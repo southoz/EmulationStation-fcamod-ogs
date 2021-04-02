@@ -18,18 +18,24 @@ sudo apt update -y && sudo apt-get install -y libboost-system-dev libboost-files
   libboost-date-time-dev libasound2-dev cmake libsdl2-dev rapidjson-dev libvlc-dev \
   libvlccore-dev vlc-bin libsdl2-mixer-dev
 ```
+Some Libraries will fail to install and require manual installation.
+```bash
+sudo dpkg -i --force-all /var/cache/apt/archives/libegl-dev_1.3.2-1~ubuntu0.20.04.1_arm64.deb
+sudo dpkg -i --force-all /var/cache/apt/archives/libgles-dev_1.3.2-1~ubuntu0.20.04.1_arm64.deb
+sudo dpkg -i --force-all /var/cache/apt/archives/libwayland-dev_1.18.0-1_arm64.deb
+```
 
 Note this Repository uses a git submodule - to checkout the source and all submodules, use
 
 ```bash
-git clone --recursive https://github.com/christianhaitian/EmulationStation-fcamod.git
+git clone --recursive https://github.com/southoz/EmulationStation-fcamod-ogs.git
 ```
 
 or 
 
 ```bash
-git clone https://github.com/christianhaitian/EmulationStation-fcamod.git
-cd EmulationStation-fcamod
+git clone https://github.com/southoz/EmulationStation-fcamod-ogs.git
+cd EmulationStation-fcamod-ogs
 git submodule update --init
 ```
 If you don't have the go2 headers in either /usr/local/include/go2 or /usr/include/go2, you will also need go2 headers files from [here](https://github.com/OtherCrashOverride/libgo2/tree/master/src) to be copied into a folder named go2 in your /usr/local/include folder.
@@ -38,7 +44,7 @@ Then, generate and build the Makefile with CMake:
 ```bash
 cd EmulationStation-fcamod
 sudo dpkg -i --force-all libmali-rk-bifrost-g31-rxp0-wayland-gbm_1.7-2+deb10_arm64.deb
-dpkg -i libmali-rk-dev_1.7-1+deb10_arm64.deb
+sudo dpkg -i --force-all libmali-rk-dev_1.7-1+deb10_arm64.deb
 cmake .
 make (or use make -j2 or -j3 if you have the additional core and memory to handle this to speed up the build)
 ```
