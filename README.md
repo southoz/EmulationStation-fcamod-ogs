@@ -22,13 +22,13 @@ sudo apt update -y && sudo apt-get install -y libboost-system-dev libboost-files
 Note this Repository uses a git submodule - to checkout the source and all submodules, use
 
 ```bash
-git clone --recursive https://github.com/christianhaitian/EmulationStation-fcamod.git
+git clone --recursive https://github.com/christianhaitian/EmulationStation-fcamod.git -b fullscreen
 ```
 
 or 
 
 ```bash
-git clone https://github.com/christianhaitian/EmulationStation-fcamod.git
+git clone https://github.com/christianhaitian/EmulationStation-fcamod.git -b fullscreen
 cd EmulationStation-fcamod
 git submodule update --init
 ```
@@ -42,6 +42,32 @@ dpkg -i libmali-rk-dev_1.7-1+deb10_arm64.deb
 cmake .
 make (or use make -j2 or -j3 if you have the additional core and memory to handle this to speed up the build)
 ```
+
+**Special Note**
+
+If you'd like to enable the ability to scrape games using TheGamesDB and/or ScreenScraper.fr, you'll need to provide a developer ID or API Key for the service(s) with a cmake command as follows:
+
+For ScreenScraper.fr:
+Use cmake -DSCREENSCRAPER_DEV_LOGIN="devid=<yourdevid>&devpassword=<yourdevpass>"
+
+For TheGamesDB:
+Use cmake -DGAMESDB_APIKEY="<YourAPIKey>" 
+
+You can also include a unique name for your build of EmulationStation so that ScreenScraper can provide some stats for your build:
+Use cmake -DSCREENSCRAPER_SOFTNAME="<YourBuildNameHere>"
+
+Example cmake line with all of these features enabled:
+
+```
+cmake -DSCREENSCRAPER_DEV_LOGIN="devid=TestID&devpassword=TestPassword" -DGAMESDB_APIKEY="someapikeyprovidedbythegamesdb" -DSCREENSCRAPER_SOFTNAME="MyBuildEmulationStation"
+```
+
+As of 04/13/2021: 
+
+You can request a Developer ID and Password from screenscraper.fr by creating an account then go to the forum located at: https://www.screenscraper.fr/forumsujets.php?frub=12&numpage=0
+
+You can request a apikey from TheGamesDB by creating an account then go to the forum located at: https://forums.thegamesdb.net/viewforum.php?f=10
+
 
 current brightness script for es-app/src/guis/GuiMenu.cpp line 78
 =================
