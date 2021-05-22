@@ -226,7 +226,7 @@ void Settings::setDefaults()
 	mBoolMap["audio.persystem"] = false;
 	mBoolMap["audio.thememusics"] = true;
 	
-	mStringMap["MusicDirectory"] = "";
+	mStringMap["MusicDirectory"] = "/roms/bgmusic";
 	mStringMap["UserMusicDirectory"] = "";
 
 	mBoolMap["updates.enabled"] = true;

@@ -1323,7 +1323,7 @@ void GuiMenu::openOtherSettings()
 	s->addSaveFunc([es_timezones] {
 		if (es_timezones->changed()) {
 			std::string selectedTimezone = es_timezones->getSelected();
-			runSystemCommand("ln -sf /usr/share/zoneinfo/" + selectedTimezone + " /etc/localtime", "", nullptr);
+			runSystemCommand("sudo ln -sf /usr/share/zoneinfo/" + selectedTimezone + " /etc/localtime", "", nullptr);
 		}
 		SystemConf::getInstance()->set("system.timezone", es_timezones->getSelected());
 	});
