@@ -126,7 +126,14 @@ void GuiCollectionSystemsOptions::initializeMenu()
 			setVariable("reloadAll", true);
 	});
 
-
+	std::shared_ptr<SwitchComponent> favoritesFirstSwitch = std::make_shared<SwitchComponent>(mWindow);
+	favoritesFirstSwitch->setState(Settings::getInstance()->getBool("FavoritesFirst"));
+	addWithLabel(_("SORT FAVORITES FIRST"), favoritesFirstSwitch);
+	addSaveFunc([this, favoritesFirstSwitch]
+	{
+		if (Settings::getInstance()->setBool("FavoritesFirst", favoritesFirstSwitch->getState()))
+			setVariable("reloadAll", true);
+        });
 
 
 	if (CollectionSystemManager::get()->isEditing())
