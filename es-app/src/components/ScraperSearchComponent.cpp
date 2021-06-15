@@ -33,7 +33,7 @@ ScraperSearchComponent::ScraperSearchComponent(Window* window, SearchType type) 
 	mGrid.setEntry(std::make_shared<GuiComponent>(mWindow), Vector2i(0, 0), false, false, Vector2i(1, 3), GridFlags::BORDER_TOP | GridFlags::BORDER_BOTTOM);
 
 	// selected result name
-	mResultName = std::make_shared<TextComponent>(mWindow, "Result name", ThemeData::getMenuTheme()->Text.font, mdColor);
+	mResultName = std::make_shared<TextComponent>(mWindow, _("Result name"), ThemeData::getMenuTheme()->Text.font, mdColor);
 
 	// selected result thumbnail
 	mResultThumbnail = std::make_shared<ImageComponent>(mWindow);
@@ -41,7 +41,7 @@ ScraperSearchComponent::ScraperSearchComponent(Window* window, SearchType type) 
 
 	// selected result desc + container
 	mDescContainer = std::make_shared<ScrollableContainer>(mWindow);
-	mResultDesc = std::make_shared<TextComponent>(mWindow, "Result desc", font, mdColor);
+	mResultDesc = std::make_shared<TextComponent>(mWindow, _("Result desc"), font, mdColor);
 	mDescContainer->addChild(mResultDesc.get());
 	mDescContainer->setAutoScroll(true);
 	
@@ -239,7 +239,7 @@ void ScraperSearchComponent::onSearchDone(const std::vector<ScraperSearchResult>
 		// Check if the scraper used is still valid
 		if (!isValidConfiguredScraper())
 		{
-			mWindow->pushGui(new GuiMsgBox(mWindow, Utils::String::toUpper("Configured scraper is no longer available.\nPlease change the scraping source in the settings."),
+			mWindow->pushGui(new GuiMsgBox(mWindow, Utils::String::toUpper(_("Configured scraper is no longer available.\nPlease change the scraping source in the settings.")),
 				_("FINISH"), mSkipCallback));
 		}
 		else
@@ -487,10 +487,10 @@ void ScraperSearchComponent::openInputScreen(ScraperSearchParams& params)
 
 	stop();
 
-	mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "SEARCH FOR",
+	mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, _("SEARCH FOR"),
 		// initial value is last search if there was one, otherwise the clean path name
 		params.nameOverride.empty() ? params.game->getCleanName() : params.nameOverride,
-		searchForFunc, false, "SEARCH"));
+		searchForFunc, false, _("SEARCH")));
 }
 
 std::vector<HelpPrompt> ScraperSearchComponent::getHelpPrompts()

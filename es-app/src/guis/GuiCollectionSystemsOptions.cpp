@@ -128,7 +128,7 @@ void GuiCollectionSystemsOptions::initializeMenu()
 
 	std::shared_ptr<SwitchComponent> favoritesFirstSwitch = std::make_shared<SwitchComponent>(mWindow);
 	favoritesFirstSwitch->setState(Settings::getInstance()->getBool("FavoritesFirst"));
-	addWithLabel(_("SORT FAVORITES FIRST"), favoritesFirstSwitch);
+	addWithLabel(_("SHOW FAVORITES ON TOP"), favoritesFirstSwitch);
 	addSaveFunc([this, favoritesFirstSwitch]
 	{
 		if (Settings::getInstance()->setBool("FavoritesFirst", favoritesFirstSwitch->getState()))
