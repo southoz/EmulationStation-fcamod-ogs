@@ -220,7 +220,7 @@ msgstr "VER INFORMACIÓN DEL JUEGO"
 
 #:
 msgid "SHOW GAME INFO ON SCREENSAVER"
-msgstr "VER INFORMACIÓN DEL JUEGO EN SALVAPANTALLAS"
+msgstr "VER INFORMACIÓN DEL JUEGO"
 
 #:
 msgid "USE MARQUEE AS GAME INFO"
@@ -885,7 +885,7 @@ msgstr "atenuar pantalla"
 
 #: 
 msgid "black"
-msgstr "pantalla en negro"
+msgstr "pantalla negra"
 
 #: 
 msgid "SHOW FRAMERATE"
