@@ -885,7 +885,7 @@ msgstr "atenuar pantalla"
 
 #: 
 msgid "black"
-msgstr "pantalla negra"
+msgstr "pantalla en negro"
 
 #: 
 msgid "SHOW FRAMERATE"
