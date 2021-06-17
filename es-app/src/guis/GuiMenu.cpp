@@ -828,17 +828,19 @@ void GuiMenu::openUISettings()
 		std::string selectedMode = UImodeSelection->getSelected();
 		if (selectedMode != "Full")
 		{
-			std::string msg = "You are changing the UI to a restricted mode:\n" + selectedMode + "\n";
+			std::string msg = "You are changing the UI to a restricted mode:\n%s\n";
 			msg += "This will hide most menu-options to prevent changes to the system.\n";
 			msg += "To unlock and return to the full UI, enter this code: \n";
-			msg += "\"" + UIModeController::getInstance()->getFormattedPassKeyStr() + "\"\n\n";
+			msg += "\"%s\"\n\n";
 			msg += "Do you want to proceed?";
-			window->pushGui(new GuiMsgBox(window, msg,
-				"YES", [selectedMode] {
+			char msgstrbuf[256];
+			snprintf(msgstrbuf, 256, _(msg), selectedMode, UIModeController::getInstance()->getFormattedPassKeyStr());
+			window->pushGui(new GuiMsgBox(window, msgstrbuf,
+				_("YES"), [selectedMode] {
 				LOG(LogDebug) << "Setting UI mode to " << selectedMode;
 				Settings::getInstance()->setString("UIMode", selectedMode);
 				Settings::getInstance()->saveFile();
-			}, "NO", nullptr));
+			}, _("NO"), nullptr));
 		}
 	});
 	//#endif
