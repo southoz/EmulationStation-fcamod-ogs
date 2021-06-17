@@ -86,7 +86,7 @@ void GuiScraperStart::pressedStart()
 		if((*it)->getPlatformIds().empty())
 		{
 			mWindow->pushGui(new GuiMsgBox(mWindow, 
-				_(Utils::String::toUpper("Warning: some of your selected systems do not have a platform set. Results may be even more inaccurate than usual!\nContinue anyway?")), 
+				_(Utils::String::toUpper(_("Warning: some of your selected systems do not have a platform set. Results may be even more inaccurate than usual!\nContinue anyway?"))), 
 				_("YES"), std::bind(&GuiScraperStart::start, this), 
 				_("NO"), nullptr));
 			return;
