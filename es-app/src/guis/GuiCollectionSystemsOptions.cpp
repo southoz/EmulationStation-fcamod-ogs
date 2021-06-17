@@ -238,7 +238,7 @@ void GuiCollectionSystemsOptions::addSystemsToMenu()
 			continue;
 
 		if (it->second.decl.displayIfEmpty)
-			autoOptionList->add(it->second.decl.longName, it->second.decl.name, it->second.isEnabled);
+			autoOptionList->add(_(it->second.decl.longName.c_str()), it->second.decl.name, it->second.isEnabled);
 		else
 		{
 			if (!it->second.isPopulated)

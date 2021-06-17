@@ -278,7 +278,7 @@ void GuiMenu::openSoundSettings()
 			}
 		}
 		for(auto ac = audio_cards.cbegin(); ac != audio_cards.cend(); ac++)
-			audio_card->add(*ac, *ac, Settings::getInstance()->getString("AudioCard") == *ac);
+			audio_card->add(_(ac->c_str()), *ac, Settings::getInstance()->getString("AudioCard") == *ac);
 		s->addWithLabel(_("AUDIO CARD"), audio_card);
 		s->addSaveFunc([audio_card] {
 			Settings::getInstance()->setString("AudioCard", audio_card->getSelected());
@@ -289,18 +289,18 @@ void GuiMenu::openSoundSettings()
 		// volume control device
 		auto vol_dev = std::make_shared< OptionListComponent<std::string> >(mWindow, _("AUDIO DEVICE"), false);
 		std::vector<std::string> transitions;
-		transitions.push_back(_("PCM"));
-		transitions.push_back(_("Speaker"));
-		transitions.push_back(_("Master"));
-		transitions.push_back(_("Digital"));
-		transitions.push_back(_("Analogue"));
+		transitions.push_back("PCM");
+		transitions.push_back("Speaker");
+		transitions.push_back("Master");
+		transitions.push_back("Digital");
+		transitions.push_back("Analogue");
 		if (Settings::getInstance()->getString("AudioDevice") != "") {
 			if(std::find(transitions.begin(), transitions.end(), Settings::getInstance()->getString("AudioDevice")) == transitions.end()) {
 				transitions.push_back(Settings::getInstance()->getString("AudioDevice"));
 			}
 		}
 		for(auto it = transitions.cbegin(); it != transitions.cend(); it++)
-			vol_dev->add(*it, *it, Settings::getInstance()->getString("AudioDevice") == *it);
+			vol_dev->add(_(it->c_str()), *it, Settings::getInstance()->getString("AudioDevice") == *it);
 		s->addWithLabel(_("AUDIO DEVICE"), vol_dev);
 		s->addSaveFunc([vol_dev] {
 			Settings::getInstance()->setString("AudioDevice", vol_dev->getSelected());
@@ -386,7 +386,7 @@ void GuiMenu::openSoundSettings()
 			}
 		}
 		for (auto it = omx_cards.cbegin(); it != omx_cards.cend(); it++)
-			omx_audio_dev->add(*it, *it, Settings::getInstance()->getString("OMXAudioDev") == *it);
+			omx_audio_dev->add(_(it->c_str()), *it, Settings::getInstance()->getString("OMXAudioDev") == *it);
 		s->addWithLabel(_("OMX PLAYER AUDIO DEVICE"), omx_audio_dev);
 		s->addSaveFunc([omx_audio_dev] {
 			if (Settings::getInstance()->getString("OMXAudioDev") != omx_audio_dev->getSelected())
@@ -468,7 +468,7 @@ void GuiMenu::openThemeConfiguration(Window* mWindow, GuiComponent* s, std::shar
 			viewPreference = "automatic";
 
 		for (auto it = styles.cbegin(); it != styles.cend(); it++)
-			gamelist_style->add(it->second, it->first, viewPreference == it->first);
+			gamelist_style->add(_(it->second.c_str()), it->first, viewPreference == it->first);
 
 		if (!gamelist_style->hasSelection())
 			gamelist_style->selectFirstItem();
@@ -792,7 +792,7 @@ void GuiMenu::openUISettings()
 				viewPreference = "automatic";
 
 			for (auto it = styles.cbegin(); it != styles.cend(); it++)
-				gamelist_style->add(it->second, it->first, viewPreference == it->first);
+				gamelist_style->add(_(it->second.c_str()), it->first, viewPreference == it->first);
 
 			s->addWithLabel(_("GAMELIST VIEW STYLE"), gamelist_style);
 			s->addSaveFunc([s, gamelist_style, window] 
