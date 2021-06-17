@@ -275,7 +275,11 @@ GuiGamelistOptions::GuiGamelistOptions(Window* window, SystemData* system, bool 
 	if(UIModeController::getInstance()->isUIModeFull() && CollectionSystemManager::get()->isEditing())
 	{
 		row.elements.clear();
-		row.addElement(std::make_shared<TextComponent>(mWindow, _("FINISH EDITING")+" '" + Utils::String::toUpper(CollectionSystemManager::get()->getEditingCollection()) + "' "+_("COLLECTION"), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color), true);
+		
+		char fecstrbuf[64];
+		snprintf(fecstrbuf, 64, _("FINISH EDITING '%s' COLLECTION").c_str(), Utils::String::toUpper(CollectionSystemManager::get()->getEditingCollection()).c_str());
+		
+		row.addElement(std::make_shared<TextComponent>(mWindow, fecstrbuf, ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color), true);
 		row.makeAcceptInputHandler(std::bind(&GuiGamelistOptions::exitEditMode, this));
 		mMenu.addRow(row);
 	}
