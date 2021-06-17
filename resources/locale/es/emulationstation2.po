@@ -4,9 +4,255 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: POEditor.com\n"
-"Project-Id-Version: recalbox-emulationstation\n"
+"Project-Id-Version: emulationstation\n"
 "Language: es\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#:
+msgid "EMULATOR SETTINGS"
+msgstr "CONFIGURACIÓN DE EMULADORES"
+
+#:
+msgid "LOG LEVEL"
+msgstr "DETALLE DEL LOG"
+
+#:
+msgid "LOWER MUSIC WHEN PLAYING VIDEO"
+msgstr "ATENUAR MÚSICA AL REPRODUCIR VIDEOS"
+
+#:
+msgid "OMX PLAYER AUDIO DEVICE"
+msgstr "DISPOSITIVO DE AUDIO DEL REPRODUCTOR OMX"
+
+#:
+msgid "PLAY THEME MUSICS"
+msgstr "REPRODUCIR MÚSICA DEL TEMA"
+
+#:
+msgid "DISPLAY SONG TITLES"
+msgstr "MOSTRAR TÍTULOS DE CANCIONES"
+
+#:
+msgid "SHOW FAVORITES ON TOP"
+msgstr "MOSTRAR FAVORITOS PRIMERO"
+
+#:
+msgid "PREFERRED IMAGE SOURCE"
+msgstr "ORIGEN DE IMAGEN PREFERIDO"
+
+#:
+msgid "PREFERRED THUMBNAIL SOURCE"
+msgstr "ORIGEN DE MINIATURA PREFERIDO"
+
+#:
+msgid "SELECT THEME TO INSTALL"
+msgstr "SELECCIONE EL TEMA A INSTALAR"
+
+#:
+msgid "'%s' ADDED TO DOWNLOAD QUEUE"
+msgstr "'%s' SE AÑADIÓ A LA COLA DE DESCARGAS"
+
+#:
+msgid "SCRAPE MARQUEE"
+msgstr "MARQUESINA DE INFORMACIÓN"
+
+#, c-format
+msgid "%i SELECTED"
+msgid_plural "%i SELECTED"
+msgstr[0] "%i SELECCIONADO"
+msgstr[1] "%i SELECCIONADOS"
+
+#:
+msgid "VIDEO SCREENSAVER SETTINGS"
+msgstr "CONFIGURAR SALVAPANTALLAS DE VÍDEO"
+
+#:
+msgid "SLIDESHOW SCREENSAVER SETTINGS"
+msgstr "CONFIGURAR SALVAPANTALLAS DE PRESENTACIÓN"
+
+#:
+msgid "SCREENSAVER CONTROLS"
+msgstr "CONTROLES DEL SALVAPANTALLAS"
+
+#:
+msgid "VIDEO SCREENSAVER"
+msgstr "VIDEO DEL SALVAPANTALLAS"
+
+#:
+msgid "SLIDESHOW SCREENSAVER"
+msgstr "PRESENTACIÓN DEL SALVAPANTALLAS"
+
+#:
+msgid "DOWNLOADING"
+msgstr "DESCARGADNO"
+
+#:
+msgid "GROUPED SYSTEMS"
+msgstr "SISTEMAS AGRUPADOS"
+
+#:
+msgid "THEME INSTALLED SUCCESSFULLY"
+msgstr "TEMA INSTALADO SATISFACTORIAMENTE"
+
+#:
+msgid "Downloading"
+msgstr "Descargando"
+
+#:
+msgid "Extracting"
+msgstr "Extrayendo"
+
+#:
+msgid "Only missing medias"
+msgstr "Solo contenido faltante"
+
+#:
+msgid "always"
+msgstr "siempre"
+
+#:
+msgid "start & end"
+msgstr "inicio y fin"
+
+#:
+msgid "never"
+msgstr "nunca"
+
+#:
+msgid "SCRAPE VIDEOS"
+msgstr "OBTENER VÍDEOS"
+
+#:
+msgid "RESET GAMELIST CUSTOMISATIONS"
+msgstr "RESTABLECER PERSONALIZACIONES DE LISTAS"
+
+#:
+msgid "RESET"
+msgstr "RESTABLECER"
+
+#:
+msgid "SHOW FOLDERS"
+msgstr "MOSTRAR CARPETAS"
+
+#:
+msgid "HAVING MULTIPLE GAMES"
+msgstr "CONTIENEN VARIOS JUEGOS"
+
+#:
+msgid "having multiple games"
+msgstr "contienen varios juegos"
+
+#:
+msgid "ARE YOU SURE YOU WANT TO CONFIGURE INPUT?"
+msgstr "¿SEGURO QUE DESEAS CONFIGURAR UN CONTROL?"
+
+#:
+msgid "disabled"
+msgstr "desactivado"
+
+#:
+msgid "default"
+msgstr "por defecto"
+
+#:
+msgid "DEFAULT"
+msgstr "POR DEFECTO"
+
+#:
+msgid "warning"
+msgstr "warning"
+
+#:
+msgid "error"
+msgstr "error"
+
+#:
+msgid "SWAP IMAGE AFTER (SECS)"
+msgstr "CAMBIAR IMAGEN CADA (SEGS)"
+
+#:
+msgid "SHOW GAME NAME"
+msgstr "MOSTRAR NOMBRE DEL JUEGO"
+
+#:
+msgid "STRETCH IMAGES"
+msgstr "AJUSTAR IMÁGENES"
+
+#:
+msgid "BACKGROUND AUDIO"
+msgstr "SONIDO DE FONDO"
+
+#:
+msgid "USE CUSTOM IMAGES"
+msgstr "USAR IMÁGENES PERSONALIZADAS"
+
+#:
+msgid "CUSTOM IMAGE DIR"
+msgstr "CARPETA DE IMÁGENES PER."
+
+#:
+msgid "CUSTOM IMAGE DIR RECURSIVE"
+msgstr "RECURSIVIDAD EN CARPETA DE IMÁGENES PER."
+
+#:
+msgid "CUSTOM IMAGE FILTER"
+msgstr "FILTRO DE IMAGENES PER."
+
+#:
+msgid "SWAP VIDEO AFTER (SECS)"
+msgstr "CAMBIAR VÍDEO CADA (SEGS)"
+
+#:
+msgid "USE OMX PLAYER FOR SCREENSAVER"
+msgstr "USAR REPRODUCTOR OMX EN SALVAPANTALLAS"
+
+#:
+msgid "USE OMX PLAYER (HW ACCELERATED)"
+msgstr "USAR REPRODUCTOR OMX (ACELERACIÓN HW)"
+
+#:
+msgid "SHOW GAME INFO"
+msgstr "VER INFORMACIÓN DEL JUEGO"
+
+#:
+msgid "SHOW GAME INFO ON SCREENSAVER"
+msgstr "VER INFORMACIÓN DEL JUEGO EN SALVAPANTALLAS"
+
+#:
+msgid "USE MARQUEE AS GAME INFO"
+msgstr "USAR MARQUESINA COMO INFORMACIÓN DEL JUEGO"
+
+#:
+msgid "USE RANDOM DECORATION"
+msgstr "UTILIZAR DECORACIÓN ALEATORIA"
+
+#:
+msgid "STRETCH VIDEO ON SCREENSAVER"
+msgstr "AJUSTAR VÍDEO EN SALVAPANTALLAS"
+
+#:
+msgid "This collection is empty"
+msgstr "Esta colección está vacia."
+
+#:
+msgid "None"
+msgstr "Ninguno"
+
+#:
+msgid "Various"
+msgstr "Varios"
+
+#:
+msgid "among other titles."
+msgstr "entre otros títulos."
+
+#:
+msgid "This collection contains"
+msgstr "Esta colección contiene"
+
+#:
+msgid "games, including"
+msgstr "juegos, incluyendo"
 
 #: 
 msgid "Loading..."
@@ -14,7 +260,19 @@ msgstr "Cargando..."
 
 #: 
 msgid "Preloading UI"
-msgstr "Iniciando..."
+msgstr "Iniciando la UI..."
+
+#: 
+msgid "ADD/REMOVE GAMES TO THIS GAME COLLECTION"
+msgstr "AÑADIR/QUITAR JUEGOS DE LA COLECCIÓN"
+
+#:
+msgid "FINISH EDITING"
+msgstr "TERMINAR LA EDICIÓN"
+
+#:
+msgid "COLLECTION"
+msgstr "COLECCIÓN"
 
 #: 
 msgid "GRID SIZE"
@@ -33,12 +291,20 @@ msgid "PRELOAD UI"
 msgstr "PRECARGA UI"
 
 #: 
+msgid "SEARCH FOR LOCAL ART"
+msgstr "BÚSQUEDA DE ARTE LOCAL"
+
+#: 
 msgid "VSYNC"
-msgstr "VSYNC"
+msgstr "SINCRONIZACIÓN VERTICAL"
 
 #: 
 msgid "DISPLAY FAVORITES FIRST IN GAMELIST"
 msgstr "MOSTRAR JUEGOS FAVORITOS PRIMERO"
+
+#: 
+msgid "SHOW SYSTEM NAME IN COLLECTIONS"
+msgstr "MOSTRAR NOMBRE DEL SISTEMA EN LAS COLECCIONES"
 
 #: 
 msgid "OPTIMIZE IMAGES VRAM USE"
@@ -57,12 +323,16 @@ msgid "Kid"
 msgstr "Niño"
 
 #: 
-msgstr "GAME COLLECTION SETTINGS"
-msgstr "OPCIONES LISTAS PERSONALIZADAS"
+msgid "GAME COLLECTION SETTINGS"
+msgstr "CONFIGURACIÓN DE COLECCIONES DE JUEGOS"
 
 #:
-msgstr "CANCEL"
+msgid "CANCEL"
 msgstr "CANCELAR"
+
+#:
+msgid "cancel"
+msgstr "cancelar"
 
 #:
 msgid "automatic"
@@ -73,8 +343,16 @@ msgid "basic"
 msgstr "básico"
 
 #: 
+msgid "BASIC"
+msgstr "BÁSICO"
+
+#: 
 msgid "detailed"
 msgstr "detallado"
+
+#: 
+msgid "DETAILED"
+msgstr "DETALLADO"
 
 #: 
 msgid "grid"
@@ -87,6 +365,10 @@ msgstr "desvanecerse"
 #: 
 msgid "instant"
 msgstr "instantáneo"
+
+#: 
+msgid "enhanced"
+msgstr "mejorado"
 
 #: 
 msgid "slide"
@@ -109,6 +391,10 @@ msgid "APPLY FILTER"
 msgstr "APLICAR FILTRO"
 
 #: 
+msgid "ARCADE SYSTEMS"
+msgstr "SISTEMAS ARCADE"
+
+#: 
 msgid "AUTOMATIC GAME COLLECTIONS"
 msgstr "COLECCIONES DE JUEGOS AUTOMÁTICAS"
 
@@ -122,11 +408,7 @@ msgstr "COLECCIONES PERSONALIZADAS"
 
 #: 
 msgid "CREATE NEW CUSTOM COLLECTION FROM THEME"
-msgstr "CREAR UNA COLECCIÓN DESDE SISTEMAS"
-
-#: 
-msgid "GAME COLLECTION SETTINGS"
-msgstr "OPCIONES LISTAS DE JUEGO"
+msgstr "CREAR UNA COLECCIÓN DEL SISTEMA"
 
 #: 
 msgid "SELECT THEME FOLDER"
@@ -138,11 +420,7 @@ msgstr "CREAR UNA COLECCIÓN PERSONALIZADA"
 
 #: 
 msgid "New Collection Name"
-msgstr "Nombre nueva colección"
-
-#: 
-msgid "Loading..."
-msgstr "Cargando ..."
+msgstr "Nombre de la nueva colección"
 
 #: 
 msgid "GROUP UNTHEMED CUSTOM COLLECTIONS"
@@ -177,6 +455,10 @@ msgid "VRAM LIMIT"
 msgstr "LIMITE MAX VRAM"
 
 #: 
+msgid "FILTER GAMELIST BY"
+msgstr "FILTRAR LISTA POR"
+
+#: 
 msgid "RESET ALL FILTERS"
 msgstr "RESTABLECER TODOS LOS FILTROS"
 
@@ -185,8 +467,16 @@ msgid "GAMELIST VIEW STYLE"
 msgstr "MODO VISTA, LISTA DE JUEGOS"
 
 #: 
+msgid "VIEW CUSTOMISATION"
+msgstr "VER PERSONALIZACIÓN"
+
+#: 
 msgid "GAME LAUNCH TRANSITION"
 msgstr "TRANSICIÓN AL LANZAR JUEGO"
+
+#: 
+msgid "THREADED LOADING"
+msgstr "Acelerar la carga del sistema"
 
 #: 
 msgid "RANDOM"
@@ -194,7 +484,7 @@ msgstr "ALEATORIO"
 
 #: 
 msgid "Rating"
-msgstr "Calificación"
+msgstr "Valoración"
 
 #: 
 msgid "Released"
@@ -218,7 +508,7 @@ msgstr "Jugadores"
 
 #: 
 msgid "NO GAMES FOUND - SKIP"
-msgstr "NO SE ENCUENTRAN JUEGOS - SALTAR"
+msgstr "NO SE ENCUENTRAN JUEGOS - IGNORAR"
 
 #: 
 msgid "RETRY"
@@ -226,7 +516,7 @@ msgstr "REINTENTAR"
 
 #: 
 msgid "SKIP"
-msgstr "SALTAR"
+msgstr "IGNORAR"
 
 #: 
 msgid "SEARCH FOR"
@@ -239,6 +529,10 @@ msgstr "BUSCAR"
 #: 
 msgid "SCRAPING IN PROGRESS"
 msgstr "ESCANEADO EN CURSO"
+
+#: 
+msgid "SCRAPING IS RUNNING. DO YOU WANT TO STOP IT ?"
+msgstr "ESCANEANDO. ¿QUIERE DETENERLO?"
 
 #: 
 msgid "SYSTEM"
@@ -272,11 +566,11 @@ msgstr "JUEGO %i DE %i"
 msgid "WE CAN'T FIND ANY SYSTEMS!\n"
 "CHECK THAT YOUR PATHS ARE CORRECT IN THE SYSTEMS CONFIGURATION FILE, AND YOUR GAME DIRECTORY HAS AT LEAST ONE GAME WITH THE CORRECT EXTENSION.\n"
 "\n"
-""
+"VISIT EMULATIONSTATION.ORG FOR MORE INFORMATION."
 msgstr "¡NO HEMOS ENCONTRADO NINGÚN SISTEMA!\n"
 "COMPRUEBE QUE SUS RUTAS SON CORRECTAS EN EL ARCHIVO DE CONFIGURACIÓN DE SISTEMAS, Y SU DIRECTORIO DE JUEGOS TIENE AL MENOS UN JUEGO CON LA EXTENSIÓN CORRECTA.\n"
 "\n"
-""
+"VISITA EMULATIONSTATION.ORG PARA MÁS INFORMACIÓN."
 
 #: 
 msgid "%i GAME SUCCESSFULLY SCRAPED!"
@@ -287,8 +581,8 @@ msgstr[1] "%i ¡JUEGOS ESCANEADOS!"
 #: 
 msgid "%i GAME SKIPPED."
 msgid_plural "%i GAMES SKIPPED."
-msgstr[0] "%i ¡JUEGO SALTADO!"
-msgstr[1] "%i ¡JUEGOS SALTADOS!"
+msgstr[0] "%i ¡JUEGO IGNORADO!"
+msgstr[1] "%i ¡JUEGOS IGNORADOS!"
 
 #: 
 msgid "OK"
@@ -325,12 +619,20 @@ msgid "DELETE"
 msgstr "BORRAR"
 
 #: 
+msgid "SAVE CHANGES ?"
+msgstr "¿GUARDAR CAMBIOS?"
+
+#: 
 msgid "SAVE CHANGES?"
 msgstr "¿GUARDAR CAMBIOS?"
 
 #: 
 msgid "BACK"
 msgstr "VOLVER"
+
+#: 
+msgid "go back"
+msgstr "ir atrás"
 
 #: 
 msgid "CLOSE"
@@ -346,7 +648,7 @@ msgstr "KODI MEDIA CENTER"
 
 #: 
 msgid "SYSTEM SETTINGS"
-msgstr "OPCIONES DE SISTEMA"
+msgstr "CONFIGURACIÓN DEL SISTEMA"
 
 #: 
 msgid "VERSION"
@@ -418,8 +720,12 @@ msgid "START UPDATE"
 msgstr "INICIAR ACTUALIZACIÓN"
 
 #: 
+msgid "UPDATE AVAILABLE"
+msgstr "ACTUALIZACIÓN DISPONIBLE"
+
+#: 
 msgid "KODI SETTINGS"
-msgstr "OPCIONES KODI"
+msgstr "CONFIGURACIÓN KODI"
 
 #: 
 msgid "ENABLE KODI"
@@ -451,7 +757,7 @@ msgstr "EL SISTEMA SE REINICIARÁ"
 
 #: 
 msgid "GAMES SETTINGS"
-msgstr "OPCIONES DE JUEGOS"
+msgstr "CONFIGURACIÓN DE JUEGOS"
 
 #: 
 msgid "GAME RATIO"
@@ -483,7 +789,7 @@ msgstr "RETRO"
 
 #: 
 msgid "RETROACHIEVEMENTS SETTINGS"
-msgstr "AJUSTES DE RETROACHEIVMENTS"
+msgstr "CONFIGURACIÓN DE RETROACHEIVMENTS"
 
 #: 
 msgid "RETROACHIEVEMENTS"
@@ -515,11 +821,19 @@ msgstr "ACTUALIZAR LISTAS DE JUEGOS"
 
 #: 
 msgid "CONTROLLERS SETTINGS"
-msgstr "AJUSTE MANDOS"
+msgstr "CONFIGURACIÓN DE CONTROLES"
+
+#: 
+msgid "DISPLAY SETTINGS"
+msgstr "CONFIGURACIÓN DE PANTALLA"
+
+#: 
+msgid "BRIGHTNESS"
+msgstr "BRILLO"
 
 #: 
 msgid "UI SETTINGS"
-msgstr "OPCIONES DE INTERFAZ"
+msgstr "CONFIGURACIÓN DE INTERFAZ"
 
 #: 
 msgid "OVERSCAN"
@@ -531,7 +845,7 @@ msgstr "SALVAPANTALLAS"
 
 #: 
 msgid "SCREENSAVER SETTINGS"
-msgstr "AJUSTES SALVAPANTALLAS"
+msgstr "CONFIGURACIÓN DE SALVAPANTALLAS"
 
 #: 
 msgid "SCREENSAVER AFTER"
@@ -543,7 +857,23 @@ msgstr "ESTILO DE TRANSICIÓN"
 
 #: 
 msgid "SCREENSAVER BEHAVIOR"
-msgstr "COMPORTAMIENTO DE SALVAPANTALLAS"
+msgstr "MODO DE SALVAPANTALLAS"
+
+#: 
+msgid "random video"
+msgstr "vídeo aleatorio"
+
+#: 
+msgid "slideshow"
+msgstr "pase de imágenes"
+
+#: 
+msgid "dim"
+msgstr "atenuar pantalla"
+
+#: 
+msgid "black"
+msgstr "pantalla negra"
 
 #: 
 msgid "SHOW FRAMERATE"
@@ -566,16 +896,52 @@ msgid "THEME"
 msgstr "TEMAS"
 
 #: 
+msgid "THEME "
+msgstr "TEMA "
+
+#: 
 msgid "SOUND SETTINGS"
-msgstr "OPCIONES DE SONIDO"
+msgstr "CONFIGURACIÓN DE SONIDO"
 
 #: 
 msgid "SYSTEM VOLUME"
 msgstr "VOLUMEN DEL SISTEMA"
 
 #: 
+msgid "AUDIO CARD"
+msgstr "TARJETA DE SONIDO"
+
+#: 
+msgid "AUDIO DEVICE"
+msgstr "DISPOSITIVO DE SONIDO"
+
+#:
+msgid "Speaker"
+msgstr "Altavoz"
+
+#:
+msgid "Master"
+msgstr "Maestro"
+
+#:
+msgid "Analogue"
+msgstr "Analógico"
+
+#: 
 msgid "FRONTEND MUSIC"
 msgstr "MÚSICA DE FONDO"
+
+#: 
+msgid "ONLY PLAY SYSTEM-SPECIFIC MUSIC FOLDER"
+msgstr "SOLO REPRODUCIR MÚSICA DEL PROPIO SISTEMA"
+
+#: 
+msgid "FILTER GAMES BY TEXT"
+msgstr "FILTRAR JUEGOS POR TEXTO"
+
+#: 
+msgid "THIS FUNCTION IS DISABLED WHEN SCRAPING IS RUNNING"
+msgstr "ESTA FUNCIÓN ESTÁ DESHABILITADA CUANDO SE ESTÁ ESCANEANDO"
 
 #: 
 msgid "OUTPUT DEVICE"
@@ -595,7 +961,7 @@ msgstr "AUTO"
 
 #: 
 msgid "NETWORK SETTINGS"
-msgstr "OPCIONES DE RED"
+msgstr "CONFIGURACIÓN DE RED"
 
 #: 
 msgid "CONNECTED"
@@ -647,19 +1013,47 @@ msgstr "ESCANEAR DESDE:"
 
 #: 
 msgid "SCRAPE RATINGS"
-msgstr "ESCANEAR CALIFICACIONES"
+msgstr "OBTENER VALORACIONES"
 
 #: 
 msgid "SCRAPE NOW"
 msgstr "ESCANEAR AHORA"
 
 #: 
+msgid "SCRAPING"
+msgstr "ESCANEANDO"
+
+#: 
+msgid "Searching"
+msgstr "Buscando"
+
+#: 
+msgid "SCRAPE FAILED"
+msgstr "ESCANEO FALLIDO"
+
+#: 
+msgid "SCRAPING FINISHED. REFRESH UPDATE GAMES LISTS TO APPLY CHANGES."
+msgstr "ESCANEO TERMINADO. ACTUALIZE LA LISTAS DE JUEGOS PARA APLICAR CAMBIOS."
+
+#: 
 msgid "QUIT"
 msgstr "SALIR"
 
 #: 
+msgid "QUIT EMULATIONSTATION"
+msgstr "SALIR DE EMULATIONSTATION"
+
+#: 
+msgid "RESTART EMULATIONSTATION"
+msgstr "REINICIAR EMULATIONSTATION"
+
+#: 
+msgid "REALLY QUIT?"
+msgstr "¿SEGURO DE SALIR?"
+
+#: 
 msgid "REALLY RESTART?"
-msgstr "¿REALMENTE QUIERE REINICIAR?"
+msgstr "¿SEGURO DE REINICIAR?"
 
 #: 
 msgid "RESTART SYSTEM"
@@ -667,7 +1061,7 @@ msgstr "REINICIAR SISTEMA"
 
 #: 
 msgid "REALLY SHUTDOWN?"
-msgstr "¿REALMENTE QUIERE APAGAR?"
+msgstr "¿SEGURO DE APAGAR?"
 
 #: 
 msgid "SHUTDOWN SYSTEM"
@@ -678,12 +1072,20 @@ msgid "Emulator"
 msgstr "Emulador"
 
 #: 
+msgid "emulator"
+msgstr "emulador"
+
+#: 
 msgid "Core"
 msgstr "Núcleo"
 
 #: 
+msgid "core"
+msgstr "núcleo"
+
+#: 
 msgid "YOU ARE GOING TO CONFIGURE A CONTROLLER. IF YOU HAVE ONLY ONE JOYSTICK, CONFIGURE THE DIRECTIONS KEYS AND SKIP JOYSTICK CONFIG BY HOLDING A BUTTON. IF YOU DO NOT HAVE A SPECIAL KEY FOR HOTKEY, CHOOSE THE SELECT BUTTON. SKIP ALL BUTTONS YOU DO NOT HAVE BY HOLDING A KEY. BUTTONS NAMES ARE BASED ON THE SNES CONTROLLER."
-msgstr "USTED VA A CONFIGURAR UN MANDO, SI TIENE SÓLO UN JOYSTICK, CONFIGURE LAS TECLAS DE DIRECCIÓN Y SÁLTESE LA CONFIGURACIÓN DEL JOYSTICK MANTENIENDO APRETADO UN BOTÓN. SI NO TIENE UN BOTÓN ESPECIAL PARA HOTKEY, USE SELECT E IGNORE LOS BOTONES QUE NO HAYA EN SU MANDO. NO PUEDE USAR OTRA VEZ UN BOTÓN YA CONFIGURADO MANTENIENDO APRETADO UN BOTÓN. LOS NOMBRES DE LOS BOTONES ESTÁN BASADOS EN EL MANDO DE SUPER NINTENDO."
+msgstr "USTED VA A CONFIGURAR UN MANDO, SI TIENE SÓLO UN JOYSTICK, CONFIGURE LAS TECLAS DE DIRECCIÓN E IGNORE LA CONFIGURACIÓN DEL JOYSTICK MANTENIENDO APRETADO UN BOTÓN. SI NO TIENE UN BOTÓN ESPECIAL PARA HOTKEY, USE SELECT E IGNORE LOS BOTONES QUE NO HAYA EN SU MANDO. NO PUEDE USAR OTRA VEZ UN BOTÓN YA CONFIGURADO MANTENIENDO APRETADO UN BOTÓN. LOS NOMBRES DE LOS BOTONES ESTÁN BASADOS EN EL MANDO DE SUPER NINTENDO."
 
 #. GUIMENU
 #: 
@@ -736,8 +1138,20 @@ msgid "OPTIONS"
 msgstr "OPCIONES"
 
 #: 
+msgid "options"
+msgstr "opciones"
+
+#: 
+msgid "Filter Options"
+msgstr "Opciones de filtro"
+
+#: 
 msgid "JUMP TO LETTER"
 msgstr "IR A LA LETRA O NÚMERO"
+
+#: 
+msgid "JUMP TO..."
+msgstr "IR A..."
 
 #: 
 msgid "SORT GAMES BY"
@@ -786,6 +1200,10 @@ msgid "START"
 msgstr "INICIAR"
 
 #: 
+msgid "start"
+msgstr "iniciar"
+
+#: 
 msgid "WARNING: SOME OF YOUR SELECTED SYSTEMS DO NOT HAVE A PLATFORM SET. RESULTS MAY BE EVEN MORE INACCURATE THAN USUAL!\n"
 "CONTINUE ANYWAY?"
 msgstr "ADVERTENCIA: ALGUNOS DE SUS SISTEMAS SELECCIONADOS NO TIENEN UNA PLATAFORMA.!LOS RESULTADOS PUEDEN SER ERRONEOS!\n"
@@ -812,8 +1230,64 @@ msgid "UPDATE FAILED, THE SYSTEM WILL NOW REBOOT"
 msgstr "FALLO ACTUALIZAR, EL SISTEMA SE REINICIARÁ"
 
 #: 
+msgid "APPLY UPDATE"
+msgstr "APLICAR ACTUALIZACIÓN"
+
+#: 
+msgid "DOWNLOADS AND UPDATES"
+msgstr "DESCARGAS Y ACTUALIZACIONES"
+
+#: 
+msgid "THEME INSTALLER"
+msgstr "INSTALADOR DE TEMAS"
+
+#: 
+msgid "IMAGE SOURCE"
+msgstr "IMAGEN PRINCIPAL <IMAGE>"
+
+#: 
+msgid "SCREENSHOT"
+msgstr "CAPTURA DE PANTALLA"
+
+#: 
+msgid "TITLE SCREENSHOT"
+msgstr "CAPTURA DE TÍTULO"
+
+#: 
+msgid "BOX SOURCE"
+msgstr "CAJA <THUMBNAIL>"
+
+#: 
+msgid "BOX 2D"
+msgstr "CAJA 2D"
+
+#: 
+msgid "BOX 3D"
+msgstr "CAJA 3D"
+
+#: 
+msgid "LOGO SOURCE"
+msgstr "LOGOTIPO <MARQUEE>"
+
+#: 
+msgid "WHEEL"
+msgstr "RUEDA"
+
+#:
+msgid "SHOW FILENAMES IN LISTS"
+msgstr "MOSTRAR NOMBRES DE ARCHIVO EN LAS LISTAS"
+
+#:
+msgid "SHOW CLOCK"
+msgstr "MOSTRAR RELOJ"
+
+#: 
 msgid "NO UPDATE AVAILABLE"
 msgstr "NO HAY ACTUALIZACIÓN DISPONIBLE"
+
+#: 
+msgid "UPDATE IS ALREADY RUNNING"
+msgstr "ACTUALIZACIÓN EN PROCESO"
 
 #: 
 msgid "enter emulator"
@@ -836,12 +1310,28 @@ msgid "Name"
 msgstr "Nombre"
 
 #: 
+msgid "NAME"
+msgstr "NOMBRE"
+
+#: 
+msgid "ENTER GAME NAME"
+msgstr "INTRODUCIR NOMBRE DEL JUEGO"
+
+#: 
 msgid "enter game name"
 msgstr "introducir nombre de juego"
 
 #: 
 msgid "Description"
 msgstr "Descripción"
+
+#: 
+msgid "DESCRIPTION"
+msgstr "DESCRIPCIÓN"
+
+#: 
+msgid "ENTER DESCRIPTION"
+msgstr "INTRODUCIR DESCRIPCIÓN"
 
 #: 
 msgid "enter description"
@@ -852,51 +1342,151 @@ msgid "Image"
 msgstr "Imagen"
 
 #: 
+msgid "IMAGE"
+msgstr "IMAGEN"
+
+#: 
+msgid "ENTER PATH TO IMAGE"
+msgstr "INTRODUCIR RUTA DE LA IMAGEN"
+
+#: 
 msgid "enter path to image"
 msgstr "introducir ruta de la imagen"
+
+#: 
+msgid "ENTER PATH TO VIDEO"
+msgstr "INTRODUCIR RUTA DEL VIDEO"
+
+#: 
+msgid "enter path to video"
+msgstr "introducir ruta del video"
+
+#: 
+msgid "ENTER PATH TO MARQUEE"
+msgstr "INTRODUCIR RUTA DE LA MARQUESINA"
+
+#: 
+msgid "enter path to marquee"
+msgstr "introducir ruta de la marquesina"
+
+#: 
+msgid "Marquee"
+msgstr "Marquesina"
+
+#: 
+msgid "MARQUEE"
+msgstr "MARQUESINA"
 
 #: 
 msgid "Thumbnail"
 msgstr "Miniatura"
 
 #: 
+msgid "THUMBNAIL"
+msgstr "MINIATURA"
+
+#: 
+msgid "enter path to"
+msgstr "introducir ruta de"
+
+#: 
+msgid "ENTER PATH TO"
+msgstr "INTRODUCIR RUTA DE"
+
+#: 
 msgid "enter path to thumbnail"
 msgstr "introducir ruta de la miniatura"
 
 #: 
+msgid "ENTER PATH TO THUMBNAIL"
+msgstr "INTRODUCIR RUTA DE LA MINIATURA"
+
+#: 
+msgid "ENTER RATING"
+msgstr "INTORDUCIR VALORACIÓN"
+
+#: 
 msgid "enter rating"
-msgstr "introducir calificación"
+msgstr "introducir valoración"
 
 #: 
 msgid "Release date"
 msgstr "Fecha de lanzamiento"
 
 #: 
+msgid "RELEASE DATE"
+msgstr "FECHA DE LANZAMIENTO"
+
+#: 
 msgid "enter release date"
 msgstr "introducir fecha de lanzamiento"
+
+#: 
+msgid "ENTER RELEASE DATE"
+msgstr "INTRODUCIR FECHA DE LANZAMIENTO"
 
 #: 
 msgid "enter game developer"
 msgstr "introducir desarrollador del juego"
 
 #: 
+msgid "ENTER GAME DEVELOPER"
+msgstr "INTRODUCIR DESARROLLADOR DEL JUEGO"
+
+#: 
 msgid "enter game publisher"
 msgstr "introducir el editor del juego"
+
+#: 
+msgid "ENTER GAME PUBLISHER"
+msgstr "INTRODUCIR EL EDITOR DEL JUEGO"
 
 #: 
 msgid "enter game genre"
 msgstr "introducir el género de juego"
 
 #: 
+msgid "ENTER GAME GENRE"
+msgstr "INTORUDCIR EL GÉNERO DEL JUEGO"
+
+#: 
 msgid "enter number of players"
 msgstr "introducir el número de jugadores"
+
+#: 
+msgid "ENTER NUMBER OF PLAYERS"
+msgstr "INTRODUCIR EL NÚMERO DE JUGADORES"
+
+#: 
+msgid "enter favorite off/on"
+msgstr "introducir en favoritos si/no"
+
+#: 
+msgid "ENTER FAVORITE OFF/ON"
+msgstr "INTRODUCIR EN FAVORITOS SI/NO"
+
+#: 
+msgid "enter hidden off/on"
+msgstr "introducir en ocultos si/no"
+
+#: 
+msgid "ENTER HIDDEN OFF/ON"
+msgstr "INTRODUCIR EN OCULTOS SI/NO"
+
+#: 
+msgid "enter kidgame off/on"
+msgstr "introducir en para niños si/no"
+
+#: 
+msgid "ENTER KIDGAME OFF/ON"
+msgstr "INTRODUCIR EN PARA NIÑOS SI/NO"
 
 #: 
 msgid "Favorite"
 msgstr "Favorito"
 
 #: 
-msgid "entrer le favori"
+msgid "add to favorites"
 msgstr "añadir a favoritos"
 
 #: 
@@ -904,8 +1494,16 @@ msgid "Region"
 msgstr "Región"
 
 #: 
+msgid "REGION"
+msgstr "REGIÓN"
+
+#: 
 msgid "enter region"
 msgstr "introducir región"
+
+#: 
+msgid "ENTER REGION"
+msgstr "INTRODUCIR REGIÓN"
 
 #: 
 msgid "Romtype"
@@ -916,20 +1514,20 @@ msgid "enter romtype"
 msgstr "introducir tipo de rom"
 
 #: 
-msgid "Hidden"
-msgstr "Oculto"
-
-#: 
 msgid "HIDDEN"
 msgstr "OCULTO"
 
 #: 
-msgid "NAME"
-msgstr "NOMBRE"
+msgid "Hidden"
+msgstr "Oculto"
 
 #: 
 msgid "EMULATOR"
 msgstr "EMULADOR"
+
+#: 
+msgid "CORE"
+msgstr "NÚCLEO"
 
 #: 
 msgid "FAVORITE"
@@ -940,12 +1538,28 @@ msgid "set hidden"
 msgstr "marcar como oculto"
 
 #: 
+msgid "SET HIDDEN"
+msgstr "OCULTAR"
+
+#: 
 msgid "Play count"
 msgstr "veces jugado"
 
 #: 
+msgid "PLAY COUNT"
+msgstr "VECES JUGADO
+
+#: 
+msgid "ARCADE SYSTEM"
+msgstr "SISTEMA ARCADE"
+
+#: 
 msgid "enter number of times played"
 msgstr "introducir el número de veces jugado"
+
+#: 
+msgid "ENTER NUMBER OF TIMES PLAYED"
+msgstr "INTRODUCIR EL NÚMERO DE VECES JUGADO"
 
 #: 
 msgid "Last played"
@@ -953,17 +1567,41 @@ msgstr "Última vez jugado"
 
 #: 
 msgid "enter last played date"
-msgstr "introducir la última vez que jugó al juego"
+msgstr "introducir la última vez que jugó"
+
+#: 
+msgid "ENTER LAST PLAYED DATE"
+msgstr "INTRODUCIR LA ÚLTIMA VEZ QUE JUGÓ"
+
+#: 
+msgid "enter arcade system name"
+msgstr "introducir nombre del sistema arcade
+
+#: 
+msgid "ENTER ARCADE SYSTEM NAME"
+msgstr "INTRODUCIR NOMBRE DEL SISTEMA ARCADE"
 
 #: 
 msgid "GAMES AVAILABLE"
 msgstr "JUEGOS DISPONIBLES"
+
+#:
+msgid "%i GAME AVAILABLE"
+msgid_plural "%i GAMES AVAILABLE"
+msgstr[0] "%i JUEGO DISPONIBLE"
+msgstr[1] "%i JUEGOS DISPONIBLE"
 
 #: 
 msgid "%i FAVORITE"
 msgid_plural "%i FAVORITES"
 msgstr[0] "%i FAVORITO"
 msgstr[1] "%i FAVORITOS"
+
+#:
+msgid "%i GAME SUCCESSFULLY SCRAPED!"
+msgid_plural "%i GAMES SUCCESSFULLY SCRAPED!"
+msgstr[0] "¡%i JUEGO ESCANEADO!"
+msgstr[1] "¡%i JUEGOS ESCANEADOS!"
 
 #: 
 msgid "SCROLL"
@@ -982,6 +1620,10 @@ msgid "MENU"
 msgstr "MENÚ"
 
 #: 
+msgid "menu"
+msgstr "menú"
+
+#: 
 msgid "FILENAME, ASCENDING"
 msgstr "NOMBRE ARCHIVO, ASCENDENTE"
 
@@ -991,11 +1633,11 @@ msgstr "NOMBRE ARCHIVO, DESCENDENTE"
 
 #: 
 msgid "RATING, ASCENDING"
-msgstr "CALIFICACIÓN,  ASCENDENTE"
+msgstr "VALORACIÓN, ASCENDENTE"
 
 #: 
 msgid "RATING, DESCENDING"
-msgstr "CALIFICACIÓN,  DESCENDENTE"
+msgstr "VALORACIÓN, DESCENDENTE"
 
 #: 
 msgid "TIMES PLAYED, ASCENDING"
@@ -1012,6 +1654,54 @@ msgstr "ÚLTIMA VEZ JUGADO, ASCENDENTE"
 #: 
 msgid "LAST PLAYED, DESCENDING"
 msgstr "ÚLTIMA VEZ JUGADO, DESCENDENTE"
+
+#: 
+msgid "NUMBER PLAYERS, ASCENDING"
+msgstr "NÚMERO DE JUGADORES, ASCENDENTE"
+
+#: 
+msgid "NUMBER PLAYERS, DESCENDING"
+msgstr "NÚMERO DE JUGADORES, DESCENDENTE"
+
+#: 
+msgid "RELEASE DATE, ASCENDING"
+msgstr "FECHA DE PUBLICACION, ASCENDENTE"
+
+#: 
+msgid "RELEASE DATE, DESCENDING"
+msgstr "FECHA DE PUBLICACION, DESCENDENTE"
+
+#: 
+msgid "GENRE, ASCENDING"
+msgstr "GÉNERO, ASCENDENTE"
+
+#: 
+msgid "GENRE, DESCENDING"
+msgstr "GÉNERO, DESCENDENTE"
+
+#: 
+msgid "DEVELOPER, ASCENDING"
+msgstr "DESARROLLADOR, ASCENDENTE"
+
+#: 
+msgid "DEVELOPER, DESCENDING"
+msgstr "DESARROLLADOR, DESCENDENTE"
+
+#: 
+msgid "PUBLISHER, ASCENDING"
+msgstr "EDITOR, ASCENDENTE"
+
+#: 
+msgid "PUBLISHER, DESCENDING"
+msgstr "EDITOR, DESCENDENTE"
+
+#: 
+msgid "SYSTEM, ASCENDING"
+msgstr "SISTEMA, ASCENDENTE"
+
+#: 
+msgid "SYSTEM, DESCENDING"
+msgstr "SISTEMA, DESCENDENTE"
 
 #: 
 msgid "WORKING..."
@@ -1058,18 +1748,16 @@ msgid "unknown"
 msgstr "desconocido"
 
 #: 
+msgid "UNKNOWN"
+msgstr "DESCONOCIDO"
+
+#: 
 msgid "SELECT ALL"
 msgstr "SELECCIONAR TODO"
 
 #: 
 msgid "SELECT NONE"
 msgstr "SELECCIONAR NINGUNO"
-
-#: 
-msgid "%i SELECTED"
-msgid_plural "%i SELECTED"
-msgstr[0] "%i SELECCIONADO"
-msgstr[1] "%i SELECCIONADOS"
 
 #: 
 msgid "UP"
@@ -1132,13 +1820,23 @@ msgstr "MANDO %i"
 msgid "PRESS ANYTHING"
 msgstr "PRESIONE CUALQUIER BOTÓN"
 
+msgid "HOLD ANY BUTTON TO SKIP"
+msgstr "PRESIONE CUALQUIER BOTÓN PARA IGNORAR"
+
+msgid "-NOT DEFINED-"
+msgstr "-NO DEFINIDO-"
+
 #: 
 msgid "ALREADY TAKEN"
 msgstr "YA ESTÁ EN USO"
 
 #: 
 msgid "DISCARD CHANGES"
-msgstr "DESECHAR LOS CAMBIOS"
+msgstr "DESCARTAR LOS CAMBIOS"
+
+#: 
+msgid "discard changes"
+msgstr "descartar los cambios"
 
 #: 
 msgid "WELCOME"
@@ -1146,7 +1844,7 @@ msgstr "BIENVENIDO"
 
 #: 
 msgid "CONFIGURE INPUT"
-msgstr "CONFIGURAR MANDO"
+msgstr "CONFIGURAR CONTROL"
 
 #: 
 msgid "%i GAMEPAD DETECTED"
@@ -1160,11 +1858,15 @@ msgstr "NINGÚN MANDO DETECTADO"
 
 #: 
 msgid "HOLD A BUTTON ON YOUR DEVICE TO CONFIGURE IT."
-msgstr "MANTENGA UN BOTÓN PULSADO PARA CONFIGURAR EL MANDO"
+msgstr "MANTENGA UN BOTÓN PULSADO PARA CONFIGURAR EL CONTROL"
 
 #: 
 msgid "PRESS F4 TO QUIT AT ANY TIME."
 msgstr "PULSE F4 PARA SALIR EN CUALQUIER MOMENTO"
+
+#: 
+msgid "PRESS ESC TO CANCEL."
+msgstr "PULSE ESC PARA CANCELAR."
 
 #: 
 msgid "PRESS ESC OR THE HOTKEY TO CANCEL."
@@ -1236,15 +1938,19 @@ msgid "ACCEPT RESULT"
 msgstr "ACEPTAR EL RESULTADO"
 
 #: 
+msgid "accept result"
+msgstr "aceptar el resultado"
+
+#: 
 msgid "FILENAME"
 msgstr "NOMBRE DE ARCHIVO"
 
 #: 
 msgid "RATING"
-msgstr "VOTOS"
+msgstr "VALORACIÓN"
 
 #: 
-msgid "PARTIES JOUÉES"
+msgid "TIMES PLAYED"
 msgstr "VECES JUGADO"
 
 #: 
@@ -1260,8 +1966,36 @@ msgid "DEVELOPER"
 msgstr "DESARROLLADOR"
 
 #: 
+msgid "PUBLISHER"
+msgstr "EDITOR"
+
+#: 
 msgid "GENRE"
 msgstr "GÉNERO"
+
+#: 
+msgid "PLAYERS"
+msgstr "JUGADORES"
+
+#: 
+msgid "FAVORITES"
+msgstr "FAVORITOS"
+
+#: 
+msgid "Favorites"
+msgstr "Favoritos"
+
+#: 
+msgid "No Entries Found"
+msgstr "Sin entradas"
+
+#: 
+msgid "KIDGAME"
+msgstr "PARA NIÑOS"
+
+#: 
+msgid "PUBLISHER / DEVELOPER"
+msgstr "EDITOR / DESARROLLADOR"
 
 #: 
 msgid "SHOW HIDDEN"
@@ -1382,7 +2116,7 @@ msgstr "Comience el proceso de escaneado con la configuración que se muestra a 
 
 #: 
 msgid "Scrape and display game ratings."
-msgstr "Escanear y mostrar clasificaciones de juegos."
+msgstr "Obtener y mostrar valoraciones de juegos."
 
 #: 
 msgid "Advanced settings. Please make sure you really know what you're doing, before changing any values in this menu."
@@ -1456,7 +2190,7 @@ msgstr "ESCALA DE ENTEROS (PIXEL PERFECTO)"
 
 #: 
 msgid "ADVANCED SETTINGS"
-msgstr "AJUSTES AVANZADOS"
+msgstr "CONFIGURACIÓN AVANZADA"
 
 #: 
 msgid "BOOT SETTINGS"
@@ -1525,6 +2259,10 @@ msgstr "ACTIVAR FILTROS"
 #: 
 msgid "THEME CONFIGURATION"
 msgstr "CONFIGURACIÓN DE TEMA"
+
+#: 
+msgid "YOU MUST APPLY THE THEME BEFORE EDIT CONFIGURATION"
+msgstr "DEBE APLICAR EL TEMA ANTES DE EDITAR LA CONFIGURACIÓN"
 
 #: 
 msgid "THEME COLORSET"
@@ -1664,11 +2402,11 @@ msgstr "SE REQUIERE ENTRADA"
 
 #: 
 msgid "(skipped)"
-msgstr "(saltado)"
+msgstr "(ignorado)"
 
 #: 
 msgid "UP/DOWN TO SKIP"
-msgstr "ARRIBA / ABAJO PARA SALTAR"
+msgstr "ARRIBA / ABAJO PARA IGNORAR"
 
 #: 
 msgid "A TO UNSET"
@@ -1676,11 +2414,11 @@ msgstr "A PARA CANCELAR"
 
 #: 
 msgid "DOWN TO SKIP AND KEEP [%1%]"
-msgstr "ABAJO PARA SALTAR Y MANTENER [%1%]"
+msgstr "ABAJO PARA IGNORAR Y MANTENER [%1%]"
 
 #: 
 msgid "UP/DOWN TO SKIP AND KEEP [%1%]"
-msgstr "ARRIBA / ABAJO PARA SALTAR Y MANTENER  [%1%]"
+msgstr "ARRIBA / ABAJO PARA IGNORAR Y MANTENER  [%1%]"
 
 #: 
 msgid "Set duration of help popups, 0 means no popup."
@@ -1700,7 +2438,7 @@ msgstr "DURACIÓN VENTANA EMERGENTE DE MÚSICA"
 
 #: 
 msgid "POPUP SETTINGS"
-msgstr "AJUSTES DE VENTANA EMERGENTES"
+msgstr "CONFIGURACIÓN DE VENTANA EMERGENTES"
 
 #: 
 msgid "POPUP POSITION"
@@ -1744,7 +2482,7 @@ msgstr "JUEGO EN RED"
 
 #: 
 msgid "NETPLAY SETTINGS"
-msgstr "OPCIONES DE JUEGO EN RED"
+msgstr "CONFIGURACIÓN DE JUEGO EN RED"
 
 #: 
 msgid "NETPLAY LOBBY"
@@ -1859,12 +2597,12 @@ msgid "THIS COULD TAKE A WHILE, CONFIRM?"
 msgstr "ESTO PODRÍA TOMAR UN TIEMPO, ¿CONFIRMAR?"
 
 #: 
-msgid "bueno"
-msgstr "bon"
+msgid "good"
+msgstr "bueno"
 
 #: 
 msgid "bad"
-msgstr "malO"
+msgstr "malo"
 
 #: 
 msgid "medium"
@@ -1887,8 +2625,8 @@ msgid "Game"
 msgstr "Juego"
 
 #: 
-msgid "¡Juega en línea en juegos que se ejecutan en Retroarch como NES, SNES, FBA, Genesis / Megadrive y más!"
-msgstr "Jouez en ligne à des jeux tournant sous Retroarch comme NES, SNES, FBA, Megadrive et bien plus!"
+msgid "Play online on games running through Retroarch like NES, SNES, FBA, Genesis/Megadrive and more!"
+msgstr "¡Juega en línea en juegos que se ejecutan en Retroarch como NES, SNES, FBA, Genesis / Megadrive y más!"
 
 #: 
 msgid "Rom, hash and core match"
@@ -1915,6 +2653,10 @@ msgid "Starting UI"
 msgstr "Inicialización interfaz"
 
 #:
+msgid "SAVING DATA. PLEASE WAIT..."
+msgstr "GUARDANDO DATOS. POR FAVOR ESPERE ..."
+
+#:
 msgid "VERIFYING"
 msgstr "VERIFICANDO"
 
@@ -1922,25 +2664,159 @@ msgstr "VERIFICANDO"
 msgid "EMPTY LIST"
 msgstr "LISTA VACÍA"
 
+#:
+msgid "VISIBLE SYSTEMS"
+msgstr "SISTEMAS VISIBLES"
+
+#:
+msgid "COMPLETE QUIT MENU"
+msgstr "SALIR AL MENÚ"
+
 
 #: Retroarch ratio
 msgid "Auto"
 msgstr "Automático"
 
+#:
 msgid "Square pixel"
 msgstr "Píxel cuadrado"
 
-msgid "Square pixel"
-msgstr "Pixel carré"
-
+#:
 msgid "Retroarch Config"
-msgstr "Retroarch Configuración'"
+msgstr "Retroarch - Configuración"
 
+#:
 msgid "Retroarch Custom"
-msgstr "Retroarch Customización'"
+msgstr "Retroarch - Personalización"
 
+#:
 msgid "Core provided"
-msgstr "Núcleo proporcionado"
+msgstr "Proporcionado por el Núcleo"
 
+#:
 msgid "Do not set"
 msgstr "No establecer"
+
+#:
+msgid "The selected UI mode has nothing to show,\n returning to UI mode: FULL"
+msgstr "El modo seleccionado no muestra nada, \n volviendo al modo: COMPLETO"
+
+#:
+msgid "ERROR: EVERY SYSTEM IS HIDDEN, RE-DISPLAYING ALL OF THEM NOW"
+msgstr "ERROR: TODOS LOS SISTEMAS ESTÁN OCULTOS, VOLVIENDO A MOSTRAR TODOS AHORA"
+
+#:
+msgid "Loading theme..."
+msgstr "Cargando tema..."
+
+#:
+msgid "TEXT FOR SIZE CALCULATION"
+msgstr "TEXTO PARA EL CÁLCULO DEL TAMAÑO"
+
+#:
+msgid "MODIFIER"
+msgstr "MODIFICADOR"
+
+#:
+msgid "SELECTIONNER"
+msgstr "SELECTOR"
+
+#:
+msgid "DISPLAY"
+msgstr "PANTALLA"
+
+#:
+msgid "AN ERROR HAS OCCURED"
+msgstr "HA OCURRIDO UN ERROR"
+
+#:
+msgid "Result name"
+msgstr "Nombre del resultado"
+
+#:
+msgid "Result desc"
+msgstr "Descripción del resultado"
+
+#:
+msgid "Configured scraper is no longer available.\nPlease change the scraping source in the settings."
+msgstr "El escáner configurado ya no está disponible.\nCambie la fuente de escaneo en la configuración."
+
+#:
+msgid "THIS WILL DELETE THE ACTUAL GAME FILE(S)!\nARE YOU SURE?"
+msgstr "¡ESTO BORRARÁ LOS ARCHIVO DEL JUEGO!\n¿ESTÁ SEGURO?"
+
+#:
+msgid "FALSE"
+msgstr "FALSO"
+
+#:
+msgid "TRUE"
+msgstr "VERDADERO"
+
+#:
+msgid "TIMEZONE"
+msgstr "ZONA HORARIA"
+
+#:
+msgid "Editing the '%s' Collection. Add/remove games with Y."
+msgstr "Editando la colección '%s'. Añada/elimine juegos con Y."
+
+#:
+msgid "Finished editing the '%s' Collection."
+msgstr "Terminada la edición de la colección '%s'."
+
+#:
+msgid "Added '%s' to '%s'"
+msgstr "Añadido '%s' a '%s'."
+
+#:
+msgid "Removed '%s' from '%s'"
+msgstr "Eliminado '%s' de '%s'."
+
+#:
+msgid "This collection is empty."
+msgstr "La colección esta vacía."
+
+#:
+msgid "all games"
+msgstr "todos los juegos"
+
+#:
+msgid "last played"
+msgstr "últimos jugados"
+
+#: 
+msgid "favorites"
+msgstr "favoritos"
+
+#:
+msgid "2 players"
+msgstr "2 jugadores"
+
+#:
+msgid "4 players"
+msgstr "4 jugadores"
+
+#:
+msgid "never played"
+msgstr "Nunca jugados"
+
+#:
+msgid "collections"
+msgstr "colecciones"
+
+#:
+msgid "Using OMX Player and displaying Game Info may result in the video flickering in some TV modes. If that happens, consider:\n\n• Disabling the \"Show Game Info\" option;\n• Disabling \"Overscan\" on the Pi configuration menu might help:\nRetroPie > Raspi-Config > Advanced Options > Overscan > \"No\".\n• Disabling the use of OMX Player for the screensaver."
+msgstr "El uso del reproductor OMX junto a la visualización de la información del juego, puede provocar que el video parpadee en algunos modos de TV. Si ocurre, considere:\n\n• Deshabilitar la opción \"Ver informacion del juego\";\n• Deshabilitar \"Overscan\" en el menú de configuración de la Pi puede ayudar:\nRetroPie > Raspi-Config > Advanced Options > Overscan > \"No\".\n• Deshabilitar el uso del reproductor OMX en el protector de pantalla."
+
+#:
+msgid "GOT IT!"
+msgstr "¡ENTENDIDO!"
+
+#:
+msgid "both"
+msgstr "ambos"
+
+#:
+msgid "sysdefault"
+msgstr "sistema por defecto"
