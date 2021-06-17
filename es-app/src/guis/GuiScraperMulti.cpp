@@ -10,6 +10,7 @@
 #include "PowerSaver.h"
 #include "SystemData.h"
 #include "Window.h"
+#include "EsLocale.h"
 
 GuiScraperMulti::GuiScraperMulti(Window* window, const std::queue<ScraperSearchParams>& searches, bool approveResults) :
 	GuiComponent(window), mBackground(window, ":/frame.png"), mGrid(window, Vector2i(1, 5)),
@@ -109,7 +110,10 @@ void GuiScraperMulti::doNextSearch()
 
 	// update subtitle
 	ss.str(""); // clear
-	ss << _("GAME") << " " << (mCurrentGame + 1) << " " << _("OF") << " " << mTotalGames << " - " << Utils::String::toUpper(Utils::FileSystem::getFileName(mSearchQueue.front().game->getPath()));
+	char strbuf[64];
+	sprintf(strbuf, _("GAME %i OF %i"), mCurrentGame + 1, mTotalGames);
+	ss << strbuf  << " - " << Utils::String::toUpper(Utils::FileSystem::getFileName(mSearchQueue.front().game->getPath()));
+	
 	mSubtitle->setText(ss.str());
 
 	mSearchComp->search(mSearchQueue.front());
@@ -144,10 +148,16 @@ void GuiScraperMulti::finish()
 	{
 		ss << _("NO GAMES WERE SCRAPED") << ".";
 	}else{
-		ss << mTotalSuccessful << " " << _("GAME") << ((mTotalSuccessful > 1) ? "S" : "") << " " << _("SUCCESSFULLY SCRAPED") << "!";
+		
+		char csstrbuf[64];
+		snprintf(csstrbuf, 64, EsLocale::nGetText("%i GAME SUCCESSFULLY SCRAPED!", "%i GAMES SUCCESSFULLY SCRAPED!", mTotalSuccessful).c_str(), mTotalSuccessful);
+		ss << csstrbuf;
 
-		if(mTotalSkipped > 0)
-			ss << "\n" << mTotalSkipped << " " << _("GAME") << ((mTotalSkipped > 1) ? "S" : "") << " " << _("SKIPPED") << ".";
+		if(mTotalSkipped > 0) {
+			char skrbuf[64];
+			snprintf(skrbuf, 64, EsLocale::nGetText("%i GAME SKIPPED.", "%i GAMES SKIPPED.", mTotalSuccessful).c_str(), mTotalSuccessful);
+			ss << "\n" << skrbuf;
+		}
 	}
 
 	mWindow->pushGui(new GuiMsgBox(mWindow, ss.str(),
