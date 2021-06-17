@@ -305,7 +305,7 @@ void SystemView::populate()
 		if (!UIModeController::getInstance()->isUIModeFull())
 		{
 			Settings::getInstance()->setString("UIMode", "Full");
-			mWindow->pushGui(new GuiMsgBox(mWindow, "The selected UI mode has nothing to show,\n returning to UI mode: FULL", "OK", nullptr));
+			mWindow->pushGui(new GuiMsgBox(mWindow, _("The selected UI mode has nothing to show,\n returning to UI mode: FULL"), _("OK"), nullptr));
 		}
 		
 		if (Settings::getInstance()->setString("HiddenSystems", ""))
@@ -314,7 +314,7 @@ void SystemView::populate()
 
 			// refresh GUI
 			populate();
-			mWindow->pushGui(new GuiMsgBox(mWindow, "ERROR: EVERY SYSTEM IS HIDDEN, RE-DISPLAYING ALL OF THEM NOW", "OK", nullptr));
+			mWindow->pushGui(new GuiMsgBox(mWindow, _("ERROR: EVERY SYSTEM IS HIDDEN, RE-DISPLAYING ALL OF THEM NOW"), _("OK"), nullptr));
 		}
 	}
 }
@@ -522,7 +522,7 @@ void SystemView::onCursorChanged(const CursorState& /*state*/)
 		std::stringstream ss;
 
 		if (!getSelected()->isGameSystem() && !getSelected()->isGroupSystem())
-			ss << "CONFIGURATION";
+			ss << _("CONFIGURATION");
 		else
 		{
 			char strbuf[256];
