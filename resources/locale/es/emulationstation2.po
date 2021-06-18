@@ -885,7 +885,7 @@ msgstr "atenuar pantalla"
 
 #: 
 msgid "black"
-msgstr "pantalla negra"
+msgstr "pantalla en negro"
 
 #: 
 msgid "SHOW FRAMERATE"
@@ -1181,12 +1181,6 @@ msgstr "INICIAR"
 #: 
 msgid "start"
 msgstr "iniciar"
-
-#: 
-msgid "WARNING: SOME OF YOUR SELECTED SYSTEMS DO NOT HAVE A PLATFORM SET. RESULTS MAY BE EVEN MORE INACCURATE THAN USUAL!\n"
-"CONTINUE ANYWAY?"
-msgstr "ADVERTENCIA: ALGUNOS DE SUS SISTEMAS SELECCIONADOS NO TIENEN UNA PLATAFORMA.!LOS RESULTADOS PUEDEN SER ERRONEOS!\n"
-"¿CONTINUAR IGUALMENTE?"
 
 #: 
 msgid "NO GAMES FIT THAT CRITERIA."
@@ -2690,3 +2684,7 @@ msgstr "NO SE ESCANEARON JUEGOS"
 #:
 msgid "CONFIGURATION"
 msgstr "CONFIGURACIÓN"
+
+#:
+msgid "You are changing the UI to a restricted mode:\n%s\nThis will hide most menu-options to prevent changes to the system.\nTo unlock and return to the full UI, enter this code:\n\"%s\"\n\nDo you want to proceed?"
+msgstr "Está cambiando la interfaz de usuario a un modo restringido:\n%s\nSe ocultarán la mayoría de las opciones de menú para evitar cambios en el sistema.\nPara desbloquear y volver a la IU completa, ingrese el código:\n\"%s\"\n\n¿Quiere continuar?"
