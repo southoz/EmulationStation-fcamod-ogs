@@ -45,6 +45,7 @@ const std::map<PlatformId, unsigned short> screenscraper_platformid_map{
 	{ ATARI_ST, 42},
 	// missing Atari XE ?
 	{ COLECOVISION, 48 },
+	{ COMMODORE_16, 99 },
 	{ COMMODORE_64, 66 },
 	{ INTELLIVISION, 115 },
 	{ MAC_OS, 146 },
@@ -99,6 +100,7 @@ const std::map<PlatformId, unsigned short> screenscraper_platformid_map{
 	{ TRS80_COLOR_COMPUTER, 144 },
 	{ TANDY, 144 },	
 	{ SUPERGRAFX, 105 },
+	{ SUPERVISION, 207 },
 
 	{ AMIGACD32, 130 },
 	{ AMIGACDTV, 129 },
@@ -132,6 +134,7 @@ const std::map<PlatformId, unsigned short> screenscraper_platformid_map{
 	{ APPLE2GS, 217 },
 	{ SPECTRAVIDEO, 218 },
 	{ PALMOS, 219 },
+	{ ALG, 170 },
 	{ DAPHNE, 49 },
 	{ EASYRPG, 231 },
 	{ SOLARUS, 223 }
