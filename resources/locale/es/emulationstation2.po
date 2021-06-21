@@ -56,13 +56,13 @@ msgstr "'%s' SE AÑADIÓ A LA COLA DE DESCARGAS"
 msgid "SCRAPE MARQUEE"
 msgstr "MARQUESINA DE INFORMACIÓN"
 
-#, c-format
+#:
 msgid "%i SELECTED"
 msgid_plural "%i SELECTED"
 msgstr[0] "%i SELECCIONADO"
 msgstr[1] "%i SELECCIONADOS"
 
-#, c-format
+#:
 msgid "GAME %i OF %i"
 msgstr "JUEGO %i DE %i"
 
@@ -1688,11 +1688,11 @@ msgid "HOLD ANY BUTTON TO SKIP"
 msgstr "PRESIONE CUALQUIER BOTÓN PARA IGNORAR"
 
 msgid "-NOT DEFINED-"
-msgstr "-NO DEFINIDO-"
+msgstr "-SIN DEFINIR-"
 
 #: 
 msgid "ALREADY TAKEN"
-msgstr "YA ESTÁ EN USO"
+msgstr "EN USO"
 
 #: 
 msgid "DISCARD CHANGES"
@@ -2543,7 +2543,7 @@ msgstr "El modo seleccionado no muestra nada, \n volviendo al modo: COMPLETO"
 
 #:
 msgid "ERROR: EVERY SYSTEM IS HIDDEN, RE-DISPLAYING ALL OF THEM NOW"
-msgstr "ERROR: TODOS LOS SISTEMAS ESTÁN OCULTOS, VOLVIENDO A MOSTRAR TODOS AHORA"
+msgstr "ERROR: TODOS LOS SISTEMAS ESTÁN OCULTOS, MOSTRANDO TODOS NUEVAMENTE"
 
 #:
 msgid "Loading theme..."
@@ -2686,5 +2686,39 @@ msgid "CONFIGURATION"
 msgstr "CONFIGURACIÓN"
 
 #:
-msgid "You are changing the UI to a restricted mode:\n%s\nThis will hide most menu-options to prevent changes to the system.\nTo unlock and return to the full UI, enter this code:\n\"%s\"\n\nDo you want to proceed?"
-msgstr "Está cambiando la interfaz de usuario a un modo restringido:\n%s\nSe ocultarán la mayoría de las opciones de menú para evitar cambios en el sistema.\nPara desbloquear y volver a la IU completa, ingrese el código:\n\"%s\"\n\n¿Quiere continuar?"
+msgid "You are changing the UI to a restricted mode:"
+msgstr "Está cambiando la interfaz de usuario a un modo restringido:"
+
+#:
+msgid "This will hide most menu-options to prevent changes to the system.\nTo unlock and return to the full UI, enter this code:"
+msgstr "Se ocultarán la mayoría de las opciones de menú para evitar cambios en el sistema.\nPara desbloquear y volver a la IU completa, ingrese el código:"
+
+#:
+msgid "Do you want to proceed?"
+msgstr "¿Quiere continuar?"
+
+#:
+msgid "This collection contains %i game, including :%s"
+msgid_plural "This collection contains %i games, including :%s"
+msgstr[0] "Esta colección contiene %i juego, incluyendo :%s"
+msgstr[1] "Esta colección contiene %i juegos, incluyendo :%s"
+
+#:
+msgid ""
+"YOU DIDN'T CHOOSE A HOTKEY ENABLE BUTTON. THIS IS REQUIRED FOR EXITING GAMES "
+"WITH A CONTROLLER. DO YOU WANT TO USE THE SELECT BUTTON DEFAULT ? PLEASE "
+"ANSWER YES TO USE SELECT OR NO TO NOT SET A HOTKEY ENABLE BUTTON."
+msgstr ""
+"NO HAS ELEGIDO EL BOTÓN \"HOTKEY\", ESTE BOTÓN ES NECESARIO PARA SALIR DE "
+"LOS JUEGOS CON UN MANDO. ¿DESEAS USAR EL BOTÓN SELECT POR DEFECTO? POR FAVOR "
+"RESPONDE SI PARA USAR \"SELECT\", O NO PARA NO HABILITAR EL BOTÓN \"HOTKEY\"."
+
+#:
+msgid "HOLD FOR %iS TO SKIP"
+msgid_plural "HOLD FOR %iS TO SKIP"
+msgstr[0] "MANTÉN PULSADO %iS PARA SALTAR"
+msgstr[1] "MANTÉN PULSADOS %iS PARA SALTAR"
+
+#:
+msgid "SYSTEM INFO"
+msgstr "INFORMACIÓN DEL SISTEMA"
