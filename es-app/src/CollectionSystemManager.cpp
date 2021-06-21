@@ -11,6 +11,7 @@
 #include "Settings.h"
 #include "SystemData.h"
 #include "ThemeData.h"
+#include "LocaleES.h"
 #include <pugixml/src/pugixml.hpp>
 #include <fstream>
 #include "Gamelist.h"
@@ -668,12 +669,13 @@ void CollectionSystemManager::updateCollectionFolderMetadata(SystemData* sys)
 	std::string image = "";
 
 	auto games = rootFolder->getChildren();
+	char trstring[512];
 
 	if(games.size() > 0)
 	{
 		std::string games_list = "";
 		int games_counter = 0;
-		for(auto iter = games.cbegin(); iter != games.cend(); ++iter)
+		for(auto iter = games.cbegin(); iter != games.cend() || games_counter < 5; ++iter)
 		{
 			games_counter++;
 			FileData* file = *iter;
@@ -703,7 +705,14 @@ void CollectionSystemManager::updateCollectionFolderMetadata(SystemData* sys)
 			}
 		}
 
-		desc = _("This collection contains") + " " + std::to_string(games_counter) + " " + _("games, including") + " " + games_list;
+			
+		games_counter = games.size();
+
+		snprintf(trstring, 512, ngettext(
+			"This collection contains %i game, including :%s",
+			"This collection contains %i games, including :%s", games_counter), games_counter, games_list.c_str());
+
+		desc = trstring;
 
 		FileData* randomGame = sys->getRandomGame();
 		if (randomGame != nullptr)
