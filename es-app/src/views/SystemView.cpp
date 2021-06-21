@@ -7,6 +7,7 @@
 #include "Log.h"
 #include "Settings.h"
 #include "SystemData.h"
+#include "EsLocale.h"
 #include "Window.h"
 #include "AudioManager.h"
 #include "components/VideoComponent.h"
@@ -19,7 +20,7 @@ const int logoBuffersRight[] = { 1, 2, 5 };
 
 SystemView::SystemView(Window* window) : IList<SystemViewData, SystemData*>(window, LIST_SCROLL_STYLE_SLOW, LIST_ALWAYS_LOOP),
 										 mViewNeedsReload(true),
-										 mSystemInfo(window, "SYSTEM INFO", Font::get(FONT_SIZE_SMALL), 0x33333300, ALIGN_CENTER)
+										 mSystemInfo(window, _("SYSTEM INFO"), Font::get(FONT_SIZE_SMALL), 0x33333300, ALIGN_CENTER)
 {
 	mCamOffset = 0;
 	mExtrasCamOffset = 0;
@@ -525,8 +526,8 @@ void SystemView::onCursorChanged(const CursorState& /*state*/)
 			ss << _("CONFIGURATION");
 		else
 		{
-			char strbuf[256];
-			snprintf(strbuf, 256, EsLocale::nGetText("%i GAME AVAILABLE", "%i GAMES AVAILABLE", gameCount).c_str(), gameCount);
+			char strbuf[128];
+			snprintf(strbuf, 128, ngettext("%i GAME AVAILABLE", "%i GAMES AVAILABLE", gameCount), gameCount);
 			ss << strbuf;
 		}
 	
