@@ -675,7 +675,7 @@ void CollectionSystemManager::updateCollectionFolderMetadata(SystemData* sys)
 	{
 		std::string games_list = "";
 		int games_counter = 0;
-		for(auto iter = games.cbegin(); iter != games.cend() || games_counter < 5; ++iter)
+		for(auto iter = games.cbegin(); iter != games.cend() && games_counter < 5; ++iter)
 		{
 			games_counter++;
 			FileData* file = *iter;
