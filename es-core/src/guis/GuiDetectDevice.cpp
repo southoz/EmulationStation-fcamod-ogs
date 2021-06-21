@@ -7,6 +7,7 @@
 #include "InputManager.h"
 #include "PowerSaver.h"
 #include "Window.h"
+#include "LocaleES.h"
 
 #define HOLD_TIME 1000
 
@@ -39,8 +40,8 @@ GuiDetectDevice::GuiDetectDevice(Window* window, bool firstRun, const std::funct
 	
 	if (numDevices > 0)
 	{
-		char strbuf[256];
-		snprintf(strbuf, 256, EsLocale::nGetText("%i GAMEPAD DETECTED", "%i GAMEPADS DETECTED", numDevices).c_str(), numDevices); // batocera
+		char strbuf[64];
+		snprintf(strbuf, 64, ngettext("%i GAMEPAD DETECTED", "%i GAMEPADS DETECTED", numDevices), numDevices);// batocera
 		deviceInfo << strbuf;
 	}	
 	else
