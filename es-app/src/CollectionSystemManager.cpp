@@ -29,15 +29,15 @@ std::vector<CollectionSystemDecl> CollectionSystemManager::getSystemDecls()
 {
 	CollectionSystemDecl systemDecls[] = {
 		//type                  name            long name            //default sort              // theme folder            // isCustom
-		{ AUTO_ALL_GAMES,       "all",          "all games",         "filename, ascending",      "auto-allgames",           false,		true },
-		{ AUTO_LAST_PLAYED,     "recent",       "last played",       "last played, descending",  "auto-lastplayed",         false,		true },
-		{ AUTO_FAVORITES,       "favorites",    "favorites",         "filename, ascending",      "auto-favorites",          false,		true },
-		{ AUTO_AT2PLAYERS,      "2players",	    "2 players",         "filename, ascending",    "auto-at2players",         false,       true },
-		{ AUTO_AT4PLAYERS,      "4players",     "4 players",         "filename, ascending",    "auto-at4players",         false,       true },
-		{ AUTO_NEVER_PLAYED,    "neverplayed",  "never played",      "filename, ascending",    "auto-neverplayed",        false,       true },
+		{ AUTO_ALL_GAMES,       "all",          "all games",         "filename, ascending",      "auto-allgames",           false,	true },
+		{ AUTO_LAST_PLAYED,     "recent",       "last played",       "last played, descending",  "auto-lastplayed",         false,	true },
+		{ AUTO_FAVORITES,       "favorites",    "favorites",         "filename, ascending",      "auto-favorites",          false,	true },
+		{ AUTO_AT2PLAYERS,      "2players",	"2 players",         "filename, ascending",	 "auto-at2players",         false,      true },
+		{ AUTO_AT4PLAYERS,      "4players",     "4 players",         "filename, ascending",	 "auto-at4players",         false,      true },
+		{ AUTO_NEVER_PLAYED,    "neverplayed",  "never played",      "filename, ascending",	 "auto-neverplayed",        false,      true },
 
 		// Arcade meta 
-		{ AUTO_ARCADE,           "arcade",      "arcade",				"filename, ascending",    "arcade",				     false,      true },
+		{ AUTO_ARCADE,           "arcade",      "arcade",            "filename, ascending",    "arcade",		    false,      true },
 
 		// Arcade systems
 		{ CPS1_COLLECTION,      "zcps1",       "cps1",                 "filename, ascending",    "cps1",                    false,       false },
@@ -65,7 +65,7 @@ std::vector<CollectionSystemDecl> CollectionSystemManager::getSystemDecls()
 		{ ATLUS_COLLECTION,     "zatlus",      "atlus",                "filename, ascending",    "atlus",                   false,       false },
 		{ BANPRESTO_COLLECTION, "zbanpresto",  "banpresto",            "filename, ascending",    "banpresto",               false,       false },
 
-		{ CUSTOM_COLLECTION,    myCollectionsName,  "collections",    "filename, ascending",      "custom-collections",      true,		 true }
+		{ CUSTOM_COLLECTION,    myCollectionsName,  "collections",    "filename, ascending",      "custom-collections",      true,	 true }
 	};
 
 	return std::vector<CollectionSystemDecl>(systemDecls, systemDecls + sizeof(systemDecls) / sizeof(systemDecls[0]));
@@ -675,7 +675,7 @@ void CollectionSystemManager::updateCollectionFolderMetadata(SystemData* sys)
 	{
 		std::string games_list = "";
 		int games_counter = 0;
-		for(auto iter = games.cbegin(); iter != games.cend() && games_counter < 5; ++iter)
+		for(auto iter = games.cbegin(); iter != games.cend() && games_counter < 4; ++iter)
 		{
 			games_counter++;
 			FileData* file = *iter;
