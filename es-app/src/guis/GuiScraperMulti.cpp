@@ -150,12 +150,12 @@ void GuiScraperMulti::finish()
 	}else{
 		
 		char csstrbuf[64];
-		snprintf(csstrbuf, 64, ngettext("%i GAME SUCCESSFULLY SCRAPED!", "%i GAMES SUCCESSFULLY SCRAPED!", mTotalSuccessful), mTotalSuccessful);
+		snprintf(csstrbuf, 64, EsLocale::nGetText("%i GAME SUCCESSFULLY SCRAPED!", "%i GAMES SUCCESSFULLY SCRAPED!", mTotalSuccessful).c_str(), mTotalSuccessful);
 		ss << csstrbuf;
 
 		if(mTotalSkipped > 0) {
 			char skrbuf[64];
-			snprintf(skrbuf, 64, ngettext("%i GAME SKIPPED.", "%i GAMES SKIPPED.", mTotalSuccessful), mTotalSuccessful);
+			snprintf(skrbuf, 64, EsLocale::nGetText("%i GAME SKIPPED.", "%i GAMES SKIPPED.", mTotalSuccessful).c_str(), mTotalSuccessful);
 			ss << "\n" << skrbuf;
 		}
 	}
