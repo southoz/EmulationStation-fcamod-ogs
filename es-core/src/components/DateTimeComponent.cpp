@@ -59,13 +59,13 @@ std::string DateTimeComponent::getDisplayString() const
 		char buf[64];
 
 		if(dur.getDays() > 0)
-			snprintf(buf, 64, ngettext("%i day ago", "%i days ago", dur.getDays()), dur.getDays());
+			snprintf(buf, 64, EsLocale::nGetText("%i day ago", "%i days ago", dur.getDays()).c_str(), dur.getDays());
 		else if(dur.getHours() > 0)
-			snprintf(buf, 64, ngettext("%i hour ago", "%i hours ago", dur.getHours()), dur.getHours());
+			snprintf(buf, 64, EsLocale::nGetText("%i hour ago", "%i hours ago", dur.getHours()).c_str(), dur.getHours());
 		else if(dur.getMinutes() > 0)
-			snprintf(buf, 64, ngettext("%i min ago", "%i mins ago", dur.getMinutes()), dur.getMinutes());
+			snprintf(buf, 64, EsLocale::nGetText("%i min ago", "%i mins ago", dur.getMinutes()).c_str(), dur.getMinutes());
 		else
-			snprintf(buf, 64, ngettext("%i sec ago", "%i secs ago", dur.getSeconds()), dur.getSeconds());
+			snprintf(buf, 64, EsLocale::nGetText("%i sec ago", "%i secs ago", dur.getSeconds()).c_str(), dur.getSeconds());
 
 		return std::string(buf);
 	}
