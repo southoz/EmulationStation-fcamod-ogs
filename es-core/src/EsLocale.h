@@ -45,6 +45,5 @@ private:
 	#define _U(x) x
 
 	#define _(x) EsLocale::getText(x)
-	#define ngettext(A, B, C) EsLocale::nGetText(A, B, C).c_str()
 #endif // _WIN32
 
