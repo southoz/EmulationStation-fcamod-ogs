@@ -7,7 +7,7 @@
 #include "InputManager.h"
 #include "PowerSaver.h"
 #include "Window.h"
-#include "LocaleES.h"
+#include "EsLocale.h"
 
 #define HOLD_TIME 1000
 
