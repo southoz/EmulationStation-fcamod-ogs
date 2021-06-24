@@ -112,7 +112,7 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 				if (defaultCore.length() == 0)
 					core_choice->add(_("DEFAULT"), "", false);
 				else 
-					core_choice->add(_("DEFAULT")+" ("+ defaultCore+")", "", false);
+					core_choice->add(_("DEFAULT")+" ("+ defaultCore +")", "", false);
 							
 				std::vector<std::string> cores = system->getSystemEnvData()->getCores(emulatorName);				
 
