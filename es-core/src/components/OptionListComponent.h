@@ -456,7 +456,7 @@ private:
 			// display # selected
 			char strbuf[64];
 			int x = getSelectedObjects().size();
-			snprintf(strbuf, 64, ngettext("%i SELECTED", "%i SELECTED", x), x);
+			snprintf(strbuf, 64, EsLocale::nGetText("%i SELECTED", "%i SELECTED", x).c_str(), x);
 			mText.setText(strbuf);
 
 
