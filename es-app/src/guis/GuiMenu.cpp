@@ -1392,9 +1392,30 @@ void GuiMenu::openOtherSettings()
 		if (langues.size() > 1)
 		{
 			auto language = std::make_shared< OptionListComponent<std::string> >(mWindow, _("LANGUAGE"), false);
+			std::string settings_language = Settings::getInstance()->getString("Language");
 
-			for (auto it = langues.cbegin(); it != langues.cend(); it++)
-				language->add(*it, *it, Settings::getInstance()->getString("Language") == *it);
+			for (auto it = langues.cbegin(); it != langues.cend(); it++) {
+				
+				if (*it == "br")
+					language->add(_("PORTUGUESE BRAZIL"), *it, settings_language == *it);
+				else if (*it == "de")
+					language->add(_("DEUTSCHE"), *it, settings_language == *it);
+				else if (*it == "es")
+					language->add(_("SPANISH"), *it, settings_language == *it);
+				else if (*it == "fr")
+					language->add(_("FRENCH"), *it, settings_language == *it);
+				else if (*it == "ko")
+					language->add(_("KOREAN"), *it, settings_language == *it);
+				else if (*it == "pt")
+					language->add(_("PORTUGUESE PORTUGAL"), *it, settings_language == *it);
+				else if (*it == "zh-CN")
+					language->add(_("SIMPLIFIED CHINESE"), *it, settings_language == *it);
+				else if (*it == "en")
+					language->add(_("ENGLISH"), *it, settings_language == *it);
+				else
+					language->add(_(it->c_str()), *it, settings_language == *it);
+				
+			}
 
 			s->addWithLabel(_("LANGUAGE"), language);
 			s->addSaveFunc([language, window, s] {
