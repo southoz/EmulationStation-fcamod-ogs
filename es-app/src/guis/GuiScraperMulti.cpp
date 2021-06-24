@@ -111,7 +111,7 @@ void GuiScraperMulti::doNextSearch()
 	// update subtitle
 	ss.str(""); // clear
 	char strbuf[64];
-	sprintf(strbuf, _("GAME %i OF %i"), mCurrentGame + 1, mTotalGames);
+	sprintf(strbuf, _("GAME %i OF %i").c_str(), mCurrentGame + 1, mTotalGames);
 	ss << strbuf  << " - " << Utils::String::toUpper(Utils::FileSystem::getFileName(mSearchQueue.front().game->getPath()));
 	
 	mSubtitle->setText(ss.str());
