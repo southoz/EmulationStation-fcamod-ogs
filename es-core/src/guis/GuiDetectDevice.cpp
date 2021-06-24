@@ -38,10 +38,9 @@ GuiDetectDevice::GuiDetectDevice(Window* window, bool firstRun, const std::funct
 	std::stringstream deviceInfo;
 	int numDevices = InputManager::getInstance()->getNumJoysticks();
 	
-	if (numDevices > 0)
-	{
+	if (numDevices > 0) {
 		char strbuf[64];
-		snprintf(strbuf, 64, ngettext("%i GAMEPAD DETECTED", "%i GAMEPADS DETECTED", numDevices), numDevices);// batocera
+		snprintf(strbuf, 64, EsLocale::nGetText("%i GAMEPAD DETECTED", "%i GAMEPADS DETECTED", numDevices).c_str(), numDevices);// batocera
 		deviceInfo << strbuf;
 	}	
 	else
