@@ -266,7 +266,7 @@ void GuiInputConfig::update(int deltaTime)
 				// crossed the second boundary, update text
 				const auto& text = mMappings.at(mHeldInputId);
 				char strbuf[64];
-				snprintf(strbuf, 64, ngettext("HOLD FOR %iS TO SKIP", "HOLD FOR %iS TO SKIP", HOLD_TO_SKIP_MS/1000 - curSec), HOLD_TO_SKIP_MS/1000 - curSec); // batocera
+				snprintf(strbuf, 64, EsLocale::nGetText("HOLD FOR %iS TO SKIP", "HOLD FOR %iS TO SKIP", HOLD_TO_SKIP_MS/1000 - curSec).c_str(), HOLD_TO_SKIP_MS/1000 - curSec); // batocera
 				text->setText(strbuf);
 				text->setColor(ThemeData::getMenuTheme()->Text.color);
 			}
