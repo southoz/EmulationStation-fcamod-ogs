@@ -527,7 +527,7 @@ void SystemView::onCursorChanged(const CursorState& /*state*/)
 		else
 		{
 			char strbuf[128];
-			snprintf(strbuf, 128, ngettext("%i GAME AVAILABLE", "%i GAMES AVAILABLE", gameCount), gameCount);
+			snprintf(strbuf, 128, EsLocale::nGetText("%i GAME AVAILABLE", "%i GAMES AVAILABLE", gameCount).c_str(), gameCount);
 			ss << strbuf;
 		}
 	
