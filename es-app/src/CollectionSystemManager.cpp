@@ -11,7 +11,7 @@
 #include "Settings.h"
 #include "SystemData.h"
 #include "ThemeData.h"
-#include "LocaleES.h"
+#include "EsLocale.h"
 #include <pugixml/src/pugixml.hpp>
 #include <fstream>
 #include "Gamelist.h"
