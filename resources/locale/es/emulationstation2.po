@@ -1323,12 +1323,12 @@ msgid "THUMBNAIL"
 msgstr "MINIATURA"
 
 #: 
-msgid "enter emulator"
-msgstr "introducir emulador"
+msgid "SELECT EMULATOR"
+msgstr "SELECCIONE EMULADOR"
 
 #: 
-msgid "enter core"
-msgstr "introducir núcleo"
+msgid "SELECT CORE"
+msgstr "SELECCIONE NÚCLEO"
 
 #: 
 msgid "enter path to thumbnail"

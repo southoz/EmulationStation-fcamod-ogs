@@ -1112,8 +1112,8 @@ void GuiMenu::openSystemEmulatorSettings(SystemData* system)
 
 	GuiSettings* s = new GuiSettings(mWindow, system->getFullName().c_str());
 
-	auto emul_choice = std::make_shared<OptionListComponent<std::string>>(mWindow, _("EMULATOR"), false);
-	auto core_choice = std::make_shared<OptionListComponent<std::string>>(mWindow, _("CORE"), false);
+	auto emul_choice = std::make_shared<OptionListComponent<std::string>>(mWindow, _("SELECT EMULATOR"), false);
+	auto core_choice = std::make_shared<OptionListComponent<std::string>>(mWindow, _("SELECT CORE"), false);
 
 	std::string currentEmul = Settings::getInstance()->getString(system->getName() + ".emulator");
 	std::string defaultEmul = (system->getSystemEnvData()->mEmulators.size() == 0 ? "" : system->getSystemEnvData()->mEmulators[0].mName);
