@@ -400,7 +400,7 @@ msgstr "ACTIVAR SONIDOS DE NAVEGACIÓN"
 
 #: 
 msgid "ENABLE VIDEO AUDIO"
-msgstr "ACTIVAR AUDIO DE VÍDEO"
+msgstr "ACTIVAR AUDIO DEL VÍDEO"
 
 #: 
 msgid "APPLY FILTER"
@@ -2722,3 +2722,35 @@ msgstr[1] "MANTÉN PULSADOS %iS PARA SALTAR"
 #:
 msgid "SYSTEM INFO"
 msgstr "INFORMACIÓN DEL SISTEMA"
+
+#:
+msgid "PORTUGUESE BRAZIL"
+msgstr "BRASILEÑO"
+
+#:
+msgid "DEUTSCHE"
+msgstr "ALEMÁN"
+
+#:
+msgid "SPANISH"
+msgstr "ESPAÑOL"
+
+#:
+msgid "FRENCH"
+msgstr "FRANCÉS"
+
+#:
+msgid "KOREAN"
+msgstr "KOREANO"
+
+#:
+msgid "PORTUGUESE PORTUGAL"
+msgstr "PORTUGUES"
+
+#:
+msgid "SIMPLIFIED CHINESE"
+msgstr "CHINO SIMPLIFICADO"
+
+#:
+msgid "ENGLISH"
+msgstr "INGLÉS"
