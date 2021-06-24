@@ -6,7 +6,7 @@
 #include "InputManager.h"
 #include "Log.h"
 #include "Window.h"
-#include "LocaleES.h"
+#include "EsLocale.h"
 
 struct InputConfigStructure
 {
