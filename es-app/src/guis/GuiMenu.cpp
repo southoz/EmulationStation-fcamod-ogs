@@ -35,7 +35,6 @@
 
 GuiMenu::GuiMenu(Window* window, bool animate) : GuiComponent(window), mMenu(window, _("MAIN MENU")), mVersion(window)
 {
-
 	addEntry(_("DISPLAY SETTINGS"), true, [this] { openDisplaySettings(); });
 
 	auto theme = ThemeData::getMenuTheme();
@@ -391,7 +390,7 @@ void GuiMenu::openSoundSettings()
 			}
 		}
 		for (auto it = omx_cards.cbegin(); it != omx_cards.cend(); it++)
-			omx_audio_dev->add(_(*it->c_str()), *it, Settings::getInstance()->getString("OMXAudioDev") == *it);
+			omx_audio_dev->add(_(it->c_str()), *it, Settings::getInstance()->getString("OMXAudioDev") == *it);
 		s->addWithLabel(_("OMX PLAYER AUDIO DEVICE"), omx_audio_dev);
 		s->addSaveFunc([omx_audio_dev] {
 			if (Settings::getInstance()->getString("OMXAudioDev") != omx_audio_dev->getSelected())
@@ -833,17 +832,16 @@ void GuiMenu::openUISettings()
 		std::string selectedMode = UImodeSelection->getSelected();
 		if (selectedMode != "Full")
 		{
-			std::string msg = "You are changing the UI to a restricted mode:\n" + selectedMode + "\n";
-			msg += "This will hide most menu-options to prevent changes to the system.\n";
-			msg += "To unlock and return to the full UI, enter this code: \n";
+			std::string msg = _("You are changing the UI to a restricted mode:") + "\n" + selectedMode + "\n";
+			msg += _("This will hide most menu-options to prevent changes to the system.\nTo unlock and return to the full UI, enter this code:") + "\n";
 			msg += "\"" + UIModeController::getInstance()->getFormattedPassKeyStr() + "\"\n\n";
-			msg += "Do you want to proceed?";
+			msg += _("Do you want to proceed?");
 			window->pushGui(new GuiMsgBox(window, msg,
-				"YES", [selectedMode] {
+				_("YES"), [selectedMode] {
 				LOG(LogDebug) << "Setting UI mode to " << selectedMode;
 				Settings::getInstance()->setString("UIMode", selectedMode);
 				Settings::getInstance()->saveFile();
-			}, "NO", nullptr));
+			}, _("NO"), nullptr));
 		}
 	});
 	//#endif
@@ -1118,8 +1116,8 @@ void GuiMenu::openSystemEmulatorSettings(SystemData* system)
 
 	GuiSettings* s = new GuiSettings(mWindow, system->getFullName().c_str());
 
-	auto emul_choice = std::make_shared<OptionListComponent<std::string>>(mWindow, _("EMULATOR"), false);
-	auto core_choice = std::make_shared<OptionListComponent<std::string>>(mWindow, _("CORE"), false);
+	auto emul_choice = std::make_shared<OptionListComponent<std::string>>(mWindow, _("SELECT EMULATOR"), false);
+	auto core_choice = std::make_shared<OptionListComponent<std::string>>(mWindow, _("SELECT CORE"), false);
 
 	std::string currentEmul = Settings::getInstance()->getString(system->getName() + ".emulator");
 	std::string defaultEmul = (system->getSystemEnvData()->mEmulators.size() == 0 ? "" : system->getSystemEnvData()->mEmulators[0].mName);

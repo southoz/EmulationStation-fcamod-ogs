@@ -3,6 +3,7 @@
 #include "utils/StringUtil.h"
 #include "Log.h"
 #include "Settings.h"
+#include "EsLocale.h"
 
 DateTimeComponent::DateTimeComponent(Window* window) : TextComponent(window), mDisplayRelative(false)
 {
@@ -58,13 +59,13 @@ std::string DateTimeComponent::getDisplayString() const
 		char buf[64];
 
 		if(dur.getDays() > 0)
-			sprintf(buf, "%d day%s ago", dur.getDays(), (dur.getDays() > 1) ? "s" : "");
+			snprintf(buf, 64, EsLocale::nGetText("%i day ago", "%i days ago", dur.getDays()).c_str(), dur.getDays());
 		else if(dur.getHours() > 0)
-			sprintf(buf, "%d hour%s ago", dur.getHours(), (dur.getHours() > 1) ? "s" : "");
+			snprintf(buf, 64, EsLocale::nGetText("%i hour ago", "%i hours ago", dur.getHours()).c_str(), dur.getHours());
 		else if(dur.getMinutes() > 0)
-			sprintf(buf, "%d minute%s ago", dur.getMinutes(), (dur.getMinutes() > 1) ? "s" : "");
+			snprintf(buf, 64, EsLocale::nGetText("%i min ago", "%i mins ago", dur.getMinutes()).c_str(), dur.getMinutes());
 		else
-			sprintf(buf, "%d second%s ago", dur.getSeconds(), (dur.getSeconds() > 1) ? "s" : "");
+			snprintf(buf, 64, EsLocale::nGetText("%i sec ago", "%i secs ago", dur.getSeconds()).c_str(), dur.getSeconds());
 
 		return std::string(buf);
 	}

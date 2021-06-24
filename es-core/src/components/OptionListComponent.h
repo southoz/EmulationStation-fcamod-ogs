@@ -454,12 +454,9 @@ private:
 		if(mMultiSelect)
 		{
 			// display # selected
-
-			
-
-			char strbuf[256];
+			char strbuf[64];
 			int x = getSelectedObjects().size();
-			snprintf(strbuf, 256, EsLocale::nGetText("%i SELECTED", "%i SELECTED", x).c_str(), x);
+			snprintf(strbuf, 64, EsLocale::nGetText("%i SELECTED", "%i SELECTED", x).c_str(), x);
 			mText.setText(strbuf);
 
 

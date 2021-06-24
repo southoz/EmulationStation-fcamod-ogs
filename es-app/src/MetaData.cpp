@@ -12,8 +12,8 @@ MetaDataDecl gameDecls[] = {
 	{ 0,  "name",        MD_STRING,              "",                 false,      "name",                 "enter game name"},
 //	{ 1,  "sortname",    MD_STRING,              "",                 false,      "sortname",             "enter game sort name"},
 	{ 2,  "desc",        MD_MULTILINE_STRING,    "",                 false,      "description",          "enter description"},
-	{ 3,  "emulator",    MD_PLIST,				 "",                 false,      "emulator",			 "emulator" },
-	{ 4,  "core",	     MD_PLIST,				 "",                 false,      "core",				 "core" },	
+	{ 3,  "emulator",    MD_PLIST,               "",                 false,      "emulator",	           "emulator" },
+	{ 4,  "core",        MD_PLIST,               "",                 false,      "core",                 "core" },
 	{ 5,  "image",       MD_PATH,                "",                 false,      "image",                "enter path to image"},
 	{ 6,  "video",       MD_PATH     ,           "",                 false,      "video",                "enter path to video"},
 	{ 7,  "marquee",     MD_PATH,                "",                 false,      "marquee",              "enter path to marquee"},
@@ -29,7 +29,7 @@ MetaDataDecl gameDecls[] = {
 	{ 17, "kidgame",     MD_BOOL,                "false",            false,      "kidgame",              "enter kidgame off/on" },
 	{ 18, "playcount",   MD_INT,                 "0",                true,       "play count",           "enter number of times played"},
 	{ 19, "lastplayed",  MD_TIME,                "0",                true,       "last played",          "enter last played date"},
-	{ 20, "arcadesystemname",  MD_STRING,        "",                 false,      "arcade system",        "enter arcade system name"}	
+	{ 20, "arcadesystemname",  MD_STRING,        "",                 false,      "arcade system",        "enter arcade system name"}
 };
 
 const std::vector<MetaDataDecl> gameMDD(gameDecls, gameDecls + sizeof(gameDecls) / sizeof(gameDecls[0]));
