@@ -222,13 +222,13 @@ std::string DateTimeEditComponent::getDisplayString(DisplayMode mode) const
 			char buf[64];
 
 			if(dur.getDays() > 0)
-				snprintf(buf, 64, EsLocale::nGetText(("%i day ago", "%i days ago", dur.getDays()).c_str(), dur.getDays());
+				snprintf(buf, 64, EsLocale::nGetText("%i day ago", "%i days ago", dur.getDays()).c_str(), dur.getDays());
 			else if(dur.getHours() > 0)
-				snprintf(buf, 64, EsLocale::nGetText(("%i hour ago", "%i hours ago", dur.getHours()).c_str(), dur.getHours());
+				snprintf(buf, 64, EsLocale::nGetText("%i hour ago", "%i hours ago", dur.getHours()).c_str(), dur.getHours());
 			else if(dur.getMinutes() > 0)
-				snprintf(buf, 64, EsLocale::nGetText(("%i min ago", "%i mins ago", dur.getMinutes()).c_str(), dur.getMinutes());
+				snprintf(buf, 64, EsLocale::nGetText("%i min ago", "%i mins ago", dur.getMinutes()).c_str(), dur.getMinutes());
 			else
-				snprintf(buf, 64, EsLocale::nGetText(("%i sec ago", "%i secs ago", dur.getSeconds()).c_str(), dur.getSeconds());
+				snprintf(buf, 64, EsLocale::nGetText("%i sec ago", "%i secs ago", dur.getSeconds()).c_str(), dur.getSeconds());
 
 			return std::string(buf);
 		}
