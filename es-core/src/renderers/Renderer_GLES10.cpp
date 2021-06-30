@@ -586,6 +586,7 @@ namespace Renderer
 
 				int brightnessIndex = 0;
 				int brightness = 0;
+				int max_brightness = 255;
 				int fd;
 				char buffer[10];
 				fd = open("/sys/class/backlight/backlight/brightness", O_RDONLY);
@@ -596,11 +597,26 @@ namespace Renderer
 					if( count > 0 )
 					{
 						brightness = atoi(buffer);
-						brightness = brightness*100/255;
 					}
 					close(fd);
 				}
 
+				fd = open("/sys/class/backlight/backlight/max_brightness", O_RDONLY);
+				if (fd > 0)
+				{
+					memset(buffer, 0, 10);
+					ssize_t count = read(fd, buffer, 10);
+					if( count > 0 )
+					{
+						max_brightness = atoi(buffer);
+					}
+					close(fd);
+				}
+
+				//LOG(LogDebug) << "Renderer_GLES10:616 --> brightness: " << brightness;
+				//LOG(LogDebug) << "Renderer_GLES10:617 --> max_brightness: " << max_brightness;
+				brightness = brightness*100/max_brightness;
+				//LOG(LogDebug) << "Renderer_GLES10:619 --> brightness*100/max_brightness: " << brightness;
 
 				if (brightness == 0)
 				{
@@ -690,6 +706,7 @@ namespace Renderer
 				{
 					brightnessIndex = 20;
 				}
+				//LOG(LogDebug) << "Renderer_GLES10:695 --> brightnessIndex: " << brightnessIndex;
 				
 				src += (brightnessIndex * 16 * src_stride);
 				dst += (64) * sizeof(short);
