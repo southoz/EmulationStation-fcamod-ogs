@@ -2205,7 +2205,14 @@ msgstr "CHINO SIMPLIFICADO"
 msgid "ENGLISH"
 msgstr "INGLÉS"
 
-
 #:
 msgid "ADD STAR"
 msgstr "+1 ESTRELLA"
+
+#:
+msgid "ignore"
+msgstr "ignorar"
+
+#:
+msgid "invalid"
+msgstr "invalida"
