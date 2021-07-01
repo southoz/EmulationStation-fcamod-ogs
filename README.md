@@ -22,13 +22,13 @@ sudo apt update -y && sudo apt-get install -y libboost-system-dev libboost-files
 Note this Repository uses a git submodule - to checkout the source and all submodules, use
 
 ```bash
-git clone --recursive https://github.com/christianhaitian/EmulationStation-fcamod.git -b fullscreen
+git clone --recursive https://github.com/JuanMiguelBG/EmulationStation-fcamod.git -b fullscreen
 ```
 
 or 
 
 ```bash
-git clone https://github.com/christianhaitian/EmulationStation-fcamod.git -b fullscreen
+git clone https://github.com/JuanMiguelBG/EmulationStation-fcamod.git -b fullscreen
 cd EmulationStation-fcamod
 git submodule update --init
 ```
