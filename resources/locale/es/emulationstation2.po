@@ -1731,7 +1731,7 @@ msgstr "DEJAR DE EDITAR"
 
 #:
 msgid "MOVE CURSOR"
-msgstr "MOVER EL CURSOR"
+msgstr "MOVER CURSOR"
 
 #:
 msgid "EDIT"
