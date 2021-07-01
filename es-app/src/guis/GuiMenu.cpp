@@ -79,14 +79,14 @@ GuiMenu::GuiMenu(Window* window, bool animate) : GuiComponent(window), mMenu(win
 	try {
 		max_brightness = std::stoi(getShOutput(R"(cat /sys/devices/platform/backlight/backlight/backlight/max_brightness)"));
 	} catch (...) { }
-	LOG(LogDebug) << "GuiMenu::GuiMenu():82 --> max_brightness: " << std::to_string(max_brightness);
+	//LOG(LogDebug) << "GuiMenu::GuiMenu():82 --> max_brightness: " << std::to_string(max_brightness);
 
   int brightness = 50;
 	try {
 		brightness = std::stoi(getShOutput(R"(cat /sys/devices/platform/backlight/backlight/backlight/brightness)"));
-		LOG(LogDebug) << "GuiMenu::GuiMenu():87 --> brightness: " << std::to_string(brightness);
+		//LOG(LogDebug) << "GuiMenu::GuiMenu():87 --> brightness: " << std::to_string(brightness);
 		brightness = brightness*100/max_brightness;
-		LOG(LogDebug) << "GuiMenu::GuiMenu():89 --> brightness*100/max_brightness: " << std::to_string(brightness);
+		//LOG(LogDebug) << "GuiMenu::GuiMenu():89 --> brightness*100/max_brightness: " << std::to_string(brightness);
 	} catch (...) {
 		brightness = std::atoi(getShOutput(R"(current_brightness)").c_str());
 	}
@@ -110,13 +110,29 @@ GuiMenu::GuiMenu(Window* window, bool animate) : GuiComponent(window), mMenu(win
 
 void GuiMenu::openDisplaySettings()
 {
+	auto pthis = this;
+	Window* window = mWindow;
 	// Brightness
 	auto s = new GuiSettings(mWindow, _("DISPLAY"));
 
 	auto bright = std::make_shared<SliderComponent>(mWindow, 1.0f, 100.f, 1.0f, "%");
 	bright->setValue((float)go2_display_backlight_get(NULL)+1.0);
 	s->addWithLabel(_("BRIGHTNESS"), bright);
-	s->addSaveFunc([bright] { go2_display_backlight_set(NULL, (int)Math::round(bright->getValue())); });
+	s->addSaveFunc([s, bright]
+	{
+		go2_display_backlight_set(NULL, (int)Math::round(bright->getValue()));
+		s->setVariable("reloadGuiMenu", true);
+	});
+
+	s->onFinalize([s, pthis, window]
+	{
+		if (s->getVariable("reloadGuiMenu"))
+		{
+
+			delete pthis;
+			window->pushGui(new GuiMenu(window, false));
+		}
+	});
 
 	mWindow->pushGui(s);
 }
@@ -1126,6 +1142,7 @@ void GuiMenu::openUISettings()
 
 		if (s->getVariable("reloadGuiMenu"))
 		{
+
 			delete pthis;
 			window->pushGui(new GuiMenu(window, false));
 		}
@@ -1623,6 +1640,7 @@ void GuiMenu::openOtherSettings()
 	{
 		if (s->getVariable("reloadGuiMenu"))
 		{
+
 			delete pthis;
 			window->pushGui(new GuiMenu(window, false));
 		}
