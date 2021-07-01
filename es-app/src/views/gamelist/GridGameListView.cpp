@@ -785,7 +785,7 @@ std::vector<HelpPrompt> GridGameListView::getHelpPrompts()
 	if (mRoot->getSystem()->isGameSystem() && !UIModeController::getInstance()->isUIModeKid())
 	{
 		std::string prompt = CollectionSystemManager::get()->getEditingCollection();
-		prompts.push_back(HelpPrompt("y", prompt));
+		prompts.push_back(HelpPrompt("y", _(prompt)));
 	}
 	return prompts;
 }

@@ -488,9 +488,9 @@ private:
 	{
 		std::vector<HelpPrompt> prompts;
 		if(!mMultiSelect)
-			prompts.push_back(HelpPrompt("left/right", "MODIFIER"));
+			prompts.push_back(HelpPrompt("left/right", _("MODIFIER")));
 
-		prompts.push_back(HelpPrompt("a", "SELECTIONNER"));
+		prompts.push_back(HelpPrompt("a", _("SELECTIONNER")));
 		return prompts;
 	}
 

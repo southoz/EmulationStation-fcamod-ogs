@@ -1,9 +1,13 @@
 #pragma once
 
+#ifndef ES_CORE_ESLOCALE_H
+#define ES_CORE_ESLOCALE_H
+
 #include <string>
 #include <map>
 #include <functional>
 #include "utils/StringUtil.h"
+#include <fstream>
 
 struct PluralRule
 {
@@ -15,7 +19,7 @@ struct PluralRule
 class EsLocale
 {
 public:
-	static const std::string getText(const std::string text);
+	static const std::string getText(const std::string msgid);
 	static const std::string nGetText(const std::string msgid, const std::string msgid_plural, int n);
 
 	static const std::string getLanguage() { return mCurrentLanguage; }
@@ -24,6 +28,7 @@ public:
 
 private:
 	static void checkLocalisationLoaded();
+	static const void readFileSplitedValues(std::ifstream &file, std::string &msg, std::string &line_next);
 	static std::map<std::string, std::string> mItems;
 	static std::string mCurrentLanguage;
 	static bool mCurrentLanguageLoaded;
@@ -47,3 +52,4 @@ private:
 	#define _(x) EsLocale::getText(x)
 #endif // _WIN32
 
+#endif // ES_CORE_ESLOCALE_H

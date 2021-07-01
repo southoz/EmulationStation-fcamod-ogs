@@ -15,6 +15,7 @@
 #include "components/AsyncNotificationComponent.h"
 #include "guis/GuiMsgBox.h"
 #include "AudioManager.h"
+#include <string>
 
 Window::Window() : mNormalizeNextUpdate(false), mFrameTimeElapsed(0), mFrameCountElapsed(0), mAverageDeltaTime(10),
   mAllowSleep(true), mSleeping(false), mTimeSinceLastInput(0), mScreenSaver(NULL), mRenderScreenSaver(false), mInfoPopup(NULL), mClockElapsed(0) // batocera
@@ -79,13 +80,13 @@ GuiComponent* Window::peekGui()
 
 bool Window::init(bool initRenderer)
 {
-	LOG(LogInfo) << "Window::init";
+	LOG(LogInfo) << "Window::init():83";
 	
 	if (initRenderer)
 	{
 		if (!Renderer::init())
 		{
-			LOG(LogError) << "Renderer failed to initialize!";
+			LOG(LogError) << "Window::init():89 --> Renderer failed to initialize!";
 			return false;
 		}
 
@@ -284,25 +285,14 @@ void Window::update(int deltaTime)
 				// Visit http://en.cppreference.com/w/cpp/chrono/c/strftime for more information about date/time format
 				
 				char       clockBuf[32];
-
-#if WIN32
-				std::string oldLocale = setlocale(LC_TIME, nullptr);
-				setlocale(LC_TIME, "");
-
-				char       ampm[32];
-				strftime(ampm, sizeof(ampm), "%p", &clockTstruct);
-
-				if (!std::string(&ampm[0]).empty())
+				//LOG(LogDebug) << "Window::update():288 -> ClockMode12: " << Settings::getInstance()->getBool("ClockMode12");
+				if (Settings::getInstance()->getBool("ClockMode12"))
 					strftime(clockBuf, sizeof(clockBuf), "%I:%M %p", &clockTstruct);
 				else
-#endif
 					strftime(clockBuf, sizeof(clockBuf), "%H:%M", &clockTstruct);
-				
-#if WIN32
-				setlocale(LC_TIME, oldLocale.c_str());
-#endif
 
 				mClock->setText(clockBuf);
+				//LOG(LogDebug) << "Window::update():295 -> clockNow: " << clockNow << ", clockBuf: " << clockBuf;
 			}
 
 			mClockElapsed = 1000; // next update in 1000ms
@@ -713,11 +703,11 @@ void Window::processNotificationMessages()
 	NotificationMessage msg = mNotificationMessages.back();
 	mNotificationMessages.pop_back();
 
-	LOG(LogDebug) << "Notification message :" << msg.first.c_str();
+	LOG(LogDebug) << "Notification message : [\"" << msg.first.c_str() << "\", " << msg.second << "]";
 
 	if (mInfoPopup)
 		delete mInfoPopup;
-
+	// TODO translate msg fields
 	mInfoPopup = new GuiInfoPopup(this, msg.first, msg.second);
 }
 
@@ -792,8 +782,7 @@ void Window::onThemeChanged(const std::shared_ptr<ThemeData>& theme)
 	if (mClock)
 	{
 		mClock->setFont(Font::get(FONT_SIZE_SMALL));
-		mClock->setColor(0x777777FF);		
-		mClock->setHorizontalAlignment(ALIGN_RIGHT);
+		mClock->setColor(0x777777FF);
 		mClock->setVerticalAlignment(ALIGN_TOP);
 		
 		// if clock element does not exist in screen view -> <view name="screen"><text name="clock"> 
@@ -807,10 +796,20 @@ void Window::onThemeChanged(const std::shared_ptr<ThemeData>& theme)
 			if (elem && (elem->has("fontPath") || elem->has("fontSize")))
 				mClock->setFont(Font::getFromTheme(elem, ThemeFlags::ALL, Font::get(FONT_SIZE_MEDIUM)));
 		}
-		
-		mClock->setPosition(Renderer::getScreenWidth()*0.94, Renderer::getScreenHeight()*0.9965 - mClock->getFont()->getHeight());
-		mClock->setSize(Renderer::getScreenWidth()*0.05, 0);
 
+		mClock->setPosition(Renderer::getScreenWidth()*0.91, Renderer::getScreenHeight()*0.9965 - mClock->getFont()->getHeight());
+		mClock->setSize(Renderer::getScreenWidth()*0.08, 0);
+
+		if (Settings::getInstance()->getBool("ClockMode12"))
+		{
+			mClock->setHorizontalAlignment(ALIGN_LEFT);
+			//LOG(LogDebug) << "Window::onThemeChanged():806 -> ClockMode12 --> ALIGN_LEFT";
+		}
+		else
+		{
+			mClock->setHorizontalAlignment(ALIGN_RIGHT);
+			//LOG(LogDebug) << "Window::onThemeChanged():811 -> ClockMode12 --> ALIGN_RIGHT";
+		}
 		mClock->applyTheme(theme, "screen", "clock", ThemeFlags::ALL ^ (ThemeFlags::TEXT));
 	}
 }

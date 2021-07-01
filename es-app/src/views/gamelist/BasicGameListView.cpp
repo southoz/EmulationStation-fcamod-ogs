@@ -241,9 +241,9 @@ std::vector<HelpPrompt> BasicGameListView::getHelpPrompts()
 	{
 		std::string prompt = CollectionSystemManager::get()->getEditingCollection();
 		if (prompt == "Favorites")
-			prompt = _("FAVORITE");
+			prompt = "FAVORITE";
 
-		prompts.push_back(HelpPrompt("y", prompt));
+		prompts.push_back(HelpPrompt("y", _(prompt)));
 	}
 	return prompts;
 }

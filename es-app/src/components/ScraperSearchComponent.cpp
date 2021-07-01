@@ -239,7 +239,7 @@ void ScraperSearchComponent::onSearchDone(const std::vector<ScraperSearchResult>
 		// Check if the scraper used is still valid
 		if (!isValidConfiguredScraper())
 		{
-			mWindow->pushGui(new GuiMsgBox(mWindow, Utils::String::toUpper(_("Configured scraper is no longer available.\nPlease change the scraping source in the settings.")),
+			mWindow->pushGui(new GuiMsgBox(mWindow, _("CONFIGURED SCRAPER IS NO LONGER AVAILABLE.\nPLEASE CHANGE THE SCARPING SOURCE IN THE SETTINGS."),
 				_("FINISH"), mSkipCallback));
 		}
 		else
@@ -283,7 +283,8 @@ void ScraperSearchComponent::onSearchDone(const std::vector<ScraperSearchResult>
 void ScraperSearchComponent::onSearchError(const std::string& error)
 {
 	LOG(LogInfo) << "ScraperSearchComponent search error: " << error;
-	mWindow->pushGui(new GuiMsgBox(mWindow, _("AN ERROR HAS OCCURED") + " :\n" + Utils::String::toUpper(error),
+	LOG(LogInfo) << "ScraperSearchComponent::onSearchError():286 - ScraperSearchComponent search error for traslations: " << Utils::String::showSpecialCharacters(error);
+	mWindow->pushGui(new GuiMsgBox(mWindow, _("AN ERROR HAS OCCURED") + " :\n" + Utils::String::toUpper(_(error)),
 		_("RETRY"), std::bind(&ScraperSearchComponent::search, this, mLastSearch), // batocera
 		_("SKIP"), mSkipCallback, // batocera
 		_("CANCEL"), mCancelCallback, ICON_ERROR)); // batocera
@@ -470,7 +471,7 @@ void ScraperSearchComponent::updateThumbnail()
 		mResultThumbnail->setImage(content.data(), content.length());
 		mGrid.onSizeChanged(); // a hack to fix the thumbnail position since its size changed
 	}else{
-		LOG(LogWarning) << "thumbnail req failed: " << mThumbnailReq->getErrorMsg();
+		LOG(LogWarning) << "ScraperSearchComponent::updateThumbnail():474 --> thumbnail req failed: " << mThumbnailReq->getErrorMsg();
 		mResultThumbnail->setImage("");
 	}
 

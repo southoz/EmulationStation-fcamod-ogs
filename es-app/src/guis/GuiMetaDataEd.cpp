@@ -112,9 +112,9 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 				if (defaultCore.length() == 0)
 					core_choice->add(_("DEFAULT"), "", false);
 				else 
-					core_choice->add(_("DEFAULT")+" ("+ defaultCore +")", "", false);
+					core_choice->add(_("DEFAULT") + " (" + defaultCore + ")", "", false);
 							
-				std::vector<std::string> cores = system->getSystemEnvData()->getCores(emulatorName);				
+				std::vector<std::string> cores = system->getSystemEnvData()->getCores(emulatorName);
 
 				bool found = false;
 
@@ -218,7 +218,18 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 
 				bool multiLine = iter->type == MD_MULTILINE_STRING;
 				const std::string title = _(iter->displayPrompt.c_str());
-				auto updateVal = [ed](const std::string& newVal) { ed->setValue(newVal); }; // ok callback (apply new value to ed)
+				//LOG(LogDebug) << "GuiMetaDataEd::GuiMetaDataEd():221 --> [ key: " << iter->key << ", default value: \"" << iter->defaultValue  << "\", editor value: \"" << ed->getValue() << "\"]";
+				if (ed->getValue() == "unknown")
+					ed->setValue(_("unknown"));
+				auto updateVal = [ed](const std::string& newVal) {
+						//LOG(LogDebug) << "GuiMetaDataEd::GuiMetaDataEd():225 --> newVal: \"" << newVal << '"';
+						std::string new_value = newVal;
+						if (new_value == "unknown")
+							new_value = _("unknown").c_str();
+
+					//LOG(LogDebug) << "GuiMetaDataEd::GuiMetaDataEd():230 --> new_value: \"" << new_value << '"';
+					ed->setValue(new_value);
+				}; // ok callback (apply new value to ed)
 				row.makeAcceptInputHandler([this, title, ed, updateVal, multiLine] 
 				{
 					if (multiLine)
@@ -228,13 +239,18 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 				});
 				break;
 			}
-		}		
+		}
 
 		assert(ed);
 		mList->addRow(row);
-				
+
+		std::string ed_value = mMetaData->get(iter->key);
+		if (ed_value == "unknown")
+			ed_value = _("unknown");
+
 		ed->setTag(iter->key);
-		ed->setValue(mMetaData->get(iter->key));
+		ed->setValue(ed_value);
+		//LOG(LogDebug) << "GuiMetaDataEd::GuiMetaDataEd():253 --> editor [ tag: " << ed->getTag() << ", value: \"" << ed->getValue() << "\"]";
 
 		mEditors.push_back(ed);
 	}
@@ -250,7 +266,9 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 	if(mDeleteFunc)
 	{
 		auto deleteFileAndSelf = [&] { mDeleteFunc(); delete this; };
-		auto deleteBtnFunc = [this, deleteFileAndSelf] { mWindow->pushGui(new GuiMsgBox(mWindow, _("THIS WILL DELETE THE ACTUAL GAME FILE(S)!\nARE YOU SURE?"), _("YES"), deleteFileAndSelf, _("NO"), nullptr)); };
+		auto deleteBtnFunc = [this, deleteFileAndSelf] { mWindow->pushGui(new GuiMsgBox(mWindow,
+			_("THIS WILL DELETE THE ACTUAL GAME FILE(S)!\nARE YOU SURE?"),
+			_("YES"), deleteFileAndSelf, _("NO"), nullptr)); };
 		buttons.push_back(std::make_shared<ButtonComponent>(mWindow, _("DELETE"), _("DELETE"), deleteBtnFunc));
 	}
 
@@ -346,7 +364,7 @@ void GuiMetaDataEd::fetchDone(const ScraperSearchResult& result)
 	for(unsigned int i = 0; i < mEditors.size(); i++)
 	{
 		auto val = mEditors.at(i)->getValue();
-		auto key = mEditors.at(i)->getTag();		
+		auto key = mEditors.at(i)->getTag();
 
 		// Don't override favorite & hidden values, as they are not statistics
 		if (key == "favorite" || key == "hidden")

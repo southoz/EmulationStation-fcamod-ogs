@@ -198,7 +198,7 @@ GuiInputConfig::GuiInputConfig(Window* window, InputConfig* target, bool reconfi
 			okCallback();
 		delete this; 
 	};
-	buttons.push_back(std::make_shared<ButtonComponent>(mWindow, _("OK"), "ok", [this, okFunction] {
+	buttons.push_back(std::make_shared<ButtonComponent>(mWindow, _("OK"), _("OK"), [this, okFunction] {
 		// check if the hotkey enable button is set. if not prompt the user to use select or nothing.
 		Input input;
 		if (!mTargetConfig->getInputByName("HotKeyEnable", &input)) {
@@ -264,9 +264,10 @@ void GuiInputConfig::update(int deltaTime)
 			if(prevSec != curSec)
 			{
 				// crossed the second boundary, update text
+				int hold_time = HOLD_TO_SKIP_MS/1000 - curSec;
 				const auto& text = mMappings.at(mHeldInputId);
 				char strbuf[64];
-				snprintf(strbuf, 64, EsLocale::nGetText("HOLD FOR %iS TO SKIP", "HOLD FOR %iS TO SKIP", HOLD_TO_SKIP_MS/1000 - curSec).c_str(), HOLD_TO_SKIP_MS/1000 - curSec); // batocera
+				snprintf(strbuf, 64, EsLocale::nGetText("HOLD FOR %iS TO SKIP", "HOLD FOR %iS TO SKIP", hold_time).c_str(), hold_time); // batocera
 				text->setText(strbuf);
 				text->setColor(ThemeData::getMenuTheme()->Text.color);
 			}
@@ -298,13 +299,13 @@ void GuiInputConfig::rowDone()
 
 void GuiInputConfig::setPress(const std::shared_ptr<TextComponent>& text)
 {
-	text->setText("PRESS ANYTHING");
+	text->setText(_("PRESS ANYTHING"));
 	text->setColor(0x656565FF);
 }
 
 void GuiInputConfig::setNotDefined(const std::shared_ptr<TextComponent>& text)
 {
-	text->setText("-NOT DEFINED-");
+	text->setText(_("-NOT DEFINED-"));
 	text->setColor(0x999999FF);
 }
 
@@ -328,7 +329,7 @@ bool GuiInputConfig::assign(Input input, int inputId)
 	// (if it's the same as what it was before, allow it)
 	if(mTargetConfig->getMappedTo(input).size() > 0 && !mTargetConfig->isMappedTo(GUI_INPUT_CONFIG_LIST[inputId].name, input) && strcmp(GUI_INPUT_CONFIG_LIST[inputId].name, "HotKeyEnable") != 0)
 	{
-		error(mMappings.at(inputId), "Already mapped!");
+		error(mMappings.at(inputId), _("Already mapped!"));
 		return false;
 	}
 

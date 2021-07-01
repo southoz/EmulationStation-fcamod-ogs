@@ -1053,6 +1053,14 @@ void GuiMenu::openUISettings()
 	s->addSaveFunc(
 		[clock] { Settings::getInstance()->setBool("DrawClock", clock->getState()); });
 
+	// Clock time format (14:42 or 2:42 pm)
+	auto tmFormat = std::make_shared<SwitchComponent>(mWindow);
+	tmFormat->setState(Settings::getInstance()->getBool("ClockMode12"));
+	s->addWithLabel(_("SHOW CLOCK IN 12-HOUR FORMAT"), tmFormat);
+	s->addSaveFunc([tmFormat] {
+			Settings::getInstance()->setBool("ClockMode12", tmFormat->getState());
+	});
+
 	// show help
 	auto show_help = std::make_shared<SwitchComponent>(mWindow);
 	show_help->setState(Settings::getInstance()->getBool("ShowHelpPrompts"));
@@ -1392,29 +1400,30 @@ void GuiMenu::openOtherSettings()
 		if (langues.size() > 1)
 		{
 			auto language = std::make_shared< OptionListComponent<std::string> >(mWindow, _("LANGUAGE"), false);
-			std::string settings_language = Settings::getInstance()->getString("Language");
 
-			for (auto it = langues.cbegin(); it != langues.cend(); it++) {
-				
+			for (auto it = langues.cbegin(); it != langues.cend(); it++)
+			{
+				std::string language_label;
 				if (*it == "br")
-					language->add(_("PORTUGUESE BRAZIL"), *it, settings_language == *it);
+					language_label = "PORTUGUESE BRAZIL";
 				else if (*it == "de")
-					language->add(_("DEUTSCHE"), *it, settings_language == *it);
+					language_label = "DEUTSCHE";
 				else if (*it == "es")
-					language->add(_("SPANISH"), *it, settings_language == *it);
-				else if (*it == "fr")
-					language->add(_("FRENCH"), *it, settings_language == *it);
-				else if (*it == "ko")
-					language->add(_("KOREAN"), *it, settings_language == *it);
-				else if (*it == "pt")
-					language->add(_("PORTUGUESE PORTUGAL"), *it, settings_language == *it);
-				else if (*it == "zh-CN")
-					language->add(_("SIMPLIFIED CHINESE"), *it, settings_language == *it);
+					language_label = "SPANISH";
 				else if (*it == "en")
-					language->add(_("ENGLISH"), *it, settings_language == *it);
+					language_label = "ENGLISH";
+				else if (*it == "fr")
+					language_label = "FRENCH";
+				else if (*it == "ko")
+					language_label = "KOREAN";
+				else if (*it == "pt")
+					language_label = "PORTUGUESE PORTUGAL";
+				else if (*it == "zh-CN")
+					language_label = "SIMPLIFIED CHINESE";
 				else
-					language->add(_(it->c_str()), *it, settings_language == *it);
-				
+					language_label = *it;
+
+				language->add(_(language_label), *it, Settings::getInstance()->getString("Language") == *it);
 			}
 
 			s->addWithLabel(_("LANGUAGE"), language);
