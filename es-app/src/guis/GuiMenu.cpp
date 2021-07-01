@@ -1049,6 +1049,14 @@ void GuiMenu::openUISettings()
 	s->addSaveFunc(
 		[clock] { Settings::getInstance()->setBool("DrawClock", clock->getState()); });
 
+	// Clock time format (14:42 or 2:42 pm)
+	auto tmFormat = std::make_shared<SwitchComponent>(mWindow);
+	tmFormat->setState(Settings::getInstance()->getBool("ClockMode12"));
+	s->addWithLabel(_("SHOW CLOCK IN 12-HOUR FORMAT"), tmFormat);
+	s->addSaveFunc([tmFormat] {
+			Settings::getInstance()->setBool("ClockMode12", tmFormat->getState());
+	});
+
 	// show help
 	auto show_help = std::make_shared<SwitchComponent>(mWindow);
 	show_help->setState(Settings::getInstance()->getBool("ShowHelpPrompts"));
