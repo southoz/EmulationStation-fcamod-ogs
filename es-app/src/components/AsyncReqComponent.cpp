@@ -48,6 +48,6 @@ void AsyncReqComponent::render(const Transform4x4f& /*parentTrans*/)
 std::vector<HelpPrompt> AsyncReqComponent::getHelpPrompts()
 {
 	std::vector<HelpPrompt> prompts;
-	prompts.push_back(HelpPrompt("b", _("cancel")));
+	prompts.push_back(HelpPrompt("b", _("CANCEL")));
 	return prompts;
 }

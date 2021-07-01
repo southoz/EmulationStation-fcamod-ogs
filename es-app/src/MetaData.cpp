@@ -8,14 +8,14 @@
 #include "Settings.h"
 
 MetaDataDecl gameDecls[] = {
-	// key,         type,                   default,            statistic,  name in GuiMetaDataEd,  prompt in GuiMetaDataEd
+	//    key,           type,                   default,            statistic,  name in GuiMetaDataEd,  prompt in GuiMetaDataEd
 	{ 0,  "name",        MD_STRING,              "",                 false,      "name",                 "enter game name"},
 //	{ 1,  "sortname",    MD_STRING,              "",                 false,      "sortname",             "enter game sort name"},
 	{ 2,  "desc",        MD_MULTILINE_STRING,    "",                 false,      "description",          "enter description"},
-	{ 3,  "emulator",    MD_PLIST,               "",                 false,      "emulator",	           "emulator" },
+	{ 3,  "emulator",    MD_PLIST,               "",                 false,      "emulator",             "emulator" },
 	{ 4,  "core",        MD_PLIST,               "",                 false,      "core",                 "core" },
 	{ 5,  "image",       MD_PATH,                "",                 false,      "image",                "enter path to image"},
-	{ 6,  "video",       MD_PATH     ,           "",                 false,      "video",                "enter path to video"},
+	{ 6,  "video",       MD_PATH,                "",                 false,      "video",                "enter path to video"},
 	{ 7,  "marquee",     MD_PATH,                "",                 false,      "marquee",              "enter path to marquee"},
 	{ 8,  "thumbnail",   MD_PATH,                "",                 false,      "thumbnail",            "enter path to thumbnail"},
 	{ 9,  "rating",      MD_RATING,              "0.000000",         false,      "rating",               "enter rating"},
@@ -91,7 +91,10 @@ std::map<unsigned char, std::string> MetaDataList::BuildDefaultMap(MetaDataListT
 
 	const std::vector<MetaDataDecl>& mdd = getMDDByType(type);
 	for (auto iter = mdd.cbegin(); iter != mdd.cend(); iter++)
-		ret[iter->id] = iter->defaultValue;		
+	{
+		//LOG(LogDebug) << "MetaDataList::BuildDefaultMap():95 --> [ key: " <<  iter->key << ", default value: \"" << iter->defaultValue << "\"]";
+		ret[iter->id] = iter->defaultValue;
+	}
 
 	return ret;
 }

@@ -2,8 +2,11 @@
 #include "resources/ResourceManager.h"
 #include "Settings.h"
 #include "utils/FileSystemUtil.h"
+#include "utils/StringUtil.h"
 
 #include <fstream>
+
+//#include "Log.h"
 
 std::map<std::string, std::string> EsLocale::mItems;
 std::string EsLocale::mCurrentLanguage = "en";
@@ -37,39 +40,58 @@ PluralRule rules[] = {
 
 PluralRule EsLocale::mPluralRule = rules[0];
 
-const std::string EsLocale::getText(const std::string text)
+const std::string EsLocale::getText(const std::string msgid)
 {
+	//LOG(LogDebug) << "EsLocale::getText(\"" << msgid << "\"):45";
+	std::string hascode = std::to_string(std::hash<std::string>{}(msgid));
+	//LOG(LogDebug) << "EsLocale::getText():47 --> msgid : \"" << msgid << "\" --> " << hascode;
 	checkLocalisationLoaded();
 
-	auto item = mItems.find(text);
+	auto item = mItems.find(hascode);
 	if (item != mItems.cend())
+	{
+		//LOG(LogDebug) << "EsLocale::getText():53 --> item [\"" << item->first << "\", \"" << item->second << "\"]";
 		return item->second;
+	}
 
-	return text;
+	//LOG(LogDebug) << "EsLocale::getText():57 --> msgid: \"" << msgid << '"';
+	return msgid;
 }
 
 const std::string EsLocale::nGetText(const std::string msgid, const std::string msgid_plural, int n)
-{	
+{
+	//LOG(LogDebug) << "EsLocale::nGetText(\"" << msgid << "\", \"" << msgid_plural << "\", " << std::to_string(n) + "):63";
 	if (mCurrentLanguage.empty() || mCurrentLanguage == "en") // English default
 		return n != 1 ? msgid_plural : msgid;
 
 	if (mPluralRule.rule.empty())
-		return n != 1 ? getText(msgid_plural) : getText(msgid);		
+		return n != 1 ? getText(msgid_plural) : getText(msgid);
 
 	checkLocalisationLoaded();
 
 	int pluralId = mPluralRule.evaluate(n);
 	if (pluralId == 0)
+	{
+		//LOG(LogDebug) << "EsLocale::nGetText():75 --> singular: \"" << msgid << '"';
 		return getText(msgid);
-			
-	auto item = mItems.find(std::to_string(pluralId) + "@" + msgid_plural);
+	}
+	//LOG(LogDebug) << "EsLocale::nGetText():78 --> plural: \"" << msgid_plural << '"';
+	std::string hascode = std::to_string(std::hash<std::string>{}(msgid_plural));
+	//LOG(LogDebug) << "EsLocale::nGetText():80 --> msgid_plural : \"" << msgid_plural << "\" --> " << hascode;
+	auto item = mItems.find(std::to_string(pluralId) + "@" + hascode);
 	if (item != mItems.cend())
+	{
+		//LOG(LogDebug) << "EsLocale::nGetText():84 --> item [\"" << item->first << "\", \"" << item->second << "\"]";
 		return item->second;
+	}
 
-	item = mItems.find(msgid_plural);
+	item = mItems.find(hascode);
 	if (item != mItems.cend())
+	{
+		//LOG(LogDebug) << "EsLocale::nGetText():91 --> item [\"" << item->first << "\", \"" << item->second << "\"]";
 		return item->second;
-
+	}
+	//LOG(LogDebug) << "EsLocale::nGetText():94 - msgid_plural: \"" << msgid_plural << '"';
 	return msgid_plural;
 }
 
@@ -87,7 +109,7 @@ void EsLocale::checkLocalisationLoaded()
 
 	mCurrentLanguageLoaded = true;
 	mPluralRule = rules[0];
-
+	//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():112 --> mItems.clear()";
 	mItems.clear();
 
 	std::string xmlpath = ResourceManager::getInstance()->getResourcePath(":/locale/" + mCurrentLanguage + "/emulationstation2.po");
@@ -107,114 +129,197 @@ void EsLocale::checkLocalisationLoaded()
 		}
 	}
 
-	std::string	msgid;
-	std::string	msgid_plural;
-	
+	std::string msgid;
+	std::string msgid_plural;
+
+	std::string line;
+	std::string line_next;
+	std::ifstream file(xmlpath);
+
+	if (file.is_open())
+	{
+		while (!file.eof())
+		{
+			if (!line_next.empty())
+			{
+				//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():145 --> line_next: " << line_next;
+				line = line_next;
+				line_next.clear();
+			}
+			else
+			{
+				std::getline(file, line);
+				//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():152 --> line: " << line;
+				if (file.eof())
+				{
+					break;
+				}
+			}
+			if (line.find("\"Plural-Forms:") == 0)
+			{
+				auto start = line.find("plural=");
+				if (start != std::string::npos)
+				{
+					std::string plural;
+
+					auto end = line.find_last_of(';');
+					if (end == std::string::npos)
+					{
+						plural = line.substr(start + 7, line.size() - start - 7 - 1);
+
+						std::getline(file, line);
+						end = line.find_last_of(';');
+						if (end != std::string::npos)
+							plural += line.substr(1, end - 1);
+					}
+					else
+						plural = line.substr(start + 7, end - start - 7);
+
+					plural = Utils::String::replace(plural, " ", "");
+
+					if (Utils::String::endsWith(plural, ";"))
+						plural = plural.substr(0, plural.size() - 1);
+
+				//	if (Utils::String::startsWith(plural, "(") && Utils::String::endsWith(plural, ")"))
+				//		plural = plural.substr(1, plural.size() - 2);
+					plural = Utils::String::replace(plural, "(", "");
+					plural = Utils::String::replace(plural, ")", "");
+
+					for (auto iter = pluralRules.cbegin(); iter != pluralRules.cend(); iter++)
+					{
+						if (plural == iter->rule)
+						{
+							mPluralRule = *iter;
+							break;
+						}
+					}
+					//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():196 --> plural: " << plural;
+				}
+			}
+			else if (line.find("msgid_plural") == 0)
+			{
+				auto start = line.find('"');
+				if (start != std::string::npos && !msgid.empty())
+				{
+					auto end = line.find_last_of('"');
+					if (end != std::string::npos)
+					{
+						msgid_plural = line.substr(start + 1, end - start - 1);
+						//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():208 --> msgid_plural: \"" << msgid_plural << '"';
+						readFileSplitedValues(file, msgid_plural, line_next);
+						//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():209 -> msgid_plural: \"" << msgid_plural << '"';
+					}
+				}
+			}
+			else if (line.find("msgid") == 0)
+			{
+				msgid = "";
+				msgid_plural = "";
+
+				auto start = line.find('"');
+				if (start != std::string::npos)
+				{
+					auto end = line.find_last_of('"');
+					if (end != std::string::npos)
+					{
+						msgid = line.substr(start + 1, end - start - 1);
+						//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():226 -> msgid: \"" << msgid << '"';
+						readFileSplitedValues(file, msgid, line_next);
+						//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():228 -> msgid: \"" << msgid << '"';
+					}
+				}
+			}
+			else if (line.find("msgstr") == 0)
+			{
+				std::string idx;
+
+				if (!msgid_plural.empty())
+				{
+					auto idxStart = line.find('[');
+					if (idxStart != std::string::npos)
+					{
+						auto idxEnd = line.find(']', idxStart + 1);
+						if (idxEnd != std::string::npos)
+							idx = line.substr(idxStart + 1, idxEnd - idxStart - 1);
+					}
+				}
+
+				auto start = line.find('"');
+				if (start != std::string::npos)
+				{
+					auto end = line.find_last_of('"');
+					if (end != std::string::npos)
+					{
+						std::string msgstr = line.substr(start + 1, end - start - 1);
+						//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():254 -> msgstr: \"" << msgstr << '"';
+						readFileSplitedValues(file, msgstr, line_next);
+						//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():256 -> msgstr: \"" << msgstr << '"';
+						std::string msgstr_aux = Utils::String::hiddenSpecialCharacters(msgstr);
+						//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():258 -> msgstr_aux: \"" << msgstr_aux << '"';
+						if (!msgid.empty() && !msgstr.empty())
+						{
+							//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():261 -> msgid: [\"" << msgid << "\", \"" << msgstr << "\"]";
+							std::string msgid_aux = Utils::String::hiddenSpecialCharacters(msgid);
+							std::string hascode = std::to_string(std::hash<std::string>{}(msgid_aux));
+							//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():264 -> msgid_aux: \"" << msgid_aux << "\" --> " << hascode;
+							if (idx.empty() || idx == "0")
+							{
+								mItems[hascode] = msgstr_aux;
+								//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():268 -> mItems[" << hascode << "] = \"" << msgstr_aux << '"';
+							}
+						}
+						if (!msgid_plural.empty() && !msgstr.empty())
+						{
+							//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():273 -> msgid_plural: \"" << msgid_plural << '"';
+							std::string msgid_plural_aux = Utils::String::hiddenSpecialCharacters(msgid_plural);
+							std::string hascode = std::to_string(std::hash<std::string>{}(msgid_plural_aux));
+							//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():276 -> msgid_plural_aux: \"" << msgid_plural_aux << "\" --> " << hascode;
+							if (!idx.empty() && idx != "0")
+							{
+								mItems[idx + "@" + hascode] = msgstr_aux;
+								//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():280 -> mItems[" << idx << "@" << hascode << "] = \"" << msgstr_aux << '"';
+							}
+							else
+							{
+								mItems[hascode] = msgstr_aux;
+								//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():285 -> mItems[" << hascode << "] = \"" << msgstr_aux << '"';
+							}
+						}
+					}
+				}
+			}
+		}
+
+		file.close();
+	}
+
+}
+
+const void EsLocale::readFileSplitedValues(std::ifstream &file, std::string &msg, std::string &line_next)
+{
 	std::string line;
 
-	std::ifstream file(xmlpath);
 	while (std::getline(file, line))
 	{
-		if (line.find("\"Plural-Forms:") == 0)
+		//LOG(LogDebug) << "EsLocale::readFileSplitedValues():304 -> line: " << line;
+		line = Utils::String::trim(line);
+		//LOG(LogDebug) << "EsLocale::readFileSplitedValues():306 -> line --> trim(): " << line;
+		if (Utils::String::startsWith(line, "\""))
 		{
-			auto start = line.find("plural=");
-			if (start != std::string::npos)
+			auto start = 1;
+			auto end = line.find_last_of('"');
+			if (end != std::string::npos)
 			{
-				std::string plural;
-
-				auto end = line.find(";", start + 1);
-				if (end == std::string::npos)
-				{
-					plural = line.substr(start + 7, line.size() - start - 7 - 1);
-
-					std::getline(file, line);		
-					end = line.find(";", start + 1);
-					if (end != std::string::npos)
-						plural += line.substr(1, end - 1);
-				}
-				else
-					plural = line.substr(start + 7, end - start - 7);				
-
-				plural = Utils::String::replace(plural, " ", "");
-
-				if (Utils::String::endsWith(plural, ";"))
-					plural = plural.substr(0, plural.size() - 1);
-
-			//	if (Utils::String::startsWith(plural, "(") && Utils::String::endsWith(plural, ")"))
-			//		plural = plural.substr(1, plural.size() - 2);			
-				plural = Utils::String::replace(plural, "(", "");
-				plural = Utils::String::replace(plural, ")", "");
-
-				for (auto iter = pluralRules.cbegin(); iter != pluralRules.cend(); iter++)
-				{
-					if (plural == iter->rule)
-					{
-						mPluralRule = *iter;
-						break;
-					}
-				}
+				msg.append(line.substr(start, end - 1));
+				//LOG(LogDebug) << "EsLocale::readFileSplitedValues():314 -> msg: \"" << msg << '"';
 			}
 		}
-		else if (line.find("msgid_plural") == 0)
+		else
 		{
-			auto start = line.find("\"");
-			if (start != std::string::npos && !msgid.empty())
-			{
-				auto end = line.find("\"", start + 1);
-				if (end != std::string::npos)
-					msgid_plural = line.substr(start + 1, end - start - 1);
-			}
-		}		
-		else if (line.find("msgid") == 0)
-		{
-			msgid = "";
-			msgid_plural = "";
-
-			auto start = line.find("\"");
-			if (start != std::string::npos)
-			{
-				auto end = line.find("\"", start + 1);
-				if (end != std::string::npos)
-					msgid = line.substr(start + 1, end - start - 1);
-			}
-		}
-		else if (line.find("msgstr") == 0)
-		{
-			std::string	idx;
-
-			if (!msgid_plural.empty())
-			{
-				auto idxStart = line.find("[");
-				if (idxStart != std::string::npos)
-				{
-					auto idxEnd = line.find("]", idxStart + 1);
-					if (idxEnd != std::string::npos)				
-						idx = line.substr(idxStart + 1, idxEnd - idxStart - 1);				
-				}
-			}
-
-			auto start = line.find("\"");
-			if (start != std::string::npos)
-			{
-				auto end = line.find("\"", start + 1);
-				if (end != std::string::npos)
-				{
-					std::string	msgstr = line.substr(start + 1, end - start - 1);
-					if (!msgid.empty() && !msgstr.empty())
-						if (idx.empty() || idx == "0")
-							mItems[msgid] = msgstr;
-
-					if (!msgid_plural.empty() && !msgstr.empty())
-					{
-						if (!idx.empty() && idx != "0")
-							mItems[idx + "@" + msgid_plural] = msgstr;
-						else
-							mItems[msgid_plural] = msgstr;
-					}
-				}
-			}
+			line_next.append(line);
+			line.clear();
+			//LOG(LogDebug) << "EsLocale::readFileSplitedValues():321-> line_next: \"" << line_next << '"';
+			break;
 		}
 	}
 }
-
-

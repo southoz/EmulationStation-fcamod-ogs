@@ -145,6 +145,6 @@ unsigned int ButtonComponent::getCurBackColor() const
 std::vector<HelpPrompt> ButtonComponent::getHelpPrompts()
 {
 	std::vector<HelpPrompt> prompts;
-	prompts.push_back(HelpPrompt("a", mHelpText.empty() ? mText.c_str() : mHelpText.c_str()));
+	prompts.push_back(HelpPrompt("a", _( (mHelpText.empty() ? mText.c_str() : mHelpText.c_str()) ) ));
 	return prompts;
 }

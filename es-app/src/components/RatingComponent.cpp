@@ -2,6 +2,7 @@
 
 #include "resources/TextureResource.h"
 #include "ThemeData.h"
+#include "EsLocale.h"
 
 RatingComponent::RatingComponent(Window* window) : GuiComponent(window), mColorShift(0xFFFFFFFF), mUnfilledColor(0xFFFFFFFF)
 {
@@ -198,6 +199,6 @@ void RatingComponent::applyTheme(const std::shared_ptr<ThemeData>& theme, const 
 std::vector<HelpPrompt> RatingComponent::getHelpPrompts()
 {
 	std::vector<HelpPrompt> prompts;
-	prompts.push_back(HelpPrompt("a", "add star"));
+	prompts.push_back(HelpPrompt("a", _("ADD STAR")));
 	return prompts;
 }
