@@ -68,14 +68,7 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 		// don't add statistics
 		if(iter->isStatistic)
 			continue;
-		/*
-#if defined(_WIN32)
-		if (iter->displayName == "sortname" || iter->displayName == "image" || iter->displayName == "video" || iter->displayName == "marquee" || 
-			iter->displayName == "thumbnail" || iter->displayName == "kidgame" || iter->displayName == "description" || iter->displayName == "release date" || 
-			iter->displayName == "genre" || iter->displayName == "publisher" || iter->displayName == "developer" || iter->displayName == "players")
-			continue;
-#endif
-*/
+
 		// create ed and add it (and any related components) to mMenu
 		// ed's value will be set below
 		ComponentListRow row;

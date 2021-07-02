@@ -31,11 +31,6 @@ namespace Utils
 		std::vector<std::string> splitAny(const std::string& s, const std::string& seperator);
 		const std::string hiddenSpecialCharacters(const std::string msg);
 		const std::string showSpecialCharacters(const std::string msg);
-
-#if defined(_WIN32)
-		const std::string convertFromWideString(const std::wstring wstring);
-		const std::wstring convertToWideString(const std::string string);
-#endif
 	} // String::
 
 } // Utils::

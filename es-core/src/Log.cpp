@@ -7,10 +7,6 @@
 #include "Settings.h"
 #include <iomanip> 
 
-#if WIN32
-#include <Windows.h>
-#endif
-
 static std::mutex mLogLock;
 
 LogLevel Log::reportingLevel = LogInfo;
@@ -119,11 +115,7 @@ Log::~Log()
 	// print all messages if using --debug
 	if (messageLevel == LogError || reportingLevel >= LogDebug)
 	{
-#if WIN32
-		OutputDebugStringA(os.str().c_str());
-#else
 		fprintf(stderr, "%s", os.str().c_str());
-#endif
 	}
 }
 

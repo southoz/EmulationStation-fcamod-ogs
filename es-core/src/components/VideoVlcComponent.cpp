@@ -12,11 +12,6 @@
 #include <SDL_timer.h>
 #include "AudioManager.h"
 
-
-#ifdef WIN32
-#include <codecvt>
-#endif
-
 #include "ImageIO.h"
 
 #define MATHPI          3.141592653589793238462643383279502884L
@@ -510,11 +505,8 @@ void VideoVlcComponent::startVideo()
 	mVideoWidth = 0;
 	mVideoHeight = 0;
 
-#ifdef WIN32
-	std::string path(Utils::String::replace(mVideoPath, "/", "\\"));
-#else
 	std::string path(mVideoPath);
-#endif
+
 	// Make sure we have a video path
 	if (mVLC && (path.size() > 0))
 	{

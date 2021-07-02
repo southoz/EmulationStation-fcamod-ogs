@@ -36,20 +36,10 @@ private:
 	static PluralRule mPluralRule;
 };
 
-
-#if defined(_WIN32)
-	#define UNICODE_CHARTYPE wchar_t*
-	#define _L(x) L ## x
-	#define _U(x) Utils::String::convertFromWideString(L ## x)
-	
-	#define _(x) EsLocale::getText(x)
-#else
-
 	#define UNICODE_CHARTYPE char*
 	#define _L(x) x
 	#define _U(x) x
 
 	#define _(x) EsLocale::getText(x)
-#endif // _WIN32
 
 #endif // ES_CORE_ESLOCALE_H
