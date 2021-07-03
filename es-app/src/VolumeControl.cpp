@@ -18,11 +18,7 @@ std::weak_ptr<VolumeControl> VolumeControl::sInstance;
 
 VolumeControl::VolumeControl()
 	: originalVolume(0), internalVolume(0)
-#if defined (__APPLE__)
-#error TODO: Not implemented for MacOS yet!!!
-#elif defined(__linux__)
 	, mixerIndex(0), mixerHandle(nullptr), mixerElem(nullptr), mixerSelemId(nullptr)
-#endif
 {
 	init();
 
@@ -32,11 +28,7 @@ VolumeControl::VolumeControl()
 
 VolumeControl::VolumeControl(const VolumeControl & right) :
 	originalVolume(0), internalVolume(0)
-#if defined (__APPLE__)
-#error TODO: Not implemented for MacOS yet!!!
-#elif defined(__linux__)
 	, mixerIndex(0), mixerHandle(nullptr), mixerElem(nullptr), mixerSelemId(nullptr)
-#endif
 {
 	(void)right;
 	sInstance = right.sInstance;
@@ -73,9 +65,6 @@ std::shared_ptr<VolumeControl> & VolumeControl::getInstance()
 void VolumeControl::init()
 {
 	//initialize audio mixer interface
-#if defined (__APPLE__)
-#error TODO: Not implemented for MacOS yet!!!
-#elif defined(__linux__)
 	//try to open mixer device
 	if (mixerHandle == nullptr)
 	{
@@ -143,15 +132,12 @@ void VolumeControl::init()
 			LOG(LogError) << "VolumeControl::init() - Failed to open ALSA mixer!";
 		}
 	}
-#endif
+
 }
 
 void VolumeControl::deinit()
 {
 	//deinitialize audio mixer interface
-#if defined (__APPLE__)
-#error TODO: Not implemented for MacOS yet!!!
-#elif defined(__linux__)
 	if (mixerHandle != nullptr) {
 		snd_mixer_detach(mixerHandle, mixerCard);
 		snd_mixer_free(mixerHandle);
@@ -159,16 +145,13 @@ void VolumeControl::deinit()
 		mixerHandle = nullptr;
 		mixerElem = nullptr;
 	}
-#endif
+
 }
 
 int VolumeControl::getVolume() const
 {
 	int volume = 0;
 
-#if defined (__APPLE__)
-#error TODO: Not implemented for MacOS yet!!!
-#elif defined(__linux__)
 	if (mixerElem != nullptr)
 	{
 		if (mixerHandle != nullptr)
@@ -209,7 +192,7 @@ int VolumeControl::getVolume() const
 			LOG(LogError) << "VolumeControl::getVolume() - Failed to get volume range!";
 		}
 	}
-#endif
+
 	//clamp to 0-100 range
 	if (volume < 0)
 	{
@@ -235,9 +218,7 @@ void VolumeControl::setVolume(int volume)
 	}
 	//store values in internal variables
 	internalVolume = volume;
-#if defined (__APPLE__)
-#error TODO: Not implemented for MacOS yet!!!
-#elif defined(__linux__)
+
 	if (mixerElem != nullptr)
 	{
 		//get volume range
@@ -258,5 +239,5 @@ void VolumeControl::setVolume(int volume)
 			LOG(LogError) << "VolumeControl::getVolume() - Failed to get volume range!";
 		}
 	}
-#endif
+
 }
