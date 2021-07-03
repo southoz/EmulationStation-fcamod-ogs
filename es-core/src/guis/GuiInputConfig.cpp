@@ -350,7 +350,6 @@ void GuiInputConfig::clearAssignment(int inputId)
 
 bool GuiInputConfig::filterTrigger(Input input, InputConfig* config)
 {
-#if defined(__linux__)
 	// on Linux, some gamepads return both an analog axis and a digital button for the trigger;
 	// we want the analog axis only, so this function removes the button press event
 
@@ -370,7 +369,6 @@ bool GuiInputConfig::filterTrigger(Input input, InputConfig* config)
 		if (input.type == TYPE_AXIS && (input.id == 2 || input.id == 5) && input.value < 0)
 			return true;
 	}
-#endif
 
 	return false;
 }

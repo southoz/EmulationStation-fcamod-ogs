@@ -4,14 +4,8 @@
 #include "Log.h"
 #include "Settings.h"
 
-#if defined(__linux__)
-#if defined(_VERO4K_)
-const char * VolumeControl::mixerName = "PCM";
-#else
 const char * VolumeControl::mixerName = "Master";
-#endif
 const char * VolumeControl::mixerCard = "default";
-#endif
 
 std::weak_ptr<VolumeControl> VolumeControl::sInstance;
 
