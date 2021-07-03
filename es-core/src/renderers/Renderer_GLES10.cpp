@@ -308,12 +308,6 @@ namespace Renderer
 
 	void swapBuffers()
 	{
-#ifdef WIN32		
-		glFlush();
-		glFinish();
-		Sleep(0);
-#endif
-
 		//SDL_GL_SwapWindow(getSDLWindow());
 
 		if (context)
@@ -853,10 +847,6 @@ namespace Renderer
 						GO2_ROTATION_DEGREES_270);
 			go2_context_surface_unlock(context, surface);
 		}
-
-#ifdef WIN32		
-		Sleep(0);
-#endif
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		//printf("Frame %d\n", frame++);

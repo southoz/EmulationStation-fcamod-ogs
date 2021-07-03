@@ -462,12 +462,6 @@ void Window::renderLoadingScreen(std::string text, float percent, unsigned char 
 	delete cache;
 
 	Renderer::swapBuffers();
-	
-#if defined(_WIN32)
-	// Avoid Window Freezing on Windows
-	SDL_Event event;
-	while (SDL_PollEvent(&event));
-#endif
 }
 
 void Window::loadCustomImageLoadingScreen(std::string imagePath, std::string customText)

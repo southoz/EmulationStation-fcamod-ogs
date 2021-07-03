@@ -9,12 +9,7 @@
 #include "SystemData.h"
 #include <pugixml/src/pugixml.hpp>
 
-#ifdef WIN32
-#include <Windows.h>
-#include <direct.h>
-#else
 #include <unistd.h>
-#endif
 
 FileData* findOrCreateFile(SystemData* system, const std::string& path, FileType type, std::unordered_map<std::string, FileData*>& fileMap)
 {
@@ -414,10 +409,6 @@ void updateGamelist(SystemData* system)
 		else if (Utils::FileSystem::exists(tmpFile))
 		{				
 			doc.reset();
-
-#ifdef WIN32
-			::Sleep(50); // Introduce a small sleep
-#endif
 
 			// Secure XML writing
 			if (Utils::FileSystem::getFileSize(tmpFile) != 0)

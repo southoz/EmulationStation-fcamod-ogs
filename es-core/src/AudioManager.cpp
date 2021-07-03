@@ -8,11 +8,7 @@
 #include "utils/FileSystemUtil.h"
 #include "utils/StringUtil.h"
 
-#ifdef WIN32
-#include <time.h>
-#else
 #include <unistd.h>
-#endif
 
 std::vector<std::shared_ptr<Sound>> AudioManager::sSoundVector;
 std::shared_ptr<AudioManager> AudioManager::sInstance;
@@ -180,11 +176,7 @@ void AudioManager::playRandomMusic(bool continueIfPlaying)
 	if (musics.empty()) 
 		return;
 	
-#if defined(WIN32)
-	srand(time(NULL) % getpid());
-#else
 	srand(time(NULL) % getpid() + getppid());
-#endif
 
 	int randomIndex = rand() % musics.size();
 

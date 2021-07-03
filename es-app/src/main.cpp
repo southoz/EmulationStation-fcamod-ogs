@@ -22,11 +22,7 @@
 #include <iostream>
 #include <time.h>
 
-#if defined(_WIN32)
-#include <Windows.h>
-#elif defined(__linux__)
 #include <unistd.h>
-#endif
 
 #include "resources/TextureData.h"
 #include <FreeImage.h>
@@ -296,14 +292,6 @@ bool parseArgs(int argc, char* argv[])
 		}
 		else if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0)
 		{
-#ifdef WIN32
-			// This is a bit of a hack, but otherwise output will go to nowhere
-			// when the application is compiled with the "WINDOWS" subsystem (which we usually are).
-			// If you're an experienced Windows programmer and know how to do this
-			// the right way, please submit a pull request!
-			AttachConsole(ATTACH_PARENT_PROCESS);
-			freopen("CONOUT$", "wb", stdout);
-#endif
 			std::cout <<
 				"EmulationStation, a graphical front-end for ROM browsing.\n"
 				"Written by Alec \"Aloshi\" Lofquist.\n"
@@ -405,14 +393,7 @@ int main(int argc, char* argv[])
 {
 	srand((unsigned int)time(NULL));
 
-#if WIN32
-	std::locale::global(std::locale("en-US"));
-	setlocale(LC_NUMERIC, "C");
-	setlocale(LC_TIME, "C");
-	setlocale(LC_MONETARY, "C");
-#else
 	std::locale::global(std::locale("C"));
-#endif
 
 	if(!parseArgs(argc, argv))
 		return 0;
@@ -422,37 +403,6 @@ int main(int argc, char* argv[])
 	return 0;
 	*/
 	// only show the console on Windows if HideConsole is false
-#ifdef WIN32
-	// MSVC has a "SubSystem" option, with two primary options: "WINDOWS" and "CONSOLE".
-	// In "WINDOWS" mode, no console is automatically created for us.  This is good,
-	// because we can choose to only create the console window if the user explicitly
-	// asks for it, preventing it from flashing open and then closing.
-	// In "CONSOLE" mode, a console is always automatically created for us before we
-	// enter main. In this case, we can only hide the console after the fact, which
-	// will leave a brief flash.
-	// TL;DR: You should compile ES under the "WINDOWS" subsystem.
-	// I have no idea how this works with non-MSVC compilers.
-	if(!Settings::getInstance()->getBool("HideConsole"))
-	{
-		// we want to show the console
-		// if we're compiled in "CONSOLE" mode, this is already done.
-		// if we're compiled in "WINDOWS" mode, no console is created for us automatically;
-		// the user asked for one, so make one and then hook stdin/stdout/sterr up to it
-		if(AllocConsole()) // should only pass in "WINDOWS" mode
-		{
-			freopen("CONIN$", "r", stdin);
-			freopen("CONOUT$", "wb", stdout);
-			freopen("CONOUT$", "wb", stderr);
-		}
-	}else{
-		// we want to hide the console
-		// if we're compiled with the "WINDOWS" subsystem, this is already done.
-		// if we're compiled with the "CONSOLE" subsystem, a console is already created;
-		// it'll flash open, but we hide it nearly immediately
-		if(GetConsoleWindow()) // should only pass in "CONSOLE" mode
-			ShowWindow(GetConsoleWindow(), SW_HIDE);
-	}
-#endif
 
 	// call this ONLY when linking with FreeImage as a static library
 #ifdef FREEIMAGE_LIB
@@ -531,11 +481,6 @@ int main(int argc, char* argv[])
 	if (scrape_cmdline)
 		return run_scraper_cmdline();
 
-#if WIN32
-	if (Settings::getInstance()->getBool("updates.enabled"))
-		NetworkThread* nthread = new NetworkThread(&window);
-#endif
-
 	//dont generate joystick events while we're loading (hopefully fixes "automatically started emulator" bug)
 	SDL_JoystickEventState(SDL_DISABLE);
 
@@ -564,22 +509,6 @@ int main(int argc, char* argv[])
 
 	if (Settings::getInstance()->getBool("audio.bgmusic"))
 		AudioManager::getInstance()->playRandomMusic();
-
-#ifdef WIN32	
-	DWORD displayFrequency = 60;
-
-	DEVMODE lpDevMode;
-	memset(&lpDevMode, 0, sizeof(DEVMODE));
-	lpDevMode.dmSize = sizeof(DEVMODE);
-	lpDevMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFLAGS | DM_DISPLAYFREQUENCY;
-	lpDevMode.dmDriverExtra = 0;
-
-	if (EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &lpDevMode) != 0) {
-		displayFrequency = lpDevMode.dmDisplayFrequency; // default value if cannot retrieve from user settings.
-	}
-	
-	int timeLimit = (1000 / displayFrequency) - 6;	 // Margin for vsync
-#endif
 
 	int lastTime = SDL_GetTicks();
 	int ps_time = SDL_GetTicks();
@@ -644,27 +573,7 @@ int main(int argc, char* argv[])
 
 		int processDuration = SDL_GetTicks() - processStart;
 		
-#ifdef WIN32		
-		if (processDuration < timeLimit)
-		{
-			int timeToWait = timeLimit - processDuration;
-			if (timeToWait > 0 && timeToWait < 100)
-				Sleep(timeToWait);
-		}
-
-		int swapStart = SDL_GetTicks();
-#endif
-
 		Renderer::swapBuffers();				
-/*
-#ifdef WIN32	
-		int swapDuration = SDL_GetTicks() - swapStart;
-		
-		char buffer[100];
-		sprintf_s(buffer, "px=%d swap=%d, sleep=%d\n", processDuration, swapDuration, timeLimit - processDuration);
-		OutputDebugStringA(buffer);
-#endif
-*/
 	}
 
 	ThreadedScraper::stop();

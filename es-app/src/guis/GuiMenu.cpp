@@ -66,10 +66,6 @@ GuiMenu::GuiMenu(Window* window, bool animate) : GuiComponent(window), mMenu(win
 		
 		addEntry(_("SCRAPER"), true, [this] { openScraperSettings(); }, "iconScraper");
 
-#if WIN32
-		addEntry(_("DOWNLOADS AND UPDATES"), true, [this] { openUpdateSettings(); }, "iconUpdates");
-#endif
-
 		addEntry(_("ADVANCED SETTINGS"), true, [this] { openOtherSettings(); }, "iconAdvanced");
 	}
 	
@@ -852,8 +848,7 @@ void GuiMenu::openUISettings()
 	s->addRow(screensaver_row);
 
 
-	//#ifndef WIN32
-		//UI mode
+	//UI mode
 	auto UImodeSelection = std::make_shared< OptionListComponent<std::string> >(mWindow, _("UI MODE"), false);
 	std::vector<std::string> UImodes = UIModeController::getInstance()->getUIModes();
 	for (auto it = UImodes.cbegin(); it != UImodes.cend(); it++)
@@ -877,7 +872,6 @@ void GuiMenu::openUISettings()
 			}, _("NO"), nullptr));
 		}
 	});
-	//#endif
 
 	// LANGUAGE
 	/*
@@ -1049,15 +1043,6 @@ void GuiMenu::openUISettings()
 			ViewController::get()->goToStart(true);
 	});
 
-
-#if defined(_WIN32)
-	// quick system select (left/right in game list view)
-	auto hideWindowScreen = std::make_shared<SwitchComponent>(mWindow);
-	hideWindowScreen->setState(Settings::getInstance()->getBool("HideWindow"));
-	s->addWithLabel(_("HIDE WHEN RUNNING GAME"), hideWindowScreen);
-	s->addSaveFunc([hideWindowScreen] { Settings::getInstance()->setBool("HideWindow", hideWindowScreen->getState()); });
-#endif
-
 	// quick system select (left/right in game list view)
 	auto quick_sys_select = std::make_shared<SwitchComponent>(mWindow);
 	quick_sys_select->setState(Settings::getInstance()->getBool("QuickSystemSelect"));
@@ -1142,7 +1127,6 @@ void GuiMenu::openUISettings()
 
 		if (s->getVariable("reloadGuiMenu"))
 		{
-
 			delete pthis;
 			window->pushGui(new GuiMenu(window, false));
 		}
@@ -1480,43 +1464,6 @@ void GuiMenu::openOtherSettings()
 	s->addSaveFunc([max_vram] { Settings::getInstance()->setInt("MaxVRAM", (int)Math::round(max_vram->getValue())); });
 
 
-	/*
-#if WIN32
-
-	// Enable updates
-	auto updates_enabled = std::make_shared<SwitchComponent>(mWindow);
-	updates_enabled->setState(Settings::getInstance()->getBool("updates.enabled"));
-	s->addWithLabel(_("AUTO UPDATES"), updates_enabled);
-	s->addSaveFunc([updates_enabled]
-	{
-		Settings::getInstance()->setBool("updates.enabled", updates_enabled->getState());
-	});
-
-	// Start update
-	s->addEntry(ApiSystem::state == UpdateState::State::UPDATE_READY ? _("APPLY UPDATE") : _("START UPDATE"), true, [this]
-	{
-		if (ApiSystem::checkUpdateVersion().empty())
-		{
-			mWindow->pushGui(new GuiMsgBox(mWindow, _("NO UPDATE AVAILABLE")));
-			return;
-		}
-
-		if (ApiSystem::state == UpdateState::State::UPDATE_READY)
-		{
-			if (quitES(QuitMode::QUIT))
-				LOG(LogWarning) << "Reboot terminated with non-zero result!";
-		}
-		else if (ApiSystem::state == UpdateState::State::UPDATER_RUNNING)
-			mWindow->pushGui(new GuiMsgBox(mWindow, _("UPDATE IS ALREADY RUNNING")));
-		else
-			ApiSystem::startUpdate(mWindow);
-	});
-#endif
-*/
-
-
-
-
 	// gamelists
 	auto save_gamelists = std::make_shared<SwitchComponent>(mWindow);
 	save_gamelists->setState(Settings::getInstance()->getBool("SaveGamelistsOnExit"));
@@ -1527,13 +1474,11 @@ void GuiMenu::openOtherSettings()
 	parse_gamelists->setState(Settings::getInstance()->getBool("ParseGamelistOnly"));
 	s->addWithLabel(_("PARSE GAMESLISTS ONLY"), parse_gamelists);
 	s->addSaveFunc([parse_gamelists] { Settings::getInstance()->setBool("ParseGamelistOnly", parse_gamelists->getState()); });
-	
-#ifndef WIN32
+
 	auto local_art = std::make_shared<SwitchComponent>(mWindow);
 	local_art->setState(Settings::getInstance()->getBool("LocalArt"));
 	s->addWithLabel(_("SEARCH FOR LOCAL ART"), local_art);
 	s->addSaveFunc([local_art] { Settings::getInstance()->setBool("LocalArt", local_art->getState()); });
-#endif
 
 #ifdef _RPI_
 	// Video Player - VideoOmxPlayer
@@ -1571,17 +1516,6 @@ void GuiMenu::openOtherSettings()
 		Settings::getInstance()->setBool("OptimizeVRAM", optimizeVram->getState());
 	});
 
-#ifdef WIN32
-	// vsync
-	auto vsync = std::make_shared<SwitchComponent>(mWindow);
-	vsync->setState(Settings::getInstance()->getBool("VSync"));
-	s->addWithLabel(_("VSYNC"), vsync);
-	s->addSaveFunc([vsync] 
-	{ 
-		Settings::getInstance()->setBool("VSync", vsync->getState()); 
-		Renderer::setSwapInterval();
-	});
-#endif
 
 	// framerate	
 	auto framerate = std::make_shared<SwitchComponent>(mWindow);
@@ -1640,7 +1574,6 @@ void GuiMenu::openOtherSettings()
 	{
 		if (s->getVariable("reloadGuiMenu"))
 		{
-
 			delete pthis;
 			window->pushGui(new GuiMenu(window, false));
 		}
@@ -1679,7 +1612,6 @@ void GuiMenu::openQuitMenu()
 	ComponentListRow row;
 	if (UIModeController::getInstance()->isUIModeFull())
 	{
-#ifndef WIN32
 		// Restart does not work on Windows
 		row.makeAcceptInputHandler([window] {
 			window->pushGui(new GuiMsgBox(window, _("REALLY RESTART?"), _("YES"),
@@ -1691,7 +1623,6 @@ void GuiMenu::openQuitMenu()
 		});
 		row.addElement(std::make_shared<TextComponent>(window, _("RESTART EMULATIONSTATION"), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color), true);
 		s->addRow(row);
-#endif
 
 		if(Settings::getInstance()->getBool("ShowExit"))
 		{
@@ -1790,19 +1721,8 @@ void GuiMenu::addVersionInfo()
 	mVersion.setColor(theme->Footer.color);
 
 	mVersion.setLineSpacing(0);
-
-#if WIN32
-	std::string localVersion;
-	std::string localVersionFile = Utils::FileSystem::getExePath() + "/version.info";
-	if (Utils::FileSystem::exists(localVersionFile))
-	{
-		localVersion = Utils::FileSystem::readAllText(localVersionFile);
-		localVersion = Utils::String::replace(Utils::String::replace(localVersion, "\r", ""), "\n", "");	
-		mVersion.setText("EMULATIONSTATION V" + localVersion+" FCAMOD");	
-	}
-	else
-#endif
-		mVersion.setText("EMULATIONSTATION V" + Utils::String::toUpper(PROGRAM_VERSION_STRING) + " BUILD " + buildDate);
+	
+	mVersion.setText("EMULATIONSTATION V" + Utils::String::toUpper(PROGRAM_VERSION_STRING) + " BUILD " + buildDate);
 
 	mVersion.setHorizontalAlignment(ALIGN_CENTER);	
 	mVersion.setVerticalAlignment(ALIGN_CENTER);

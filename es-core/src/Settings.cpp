@@ -25,9 +25,7 @@ std::vector<const char*> settings_dont_save {
 	{ "ShowExit" },
 	{ "SplashScreen" },
 	{ "SplashScreenProgress" },
-#if !defined(_WIN32)
 	{ "VSync" },
-#endif
 	{ "FullscreenBorderless" },
 	{ "Windowed" },
 	{ "WindowWidth" },
@@ -72,13 +70,8 @@ void Settings::setDefaults()
 	mBoolMap["DrawFramerate"] = false;
 	mBoolMap["ShowExit"] = true;		
 
-#if WIN32
-	mBoolMap["ShowOnlyExit"] = true;
-	mBoolMap["FullscreenBorderless"] = true;
-#else
 	mBoolMap["ShowOnlyExit"] = false;
 	mBoolMap["FullscreenBorderless"] = false;
-#endif
 
 	mBoolMap["Windowed"] = false;
 	mBoolMap["SplashScreen"] = true;
@@ -113,21 +106,14 @@ void Settings::setDefaults()
 	mIntMap["ScraperResizeWidth"] = 400;
 	mIntMap["ScraperResizeHeight"] = 0;
 
-#if defined(_WIN32)
-	mIntMap["MaxVRAM"] = 256;
+#ifdef _RPI_
+	mIntMap["MaxVRAM"] = 80;
 #else
-	#ifdef _RPI_
-		mIntMap["MaxVRAM"] = 80;
-	#else
-		mIntMap["MaxVRAM"] = 100;
-	#endif
+	mIntMap["MaxVRAM"] = 100;
 #endif
 
-#if defined(_WIN32)
-	mBoolMap["HideWindow"] = false;
-#else
 	mBoolMap["HideWindow"] = true;
-#endif
+
 	mStringMap["GameTransitionStyle"] = "fade";
 	mStringMap["TransitionStyle"] = "auto";
 	mStringMap["Language"] = "en";	

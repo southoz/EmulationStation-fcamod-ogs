@@ -10,22 +10,6 @@
 #include <iostream>
 #include <SDL_timer.h>
 
-
-#if WIN32 & !_DEBUG
-	// NOBATOCERACONF routes all SystemConf to es_settings for Windows Release version
-
-	#include "Settings.h"
-	#define NOBATOCERACONF
-
-	std::string mapSettingsName(const std::string name)
-	{
-		if (name == "system.language")
-			return "Language";
-
-		return name;
-	}
-#endif
-
 SystemConf *SystemConf::sInstance = NULL;
 
 static std::vector<std::string> dontRemoveAutoValue
@@ -55,11 +39,7 @@ std::string systemConfFileTmp = "~/.emulationstation.conf.tmp";
 
 SystemConf::SystemConf() 
 {
-#if WIN32
-	systemConfFile = Utils::FileSystem::getEsConfigPath() + "/batocera.conf";
-	systemConfFileTmp = Utils::FileSystem::getEsConfigPath() + "/batocera.conf.tmp";
-#endif
-
+    loadSystemConf();
     loadSystemConf();
 }
 
@@ -113,13 +93,11 @@ bool SystemConf::saveSystemConf()
 
 	std::ifstream filein(systemConfFile); //File to read from
 
-#ifndef WIN32
 	if (!filein)
 	{
 		LOG(LogError) << "Unable to open for saving :  " << systemConfFile << "\n";
 		return false;
 	}
-#endif
 
 	/* Read all lines in a vector */
 	std::vector<std::string> fileLines;
