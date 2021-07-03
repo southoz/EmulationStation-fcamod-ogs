@@ -21,10 +21,6 @@ msgid "LOWER MUSIC WHEN PLAYING VIDEO"
 msgstr "ATENUAR MÚSICA AL REPRODUCIR VIDEOS"
 
 #:
-msgid "OMX PLAYER AUDIO DEVICE"
-msgstr "DISPOSITIVO DE AUDIO DEL REPRODUCTOR OMX"
-
-#:
 msgid "PLAY THEME MUSICS"
 msgstr "REPRODUCIR MÚSICA DEL TEMA"
 
@@ -205,14 +201,6 @@ msgstr "FILTRO DE IMAGENES PER."
 #:
 msgid "SWAP VIDEO AFTER (SECS)"
 msgstr "CAMBIAR VÍDEO CADA (SEGS)"
-
-#:
-msgid "USE OMX PLAYER FOR SCREENSAVER"
-msgstr "USAR REPRODUCTOR OMX EN SALVAPANTALLAS"
-
-#:
-msgid "USE OMX PLAYER (HW ACCELERATED)"
-msgstr "USAR REPRODUCTOR OMX (ACELERACIÓN HW)"
 
 #:
 msgid "SHOW GAME INFO"
@@ -898,10 +886,6 @@ msgstr "ESTA FUNCIÓN ESTÁ DESHABILITADA CUANDO SE ESTÁ ESCANEANDO"
 #:
 msgid "OUTPUT DEVICE"
 msgstr "DISPOSITIVO DE SALIDA"
-
-#:
-msgid "HDMI"
-msgstr "HDMI"
 
 #:
 msgid "JACK"
@@ -2071,24 +2055,8 @@ msgid "collections"
 msgstr "colecciones"
 
 #:
-msgid "Using OMX Player and displaying Game Info may result in the video flickering in some TV modes. If that happens, consider:"
-msgstr "El uso del reproductor OMX junto a la visualización de la información del juego, puede provocar que el video parpadee en algunos modos de TV. Si ocurre, considere:"
-
-#:
 msgid "Disabling the 'Show Game Info' option;"
 msgstr "Deshabilitar la opción 'Ver información del juego';"
-
-#:
-msgid "Disabling 'Overscan' on the Pi configuration menu might help:"
-msgstr "Deshabilitar 'Overscan' en el menú de configuración de la Pi puede ayudar:"
-
-#:
-msgid "RetroPie > Raspi-Config > Advanced Options > Overscan > 'No'."
-msgstr "RetroPie > Raspi-Config > Advanced Options > Overscan > 'No'."
-
-#:
-msgid "Disabling the use of OMX Player for the screensaver."
-msgstr "Deshabilitar el uso del reproductor OMX en el protector de pantalla."
 
 #:
 msgid "GOT IT!"

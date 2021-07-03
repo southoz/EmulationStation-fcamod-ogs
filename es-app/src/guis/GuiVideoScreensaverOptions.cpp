@@ -18,24 +18,6 @@ GuiVideoScreensaverOptions::GuiVideoScreensaverOptions(Window* window, const cha
 		PowerSaver::updateTimeouts();
 	});
 
-
-#ifdef _RPI_
-	auto ss_omx = std::make_shared<SwitchComponent>(mWindow);
-	ss_omx->setState(Settings::getInstance()->getBool("ScreenSaverOmxPlayer"));
-	addWithLabel(_("USE OMX PLAYER FOR SCREENSAVER"), ss_omx);
-	addSaveFunc([ss_omx, this] { Settings::getInstance()->setBool("ScreenSaverOmxPlayer", ss_omx->getState()); });
-
-	ss_omx->setOnChangedCallback([this, ss_omx, window]()
-	{
-		if (Settings::getInstance()->setBool("ScreenSaverOmxPlayer", ss_omx->getState()))
-		{
-			Window* pw = mWindow;
-			delete this;
-			pw->pushGui(new GuiVideoScreensaverOptions(pw, _("VIDEO SCREENSAVER").c_str()));
-		}
-	});
-#endif
-
 	// Render Video Game Name as subtitles
 	auto ss_info = std::make_shared< OptionListComponent<std::string> >(mWindow, _("SHOW GAME INFO"), false);
 	std::vector<std::string> info_type;
@@ -49,10 +31,7 @@ GuiVideoScreensaverOptions::GuiVideoScreensaverOptions(Window* window, const cha
 
 
 	bool advancedOptions = true;
-
-//#ifdef _RPI_
 	advancedOptions = !Settings::getInstance()->getBool("ScreenSaverOmxPlayer");
-//#endif
 
 	if (advancedOptions)
 	{
@@ -80,18 +59,6 @@ GuiVideoScreensaverOptions::~GuiVideoScreensaverOptions()
 
 void GuiVideoScreensaverOptions::save()
 {
-#ifdef _RPI_
 	bool startingStatusNotRisky = (Settings::getInstance()->getString("ScreenSaverGameInfo") == "never" || !Settings::getInstance()->getBool("ScreenSaverOmxPlayer"));
-#endif
 	GuiScreensaverOptions::save();
-
-#ifdef _RPI_
-	bool endStatusRisky = (Settings::getInstance()->getString("ScreenSaverGameInfo") != "never" && Settings::getInstance()->getBool("ScreenSaverOmxPlayer"));
-	if (startingStatusNotRisky && endStatusRisky) {
-		// if before it wasn't risky but now there's a risk of problems, show warning
-		mWindow->pushGui(new GuiMsgBox(mWindow,
-		_("Using OMX Player and displaying Game Info may result in the video flickering in some TV modes. If that happens, consider:\n\n• Disabling the \"Show Game Info\" option;\n• Disabling \"Overscan\" on the Pi configuration menu might help:\nRetroPie > Raspi-Config > Advanced Options > Overscan > \"No\".\n• Disabling the use of OMX Player for the screensaver."),
-			_("GOT IT!"), [] { return; }));
-	}
-#endif
 }

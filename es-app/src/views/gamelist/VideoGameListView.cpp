@@ -1,15 +1,9 @@
 #include "views/gamelist/VideoGameListView.h"
 
 #include "animations/LambdaAnimation.h"
-#ifdef _RPI_
-#include "components/VideoPlayerComponent.h"
-#endif
 #include "components/VideoVlcComponent.h"
 #include "utils/FileSystemUtil.h"
 #include "views/ViewController.h"
-#ifdef _RPI_
-#include "Settings.h"
-#endif
 
 VideoGameListView::VideoGameListView(Window* window, FolderData* root) :
 	BasicGameListView(window, root),
@@ -30,14 +24,7 @@ VideoGameListView::VideoGameListView(Window* window, FolderData* root) :
 	const float padding = 0.01f;
 
 	// Create the correct type of video window
-#ifdef _RPI_
-	if (Settings::getInstance()->getBool("VideoOmxPlayer"))
-		mVideo = new VideoPlayerComponent(window, "");
-	else
-		mVideo = new VideoVlcComponent(window, "");
-#else
 	mVideo = new VideoVlcComponent(window, "");
-#endif
 	
 	mVideo->setSnapshotSource(IMAGE);
 

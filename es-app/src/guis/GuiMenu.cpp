@@ -289,16 +289,9 @@ void GuiMenu::openSoundSettings()
 
 	if (UIModeController::getInstance()->isUIModeFull())
 	{
-#if defined(__linux__)
 		// audio card
 		auto audio_card = std::make_shared< OptionListComponent<std::string> >(mWindow, _("AUDIO CARD"), false);
 		std::vector<std::string> audio_cards;
-	#ifdef _RPI_
-		// RPi Specific  Audio Cards
-		audio_cards.push_back("local");
-		audio_cards.push_back("hdmi");
-		audio_cards.push_back("both");
-	#endif
 		audio_cards.push_back("default");
 		audio_cards.push_back("sysdefault");
 		audio_cards.push_back("dmix");
@@ -340,7 +333,7 @@ void GuiMenu::openSoundSettings()
 			VolumeControl::getInstance()->deinit();
 			VolumeControl::getInstance()->init();
 		});
-#endif
+
 		// disable sounds
 		auto music_enabled = std::make_shared<SwitchComponent>(mWindow);
 		music_enabled->setState(Settings::getInstance()->getBool("audio.bgmusic"));
@@ -402,30 +395,6 @@ void GuiMenu::openSoundSettings()
 		videolowermusic->setState(Settings::getInstance()->getBool("VideoLowersMusic"));
 		s->addWithLabel(_("LOWER MUSIC WHEN PLAYING VIDEO"), videolowermusic);
 		s->addSaveFunc([videolowermusic] { Settings::getInstance()->setBool("VideoLowersMusic", videolowermusic->getState()); });
-
-#ifdef _RPI_
-		// OMX player Audio Device
-		auto omx_audio_dev = std::make_shared< OptionListComponent<std::string> >(mWindow, "OMX PLAYER AUDIO DEVICE", false);
-		std::vector<std::string> omx_cards;
-		// RPi Specific  Audio Cards
-		omx_cards.push_back("local");
-		omx_cards.push_back("hdmi");
-		omx_cards.push_back("both");
-		omx_cards.push_back("alsa:hw:0,0");
-		omx_cards.push_back("alsa:hw:1,0");
-		if (Settings::getInstance()->getString("OMXAudioDev") != "") {
-			if (std::find(omx_cards.begin(), omx_cards.end(), Settings::getInstance()->getString("OMXAudioDev")) == omx_cards.end()) {
-				omx_cards.push_back(Settings::getInstance()->getString("OMXAudioDev"));
-			}
-		}
-		for (auto it = omx_cards.cbegin(); it != omx_cards.cend(); it++)
-			omx_audio_dev->add(_(it->c_str()), *it, Settings::getInstance()->getString("OMXAudioDev") == *it);
-		s->addWithLabel(_("OMX PLAYER AUDIO DEVICE"), omx_audio_dev);
-		s->addSaveFunc([omx_audio_dev] {
-			if (Settings::getInstance()->getString("OMXAudioDev") != omx_audio_dev->getSelected())
-				Settings::getInstance()->setString("OMXAudioDev", omx_audio_dev->getSelected());
-		});
-#endif
 	}
 
 	s->updatePosition();
@@ -1480,26 +1449,6 @@ void GuiMenu::openOtherSettings()
 	s->addWithLabel(_("SEARCH FOR LOCAL ART"), local_art);
 	s->addSaveFunc([local_art] { Settings::getInstance()->setBool("LocalArt", local_art->getState()); });
 
-#ifdef _RPI_
-	// Video Player - VideoOmxPlayer
-	auto omx_player = std::make_shared<SwitchComponent>(mWindow);
-	omx_player->setState(Settings::getInstance()->getBool("VideoOmxPlayer"));
-	s->addWithLabel("USE OMX PLAYER (HW ACCELERATED)", omx_player);
-	s->addSaveFunc([omx_player]
-	{
-		// need to reload all views to re-create the right video components
-		bool needReload = false;
-		if(Settings::getInstance()->getBool("VideoOmxPlayer") != omx_player->getState())
-			needReload = true;
-
-		Settings::getInstance()->setBool("VideoOmxPlayer", omx_player->getState());
-
-		if(needReload)
-			ViewController::get()->reloadAll();
-	});
-
-#endif
-
 	// preload UI
 	auto preloadUI = std::make_shared<SwitchComponent>(mWindow);
 	preloadUI->setState(Settings::getInstance()->getBool("PreloadUI"));
@@ -1529,13 +1478,11 @@ void GuiMenu::openOtherSettings()
 	s->addWithLabel(_("THREADED LOADING"), threadedLoading);
 	s->addSaveFunc([threadedLoading] { Settings::getInstance()->setBool("ThreadedLoading", threadedLoading->getState()); });
 
-#ifndef _RPI_
 	// full exit
 	auto fullExitMenu = std::make_shared<SwitchComponent>(mWindow);
 	fullExitMenu->setState(!Settings::getInstance()->getBool("ShowOnlyExit"));
 	s->addWithLabel(_("COMPLETE QUIT MENU"), fullExitMenu);
 	s->addSaveFunc([fullExitMenu] { Settings::getInstance()->setBool("ShowOnlyExit", !fullExitMenu->getState()); });
-#endif
 
 	// log level
 	auto logLevel = std::make_shared< OptionListComponent<std::string> >(mWindow, _("LOG LEVEL"), false);
