@@ -247,19 +247,12 @@ void VideoVlcComponent::render(const Transform4x4f& parentTrans)
 				resize();
 			}
 
-#ifdef _RPI_
-			// Rpi : A lot of videos are encoded in 60fps on screenscraper
-			// Try to limit transfert to opengl textures to 30fps to save CPU
-			if (!Settings::getInstance()->getBool("OptimizeVideo") || mElapsed >= 40) // 40ms = 25fps, 33.33 = 30 fps
-#endif
-			{
-				mContext.mutexes[frame].lock();
-				mTexture->initFromExternalPixels(mContext.surfaces[frame], mVideoWidth, mVideoHeight);
-				mContext.hasFrame[frame] = false;
-				mContext.mutexes[frame].unlock();
+			mContext.mutexes[frame].lock();
+			mTexture->initFromExternalPixels(mContext.surfaces[frame], mVideoWidth, mVideoHeight);
+			mContext.hasFrame[frame] = false;
+			mContext.mutexes[frame].unlock();
 
-				mElapsed = 0;
-			}
+			mElapsed = 0;
 		}
 	}
 
@@ -551,11 +544,6 @@ void VideoVlcComponent::startVideo()
 					// Avoid videos bigger than resolution
 					Vector2f maxSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());
 										
-#ifdef _RPI_
-					// Temporary -> RPI -> Try to limit videos to 400x300 for performance benchmark
-					if (!Renderer::isSmallScreen())
-						maxSize = Vector2f(400, 300);
-#endif
 
 					if (!mTargetSize.empty() && (mTargetSize.x() < maxSize.x() || mTargetSize.y() < maxSize.y()))
 						maxSize = mTargetSize;

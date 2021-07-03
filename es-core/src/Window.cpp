@@ -281,7 +281,7 @@ void Window::update(int deltaTime)
 
 			if (clockTstruct.tm_year > 100) 
 			{ 
-				// Display the clock only if year is more than 1900+100 ; rpi have no internal clock and out of the networks, the date time information has no value */
+				// Display the clock only if year is more than 1900+100
 				// Visit http://en.cppreference.com/w/cpp/chrono/c/strftime for more information about date/time format
 				
 				char       clockBuf[32];

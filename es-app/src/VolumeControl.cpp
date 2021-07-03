@@ -5,7 +5,7 @@
 #include "Settings.h"
 
 #if defined(__linux__)
-#if defined(_RPI_) || defined(_VERO4K_)
+#if defined(_VERO4K_)
 const char * VolumeControl::mixerName = "PCM";
 #else
 const char * VolumeControl::mixerName = "Master";
