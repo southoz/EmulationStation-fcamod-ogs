@@ -16,6 +16,7 @@
 #include "guis/GuiMsgBox.h"
 #include "AudioManager.h"
 #include <string>
+#include "utils/TimeUtil.h"
 
 Window::Window() : mNormalizeNextUpdate(false), mFrameTimeElapsed(0), mFrameCountElapsed(0), mAverageDeltaTime(10),
   mAllowSleep(true), mSleeping(false), mTimeSinceLastInput(0), mScreenSaver(NULL), mRenderScreenSaver(false), mInfoPopup(NULL), mClockElapsed(0) // batocera
@@ -284,12 +285,12 @@ void Window::update(int deltaTime)
 				// Display the clock only if year is more than 1900+100
 				// Visit http://en.cppreference.com/w/cpp/chrono/c/strftime for more information about date/time format
 				
-				char       clockBuf[32];
+				std::string clockBuf;
 				//LOG(LogDebug) << "Window::update():288 -> ClockMode12: " << Settings::getInstance()->getBool("ClockMode12");
 				if (Settings::getInstance()->getBool("ClockMode12"))
-					strftime(clockBuf, sizeof(clockBuf), "%I:%M %p", &clockTstruct);
+					clockBuf = Utils::Time::timeToString(clockNow, "%I:%M %p");
 				else
-					strftime(clockBuf, sizeof(clockBuf), "%H:%M", &clockTstruct);
+					clockBuf = Utils::Time::timeToString(clockNow, "%H:%M");
 
 				mClock->setText(clockBuf);
 				//LOG(LogDebug) << "Window::update():295 -> clockNow: " << clockNow << ", clockBuf: " << clockBuf;
@@ -778,6 +779,7 @@ void Window::onThemeChanged(const std::shared_ptr<ThemeData>& theme)
 		mClock->setFont(Font::get(FONT_SIZE_SMALL));
 		mClock->setColor(0x777777FF);
 		mClock->setVerticalAlignment(ALIGN_TOP);
+		mClock->setHorizontalAlignment(ALIGN_RIGHT);
 		
 		// if clock element does not exist in screen view -> <view name="screen"><text name="clock"> 
 		// skin it from system.helpsystem -> <view name="system"><helpsystem name="help"> )
@@ -791,19 +793,16 @@ void Window::onThemeChanged(const std::shared_ptr<ThemeData>& theme)
 				mClock->setFont(Font::getFromTheme(elem, ThemeFlags::ALL, Font::get(FONT_SIZE_MEDIUM)));
 		}
 
-		mClock->setPosition(Renderer::getScreenWidth()*0.91, Renderer::getScreenHeight()*0.9965 - mClock->getFont()->getHeight());
-		mClock->setSize(Renderer::getScreenWidth()*0.08, 0);
+		mClock->setPosition(Renderer::getScreenWidth() * 0.92, Renderer::getScreenHeight() * 0.9965 - mClock->getFont()->getHeight());
+		mClock->setSize(Renderer::getScreenWidth() * 0.07, 0);
 
-		if (Settings::getInstance()->getBool("ClockMode12"))
-		{
-			mClock->setHorizontalAlignment(ALIGN_LEFT);
-			//LOG(LogDebug) << "Window::onThemeChanged():806 -> ClockMode12 --> ALIGN_LEFT";
-		}
-		else
-		{
-			mClock->setHorizontalAlignment(ALIGN_RIGHT);
-			//LOG(LogDebug) << "Window::onThemeChanged():811 -> ClockMode12 --> ALIGN_RIGHT";
-		}
+		LOG(LogDebug) << "Window::onThemeChanged():799 -> Renderer::getScreenWidth(): " << std::to_string(Renderer::getScreenWidth());
+		LOG(LogDebug) << "Window::onThemeChanged():800 -> Renderer::getScreenWidth() x 0.92: " << std::to_string(Renderer::getScreenWidth() * 0.92);
+		LOG(LogDebug) << "Window::onThemeChanged():801 -> Renderer::getScreenHeight(): " << std::to_string(Renderer::getScreenHeight());
+		LOG(LogDebug) << "Window::onThemeChanged():802 -> Renderer::getScreenHeight() x 0.9965: " << std::to_string(Renderer::getScreenHeight() * 0.9965);
+		LOG(LogDebug) << "Window::onThemeChanged():803 -> Renderer::getScreenHeight() x 0.9965 - mClock->getFont()->getHeight(): " << std::to_string(Renderer::getScreenHeight() * 0.9965  - mClock->getFont()->getHeight());
+		LOG(LogDebug) << "Window::onThemeChanged():804 -> mClock->setSize(Renderer::getScreenWidth() * 0.07, 0): " << std::to_string(Renderer::getScreenWidth() * 0.07);
+
 		mClock->applyTheme(theme, "screen", "clock", ThemeFlags::ALL ^ (ThemeFlags::TEXT));
 	}
 }
