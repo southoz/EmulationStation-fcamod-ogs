@@ -283,8 +283,9 @@ void ScraperSearchComponent::onSearchDone(const std::vector<ScraperSearchResult>
 void ScraperSearchComponent::onSearchError(const std::string& error)
 {
 	LOG(LogInfo) << "ScraperSearchComponent search error: " << error;
-	LOG(LogInfo) << "ScraperSearchComponent::onSearchError():286 - ScraperSearchComponent search error for traslations: " << Utils::String::showSpecialCharacters(error);
-	mWindow->pushGui(new GuiMsgBox(mWindow, _("AN ERROR HAS OCCURED") + " :\n" + Utils::String::toUpper(_(error)),
+	std::string msg_error( Utils::String::trim(error) );
+	LOG(LogInfo) << "ScraperSearchComponent::onSearchError():287 - ScraperSearchComponent search error for traslations: " << Utils::String::showSpecialCharacters(msg_error);
+	mWindow->pushGui(new GuiMsgBox(mWindow, _("AN ERROR HAS OCCURRED") + " :\n" + Utils::String::toUpper(_(msg_error)),
 		_("RETRY"), std::bind(&ScraperSearchComponent::search, this, mLastSearch), // batocera
 		_("SKIP"), mSkipCallback, // batocera
 		_("CANCEL"), mCancelCallback, ICON_ERROR)); // batocera
@@ -403,7 +404,7 @@ void ScraperSearchComponent::update(int deltaTime)
 					mResultThumbnail->setImage(result.mdl.get("image"));
 			}
 
-			mBusyAnim.setText(_("DOWNLOADING") + " " + Utils::String::toUpper(mMDResolveHandle->getCurrentItem()));
+			mBusyAnim.setText(_("DOWNLOADING") + " " + Utils::String::toUpper(_(mMDResolveHandle->getCurrentItem())));
 		}
 		else if (mSearchHandle && mSearchHandle->status() == ASYNC_IN_PROGRESS)
 			mBusyAnim.setText(_("SEARCHING"));

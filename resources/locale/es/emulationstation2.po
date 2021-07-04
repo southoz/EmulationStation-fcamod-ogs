@@ -16,7 +16,7 @@ msgstr "CONFIGURACIÓN DE EMULADORES"
 msgid "LOG LEVEL"
 msgstr "DETALLE DEL LOG"
 
-#:
+#:AN ERROR HAS OCCURRED
 msgid "LOWER MUSIC WHEN PLAYING VIDEO"
 msgstr "ATENUAR MÚSICA AL REPRODUCIR VIDEOS"
 
@@ -1103,6 +1103,14 @@ msgid "USER DECIDES ON CONFLICTS"
 msgstr "EL USUARIO ELIGE SI HAY CONFLICTO"
 
 #:
+msgid "HTTP status 401"
+msgstr "Codigo de error HTTP 401"
+
+#:
+msgid "API closed for non-registered members"
+msgstr "API accesible solo a miembros registrados"
+
+#:
 msgid "START"
 msgstr "INICIAR"
 
@@ -1967,7 +1975,7 @@ msgid "DISPLAY"
 msgstr "PANTALLA"
 
 #:
-msgid "AN ERROR HAS OCCURED"
+msgid "AN ERROR HAS OCCURRED"
 msgstr "HA OCURRIDO UN ERROR"
 
 #:
