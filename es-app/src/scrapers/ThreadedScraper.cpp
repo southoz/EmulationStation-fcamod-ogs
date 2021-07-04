@@ -66,7 +66,9 @@ void ThreadedScraper::processError(int status, const std::string statusString)
 		status == HttpReq::REQ_403_BADLOGIN || status == HttpReq::REQ_401_FORBIDDEN)
 	{
 		mExit = true;
-		mWindow->postToUiThread([statusString](Window* w) { w->pushGui(new GuiMsgBox(w, _("SCRAPE FAILED") + " : " + statusString)); });
+		std::string msg_status( Utils::String::trim(statusString) );
+		mWindow->postToUiThread([msg_status](Window* w) { w->pushGui(new GuiMsgBox(w, _("SCRAPE FAILED") + " : " + _(msg_status))); });
+		LOG(LogInfo) << "ThreadedScraper::processError():71 - ThreadedScraper search error for traslations: " << Utils::String::showSpecialCharacters(msg_status);
 	}
 	else
 		mErrors.push_back(statusString);
@@ -134,7 +136,7 @@ void ThreadedScraper::run()
 			if (action != mCurrentAction)
 			{
 				mCurrentAction = action;
-				mWndNotification->updateText(formatGameName(mLastSearch.game), _("Downloading") + " " + mCurrentAction);
+				mWndNotification->updateText(formatGameName(mLastSearch.game), _("Downloading") + " " + _(mCurrentAction));
 			}
 
 			mWndNotification->updatePercent(mMDResolveHandle->getPercent());
