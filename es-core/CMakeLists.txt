@@ -48,7 +48,7 @@ set(CORE_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/TextComponent.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/TextEditComponent.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/VideoComponent.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/components/VideoVlcComponent.h	
+	${CMAKE_CURRENT_SOURCE_DIR}/src/components/VideoVlcComponent.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/MultiLineMenuEntry.h
 
 	# Guis
