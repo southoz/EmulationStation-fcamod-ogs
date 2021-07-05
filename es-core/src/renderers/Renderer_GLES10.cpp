@@ -23,6 +23,7 @@
 #include "BlankIcon.h"
 #include "ArkOS.h"
 
+
 static go2_input_t* input = nullptr;
 static go2_surface_t* titlebarSurface = nullptr;
 static unsigned int frame = 0;
@@ -579,38 +580,13 @@ namespace Renderer
 				int dst_stride = go2_surface_stride_get(titlebarSurface);
 
 				int brightnessIndex = 0;
-				int brightness = 0;
-				int max_brightness = 255;
-				int fd;
-				char buffer[10];
-				fd = open("/sys/class/backlight/backlight/brightness", O_RDONLY);
-				if (fd > 0)
-				{
-					memset(buffer, 0, 10);
-					ssize_t count = read(fd, buffer, 10);
-					if( count > 0 )
-					{
-						brightness = atoi(buffer);
-					}
-					close(fd);
-				}
+				int brightness = 50;
 
-				fd = open("/sys/class/backlight/backlight/max_brightness", O_RDONLY);
-				if (fd > 0)
-				{
-					memset(buffer, 0, 10);
-					ssize_t count = read(fd, buffer, 10);
-					if( count > 0 )
-					{
-						max_brightness = atoi(buffer);
-					}
-					close(fd);
-				}
+				try {
+					brightness = (int) go2_display_backlight_get(NULL);
+				} catch (...) {}
 
-				//LOG(LogDebug) << "Renderer_GLES10:616 --> brightness: " << brightness;
-				//LOG(LogDebug) << "Renderer_GLES10:617 --> max_brightness: " << max_brightness;
-				brightness = brightness*100/max_brightness;
-				//LOG(LogDebug) << "Renderer_GLES10:619 --> brightness*100/max_brightness: " << brightness;
+				//LOG(LogDebug) << "Renderer_GLES10:swapBuffers():589 --> brightness %: " << brightness;
 
 				if (brightness == 0)
 				{
@@ -700,7 +676,7 @@ namespace Renderer
 				{
 					brightnessIndex = 20;
 				}
-				//LOG(LogDebug) << "Renderer_GLES10:695 --> brightnessIndex: " << brightnessIndex;
+				//LOG(LogDebug) << "Renderer_GLES10:swapBuffers:680 --> brightnessIndex: " << std::to_string(brightnessIndex);
 				
 				src += (brightnessIndex * 16 * src_stride);
 				dst += (64) * sizeof(short);
