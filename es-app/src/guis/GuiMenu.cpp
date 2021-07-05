@@ -71,23 +71,7 @@ GuiMenu::GuiMenu(Window* window, bool animate) : GuiComponent(window), mMenu(win
 	
 	addEntry(_("QUIT"), !Settings::getInstance()->getBool("ShowOnlyExit"), [this] {openQuitMenu(); }, "iconQuit");
 
-	int max_brightness = 255;
-	try {
-		max_brightness = std::stoi(getShOutput(R"(cat /sys/devices/platform/backlight/backlight/backlight/max_brightness)"));
-	} catch (...) { }
-	//LOG(LogDebug) << "GuiMenu::GuiMenu():82 --> max_brightness: " << std::to_string(max_brightness);
-
-  int brightness = 50;
-	try {
-		brightness = std::stoi(getShOutput(R"(cat /sys/devices/platform/backlight/backlight/backlight/brightness)"));
-		//LOG(LogDebug) << "GuiMenu::GuiMenu():87 --> brightness: " << std::to_string(brightness);
-		brightness = brightness*100/max_brightness;
-		//LOG(LogDebug) << "GuiMenu::GuiMenu():89 --> brightness*100/max_brightness: " << std::to_string(brightness);
-	} catch (...) {
-		brightness = std::atoi(getShOutput(R"(current_brightness)").c_str());
-	}
-
-	addEntry("BAT: " + std::string(getShOutput(R"(cat /sys/class/power_supply/battery/capacity)")) + "%" + " | SND: " + std::string(getShOutput(R"(current_volume)")) + " | BRT: " + std::to_string(brightness) + "% |" + " WIFI: " + std::string(getShOutput(R"(cat /sys/class/net/wlan0/operstate)")), false, [this] {  });
+	addEntry("BAT: " + std::string(getShOutput(R"(cat /sys/class/power_supply/battery/capacity)")) + "%" + " | SND: " + std::string(getShOutput(R"(current_volume)")) + " | BRT: " + std::to_string( go2_display_backlight_get(NULL) ) + "% |" + " WIFI: " + std::string(getShOutput(R"(cat /sys/class/net/wlan0/operstate)")), false, [this] {  });
 
 	addEntry("Distro Version: " + std::string(getShOutput(R"(cat /usr/share/plymouth/themes/text.plymouth | grep title | cut -c 7-50)")), false, [this] {  });
 
