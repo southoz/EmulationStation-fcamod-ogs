@@ -35,7 +35,7 @@ or
 
 ```bash
 git clone https://github.com/JuanMiguelBG/EmulationStation-fcamod-ogs.git -b fullscreen
-cd EmulationStation-fcamod-ogs
+cd EmulationStation-fcamod-ogs-fullscreen
 git submodule update --init
 ```
 If you don't have the go2 headers in either /usr/local/include/go2 or /usr/include/go2, you will also need go2 headers files from [here](https://github.com/OtherCrashOverride/libgo2/tree/master/src) to be copied into a folder named go2 in your /usr/local/include folder.
