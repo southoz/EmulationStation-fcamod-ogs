@@ -42,7 +42,7 @@ If you don't have the go2 headers in either /usr/local/include/go2 or /usr/inclu
 
 Then, generate and build the Makefile with CMake:
 ```bash
-cd EmulationStation-fcamod
+cd EmulationStation-fcamod-ogs
 sudo dpkg -i --force-all libmali-rk-bifrost-g31-rxp0-wayland-gbm_1.7-2+deb10_arm64.deb
 sudo dpkg -i --force-all libmali-rk-dev_1.7-1+deb10_arm64.deb
 cmake .
