@@ -455,7 +455,7 @@ void FileFilterIndex::managePubDevEntryInIndex(FileData* game, bool remove)
 void FileFilterIndex::manageRatingsEntryInIndex(FileData* game, bool remove)
 {
 	std::string key = getIndexableKey(game, RATINGS_FILTER, false);
-	LOG(LogDebug) << "FileFilterIndex::manageRatingsEntryInIndex():458 --> IndexableKey: " << key;
+	//LOG(LogDebug) << "FileFilterIndex::manageRatingsEntryInIndex():458 --> IndexableKey: " << key;
 	// flag for including unknowns
 	bool includeUnknown = INCLUDE_UNKNOWN;
 
