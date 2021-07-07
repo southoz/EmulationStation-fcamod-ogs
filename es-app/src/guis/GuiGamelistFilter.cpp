@@ -3,6 +3,9 @@
 #include "components/OptionListComponent.h"
 #include "views/UIModeController.h"
 #include "SystemData.h"
+//#include "Log.h"
+#include "EsLocale.h"
+#include "utils/StringUtil.h"
 
 GuiGamelistFilter::GuiGamelistFilter(Window* window, SystemData* system) : GuiComponent(window), mMenu(window, _("FILTER GAMELIST BY")), mSystem(system)
 {
@@ -71,7 +74,36 @@ void GuiGamelistFilter::addFiltersToMenu()
 		optionList = std::make_shared< OptionListComponent<std::string> >(mWindow, menuLabel, true);
 		for(auto it: *allKeys)
 		{
-			optionList->add(it.first, it.first, mFilterIndex->isKeyBeingFilteredBy(it.first, type));
+			std::string optionLabel;
+
+			switch(type)
+			{
+				case RATINGS_FILTER:
+				{
+					int stars = std::atoi( &(it.first.c_str()[0]) );
+					//LOG(LogDebug) << "GuiGamelistFilter::addFiltersToMenu():84 --> RATINGS_FILTER: [stars = " << it.first[0] << ", int = " << std::to_string(stars) << ']';
+					char starsbuf[16];
+					snprintf(starsbuf, 16, EsLocale::nGetText("%i STAR", "%i STARS", stars).c_str(), stars);
+					optionLabel.append( starsbuf );
+					break;
+				}
+				case FAVORITES_FILTER:
+				case HIDDEN_FILTER:
+				case KIDGAME_FILTER:
+				{
+					optionLabel = _(it.first);
+					//LOG(LogDebug) << "GuiGamelistFilter::addFiltersToMenu():95 --> FAVORITES, HIDDEN, KIDGAME FILTERS : [value= " << it.first << ", traslation= " << optionLabel << ']';
+					break;
+				}
+				default:
+				{
+					//LOG(LogDebug) << "GuiGamelistFilter::addFiltersToMenu():100 --> GENRE, PLAYER, PUBDEV FILTERS : " << it.first;
+					optionLabel = it.first;
+				}
+			}
+
+			optionList->add(optionLabel, it.first, mFilterIndex->isKeyBeingFilteredBy(it.first, type));
+			//LOG(LogDebug) << "GuiGamelistFilter::addFiltersToMenu():106 --> index [\"" << it.first << "\", " << std::to_string(it.second) << ']';
 		}
 		if (allKeys->size() > 0)
 			mMenu.addWithLabel(menuLabel, optionList);
