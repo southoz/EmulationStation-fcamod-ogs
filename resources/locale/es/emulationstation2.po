@@ -1996,11 +1996,17 @@ msgstr "¡ESTO BORRARÁ LOS ARCHIVO DEL JUEGO!\n¿ESTÁ SEGURO?"
 
 #:
 msgid "FALSE"
-msgstr "FALSO"
+msgstr "NO"
 
 #:
 msgid "TRUE"
-msgstr "VERDADERO"
+msgstr "SI"
+
+#, c-format
+msgid "%i STAR"
+msgid_plural "%i STARS"
+msgstr[0] "%i ESTRELLA"
+msgstr[1] "%i ESTRELLAS"
 
 #:
 msgid "TIMEZONE"
