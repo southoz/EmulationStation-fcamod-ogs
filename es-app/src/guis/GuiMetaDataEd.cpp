@@ -211,16 +211,14 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 
 				bool multiLine = iter->type == MD_MULTILINE_STRING;
 				const std::string title = _(iter->displayPrompt.c_str());
-				//LOG(LogDebug) << "GuiMetaDataEd::GuiMetaDataEd():221 --> [ key: " << iter->key << ", default value: \"" << iter->defaultValue  << "\", editor value: \"" << ed->getValue() << "\"]";
 				if (ed->getValue() == "unknown")
 					ed->setValue(_("unknown"));
+
 				auto updateVal = [ed](const std::string& newVal) {
-						//LOG(LogDebug) << "GuiMetaDataEd::GuiMetaDataEd():225 --> newVal: \"" << newVal << '"';
 						std::string new_value = newVal;
 						if (new_value == "unknown")
 							new_value = _("unknown").c_str();
 
-					//LOG(LogDebug) << "GuiMetaDataEd::GuiMetaDataEd():230 --> new_value: \"" << new_value << '"';
 					ed->setValue(new_value);
 				}; // ok callback (apply new value to ed)
 				row.makeAcceptInputHandler([this, title, ed, updateVal, multiLine] 
@@ -243,7 +241,6 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 
 		ed->setTag(iter->key);
 		ed->setValue(ed_value);
-		//LOG(LogDebug) << "GuiMetaDataEd::GuiMetaDataEd():253 --> editor [ tag: " << ed->getTag() << ", value: \"" << ed->getValue() << "\"]";
 
 		mEditors.push_back(ed);
 	}

@@ -586,8 +586,6 @@ namespace Renderer
 					brightness = (int) go2_display_backlight_get(NULL);
 				} catch (...) {}
 
-				//LOG(LogDebug) << "Renderer_GLES10:swapBuffers():589 --> brightness %: " << brightness;
-
 				if (brightness == 0)
 				{
 					brightnessIndex = 0;
@@ -676,8 +674,7 @@ namespace Renderer
 				{
 					brightnessIndex = 20;
 				}
-				//LOG(LogDebug) << "Renderer_GLES10:swapBuffers:680 --> brightnessIndex: " << std::to_string(brightnessIndex);
-				
+
 				src += (brightnessIndex * 16 * src_stride);
 				dst += (64) * sizeof(short);
 

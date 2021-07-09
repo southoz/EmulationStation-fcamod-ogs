@@ -42,25 +42,19 @@ PluralRule EsLocale::mPluralRule = rules[0];
 
 const std::string EsLocale::getText(const std::string msgid)
 {
-	//LOG(LogDebug) << "EsLocale::getText(\"" << msgid << "\"):45";
 	std::string hascode = std::to_string(std::hash<std::string>{}(msgid));
-	//LOG(LogDebug) << "EsLocale::getText():47 --> msgid : \"" << msgid << "\" --> " << hascode;
+
 	checkLocalisationLoaded();
 
 	auto item = mItems.find(hascode);
 	if (item != mItems.cend())
-	{
-		//LOG(LogDebug) << "EsLocale::getText():53 --> item [\"" << item->first << "\", \"" << item->second << "\"]";
 		return item->second;
-	}
 
-	//LOG(LogDebug) << "EsLocale::getText():57 --> msgid: \"" << msgid << '"';
 	return msgid;
 }
 
 const std::string EsLocale::nGetText(const std::string msgid, const std::string msgid_plural, int n)
 {
-	//LOG(LogDebug) << "EsLocale::nGetText(\"" << msgid << "\", \"" << msgid_plural << "\", " << std::to_string(n) + "):63";
 	if (mCurrentLanguage.empty() || mCurrentLanguage == "en") // English default
 		return n != 1 ? msgid_plural : msgid;
 
@@ -71,27 +65,18 @@ const std::string EsLocale::nGetText(const std::string msgid, const std::string 
 
 	int pluralId = mPluralRule.evaluate(n);
 	if (pluralId == 0)
-	{
-		//LOG(LogDebug) << "EsLocale::nGetText():75 --> singular: \"" << msgid << '"';
 		return getText(msgid);
-	}
-	//LOG(LogDebug) << "EsLocale::nGetText():78 --> plural: \"" << msgid_plural << '"';
+
 	std::string hascode = std::to_string(std::hash<std::string>{}(msgid_plural));
-	//LOG(LogDebug) << "EsLocale::nGetText():80 --> msgid_plural : \"" << msgid_plural << "\" --> " << hascode;
+
 	auto item = mItems.find(std::to_string(pluralId) + "@" + hascode);
 	if (item != mItems.cend())
-	{
-		//LOG(LogDebug) << "EsLocale::nGetText():84 --> item [\"" << item->first << "\", \"" << item->second << "\"]";
 		return item->second;
-	}
 
 	item = mItems.find(hascode);
 	if (item != mItems.cend())
-	{
-		//LOG(LogDebug) << "EsLocale::nGetText():91 --> item [\"" << item->first << "\", \"" << item->second << "\"]";
 		return item->second;
-	}
-	//LOG(LogDebug) << "EsLocale::nGetText():94 - msgid_plural: \"" << msgid_plural << '"';
+
 	return msgid_plural;
 }
 
@@ -109,7 +94,6 @@ void EsLocale::checkLocalisationLoaded()
 
 	mCurrentLanguageLoaded = true;
 	mPluralRule = rules[0];
-	//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():112 --> mItems.clear()";
 	mItems.clear();
 
 	std::string xmlpath = ResourceManager::getInstance()->getResourcePath(":/locale/" + mCurrentLanguage + "/emulationstation2.po");
@@ -142,14 +126,12 @@ void EsLocale::checkLocalisationLoaded()
 		{
 			if (!line_next.empty())
 			{
-				//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():145 --> line_next: " << line_next;
 				line = line_next;
 				line_next.clear();
 			}
 			else
 			{
 				std::getline(file, line);
-				//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():152 --> line: " << line;
 				if (file.eof())
 				{
 					break;
@@ -193,7 +175,6 @@ void EsLocale::checkLocalisationLoaded()
 							break;
 						}
 					}
-					//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():196 --> plural: " << plural;
 				}
 			}
 			else if (line.find("msgid_plural") == 0)
@@ -205,9 +186,7 @@ void EsLocale::checkLocalisationLoaded()
 					if (end != std::string::npos)
 					{
 						msgid_plural = line.substr(start + 1, end - start - 1);
-						//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():208 --> msgid_plural: \"" << msgid_plural << '"';
 						readFileSplitedValues(file, msgid_plural, line_next);
-						//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():209 -> msgid_plural: \"" << msgid_plural << '"';
 					}
 				}
 			}
@@ -223,9 +202,7 @@ void EsLocale::checkLocalisationLoaded()
 					if (end != std::string::npos)
 					{
 						msgid = line.substr(start + 1, end - start - 1);
-						//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():226 -> msgid: \"" << msgid << '"';
 						readFileSplitedValues(file, msgid, line_next);
-						//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():228 -> msgid: \"" << msgid << '"';
 					}
 				}
 			}
@@ -251,39 +228,25 @@ void EsLocale::checkLocalisationLoaded()
 					if (end != std::string::npos)
 					{
 						std::string msgstr = line.substr(start + 1, end - start - 1);
-						//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():254 -> msgstr: \"" << msgstr << '"';
 						readFileSplitedValues(file, msgstr, line_next);
-						//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():256 -> msgstr: \"" << msgstr << '"';
 						std::string msgstr_aux = Utils::String::hiddenSpecialCharacters(msgstr);
-						//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():258 -> msgstr_aux: \"" << msgstr_aux << '"';
 						if (!msgid.empty() && !msgstr.empty())
 						{
-							//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():261 -> msgid: [\"" << msgid << "\", \"" << msgstr << "\"]";
 							std::string msgid_aux = Utils::String::hiddenSpecialCharacters(msgid);
 							std::string hascode = std::to_string(std::hash<std::string>{}(msgid_aux));
-							//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():264 -> msgid_aux: \"" << msgid_aux << "\" --> " << hascode;
+
 							if (idx.empty() || idx == "0")
-							{
 								mItems[hascode] = msgstr_aux;
-								//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():268 -> mItems[" << hascode << "] = \"" << msgstr_aux << '"';
-							}
 						}
 						if (!msgid_plural.empty() && !msgstr.empty())
 						{
-							//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():273 -> msgid_plural: \"" << msgid_plural << '"';
 							std::string msgid_plural_aux = Utils::String::hiddenSpecialCharacters(msgid_plural);
 							std::string hascode = std::to_string(std::hash<std::string>{}(msgid_plural_aux));
-							//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():276 -> msgid_plural_aux: \"" << msgid_plural_aux << "\" --> " << hascode;
+
 							if (!idx.empty() && idx != "0")
-							{
 								mItems[idx + "@" + hascode] = msgstr_aux;
-								//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():280 -> mItems[" << idx << "@" << hascode << "] = \"" << msgstr_aux << '"';
-							}
 							else
-							{
 								mItems[hascode] = msgstr_aux;
-								//LOG(LogDebug) << "EsLocale::checkLocalisationLoaded():285 -> mItems[" << hascode << "] = \"" << msgstr_aux << '"';
-							}
 						}
 					}
 				}
@@ -301,24 +264,19 @@ const void EsLocale::readFileSplitedValues(std::ifstream &file, std::string &msg
 
 	while (std::getline(file, line))
 	{
-		//LOG(LogDebug) << "EsLocale::readFileSplitedValues():304 -> line: " << line;
 		line = Utils::String::trim(line);
-		//LOG(LogDebug) << "EsLocale::readFileSplitedValues():306 -> line --> trim(): " << line;
+
 		if (Utils::String::startsWith(line, "\""))
 		{
 			auto start = 1;
 			auto end = line.find_last_of('"');
 			if (end != std::string::npos)
-			{
 				msg.append(line.substr(start, end - 1));
-				//LOG(LogDebug) << "EsLocale::readFileSplitedValues():314 -> msg: \"" << msg << '"';
-			}
 		}
 		else
 		{
 			line_next.append(line);
 			line.clear();
-			//LOG(LogDebug) << "EsLocale::readFileSplitedValues():321-> line_next: \"" << line_next << '"';
 			break;
 		}
 	}
