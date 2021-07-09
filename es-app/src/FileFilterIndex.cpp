@@ -303,7 +303,7 @@ bool FileFilterIndex::showFile(FileData* game)
 
 	// if folder, needs further inspection - i.e. see if folder contains at least one element
 	// that should be shown
-	if (game->getType() == FOLDER) 
+	if (game->getType() == FOLDER)
 	{
 		std::vector<FileData*> children = ((FolderData*) game)->getChildren();
 		// iterate through all of the children, until there's a match
@@ -355,7 +355,7 @@ bool FileFilterIndex::showFile(FileData* game)
 bool FileFilterIndex::isKeyBeingFilteredBy(std::string key, FilterIndexType type)
 {
 	const FilterIndexType filterTypes[6] = { FAVORITES_FILTER, GENRE_FILTER, PLAYER_FILTER, PUBDEV_FILTER, RATINGS_FILTER, KIDGAME_FILTER }; // ,HIDDEN_FILTER
-	std::vector<std::string> filterKeysList[6] = { favoritesIndexFilteredKeys, genreIndexFilteredKeys, playersIndexFilteredKeys, pubDevIndexFilteredKeys, ratingsIndexFilteredKeys, kidGameIndexFilteredKeys }; // hiddenIndexFilteredKeys, 
+	std::vector<std::string> filterKeysList[6] = { favoritesIndexFilteredKeys, genreIndexFilteredKeys, playersIndexFilteredKeys, pubDevIndexFilteredKeys, ratingsIndexFilteredKeys, kidGameIndexFilteredKeys }; // hiddenIndexFilteredKeys
 
 	for (int i = 0; i < 6; i++)
 	{

@@ -21,7 +21,7 @@ void GuiGamelistFilter::initializeMenu()
 	mFilterIndex = mSystem->getIndex(true);
 
 	ComponentListRow row;
-	
+
 	// show filtered menu
 	row.elements.clear();
 	row.addElement(std::make_shared<TextComponent>(mWindow, _("RESET ALL FILTERS"), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color), true);
@@ -66,7 +66,7 @@ void GuiGamelistFilter::addFiltersToMenu()
 		std::map<std::string, int>* allKeys = (*it).allIndexKeys; // all possible filters for this type
 		std::string menuLabel = _((*it).menuLabel); // text to show in menu
 		std::shared_ptr< OptionListComponent<std::string> > optionList;
-		
+
 		// add filters (with first one selected)
 		ComponentListRow row;
 
