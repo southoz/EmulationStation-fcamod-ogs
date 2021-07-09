@@ -43,8 +43,8 @@ If you don't have the go2 headers in either /usr/local/include/go2 or /usr/inclu
 Then, generate and build the Makefile with CMake:
 ```bash
 cd EmulationStation-fcamod-ogs
-sudo dpkg -i --force-all libmali-rk-bifrost-g31-rxp0-wayland-gbm_1.7-2+deb10_arm64.deb
-sudo dpkg -i --force-all libmali-rk-dev_1.7-1+deb10_arm64.deb
+(Not needed in RetroOZ) sudo dpkg -i --force-all libmali-rk-bifrost-g31-rxp0-wayland-gbm_1.7-2+deb10_arm64.deb
+(Not needed in RetroOZ) sudo dpkg -i --force-all libmali-rk-dev_1.7-1+deb10_arm64.deb
 cmake .
 make (or use make -j2 or -j3 if you have the additional core and memory to handle this to speed up the build)
 ```
@@ -81,10 +81,10 @@ current_brightness
 ```
 #!/bin/bash
 
-cursound=$(cat /sys/class/backlight/backlight/brightness);
-maxsound=255;
+curbright=$(cat /sys/class/backlight/backlight/brightness);
+maxbright=$(cat /sys/class/backlight/backlight/max_brightness);
 
-echo $((200 * $cursound/$maxsound - 100 * $cursound/$maxsound ))
+echo $((($curbright * 100)/$maxbright))
 ```
 
 current volume script for es-app/src/guis/GuiMenu.cpp line 78
