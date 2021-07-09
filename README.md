@@ -75,7 +75,7 @@ You can request a Developer ID and Password from screenscraper.fr by creating an
 You can request a apikey from TheGamesDB by creating an account then go to the forum located at: https://forums.thegamesdb.net/viewforum.php?f=10
 
 
-current brightness script for es-app/src/guis/GuiMenu.cpp line 78
+current brightness (/usr/local/bin/current_brightness) script for es-app/src/guis/GuiMenu.cpp line 78
 =================
 current_brightness
 ```
@@ -87,7 +87,7 @@ maxbright=$(cat /sys/class/backlight/backlight/max_brightness);
 echo $((($curbright * 100)/$maxbright))
 ```
 
-current volume script for es-app/src/guis/GuiMenu.cpp line 78
+current volume (/usr/local/bin/current_volume) script for es-app/src/guis/GuiMenu.cpp line 78
 ============
 current_volume
 ```
