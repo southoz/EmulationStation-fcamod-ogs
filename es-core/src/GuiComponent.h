@@ -74,9 +74,9 @@ public:
 	inline void setRotationOrigin(Vector2f origin) { setRotationOrigin(origin.x(), origin.y()); }
 
 	virtual Vector2f getSize() const;
-    inline void setSize(const Vector2f& size) { setSize(size.x(), size.y()); }
-    void setSize(float w, float h);
-    virtual void onSizeChanged() {};
+	inline void setSize(const Vector2f& size) { setSize(size.x(), size.y()); }
+	void setSize(float w, float h);
+	virtual void onSizeChanged() {};
 
 	virtual void setColor(unsigned int color) {};
 
@@ -89,14 +89,14 @@ public:
 	Vector3f getScale() const;
 	void setScale(Vector3f scale);
 
-    float getZIndex() const;
-    void setZIndex(float zIndex);
+	float getZIndex() const;
+	void setZIndex(float zIndex);
 
-    float getDefaultZIndex() const;
-    void setDefaultZIndex(float zIndex);
+	float getDefaultZIndex() const;
+	void setDefaultZIndex(float zIndex);
 
-    bool isVisible() const;
-    void setVisible(bool visible);
+	bool isVisible() const;
+	void setVisible(bool visible);
 
 	// Returns the center point of the image (takes origin into account).
 	Vector2f getCenter() const;

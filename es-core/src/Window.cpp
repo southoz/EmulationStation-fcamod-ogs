@@ -796,12 +796,12 @@ void Window::onThemeChanged(const std::shared_ptr<ThemeData>& theme)
 		mClock->setPosition(Renderer::getScreenWidth() * 0.92, Renderer::getScreenHeight() * 0.9965 - mClock->getFont()->getHeight());
 		mClock->setSize(Renderer::getScreenWidth() * 0.07, 0);
 
-		LOG(LogDebug) << "Window::onThemeChanged():799 -> Renderer::getScreenWidth(): " << std::to_string(Renderer::getScreenWidth());
-		LOG(LogDebug) << "Window::onThemeChanged():800 -> Renderer::getScreenWidth() x 0.92: " << std::to_string(Renderer::getScreenWidth() * 0.92);
-		LOG(LogDebug) << "Window::onThemeChanged():801 -> Renderer::getScreenHeight(): " << std::to_string(Renderer::getScreenHeight());
-		LOG(LogDebug) << "Window::onThemeChanged():802 -> Renderer::getScreenHeight() x 0.9965: " << std::to_string(Renderer::getScreenHeight() * 0.9965);
-		LOG(LogDebug) << "Window::onThemeChanged():803 -> Renderer::getScreenHeight() x 0.9965 - mClock->getFont()->getHeight(): " << std::to_string(Renderer::getScreenHeight() * 0.9965  - mClock->getFont()->getHeight());
-		LOG(LogDebug) << "Window::onThemeChanged():804 -> mClock->setSize(Renderer::getScreenWidth() * 0.07, 0): " << std::to_string(Renderer::getScreenWidth() * 0.07);
+		//LOG(LogDebug) << "Window::onThemeChanged():799 -> Renderer::getScreenWidth(): " << std::to_string(Renderer::getScreenWidth());
+		//LOG(LogDebug) << "Window::onThemeChanged():800 -> Renderer::getScreenWidth() x 0.92: " << std::to_string(Renderer::getScreenWidth() * 0.92);
+		//LOG(LogDebug) << "Window::onThemeChanged():801 -> Renderer::getScreenHeight(): " << std::to_string(Renderer::getScreenHeight());
+		//LOG(LogDebug) << "Window::onThemeChanged():802 -> Renderer::getScreenHeight() x 0.9965: " << std::to_string(Renderer::getScreenHeight() * 0.9965);
+		//LOG(LogDebug) << "Window::onThemeChanged():803 -> Renderer::getScreenHeight() x 0.9965 - mClock->getFont()->getHeight(): " << std::to_string(Renderer::getScreenHeight() * 0.9965  - mClock->getFont()->getHeight());
+		//LOG(LogDebug) << "Window::onThemeChanged():804 -> mClock->setSize(Renderer::getScreenWidth() * 0.07, 0): " << std::to_string(Renderer::getScreenWidth() * 0.07);
 
 		mClock->applyTheme(theme, "screen", "clock", ThemeFlags::ALL ^ (ThemeFlags::TEXT));
 	}

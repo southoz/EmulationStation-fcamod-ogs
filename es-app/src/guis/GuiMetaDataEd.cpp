@@ -162,7 +162,7 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 				ed = std::make_shared<RatingComponent>(window);
 				const float height = lbl->getSize().y() * 0.71f;
 				ed->setSize(0, height);
-				row.addElement(ed, false, true);
+				row.addElement(ed, false, true, true);
 
 				auto spacer = std::make_shared<GuiComponent>(mWindow);
 				spacer->setSize(Renderer::getScreenWidth() * 0.0025f, 0);
@@ -176,7 +176,7 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 			case MD_DATE:
 			{
 				ed = std::make_shared<DateTimeEditComponent>(window);
-				row.addElement(ed, false);
+				row.addElement(ed, false, true, true);
 
 				auto spacer = std::make_shared<GuiComponent>(mWindow);
 				spacer->setSize(Renderer::getScreenWidth() * 0.0025f, 0);
@@ -284,7 +284,7 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 
 
 	// resize + center	
-	setSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());
+	setSize(Renderer::getScreenWidth(), Renderer::getScreenHeight() * 0.88);
 	//float width = (float)Math::min(Renderer::getScreenHeight(), (int)(Renderer::getScreenWidth() * 3.0f));
 	//setSize(width, Renderer::getScreenHeight() * 1.0f);
 	setPosition((Renderer::getScreenWidth() - mSize.x()) / 2, (Renderer::getScreenHeight() - mSize.y()) / 2);
