@@ -527,10 +527,6 @@ msgid "SKIP"
 msgstr "IGNORAR"
 
 #:
-msgid "skip"
-msgstr "ignorar"
-
-#:
 msgid "SEARCH FOR"
 msgstr "BUSCAR POR:"
 
@@ -1640,10 +1636,6 @@ msgid "DISCARD CHANGES"
 msgstr "DESCARTAR LOS CAMBIOS"
 
 #:
-msgid "discard changes"
-msgstr "descartar los cambios"
-
-#:
 msgid "WELCOME"
 msgstr "BIENVENIDO"
 
@@ -1730,8 +1722,12 @@ msgid "EDIT"
 msgstr "EDITAR"
 
 #:
-msgid "accept result"
-msgstr "aceptar resultado"
+msgid "ACCEPT RESULT"
+msgstr "ACEPTAR RESULTADO"
+
+#:
+msgid "CHANGE VALUE"
+msgstr "CAMBIAR VALOR"
 
 #:
 msgid "FILENAME"
@@ -1980,11 +1976,11 @@ msgstr "HA OCURRIDO UN ERROR"
 
 #:
 msgid "Result name"
-msgstr "Nombre del resultado"
+msgstr "Nombre final"
 
 #:
 msgid "Result desc"
-msgstr "Descripción del resultado"
+msgstr "Descripción final"
 
 #:
 msgid "CONFIGURED SCRAPER IS NO LONGER AVAILABLE.\nPLEASE CHANGE THE SCARPING SOURCE IN THE SETTINGS."
