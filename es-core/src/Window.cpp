@@ -87,7 +87,7 @@ bool Window::init(bool initRenderer)
 	{
 		if (!Renderer::init())
 		{
-			LOG(LogError) << "Window::init():89 --> Renderer failed to initialize!";
+			LOG(LogError) << "Window::init() --> Renderer failed to initialize!";
 			return false;
 		}
 
@@ -286,14 +286,12 @@ void Window::update(int deltaTime)
 				// Visit http://en.cppreference.com/w/cpp/chrono/c/strftime for more information about date/time format
 				
 				std::string clockBuf;
-				//LOG(LogDebug) << "Window::update():288 -> ClockMode12: " << Settings::getInstance()->getBool("ClockMode12");
 				if (Settings::getInstance()->getBool("ClockMode12"))
 					clockBuf = Utils::Time::timeToString(clockNow, "%I:%M %p");
 				else
 					clockBuf = Utils::Time::timeToString(clockNow, "%H:%M");
 
 				mClock->setText(clockBuf);
-				//LOG(LogDebug) << "Window::update():295 -> clockNow: " << clockNow << ", clockBuf: " << clockBuf;
 			}
 
 			mClockElapsed = 1000; // next update in 1000ms
@@ -795,13 +793,6 @@ void Window::onThemeChanged(const std::shared_ptr<ThemeData>& theme)
 
 		mClock->setPosition(Renderer::getScreenWidth() * 0.92, Renderer::getScreenHeight() * 0.9965 - mClock->getFont()->getHeight());
 		mClock->setSize(Renderer::getScreenWidth() * 0.07, 0);
-
-		LOG(LogDebug) << "Window::onThemeChanged():799 -> Renderer::getScreenWidth(): " << std::to_string(Renderer::getScreenWidth());
-		LOG(LogDebug) << "Window::onThemeChanged():800 -> Renderer::getScreenWidth() x 0.92: " << std::to_string(Renderer::getScreenWidth() * 0.92);
-		LOG(LogDebug) << "Window::onThemeChanged():801 -> Renderer::getScreenHeight(): " << std::to_string(Renderer::getScreenHeight());
-		LOG(LogDebug) << "Window::onThemeChanged():802 -> Renderer::getScreenHeight() x 0.9965: " << std::to_string(Renderer::getScreenHeight() * 0.9965);
-		LOG(LogDebug) << "Window::onThemeChanged():803 -> Renderer::getScreenHeight() x 0.9965 - mClock->getFont()->getHeight(): " << std::to_string(Renderer::getScreenHeight() * 0.9965  - mClock->getFont()->getHeight());
-		LOG(LogDebug) << "Window::onThemeChanged():804 -> mClock->setSize(Renderer::getScreenWidth() * 0.07, 0): " << std::to_string(Renderer::getScreenWidth() * 0.07);
 
 		mClock->applyTheme(theme, "screen", "clock", ThemeFlags::ALL ^ (ThemeFlags::TEXT));
 	}

@@ -46,6 +46,7 @@ bool DateTimeEditComponent::input(InputConfig* config, Input input)
 			}
 		}
 
+		updateHelpPrompts();
 		return true;
 	}
 
@@ -56,6 +57,7 @@ bool DateTimeEditComponent::input(InputConfig* config, Input input)
 			mEditing = false;
 			mTime = mTimeBeforeEdit;
 			updateTextCache();
+			updateHelpPrompts();
 			return true;
 		}
 
@@ -340,4 +342,20 @@ void DateTimeEditComponent::applyTheme(const std::shared_ptr<ThemeData>& theme, 
 		setUppercase(elem->get<bool>("forceUppercase"));
 
 	setFont(Font::getFromTheme(elem, properties, mFont));
+}
+
+std::vector<HelpPrompt> DateTimeEditComponent::getHelpPrompts()
+{
+	std::vector<HelpPrompt> prompts;
+	if (mEditing)
+	{
+		prompts.push_back(HelpPrompt("left/right", _("MOVE CURSOR"))); // batocera
+		prompts.push_back(HelpPrompt("up/down", _("CHANGE VALUE"))); // batocera
+		prompts.push_back(HelpPrompt("b", _("SKIP")));
+		prompts.push_back(HelpPrompt("a", _("ACCEPT RESULT")));
+	}
+	else {
+		prompts.push_back(HelpPrompt("a", _("EDIT")));
+	}
+	return prompts;
 }

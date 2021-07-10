@@ -32,7 +32,6 @@
 
 #include <go2/display.h>
 #include "SystemConf.h"
-#include <exception>
 
 GuiMenu::GuiMenu(Window* window, bool animate) : GuiComponent(window), mMenu(window, _("MAIN MENU")), mVersion(window)
 {

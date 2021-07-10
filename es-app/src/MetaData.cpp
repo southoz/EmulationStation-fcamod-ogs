@@ -91,10 +91,7 @@ std::map<unsigned char, std::string> MetaDataList::BuildDefaultMap(MetaDataListT
 
 	const std::vector<MetaDataDecl>& mdd = getMDDByType(type);
 	for (auto iter = mdd.cbegin(); iter != mdd.cend(); iter++)
-	{
-		//LOG(LogDebug) << "MetaDataList::BuildDefaultMap():95 --> [ key: " <<  iter->key << ", default value: \"" << iter->defaultValue << "\"]";
 		ret[iter->id] = iter->defaultValue;
-	}
 
 	return ret;
 }

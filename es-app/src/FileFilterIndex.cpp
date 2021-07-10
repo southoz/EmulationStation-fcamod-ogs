@@ -355,7 +355,7 @@ bool FileFilterIndex::showFile(FileData* game)
 bool FileFilterIndex::isKeyBeingFilteredBy(std::string key, FilterIndexType type)
 {
 	const FilterIndexType filterTypes[6] = { FAVORITES_FILTER, GENRE_FILTER, PLAYER_FILTER, PUBDEV_FILTER, RATINGS_FILTER, KIDGAME_FILTER }; // ,HIDDEN_FILTER
-	std::vector<std::string> filterKeysList[6] = { favoritesIndexFilteredKeys, genreIndexFilteredKeys, playersIndexFilteredKeys, pubDevIndexFilteredKeys, ratingsIndexFilteredKeys, kidGameIndexFilteredKeys }; // hiddenIndexFilteredKeys,
+	std::vector<std::string> filterKeysList[6] = { favoritesIndexFilteredKeys, genreIndexFilteredKeys, playersIndexFilteredKeys, pubDevIndexFilteredKeys, ratingsIndexFilteredKeys, kidGameIndexFilteredKeys }; // hiddenIndexFilteredKeys
 
 	for (int i = 0; i < 6; i++)
 	{
@@ -455,7 +455,6 @@ void FileFilterIndex::managePubDevEntryInIndex(FileData* game, bool remove)
 void FileFilterIndex::manageRatingsEntryInIndex(FileData* game, bool remove)
 {
 	std::string key = getIndexableKey(game, RATINGS_FILTER, false);
-	//LOG(LogDebug) << "FileFilterIndex::manageRatingsEntryInIndex():458 --> IndexableKey: " << key;
 	// flag for including unknowns
 	bool includeUnknown = INCLUDE_UNKNOWN;
 

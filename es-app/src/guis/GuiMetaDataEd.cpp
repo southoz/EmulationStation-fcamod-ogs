@@ -162,7 +162,7 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 				ed = std::make_shared<RatingComponent>(window);
 				const float height = lbl->getSize().y() * 0.71f;
 				ed->setSize(0, height);
-				row.addElement(ed, false, true);
+				row.addElement(ed, false, true, true);
 
 				auto spacer = std::make_shared<GuiComponent>(mWindow);
 				spacer->setSize(Renderer::getScreenWidth() * 0.0025f, 0);
@@ -176,7 +176,7 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 			case MD_DATE:
 			{
 				ed = std::make_shared<DateTimeEditComponent>(window);
-				row.addElement(ed, false);
+				row.addElement(ed, false, true, true);
 
 				auto spacer = std::make_shared<GuiComponent>(mWindow);
 				spacer->setSize(Renderer::getScreenWidth() * 0.0025f, 0);
@@ -211,16 +211,14 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 
 				bool multiLine = iter->type == MD_MULTILINE_STRING;
 				const std::string title = _(iter->displayPrompt.c_str());
-				//LOG(LogDebug) << "GuiMetaDataEd::GuiMetaDataEd():221 --> [ key: " << iter->key << ", default value: \"" << iter->defaultValue  << "\", editor value: \"" << ed->getValue() << "\"]";
 				if (ed->getValue() == "unknown")
 					ed->setValue(_("unknown"));
+
 				auto updateVal = [ed](const std::string& newVal) {
-						//LOG(LogDebug) << "GuiMetaDataEd::GuiMetaDataEd():225 --> newVal: \"" << newVal << '"';
 						std::string new_value = newVal;
 						if (new_value == "unknown")
 							new_value = _("unknown").c_str();
 
-					//LOG(LogDebug) << "GuiMetaDataEd::GuiMetaDataEd():230 --> new_value: \"" << new_value << '"';
 					ed->setValue(new_value);
 				}; // ok callback (apply new value to ed)
 				row.makeAcceptInputHandler([this, title, ed, updateVal, multiLine] 
@@ -243,7 +241,6 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 
 		ed->setTag(iter->key);
 		ed->setValue(ed_value);
-		//LOG(LogDebug) << "GuiMetaDataEd::GuiMetaDataEd():253 --> editor [ tag: " << ed->getTag() << ", value: \"" << ed->getValue() << "\"]";
 
 		mEditors.push_back(ed);
 	}
@@ -283,8 +280,12 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 	});
 
 
-	// resize + center	
-	setSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());
+	// resize + center
+	float height_ratio = 1.0f;
+	if( Settings::getInstance()->getBool("ShowHelpPrompts") )
+		height_ratio = 0.88f;
+
+	setSize(Renderer::getScreenWidth(), Renderer::getScreenHeight() * height_ratio);
 	//float width = (float)Math::min(Renderer::getScreenHeight(), (int)(Renderer::getScreenWidth() * 3.0f));
 	//setSize(width, Renderer::getScreenHeight() * 1.0f);
 	setPosition((Renderer::getScreenWidth() - mSize.x()) / 2, (Renderer::getScreenHeight() - mSize.y()) / 2);

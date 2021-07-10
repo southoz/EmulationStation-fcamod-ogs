@@ -349,7 +349,13 @@ std::vector<HelpPrompt> ComponentList::getHelpPrompts()
 	if(!size())
 		return std::vector<HelpPrompt>();
 
-	std::vector<HelpPrompt> prompts = mEntries.at(mCursor).data.elements.back().component->getHelpPrompts();
+	std::shared_ptr<GuiComponent> component;
+	if (mEntries.at(mCursor).data.guiPrompt)
+		component = mEntries.at(mCursor).data.guiPrompt;
+	else
+		component = mEntries.at(mCursor).data.elements.back().component;
+
+	std::vector<HelpPrompt> prompts = component->getHelpPrompts();
 
 	if(size() > 1)
 	{
