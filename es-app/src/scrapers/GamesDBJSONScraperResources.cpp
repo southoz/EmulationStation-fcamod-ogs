@@ -138,8 +138,8 @@ bool TheGamesDBJSONRequestResources::saveResource(HttpReq* req, std::unordered_m
 	}
 	if (req->status() != HttpReq::REQ_SUCCESS)
 	{
-		LOG(LogError) << "Resource request for " << file_name << " failed:\n\t" << req->getErrorMsg();
-		LOG(LogInfo) << "GamesDBJSONRequestResources::saveResource():141 - Request Error Message for traslations: " << Utils::String::showSpecialCharacters(req->getErrorMsg());
+		LOG(LogError) << "GamesDBJSONRequestResources::saveResource():141 - Resource request for " << file_name << " failed:\n\t" << req->getErrorMsg();
+		LOG(LogInfo) << "GamesDBJSONRequestResources::saveResource():142 - Request Error Message for traslations: " << Utils::String::showSpecialCharacters(req->getErrorMsg());
 		return true; // Request failed, resetting request.
 	}
 
