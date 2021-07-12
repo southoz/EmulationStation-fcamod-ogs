@@ -147,15 +147,15 @@ namespace PlatformIds
 
 	std::string getPlatformName(PlatformId id)
 	{
+		if (PLATFORM_IGNORE == id)
+			return _("ignore");
+		else if (PLATFORM_COUNT == id)
+			return _("invalid");
+		else if (PLATFORM_UNKNOWN == id)
+			return _("unknown");
+
 		for (auto& it : Platforms)
 		{
-			if (PLATFORM_IGNORE == id)
-				return _("ignore");
-			else if (PLATFORM_COUNT == id)
-				return _("invalid");
-			else if (PLATFORM_UNKNOWN == id)
-				return _("unknown");
-
 			if (it.second == id)
 				return it.first;
 		}
