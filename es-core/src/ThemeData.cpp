@@ -253,7 +253,8 @@ std::map<std::string, std::map<std::string, ThemeData::ElementPropertyType>> The
 		{ "color", COLOR },
 		{ "centerColor", COLOR },
 		{ "cornerSize", NORMALIZED_PAIR } } },
-	{ "menuIcons", { 		
+	{ "menuIcons", {
+		{ "iconDisplay", PATH },
 		{ "iconSystem", PATH },
 		{ "iconUpdates", PATH },
 		{ "iconControllers", PATH },

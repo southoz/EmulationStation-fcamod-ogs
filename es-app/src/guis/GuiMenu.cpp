@@ -35,7 +35,7 @@
 
 GuiMenu::GuiMenu(Window* window, bool animate) : GuiComponent(window), mMenu(window, _("MAIN MENU")), mVersion(window)
 {
-	addEntry(_("DISPLAY SETTINGS"), true, [this] { openDisplaySettings(); });
+	addEntry(_("DISPLAY SETTINGS"), true, [this] { openDisplaySettings(); }, "iconDisplay");
 
 	auto theme = ThemeData::getMenuTheme();
 
