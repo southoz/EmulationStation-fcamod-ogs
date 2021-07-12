@@ -40,7 +40,6 @@ std::string systemConfFileTmp = "~/.emulationstation.conf.tmp";
 SystemConf::SystemConf() 
 {
     loadSystemConf();
-    loadSystemConf();
 }
 
 SystemConf *SystemConf::getInstance() 
