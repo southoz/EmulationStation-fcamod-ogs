@@ -6,8 +6,6 @@
 
 #include <fstream>
 
-//#include "Log.h"
-
 std::map<std::string, std::string> EsLocale::mItems;
 std::string EsLocale::mCurrentLanguage = "en";
 bool EsLocale::mCurrentLanguageLoaded = true; // By default, 'en' is considered loaded
