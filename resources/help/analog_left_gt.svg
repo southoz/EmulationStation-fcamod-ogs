@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" version="1.1"><rect id="backgroundrect" width="100%" height="100%" x="0" y="0" fill="none" stroke="none"/>
+ 
+ 
+ 
+ 
+ 
+ 
+<g class="currentLayer" style=""><title>Layer 1</title><circle id="circle" cx="32" cy="32" r="30" fill="none" stroke="#fff" stroke-width="3" class=""/><polygon id="analog_up" points="27,14 37,14 32,6.2" fill="none" stroke="#fff" stroke-linejoin="round" stroke-width="2"/><polygon id="analog_right" points="50,27 50,37 57.8,32" fill="none" stroke="#fff" stroke-linejoin="round" stroke-width="2"/><polygon id="analog_down" points="27,50 37,50 32,57.8" fill="none" stroke="#fff" stroke-linejoin="round" stroke-width="2"/><polygon id="analog_left" points="20.737905502319336,22.719914961606264 20.737905502319336,41.35810237005353 6.199999809265137,32.03908495977521 " fill="#fff" stroke="#fff" stroke-linejoin="round" stroke-width="2" class="selected"/><circle id="analog_thumb" cx="32" cy="32" r="5" fill="none" stroke="#fff" stroke-linejoin="round" stroke-width="2" class=""/></g></svg>

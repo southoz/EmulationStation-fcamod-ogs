@@ -1,0 +1,13 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<!-- Created using Krita: https://krita.org -->
+<svg xmlns="http://www.w3.org/2000/svg" 
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:krita="http://krita.org/namespaces/svg/krita"
+    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+    width="15.36pt"
+    height="15.36pt"
+    viewBox="0 0 15.36 15.36">
+<defs/>
+<circle id="outline_east" transform="matrix(0.24 0 0 0.24 9.6 5.28)" r="10" cx="10" cy="10" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2"/><circle id="outline_south" transform="matrix(0.24 0 0 0.24 5.28 9.6)" r="10" cx="10" cy="10" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2"/><circle id="outline_north" transform="matrix(0.24 0 0 0.24 5.28 0.96)" r="10" cx="10" cy="10" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2"/><circle id="outline_west" transform="matrix(0.24 0 0 0.24 0.96 5.28)" r="10" cx="10" cy="10" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2"/><path id="button_east" transform="matrix(0.24 0 0 0.24 9.6 5.28)" fill="#ffffff" stroke="#000000" stroke-opacity="0" stroke-width="0" stroke-linecap="square" stroke-linejoin="bevel" d="M10 0C4.47715 0 0 4.47715 0 10C0 15.5228 4.47715 20 10 20C15.5228 20 20 15.5228 20 10C20 4.47715 15.5228 0 10 0ZM7.34458 3.21446L12.6651 3.21446L15.4317 15.6856L11.7813 15.7344L11.1484 12.9375L8.84375 12.9375L8.21094 15.7344L4.43153 15.6856ZM10.1205 6.45301C10.0371 6.85405 9.40034 9.24403 9.04096 10.8482L11.1229 10.8482Z"/>
+</svg>

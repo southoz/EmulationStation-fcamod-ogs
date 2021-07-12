@@ -1,0 +1,13 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<!-- Created using Krita: https://krita.org -->
+<svg xmlns="http://www.w3.org/2000/svg" 
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:krita="http://krita.org/namespaces/svg/krita"
+    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+    width="15.36pt"
+    height="15.36pt"
+    viewBox="0 0 15.36 15.36">
+<defs/>
+<circle id="outline" transform="matrix(0.24 0 0 0.24 0.96 0.96)" r="28" cx="28" cy="28" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2"/><path id="button_triangle" transform="matrix(0.24 0 0 0.24 0.96 0.96)" fill="#ffffff" stroke="#000000" stroke-opacity="0" stroke-width="0" stroke-linecap="square" stroke-linejoin="bevel" d="M28 0C12.536 -2.66454e-15 1.77636e-15 12.536 0 28C1.77636e-15 43.464 12.536 56 28 56C43.464 56 56 43.464 56 28C56 12.536 43.464 -8.88178e-16 28 0ZM28 7.25783C28.752 7.23798 30.907 8.01684 31.266 8.67788L47.2 38.0279C47.5356 38.6473 46.9432 40.1983 46.5831 40.8038C46.2231 41.4093 44.4346 42.8076 43.7301 42.8086C33.1065 42.8086 22.4828 42.8086 11.8591 42.8086C11.1547 42.8076 9.85401 41.9491 9.49398 41.3435C9.13394 40.738 8.69572 38.9557 9.03133 38.3363L24.9653 8.98631C25.3063 8.35849 27.2858 7.2804 28 7.26161ZM28 14.6602L15.428 37.8162L40.573 37.8162L28.001 14.6602Z"/>
+</svg>
