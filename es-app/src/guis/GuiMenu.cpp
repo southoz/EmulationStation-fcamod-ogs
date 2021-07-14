@@ -517,7 +517,7 @@ void GuiMenu::openThemeConfiguration(Window* mWindow, GuiComponent* s, std::shar
 				if (it->name == selectedName)
 					selectedColorSet = it;
 
-			std::shared_ptr<OptionListComponent<std::string>> item = std::make_shared<OptionListComponent<std::string> >(mWindow, _(("THEME " + Utils::String::toUpper(subset)).c_str()), false);
+			std::shared_ptr<OptionListComponent<std::string>> item = std::make_shared<OptionListComponent<std::string> >(mWindow, _("THEME") + " " + Utils::String::toUpper(subset).c_str(), false);
 			item->setTag(!perSystemSettingName.empty()? perSystemSettingName : settingName);
 
 			for (auto it = themeColorSets.begin(); it != themeColorSets.end(); it++)
@@ -569,7 +569,7 @@ void GuiMenu::openThemeConfiguration(Window* mWindow, GuiComponent* s, std::shar
 					themeconfig->addWithLabel(displayName + prefix, item);
 				}
 				else
-					themeconfig->addWithLabel(_(("THEME " + Utils::String::toUpper(subset)).c_str()), item);
+					themeconfig->addWithLabel(_("THEME") + " " + Utils::String::toUpper(subset).c_str(), item);
 			}
 
 			ThemeConfigOption opt;
@@ -709,12 +709,16 @@ void GuiMenu::openUISettings()
 		if (selectedSet == themeSets.cend())
 			selectedSet = themeSets.cbegin();
 
-		auto theme_set = std::make_shared< OptionListComponent<std::string> >(mWindow, _("THEME"), false);
+			// Load theme randomly
+		auto themeRandom = std::make_shared<SwitchComponent>(mWindow);
+		themeRandom->setState(Settings::getInstance()->getBool("ThemeRandom"));
+
+		auto theme_set = std::make_shared< OptionListComponent<std::string> >(mWindow, _("THEMES"), false);
 		for (auto it = themeSets.cbegin(); it != themeSets.cend(); it++)
 			theme_set->add(it->first, it->first, it == selectedSet);
 
 		s->addWithLabel(_("THEME"), theme_set);
-		s->addSaveFunc([s, theme_set, window]
+		s->addSaveFunc([s, theme_set, window, themeRandom]
 		{
 			std::string oldTheme = Settings::getInstance()->getString("ThemeSet");
 			if (oldTheme != theme_set->getSelected())
@@ -742,6 +746,9 @@ void GuiMenu::openUISettings()
 				s->setVariable("reloadAll", true);
 				s->setVariable("reloadGuiMenu", true);
 
+					// if theme is manual set, disable random theme selection
+				Settings::getInstance()->setBool("ThemeRandom", false);
+				themeRandom->setState(Settings::getInstance()->getBool("ThemeRandom"));
 				Scripting::fireEvent("theme-changed", theme_set->getSelected(), oldTheme);
 			}
 		});
@@ -789,6 +796,12 @@ void GuiMenu::openUISettings()
 				}
 			});
 		}
+
+			// Load theme randomly
+		s->addWithLabel(_("SHOW RANDOM THEME"), themeRandom);
+		s->addSaveFunc([themeRandom] {
+			Settings::getInstance()->setBool("ThemeRandom", themeRandom->getState());
+		});
 	}
 
 	// screensaver
@@ -818,7 +831,7 @@ void GuiMenu::openUISettings()
 			msg += _("Do you want to proceed?");
 			window->pushGui(new GuiMsgBox(window, msg,
 				_("YES"), [selectedMode] {
-				LOG(LogDebug) << "Setting UI mode to " << selectedMode;
+				LOG(LogDebug) << "GuiMenu::openUISettings() - Setting UI mode to " << selectedMode;
 				Settings::getInstance()->setString("UIMode", selectedMode);
 				Settings::getInstance()->saveFile();
 			}, _("NO"), nullptr));
@@ -1239,7 +1252,7 @@ void GuiMenu::openUpdateSettings()
 		if (ApiSystem::state == UpdateState::State::UPDATE_READY)
 		{
 			if (quitES(QuitMode::QUIT))
-				LOG(LogWarning) << "Reboot terminated with non-zero result!";
+				LOG(LogWarning) << "GuiMenu::openUpdateSettings() - Reboot terminated with non-zero result!";
 		}
 		else if (ApiSystem::state == UpdateState::State::UPDATER_RUNNING)
 			mWindow->pushGui(new GuiMsgBox(mWindow, _("UPDATE IS ALREADY RUNNING")));
@@ -1548,7 +1561,7 @@ void GuiMenu::openQuitMenu()
 				[] {
 				Scripting::fireEvent("quit");
 				if(quitES(QuitMode::RESTART) != 0)
-					LOG(LogWarning) << "Restart terminated with non-zero result!";
+					LOG(LogWarning) << "GuiMenu::openQuitMenu() - Restart terminated with non-zero result!";
 			}, _("NO"), nullptr));
 		});
 		row.addElement(std::make_shared<TextComponent>(window, _("RESTART EMULATIONSTATION"), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color), true);
@@ -1575,7 +1588,7 @@ void GuiMenu::openQuitMenu()
 			Scripting::fireEvent("quit", "reboot");
 			Scripting::fireEvent("reboot");
 			if (quitES(QuitMode::REBOOT) != 0)
-				LOG(LogWarning) << "Restart terminated with non-zero result!";
+				LOG(LogWarning) << "GuiMenu::openQuitMenu() - Restart terminated with non-zero result!";
 		}, _("NO"), nullptr));
 	});
 	row.addElement(std::make_shared<TextComponent>(window, _("RESTART SYSTEM"), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color), true);
@@ -1588,7 +1601,7 @@ void GuiMenu::openQuitMenu()
 			Scripting::fireEvent("quit", "shutdown");
 			Scripting::fireEvent("shutdown");
 			if (quitES(QuitMode::SHUTDOWN) != 0)
-				LOG(LogWarning) << "Shutdown terminated with non-zero result!";
+				LOG(LogWarning) << "GuiMenu::openQuitMenu() - Shutdown terminated with non-zero result!";
 		}, _("NO"), nullptr));
 	});
 	row.addElement(std::make_shared<TextComponent>(window, _("SHUTDOWN SYSTEM"), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color), true);

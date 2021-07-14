@@ -39,7 +39,8 @@ std::vector<const char*> settings_dont_save {
 	{ "ExePath" },
 	{ "HomePath" },
 	{ "MusicDirectory"},
-	{ "UserMusicDirectory" }
+	{ "UserMusicDirectory" },
+	{ "ThemeRandomSet" }
 };
 
 Settings::Settings()
@@ -118,7 +119,8 @@ void Settings::setDefaults()
 	mStringMap["GamelistViewStyle"] = "automatic";
 	mStringMap["DefaultGridSize"] = "";
 	mStringMap["HiddenSystems"] = "";
-
+	mBoolMap["ThemeRandom"] = false;
+	mBoolMap["ThemeRandomSet"] = false;
 	mStringMap["ThemeColorSet"] = "";
 	mStringMap["ThemeIconSet"] = "";
 	mStringMap["ThemeMenu"] = "";
