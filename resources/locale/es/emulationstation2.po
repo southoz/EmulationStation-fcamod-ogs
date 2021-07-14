@@ -833,7 +833,7 @@ msgstr "TEMAS"
 
 #:
 msgid "THEME"
-msgstr "TEMA "
+msgstr "TEMA"
 
 #:
 msgid "SHOW RANDOM THEME"
