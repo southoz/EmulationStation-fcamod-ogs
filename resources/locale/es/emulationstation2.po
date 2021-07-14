@@ -828,12 +828,16 @@ msgid "QUICK SYSTEM SELECT"
 msgstr "SELECCIÓN RAPIDA DE SISTEMA"
 
 #:
-msgid "THEME"
+msgid "THEMES"
 msgstr "TEMAS"
 
 #:
-msgid "THEME "
+msgid "THEME"
 msgstr "TEMA "
+
+#:
+msgid "SHOW RANDOM THEME"
+msgstr "MOSTRAR TEMA ALEATORIO"
 
 #:
 msgid "SOUND SETTINGS"

@@ -267,10 +267,10 @@ public:
 	bool hasSubsets() { return mSubsets.size() > 0; }
 	static const std::shared_ptr<ThemeData::ThemeMenu>& getMenuTheme();
 
-	std::vector<Subset>		    getSubSets() { return mSubsets; }
-	std::vector<std::string>	getSubSetNames(const std::string ofView = "");
+	std::vector<Subset>       getSubSets() { return mSubsets; }
+	std::vector<std::string>  getSubSetNames(const std::string ofView = "");
 
-	std::string					getDefaultSubSetValue(const std::string subsetname);
+	std::string       getDefaultSubSetValue(const std::string subsetname);
 
 	static std::vector<Subset> getSubSet(const std::vector<Subset>& subsets, const std::string& subset);
 
