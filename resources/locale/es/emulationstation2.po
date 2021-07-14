@@ -423,6 +423,10 @@ msgid "New Collection Name"
 msgstr "Nombre de la nueva colección"
 
 #:
+msgid "New Collection"
+msgstr "Nueva Colección"
+
+#:
 msgid "GROUP UNTHEMED CUSTOM COLLECTIONS"
 msgstr "AGRUPAR COLECCIONES SIN SISTEMA"
 

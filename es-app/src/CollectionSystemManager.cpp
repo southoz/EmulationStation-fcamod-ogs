@@ -459,7 +459,7 @@ std::string CollectionSystemManager::getValidNewCollectionName(std::string inNam
 
 	if(name == "")
 	{
-		name = "New Collection";
+		name = _("New Collection");
 	}
 
 	if(name != inName)
@@ -512,15 +512,23 @@ void CollectionSystemManager::setEditMode(std::string collectionName)
 	// if it's bundled, this needs to be the bundle system
 	mEditingCollectionSystemData = sysData;
 
+	std::string col_name = collectionName;
+	if (collectionName == "Favorites")
+		col_name = _("Favorites");
+
 	char strbuf[128];
-	snprintf(strbuf, 128, _("Editing the '%s' Collection. Add/remove games with 'Y'.").c_str(), Utils::String::toUpper(collectionName).c_str());
+	snprintf(strbuf, 128, _("Editing the '%s' Collection. Add/remove games with 'Y'.").c_str(), Utils::String::toUpper(col_name).c_str());
 	mWindow->displayNotificationMessage(strbuf, 10000);
 }
 
 void CollectionSystemManager::exitEditMode()
 {
+	std::string col_name = mEditingCollection;
+	if (mEditingCollection == "Favorites")
+		col_name = _("Favorites");
+
 	char strbuf[128];
-	snprintf(strbuf, 128, _("Finished editing the '%s' Collection.").c_str(), mEditingCollection.c_str());
+	snprintf(strbuf, 128, _("Finished editing the '%s' Collection.").c_str(), col_name.c_str());
 	mWindow->displayNotificationMessage(strbuf, 10000);
 	mIsEditingCustom = false;
 	mEditingCollection = "Favorites";
@@ -610,10 +618,14 @@ bool CollectionSystemManager::toggleGameInCollection(FileData* file)
 
 		char trstring[512];
 
+		std::string sys_name = sysName;
+		if (sys_name == "Favorites")
+			sys_name = _("Favorites");
+
 		if (adding)
-			snprintf(trstring, 512, _("Added '%s' to '%s'").c_str(), Utils::String::removeParenthesis(name).c_str(), Utils::String::toUpper(sysName).c_str()); // batocera
+			snprintf(trstring, 512, _("Added '%s' to '%s'").c_str(), Utils::String::removeParenthesis(name).c_str(), Utils::String::toUpper(sys_name).c_str()); // batocera
 		else
-			snprintf(trstring, 512, _("Removed '%s' from '%s'").c_str(), Utils::String::removeParenthesis(name).c_str(), Utils::String::toUpper(sysName).c_str()); // batocera		  
+			snprintf(trstring, 512, _("Removed '%s' from '%s'").c_str(), Utils::String::removeParenthesis(name).c_str(), Utils::String::toUpper(sys_name).c_str()); // batocera
 
 		mWindow->displayNotificationMessage(trstring, 4000);
 
