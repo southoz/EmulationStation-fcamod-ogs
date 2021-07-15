@@ -25,7 +25,7 @@ FileData* findOrCreateFile(SystemData* system, const std::string& path, FileType
 
 	if(!contains)
 	{
-		LOG(LogError) << "File path \"" << path << "\" is outside system path \"" << system->getStartPath() << "\"";
+		LOG(LogError) << "Gamelist::findOrCreateFile() - File path \"" << path << "\" is outside system path \"" << system->getStartPath() << "\"";
 		return NULL;
 	}
 
@@ -52,7 +52,7 @@ FileData* findOrCreateFile(SystemData* system, const std::string& path, FileType
 			if (type == FOLDER)
 			{
 				return NULL;
-				LOG(LogWarning) << "gameList: folder doesn't already exist, won't create";
+				LOG(LogWarning) << "Gamelist::findOrCreateFile() - gameList: folder doesn't already exist, won't create";
 			}
 
 			if (type == GAME) // Final file
@@ -60,7 +60,7 @@ FileData* findOrCreateFile(SystemData* system, const std::string& path, FileType
 				// Skip if the extension in the gamelist is unknown
 				if (!system->getSystemEnvData()->isValidExtension(Utils::String::toLower(Utils::FileSystem::getExtension(path))))
 				{
-					LOG(LogWarning) << "gameList: file extension is not known by systemlist";
+					LOG(LogWarning) << "Gamelist::findOrCreateFile() - gameList: file extension is not known by systemlist";
 					return NULL;
 				}
 
@@ -82,7 +82,7 @@ FileData* findOrCreateFile(SystemData* system, const std::string& path, FileType
 			// if type is a folder it's gonna be empty, so don't bother
 			if(type == FOLDER)
 			{
-				LOG(LogWarning) << "gameList: folder doesn't already exist, won't create";
+				LOG(LogWarning) << "Gamelist::findOrCreateFile() - gameList: folder doesn't already exist, won't create";
 				return NULL;
 			}
 
@@ -103,21 +103,27 @@ void loadGamelistFile (const std::string xmlpath, SystemData* system, std::unord
 {	
 	bool trustGamelist = Settings::getInstance()->getBool("ParseGamelistOnly");
 
-	LOG(LogInfo) << "Parsing XML file \"" << xmlpath << "\"...";
+	LOG(LogInfo) << "Gamelist::loadGamelistFile() - Parsing XML file \"" << xmlpath << "\"...";
+
+	if ( !Utils::String::endsWith(xmlpath, ".xml") )
+	{
+		LOG(LogWarning) << "Gamelist::loadGamelistFile() - file \"" << xmlpath << "\" isn't a XML file, skipped!";
+		return;
+	}
 
 	pugi::xml_document doc;
 	pugi::xml_parse_result result = doc.load_file(xmlpath.c_str());
 
 	if (!result)
 	{
-		LOG(LogError) << "Error parsing XML file \"" << xmlpath << "\"!\n	" << result.description();
+		LOG(LogError) << "Gamelist::loadGamelistFile() - Error parsing XML file \"" << xmlpath << "\"!\n	" << result.description();
 		return;
 	}
 
 	pugi::xml_node root = doc.child("gameList");
 	if (!root)
 	{
-		LOG(LogError) << "Could not find <gameList> node in gamelist \"" << xmlpath << "\"!";
+		LOG(LogError) << "Gamelist::loadGamelistFile() - Could not find <gameList> node in gamelist \"" << xmlpath << "\"!";
 		return;
 	}
 
@@ -126,7 +132,7 @@ void loadGamelistFile (const std::string xmlpath, SystemData* system, std::unord
 		auto parentSize = root.attribute("parentHash").as_uint();
 		if (parentSize != checkSize)
 		{
-			LOG(LogWarning) << "gamelist size don't match !";
+			LOG(LogWarning) << "Gamelist::loadGamelistFile() - gamelist size don't match !";
 			return;
 		}
 	}
@@ -147,14 +153,14 @@ void loadGamelistFile (const std::string xmlpath, SystemData* system, std::unord
 		const std::string path = Utils::FileSystem::resolveRelativePath(fileNode.child("path").text().get(), relativeTo, false);
 		if (!trustGamelist && !Utils::FileSystem::exists(path))
 		{
-			LOG(LogWarning) << "File \"" << path << "\" does not exist! Ignoring.";
+			LOG(LogWarning) << "Gamelist::loadGamelistFile() - File \"" << path << "\" does not exist! Ignoring.";
 			continue;
 		}
 
 		FileData* file = findOrCreateFile(system, path, type, fileMap);
 		if (!file)
 		{
-			LOG(LogError) << "Error finding/creating FileData for \"" << path << "\", skipping.";
+			LOG(LogError) << "Gamelist::loadGamelistFile() - Error finding/creating FileData for \"" << path << "\", skipping.";
 			continue;
 		}
 		else if (!file->isArcadeAsset())
@@ -272,7 +278,7 @@ bool saveToGamelistRecovery(FileData* file)
 
 		if (!doc.save_file(path.c_str()))
 		{
-			LOG(LogError) << "Error saving gamelist.xml to \"" << path << "\" (for system " << system->getName() << ")!";
+			LOG(LogError) << "Gamelist::saveToGamelistRecovery() - Error saving gamelist.xml to \"" << path << "\" (for system " << system->getName() << ")!";
 			return false;
 		}
 
@@ -314,7 +320,7 @@ void updateGamelist(SystemData* system)
 	FolderData* rootFolder = system->getRootFolder();
 	if (rootFolder == nullptr)
 	{
-		LOG(LogError) << "Found no root folder for system \"" << system->getName() << "\"!";
+		LOG(LogError) << "Gamelist::updateGamelist() - Found no root folder for system \"" << system->getName() << "\"!";
 		return;
 	}
 
@@ -341,12 +347,12 @@ void updateGamelist(SystemData* system)
 		//parse an existing file first
 		pugi::xml_parse_result result = doc.load_file(xmlReadPath.c_str());
 		if(!result)
-			LOG(LogError) << "Error parsing XML file \"" << xmlReadPath << "\"!\n	" << result.description();
+			LOG(LogError) << "Gamelist::updateGamelist() - Error parsing XML file \"" << xmlReadPath << "\"!\n	" << result.description();
 
 		root = doc.child("gameList");		
 		if(!root)
 		{
-			LOG(LogError) << "Could not find <gameList> node in gamelist \"" << xmlReadPath << "\"!";
+			LOG(LogError) << "Gamelist::updateGamelist() - Could not find <gameList> node in gamelist \"" << xmlReadPath << "\"!";
 			root = doc.append_child("gameList");
 		}
 	}else{
@@ -396,7 +402,7 @@ void updateGamelist(SystemData* system)
 		std::string xmlWritePath(system->getGamelistPath(true));
 		Utils::FileSystem::createDirectory(Utils::FileSystem::getParent(xmlWritePath));
 
-		LOG(LogInfo) << "Added/Updated " << numUpdated << " entities in '" << xmlReadPath << "'";
+		LOG(LogInfo) << "Gamelist::updateGamelist() - Added/Updated " << numUpdated << " entities in '" << xmlReadPath << "'";
 
 		// Secure XML writing -> Write to a temporary file first
 		std::string tmpFile = xmlWritePath + ".tmp";
@@ -404,7 +410,7 @@ void updateGamelist(SystemData* system)
 			Utils::FileSystem::removeFile(tmpFile);
 
 		if (!doc.save_file(tmpFile.c_str())) {
-			LOG(LogError) << "Error saving gamelist.xml to \"" << xmlWritePath << "\" (for system " << system->getName() << ")!";
+			LOG(LogError) << "Gamelist::updateGamelist() - Error saving gamelist.xml to \"" << xmlWritePath << "\" (for system " << system->getName() << ")!";
 		}
 		else if (Utils::FileSystem::exists(tmpFile))
 		{				
@@ -423,11 +429,11 @@ void updateGamelist(SystemData* system)
 				if (Utils::FileSystem::exists(xmlWritePath))
 					std::rename(xmlWritePath.c_str(), savFile.c_str());
 				else
-					LOG(LogError) << "Unable to rename \"" << xmlWritePath << "to " << savFile << "\"!";
+					LOG(LogError) << "Gamelist::updateGamelist() - Unable to rename \"" << xmlWritePath << "to " << savFile << "\"!";
 
 				// rename gamelist.tmp.xml to gamelist.xml
 				if (std::rename(tmpFile.c_str(), xmlWritePath.c_str()) != 0)
-					LOG(LogError) << "Unable to rename \"" << tmpFile << "to " << xmlWritePath << "\"!";
+					LOG(LogError) << "Gamelist::updateGamelist() - Unable to rename \"" << tmpFile << "to " << xmlWritePath << "\"!";
 
 				clearTemporaryGamelistRecovery(system);
 			}
