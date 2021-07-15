@@ -1327,21 +1327,30 @@ std::map<std::string, ThemeSet> ThemeData::getThemeSets()
 		int position = rand() % sets.size(),
 				i = 0;
 
+		std::string oldTheme = Settings::getInstance()->getString("ThemeSet");
+		bool selected = false;
+
 		std::map<std::string, ThemeSet>::const_iterator set;
 		for (auto it = sets.cbegin(); it != sets.cend(); it++)
 		{
 			set = it;
 
-			if (i == position)
+			if ( (i == position) && (oldTheme == it->first) )
+				position++;
+			else if (i == position)
+			{
+				selected = true;
 				break;
+			}
 
 			i++;
 		}
-		if(set != sets.cend())
-		{
-			Settings::getInstance()->setString("ThemeSet", set->first);
-			Settings::getInstance()->setBool("ThemeRandomSet", true);
-		}
+
+		if(!selected)
+			set = sets.cbegin();
+
+		Settings::getInstance()->setString("ThemeSet", set->first);
+		Settings::getInstance()->setBool("ThemeRandomSet", true);
 	}
 
 	return sets;

@@ -727,8 +727,13 @@ void GuiMenu::openUISettings()
 				s->setVariable("reloadGuiMenu", true);
 
 					// if theme is manual set, disable random theme selection
-				Settings::getInstance()->setBool("ThemeRandom", false);
-				themeRandom->setState(Settings::getInstance()->getBool("ThemeRandom"));
+				if (Settings::getInstance()->getBool("ThemeRandom"))
+				{
+					Settings::getInstance()->setBool("ThemeRandom", false);
+					themeRandom->setState(Settings::getInstance()->getBool("ThemeRandom"));
+					window->pushGui(new GuiMsgBox(window, _("YOU SELECTED A THEME MANUALLY, THE RANDOM THEME SELECTION HAS BEEN DISABLED"), _("OK")));
+				}
+
 				Scripting::fireEvent("theme-changed", theme_set->getSelected(), oldTheme);
 			}
 		});
