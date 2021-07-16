@@ -6,6 +6,7 @@
 #include <mutex>
 #include "Settings.h"
 #include <iomanip> 
+#include <chrono>
 
 static std::mutex mLogLock;
 
@@ -53,8 +54,32 @@ void Log::init()
 
 std::ostringstream& Log::get(LogLevel level)
 {
-	time_t t = time(nullptr);
-	os << std::put_time(localtime(&t), "%F %T\t");
+	//time_t t = time(nullptr);
+	//os << std::put_time(localtime(&t), "%F %T\t");
+
+	std::chrono::system_clock::time_point tp = std::chrono::system_clock::now();
+
+	time_t raw_time = std::chrono::system_clock::to_time_t(tp);
+
+		// Tm* does not need to be deleted after use, because tm* is created by localtime, and there will be one in each thread
+	struct tm  *timeinfo = std::localtime(&raw_time);
+
+	os << std::put_time(timeinfo, "%F %T");
+
+	if (Settings::getInstance()->getBool("LogWithMilliseconds"))
+	{
+			// tm can only go to seconds, milliseconds need to be obtained separately
+		std::chrono::milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(tp.time_since_epoch());
+
+		std::string milliseconds_str = std::to_string(ms.count() % 1000);
+
+		if (milliseconds_str.length() < 3)
+			milliseconds_str = (std::string(3 - milliseconds_str.length(), '0') + milliseconds_str).c_str();
+
+		os << ':' << milliseconds_str;
+	}
+
+	os << '\t';
 
 	switch (level)
 	{
