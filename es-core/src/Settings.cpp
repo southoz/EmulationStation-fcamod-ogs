@@ -203,6 +203,10 @@ void Settings::setDefaults()
 	
 	mBoolMap["DrawClock"] = true;
 
+	// Log settings
+	mStringMap["LogLevel"] = "default";
+	mBoolMap["LogWithMilliseconds"] = false;
+
 	mDefaultBoolMap = mBoolMap;
 	mDefaultIntMap = mIntMap;
 	mDefaultFloatMap = mFloatMap;

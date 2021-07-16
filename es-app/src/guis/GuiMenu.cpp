@@ -1491,6 +1491,18 @@ void GuiMenu::openOtherSettings()
 		}
 	});
 
+	auto logWithMilliseconds = std::make_shared<SwitchComponent>(mWindow);
+	logWithMilliseconds->setState(Settings::getInstance()->getBool("LogWithMilliseconds"));
+	s->addWithLabel(_("LOG WITH MILLISECONDS"), logWithMilliseconds);
+	s->addSaveFunc([logWithMilliseconds] {
+		bool old_value = Settings::getInstance()->getBool("LogWithMilliseconds");
+		if (old_value != logWithMilliseconds->getState())
+		{
+			Settings::getInstance()->setBool("LogWithMilliseconds", logWithMilliseconds->getState());
+			Log::setupReportingLevel();
+			Log::init();
+		}
+	});
 
 
 
