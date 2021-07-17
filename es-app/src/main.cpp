@@ -234,7 +234,6 @@ bool parseArgs(int argc, char* argv[])
 		else if (strcmp(argv[i], "--debug") == 0)
 		{
 			Settings::getInstance()->setBool("Debug", true);
-			Settings::getInstance()->setBool("HideConsole", false);
 			Log::setReportingLevel(LogDebug);
 		}
 		else if (strcmp(argv[i], "--fullscreen-borderless") == 0)
