@@ -188,6 +188,7 @@ void Settings::setDefaults()
 	mBoolMap["updates.enabled"] = false;
 	
 	mBoolMap["DrawClock"] = true;
+	mBoolMap["ClockMode12"] = false;
 
 	// Log settings
 	mStringMap["LogLevel"] = "default";
