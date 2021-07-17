@@ -21,7 +21,6 @@ std::vector<const char*> settings_dont_save {
 	{ "ForceKid" },
 	{ "ForceKiosk" },
 	{ "IgnoreGamelist" },
-	{ "HideConsole" },
 	{ "ShowExit" },
 	{ "SplashScreen" },
 	{ "SplashScreenProgress" },
@@ -36,9 +35,7 @@ std::vector<const char*> settings_dont_save {
 	{ "ScreenOffsetY" },
 	{ "ScreenRotate" },
 	{ "MonitorID" },
-	{ "ExePath" },
-	{ "HomePath" },
-	{ "MusicDirectory"},
+	{ "MusicDirectory" },
 	{ "UserMusicDirectory" },
 	{ "ThemeRandomSet" }
 };
@@ -90,7 +87,6 @@ void Settings::setDefaults()
 	mBoolMap["ShowHelpPrompts"] = true;
 	mBoolMap["ScrapeRatings"] = true;
 	mBoolMap["IgnoreGamelist"] = false;
-	mBoolMap["HideConsole"] = true;
 	mBoolMap["QuickSystemSelect"] = true;
 	mBoolMap["MoveCarousel"] = true;
 	mBoolMap["SaveGamelistsOnExit"] = true;
@@ -140,21 +136,12 @@ void Settings::setDefaults()
 	mStringMap["SlideshowScreenSaverImageFilter"] = ".png,.jpg";
 	mBoolMap["SlideshowScreenSaverRecurse"] = false;
 	mBoolMap["SlideshowScreenSaverGameName"] = true;
-	
-	mBoolMap["ShowFilenames"] = false;
-
-	// This setting only applies to raspberry pi but set it for all platforms so
-	// we don't get a warning if we encounter it on a different platform
-	mBoolMap["VideoOmxPlayer"] = false;
-	mBoolMap["ScreenSaverOmxPlayer"] = false;
-
 	mIntMap["ScreenSaverSwapVideoTimeout"] = 30000;
+
+	mBoolMap["ShowFilenames"] = false;
 
 	mBoolMap["VideoAudio"] = true;
 	mBoolMap["VideoLowersMusic"] = true;
-	mBoolMap["CaptionsCompatibility"] = true;
-	// Audio out device for Video playback using OMX player.
-	mStringMap["OMXAudioDev"] = "both";
 	mStringMap["CollectionSystemsAuto"] = "";
 	mStringMap["CollectionSystemsCustom"] = "";
 	mBoolMap["CollectionShowSystemInfo"] = true;
@@ -183,7 +170,6 @@ void Settings::setDefaults()
 	mIntMap["ScreenOffsetY"] = 0;
 	mIntMap["ScreenRotate"]  = 0;
 	mIntMap["MonitorID"] = -1;	
-	mStringMap["ExePath"] = "";
 
 	mStringMap["Scraper"] = "ScreenScraper";
 	mStringMap["ScrapperImageSrc"] = "ss";
@@ -199,7 +185,7 @@ void Settings::setDefaults()
 	mStringMap["MusicDirectory"] = "/roms/bgmusic";
 	mStringMap["UserMusicDirectory"] = "";
 
-	mBoolMap["updates.enabled"] = true;
+	mBoolMap["updates.enabled"] = false;
 	
 	mBoolMap["DrawClock"] = true;
 

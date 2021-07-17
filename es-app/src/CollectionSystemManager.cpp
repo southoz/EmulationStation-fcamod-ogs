@@ -1262,10 +1262,9 @@ bool CollectionSystemManager::themeFolderExists(std::string folder)
 
 bool CollectionSystemManager::includeFileInAutoCollections(FileData* file)
 {
-	// we exclude non-game files from collections (i.e. "kodi", entries from non-game systems)
 	// if/when there are more in the future, maybe this can be a more complex method, with a proper list
 	// but for now a simple string comparison is more performant
-	return file->getName() != "kodi" && file->getSystem()->isGameSystem();
+	return file->getSystem()->isGameSystem();
 }
 
 std::string getCustomCollectionConfigPath(std::string collectionName)

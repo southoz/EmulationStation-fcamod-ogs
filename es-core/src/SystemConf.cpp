@@ -19,8 +19,6 @@ static std::vector<std::string> dontRemoveAutoValue
 
 static std::map<std::string, std::string> defaults =
 {
-	{ "kodi.enabled", "1" },
-	{ "kodi.atstartup", "0" },
 	{ "audio.bgmusic", "1" },
 	{ "wifi.enabled", "0" },
 	{ "system.hostname", "BATOCERA" },
@@ -42,15 +40,15 @@ SystemConf::SystemConf()
     loadSystemConf();
 }
 
-SystemConf *SystemConf::getInstance() 
+SystemConf *SystemConf::getInstance()
 {
-    if (sInstance == NULL)
-        sInstance = new SystemConf();
+	if (sInstance == NULL)
+		sInstance = new SystemConf();
 
-    return sInstance;
+	return sInstance;
 }
 
-bool SystemConf::loadSystemConf() 
+bool SystemConf::loadSystemConf()
 {
 #ifdef NOBATOCERACONF
 	return true;
@@ -58,10 +56,12 @@ bool SystemConf::loadSystemConf()
 
 	mWasChanged = false;
 
-    std::string line;
-    std::ifstream systemConf(systemConfFile);
-    if (systemConf && systemConf.is_open()) {
-        while (std::getline(systemConf, line)) {
+	std::string line;
+	std::ifstream systemConf(systemConfFile);
+	if (systemConf && systemConf.is_open())
+	{
+		while (std::getline(systemConf, line))
+		{
 
 			int idx = line.find("=");
 			if (idx == std::string::npos || line.find("#") == 0 || line.find(";") == 0)
@@ -72,13 +72,13 @@ bool SystemConf::loadSystemConf()
 			if (!key.empty() && !value.empty())
 				confMap[key] = line.substr(idx + 1);
 
-        }
-        systemConf.close();
-    } else {
-        LOG(LogError) << "Unable to open " << systemConfFile;
-        return false;
-    }
-    return true;
+		}
+		systemConf.close();
+	} else {
+		LOG(LogError) << "SystemConf::getInstance() - Unable to open " << systemConfFile;
+		return false;
+	}
+	return true;
 }
 
 bool SystemConf::saveSystemConf()
@@ -94,7 +94,7 @@ bool SystemConf::saveSystemConf()
 
 	if (!filein)
 	{
-		LOG(LogError) << "Unable to open for saving :  " << systemConfFile << "\n";
+		LOG(LogError) << "SystemConf::saveSystemConf() - Unable to open for saving :  " << systemConfFile << "\n";
 		return false;
 	}
 
@@ -163,12 +163,12 @@ bool SystemConf::saveSystemConf()
 
 	lastTime = SDL_GetTicks() - lastTime;
 
-	LOG(LogDebug) << "saveSystemConf :  " << lastTime;
+	LOG(LogDebug) << "SystemConf::saveSystemConf() - saveSystemConf :  " << lastTime;
 
 	std::ofstream fileout(systemConfFileTmp); //Temporary file
 	if (!fileout)
 	{
-		LOG(LogError) << "Unable to open for saving :  " << systemConfFileTmp << "\n";
+		LOG(LogError) << "SystemConf::saveSystemConf() - Unable to open for saving :  " << systemConfFileTmp << "\n";
 		return false;
 	}
 	for (int i = 0; i < fileLines.size(); i++) 
@@ -190,19 +190,19 @@ bool SystemConf::saveSystemConf()
 	return true;
 }
 
-std::string SystemConf::get(const std::string &name) 
+std::string SystemConf::get(const std::string &name)
 {
 #ifdef NOBATOCERACONF
 	return Settings::getInstance()->getString(mapSettingsName(name));
 #endif
-	
-    if (confMap.count(name))
-        return confMap[name];
-    
-    return "";
+
+	if (confMap.count(name))
+		return confMap[name];
+
+	return "";
 }
 
-bool SystemConf::set(const std::string &name, const std::string &value) 
+bool SystemConf::set(const std::string &name, const std::string &value)
 {
 #ifdef NOBATOCERACONF
 	return Settings::getInstance()->setString(mapSettingsName(name), value == "auto" ? "" : value);
