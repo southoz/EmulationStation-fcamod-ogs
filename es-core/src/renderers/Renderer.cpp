@@ -17,6 +17,8 @@ namespace Renderer
 	static std::stack<Rect> clipStack;
 	static std::stack<Rect> nativeClipStack;
 
+	bool mFullScreenMode = false;
+
 	//static SDL_Window*      sdlWindow          = nullptr;
 	static int              windowWidth        = 0;
 	static int              windowHeight       = 0;
@@ -67,11 +69,11 @@ namespace Renderer
 
 	static bool createWindow()
 	{
-		LOG(LogInfo) << "Creating window...";
+		LOG(LogInfo) << "Renderer::createWindow() - Creating window...";
 
 		if(SDL_Init(SDL_INIT_EVENTS) != 0)
 		{
-			LOG(LogError) << "Error initializing SDL!\n	" << SDL_GetError();
+			LOG(LogError) << "Renderer::createWindow() - Error initializing SDL!\n	" << SDL_GetError();
 			return false;
 		}
 
@@ -138,11 +140,11 @@ namespace Renderer
 			windowWidth, windowHeight,
 			windowFlags)) == nullptr)
 		{
-			LOG(LogError) << "Error creating SDL window!\n\t" << SDL_GetError();
+			LOG(LogError) << "Renderer::createWindow() - Error creating SDL window!\n\t" << SDL_GetError();
 			return false;
 		}
 
-		LOG(LogInfo) << "Created window successfully.";
+		LOG(LogInfo) << "Renderer::createWindow() - Created window successfully.";
 
 		createContext();
 		setIcon();
@@ -153,9 +155,18 @@ namespace Renderer
 		windowWidth = go2_display_height_get(display);
 		windowHeight = go2_display_width_get(display);
 		screenWidth = windowWidth;
-		screenHeight = windowHeight - 16;
+		if (Renderer::isFullScreenMode())
+		{
+			screenHeight = windowHeight;
+			screenOffsetY = 0;
+		}
+		else
+		{
+			screenHeight = windowHeight - 16;
+			screenOffsetY = 0 + 16;
+		}
+		
 		screenOffsetX = 0;
-		screenOffsetY = 0 + 16;
 		screenRotate = 0;
 
 		setupWindow();
@@ -194,8 +205,9 @@ namespace Renderer
 		//SDL_SetWindowInputFocus(sdlWindow);
 	}
 
-	bool init()
+	bool init(bool forceFullScreen)
 	{
+		mFullScreenMode = forceFullScreen;
 		if(!createWindow())
 			return false;
 
@@ -308,7 +320,7 @@ namespace Renderer
 	{
 		if(clipStack.empty())
 		{
-			LOG(LogError) << "Tried to popClipRect while the stack was empty!";
+			LOG(LogError) << "Renderer::popClipRect() - Tried to popClipRect while the stack was empty!";
 			return;
 		}
 
@@ -400,6 +412,8 @@ namespace Renderer
 	go2_display_t* getDisplay()    { return display; }
 
 	bool        isSmallScreen()    { return screenWidth < 400 || screenHeight < 400; };
+
+	bool        isFullScreenMode()    { return mFullScreenMode; };
 
 	unsigned int mixColors(unsigned int first, unsigned int second, float percent)
 	{

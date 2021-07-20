@@ -63,7 +63,7 @@ namespace Renderer
 
 	}; // Vertex
 
-	bool        init            ();
+	bool        init            (bool forceFullScreen = false);
 	void        deinit          ();
 	void        pushClipRect    (const Vector2i& _pos, const Vector2i& _size);
 	void        popClipRect     ();
@@ -107,6 +107,8 @@ namespace Renderer
 
 	// GPI Case
 	bool         isSmallScreen();
+
+	bool        isFullScreenMode();
 
 	unsigned int mixColors(unsigned int first, unsigned int second, float percent);
 

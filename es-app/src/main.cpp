@@ -31,6 +31,15 @@
 #include "scrapers/ThreadedScraper.h"
 #include "ImageIO.h"
 
+const std::string INVALID_HOME_PATH = "Invalid home path supplied.";
+const std::string INVALID_MONITOR = "Invalid monitor supplied.";
+const std::string INVALID_RESOLUTION = "Invalid resolution supplied.";
+const std::string INVALID_SCREEN_SIZE = "Invalid screensize supplied.";
+const std::string INVALID_SCREEN_OFFSET = "Invalid screenoffset supplied.";
+const std::string INVALID_SCREEN_ROTATE = "Invalid screenrotate supplied.";
+const std::string ERROR_CONFIG_DIRECTORY = "Config directory could not be created!";
+const std::string WINDOW_FAILED_INITIALIZE = "Window failed to initialize!";
+
 bool scrape_cmdline = false;
 
 #include "components/VideoVlcComponent.h"
@@ -40,12 +49,13 @@ static int gPlayVideoDuration = 0;
 
 void playVideo()
 {
+	LOG(LogInfo) << "MAIN::playVideo() - playing video splash \"" << gPlayVideo << '"';
 	Settings::getInstance()->setBool("AlwaysOnTop", true);
 
 	Window window;
-	if (!window.init(true))
+	if (!window.init(true, true))
 	{
-		LOG(LogError) << "Window failed to initialize!";
+		LOG(LogError) << WINDOW_FAILED_INITIALIZE;
 		return;
 	}
 
@@ -53,6 +63,7 @@ void playVideo()
 
 	bool exitLoop = false;
 
+	LOG(LogDebug) << "MAIN::playVideo():57 - configuring VideoVlcComponent";
 	VideoVlcComponent vid(&window);
 	vid.setVideo(gPlayVideo);
 	vid.setOrigin(0.5f, 0.5f);
@@ -60,11 +71,13 @@ void playVideo()
 	vid.setMaxSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());
 
 	vid.setOnVideoEnded([&exitLoop]()
-	{ 
+	{
+		LOG(LogDebug) << "MAIN::playVideo():66 - setOnVideoEnded() - video finalizado";
 		exitLoop = true;
 		return false;
 	});
 
+	LOG(LogDebug) << "MAIN::playVideo():71 - window.pushGui(&vid) - video lanzadao a la ventana";
 	window.pushGui(&vid);
 
 	vid.onShow();
@@ -82,7 +95,10 @@ void playVideo()
 			do
 			{
 				if (event.type == SDL_QUIT)
+				{
+					LOG(LogDebug) << "MAIN::playVideo():90 - (event.type == SDL_QUIT) - forzando la salida del video";
 					return;
+				}
 			} while (SDL_PollEvent(&event));
 		}
 
@@ -103,12 +119,14 @@ void playVideo()
 
 		Renderer::swapBuffers();
 	}
-
+	LOG(LogDebug) << "MAIN::playVideo():113 - salida del bucle, exitLoop: " << (exitLoop ? "true" : "false");
+	LOG(LogDebug) << "MAIN::playVideo():115 - window.deinit(true) - reinicio de la ventana";
 	window.deinit(true);
 }
 
 bool parseArgs(int argc, char* argv[])
 {
+	LOG(LogInfo) << "MAIN::parseArgs() - parsing arguments, number: " << std::to_string(argc);
 	Utils::FileSystem::setExePath(argv[0]);
 	// We need to process --home before any call to Settings::getInstance(), because settings are loaded from homepath
 	for (int i = 1; i < argc; i++)
@@ -117,7 +135,8 @@ bool parseArgs(int argc, char* argv[])
 		{
 			if (i >= argc - 1)
 			{
-				std::cerr << "Invalid home path supplied.";
+				std::cerr << INVALID_HOME_PATH;
+				LOG(LogError) << "MAIN::parseArgs()" << INVALID_HOME_PATH;
 				return false;
 			}
 
@@ -125,9 +144,10 @@ bool parseArgs(int argc, char* argv[])
 			break;
 		}
 	}
-	   
+
 	for(int i = 1; i < argc; i++)
 	{
+		LOG(LogInfo) << "MAIN::parseArgs() - execution argument: " << argv[i];
 		if (strcmp(argv[i], "--videoduration") == 0)
 		{
 			gPlayVideoDuration = atoi(argv[i + 1]);
@@ -135,7 +155,7 @@ bool parseArgs(int argc, char* argv[])
 		}
 		else
 		if (strcmp(argv[i], "--video") == 0)
-		{			
+		{
 			gPlayVideo = argv[i + 1];
 			i++; // skip the argument value
 		}
@@ -144,7 +164,8 @@ bool parseArgs(int argc, char* argv[])
 		{
 			if (i >= argc - 1)
 			{
-				std::cerr << "Invalid monitor supplied.";
+				std::cerr << INVALID_MONITOR;
+				LOG(LogError) << "MAIN::parseArgs() - " << INVALID_MONITOR;
 				return false;
 			}
 
@@ -156,7 +177,8 @@ bool parseArgs(int argc, char* argv[])
 		{
 			if(i >= argc - 2)
 			{
-				std::cerr << "Invalid resolution supplied.";
+				std::cerr << INVALID_RESOLUTION;
+				LOG(LogError) << "MAIN::parseArgs() - " << INVALID_RESOLUTION;
 				return false;
 			}
 
@@ -171,7 +193,8 @@ bool parseArgs(int argc, char* argv[])
 		{
 			if (i >= argc - 2)
 			{
-				std::cerr << "Invalid screensize supplied.";
+				std::cerr << INVALID_SCREEN_SIZE;
+				LOG(LogError) << "MAIN::parseArgs() - " << INVALID_SCREEN_SIZE;
 				return false;
 			}
 
@@ -185,7 +208,8 @@ bool parseArgs(int argc, char* argv[])
 		{
 			if(i >= argc - 2)
 			{
-				std::cerr << "Invalid screenoffset supplied.";
+				std::cerr << INVALID_SCREEN_OFFSET;
+				LOG(LogError) << "MAIN::parseArgs() - " << INVALID_SCREEN_OFFSET;
 				return false;
 			}
 
@@ -199,7 +223,8 @@ bool parseArgs(int argc, char* argv[])
 		{
 			if (i >= argc - 1)
 			{
-				std::cerr << "Invalid screenrotate supplied.";
+				std::cerr << INVALID_SCREEN_ROTATE;
+				LOG(LogError) << "MAIN::parseArgs() - " << INVALID_SCREEN_ROTATE;
 				return false;
 			}
 
@@ -310,6 +335,8 @@ bool parseArgs(int argc, char* argv[])
 				"--force-kid		Force the UI mode to be Kid\n"
 				"--force-kiosk		Force the UI mode to be Kiosk\n"
 				"--force-disable-filters		Force the UI to ignore applied filters in gamelist\n"
+				"--video		path to the video spalsh\n"
+				"--videoduration		the video spalsh durarion in seconds\n"
 				"--help, -h			summon a sentient, angry tuba\n\n"
 				"More information available in README.md.\n";
 			return false; //exit after printing help
@@ -326,11 +353,12 @@ bool verifyHomeFolderExists()
 	std::string configDir = home + "/.emulationstation";
 	if(!Utils::FileSystem::exists(configDir))
 	{
-		std::cout << "Creating config directory \"" << configDir << "\"\n";
+		LOG(LogInfo) << "MAIN::verifyHomeFolderExists() - Creating config directory \"" << configDir << '"';
 		Utils::FileSystem::createDirectory(configDir);
 		if(!Utils::FileSystem::exists(configDir))
 		{
-			std::cerr << "Config directory could not be created!\n";
+			std::cerr << ERROR_CONFIG_DIRECTORY << '\n';
+			LOG(LogError) << "MAIN::verifyHomeFolderExists() - " << ERROR_CONFIG_DIRECTORY;
 			return false;
 		}
 	}
@@ -347,7 +375,7 @@ bool loadSystemConfigFile(Window* window, const char** errorString)
 
 	if (!SystemData::loadConfig(window))
 	{
-		LOG(LogError) << "Error while parsing systems configuration file!";
+		LOG(LogError) << "MAIN::loadSystemConfigFile() - Error while parsing systems configuration file!";
 
 		*errorString = "IT LOOKS LIKE YOUR SYSTEMS CONFIGURATION FILE HAS NOT BEEN SET UP OR IS INVALID. YOU'LL NEED TO DO THIS BY HAND, UNFORTUNATELY.\n\n"
 			"VISIT EMULATIONSTATION.ORG FOR MORE INFORMATION.";
@@ -357,7 +385,7 @@ bool loadSystemConfigFile(Window* window, const char** errorString)
 
 	if(SystemData::sSystemVector.size() == 0)
 	{
-		LOG(LogError) << "No systems found! Does at least one system have a game present? (check that extensions match!)\n(Also, make sure you've updated your es_systems.cfg for XML!)";
+		LOG(LogError) << "MAIN::loadSystemConfigFile() - No systems found! Does at least one system have a game present? (check that extensions match!)\n(Also, make sure you've updated your es_systems.cfg for XML!)";
 
 		*errorString = "WE CAN'T FIND ANY SYSTEMS!\n"
 			"CHECK THAT YOUR PATHS ARE CORRECT IN THE SYSTEMS CONFIGURATION FILE, "
@@ -386,13 +414,18 @@ void processAudioTitles(Window* window)
 	}
 }
 
-#include "ApiSystem.h"
+//#include "ApiSystem.h"
 
 int main(int argc, char* argv[])
 {
 	srand((unsigned int)time(NULL));
 
 	std::locale::global(std::locale("C"));
+
+	//start the logger
+	Log::setupReportingLevel();
+	Log::init();
+	LOG(LogInfo) << "MAIN::main() - EmulationStation - v" << PROGRAM_VERSION_STRING << ", built " << PROGRAM_BUILT_STRING;
 
 	if(!parseArgs(argc, argv))
 		return 0;
@@ -411,17 +444,12 @@ int main(int argc, char* argv[])
 	if (!gPlayVideo.empty())
 	{
 		playVideo();
-		return 0;
+		//return 0;
 	}
 
 	//if ~/.emulationstation doesn't exist and cannot be created, bail
 	if(!verifyHomeFolderExists())
 		return 1;
-
-	//start the logger
-	Log::setupReportingLevel();
-	Log::init();	
-	LOG(LogInfo) << "EmulationStation - v" << PROGRAM_VERSION_STRING << ", built " << PROGRAM_BUILT_STRING;
 
 	//always close the log on exit
 	atexit(&onExit);
@@ -444,7 +472,7 @@ int main(int argc, char* argv[])
 	{
 		if(!window.init(true))
 		{
-			LOG(LogError) << "Window failed to initialize!";
+			LOG(LogError) << WINDOW_FAILED_INITIALIZE;
 			return 1;
 		}
 
@@ -458,7 +486,7 @@ int main(int argc, char* argv[])
 		// something went terribly wrong
 		if (errorMsg == NULL)
 		{
-			LOG(LogError) << "Unknown error occured while parsing system config file.";
+			LOG(LogError) << "MAIN::main() - Unknown error occured while parsing system config file.";
 
 			if (!scrape_cmdline)
 				Renderer::deinit();
@@ -597,7 +625,7 @@ int main(int argc, char* argv[])
 
 	processQuitMode();
 
-	LOG(LogInfo) << "EmulationStation cleanly shutting down.";
+	LOG(LogInfo) << "MAIN::main() - EmulationStation cleanly shutting down.";
 
 	return 0;
 }

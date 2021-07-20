@@ -79,13 +79,13 @@ GuiComponent* Window::peekGui()
 	return mGuiStack.back();
 }
 
-bool Window::init(bool initRenderer)
+bool Window::init(bool initRenderer, bool forceFullScreen)
 {
-	LOG(LogInfo) << "Window::init():83";
+	LOG(LogInfo) << "Window::init() - initRenderer: " << (initRenderer ? "true" : "false") << ", forceFullScreen: " << (forceFullScreen ? "true" : "false");
 	
 	if (initRenderer)
 	{
-		if (!Renderer::init())
+		if (!Renderer::init(forceFullScreen))
 		{
 			LOG(LogError) << "Window::init() --> Renderer failed to initialize!";
 			return false;
@@ -169,7 +169,7 @@ void Window::input(InputConfig* config, Input input)
 {
 	if (mScreenSaver) {
 		if (mScreenSaver->isScreenSaverActive() && Settings::getInstance()->getBool("ScreenSaverControls") &&
-			((Settings::getInstance()->getString("ScreenSaverBehavior") == "slideshow") || 			
+			((Settings::getInstance()->getString("ScreenSaverBehavior") == "slideshow") || 
 			(Settings::getInstance()->getString("ScreenSaverBehavior") == "random video")))
 		{
 			if(mScreenSaver->getCurrentGame() != NULL && (config->isMappedLike("right", input) || config->isMappedTo("start", input) || config->isMappedTo("select", input)))
