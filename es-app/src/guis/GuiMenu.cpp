@@ -67,8 +67,15 @@ GuiMenu::GuiMenu(Window* window, bool animate) : GuiComponent(window), mMenu(win
 
 		addEntry(_("ADVANCED SETTINGS"), true, [this] { openOtherSettings(); }, "iconAdvanced");
 	}
-	
+
 	addEntry(_("QUIT"), !Settings::getInstance()->getBool("ShowOnlyExit"), [this] {openQuitMenu(); }, "iconQuit");
+
+	if (Settings::getInstance()->getBool("FullScreenMode"))
+	{
+		addEntry("BAT: " + std::string(getShOutput(R"(cat /sys/class/power_supply/battery/capacity)")) + "%" + " | SND: " + std::string(getShOutput(R"(current_volume)")) + " | BRT: " + std::to_string( go2_display_backlight_get(NULL) ) + "% |" + " WIFI: " + std::string(getShOutput(R"(cat /sys/class/net/wlan0/operstate)")), false, [this] {  });
+
+		addEntry("Distro Version: " + std::string(getShOutput(R"(cat /usr/share/plymouth/themes/text.plymouth | grep title | cut -c 7-50)")), false, [this] {  });
+	}
 
 	addChild(&mMenu);
 	addVersionInfo();
@@ -85,13 +92,56 @@ GuiMenu::GuiMenu(Window* window, bool animate) : GuiComponent(window), mMenu(win
 
 void GuiMenu::openDisplaySettings()
 {
+	auto pthis = this;
+	Window* window = mWindow;
 	// Brightness
 	auto s = new GuiSettings(mWindow, _("DISPLAY"));
 
 	auto bright = std::make_shared<SliderComponent>(mWindow, 1.0f, 100.f, 1.0f, "%");
 	bright->setValue((float)go2_display_backlight_get(NULL)+1.0);
 	s->addWithLabel(_("BRIGHTNESS"), bright);
-	s->addSaveFunc([bright] { go2_display_backlight_set(NULL, (int)Math::round(bright->getValue())); });
+	s->addSaveFunc([s, bright]
+		{
+			go2_display_backlight_set(NULL, (int)Math::round(bright->getValue()));
+			if (Settings::getInstance()->getBool("FullScreenMode"))
+				s->setVariable("reloadGuiMenu", true);
+		});
+
+	// Select Full Screen Mode
+	auto fullScreenMode = std::make_shared<SwitchComponent>(mWindow);
+	fullScreenMode->setState(Settings::getInstance()->getBool("FullScreenMode"));
+	s->addWithLabel(_("FULL SCREEN MODE"), fullScreenMode);
+	s->addSaveFunc([window, fullScreenMode] {
+		bool old_value = Settings::getInstance()->getBool("FullScreenMode");
+		if (old_value != fullScreenMode->getState())
+		{
+			window->pushGui(new GuiMsgBox(window, _("REALLY WANT TO CHANGE THE SCREEN MODE ?"), _("YES"),
+				[fullScreenMode] {
+				LOG(LogInfo) << "GuiMenu::openDisplaySettings() - change to screen mode: " << ( fullScreenMode->getState() ? "full" : "header" );
+				Settings::getInstance()->setBool("FullScreenMode", fullScreenMode->getState());
+				Settings::getInstance()->saveFile();
+				Scripting::fireEvent("quit");
+				//quitES();
+				if(quitES(QuitMode::RESTART) != 0)
+					LOG(LogWarning) << "GuiMenu::openDisplaySettings() - Restart terminated with non-zero result!";
+			}, _("NO"), nullptr));
+
+		}
+	});
+
+	if (Settings::getInstance()->getBool("FullScreenMode"))
+	{
+
+		s->onFinalize([s, pthis, window]
+		{
+			if (s->getVariable("reloadGuiMenu"))
+			{
+				delete pthis;
+				window->pushGui(new GuiMenu(window, false));
+			}
+		});
+
+	}
 
 	mWindow->pushGui(s);
 }

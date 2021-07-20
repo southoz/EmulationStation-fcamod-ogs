@@ -77,6 +77,7 @@ void Settings::setDefaults()
 	mBoolMap["PreloadUI"] = false;
 	mBoolMap["StartupOnGameList"] = false;
 	mBoolMap["HideSystemView"] = false;
+	mBoolMap["FullScreenMode"] = false;
 	
 	mStringMap["StartupSystem"] = "";
 

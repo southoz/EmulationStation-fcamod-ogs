@@ -470,7 +470,7 @@ int main(int argc, char* argv[])
 
 	if (!scrape_cmdline)
 	{
-		if(!window.init(true))
+		if(!window.init(true, Settings::getInstance()->getBool("FullScreenMode")))
 		{
 			LOG(LogError) << WINDOW_FAILED_INITIALIZE;
 			return 1;
