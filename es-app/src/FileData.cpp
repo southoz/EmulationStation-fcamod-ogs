@@ -313,7 +313,7 @@ void FileData::launchGame(Window* window)
 
 	Scripting::fireEvent("game-end");
 
-	window->init(hideWindow);
+	window->init(hideWindow, Settings::getInstance()->getBool("FullScreenMode"));
 
 	VolumeControl::getInstance()->init();
 	AudioManager::getInstance()->init();	
