@@ -116,6 +116,7 @@ void VideoVlcComponent::setMinSize(float width, float height)
 
 void VideoVlcComponent::onVideoStarted()
 {
+	setShowSnapshot(false);
 	VideoComponent::onVideoStarted();
 	resize();
 }

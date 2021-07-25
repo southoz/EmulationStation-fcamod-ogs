@@ -95,7 +95,7 @@ bool Window::init(bool initRenderer, bool forceFullScreen)
 	}
 	else
 		Renderer::activateWindow();
-		
+
 	ResourceManager::getInstance()->reloadAll();
 
 	//keep a reference to the default fonts, so they don't keep getting destroyed/recreated
@@ -115,8 +115,11 @@ bool Window::init(bool initRenderer, bool forceFullScreen)
 		mClock->setFont(Font::get(FONT_SIZE_SMALL));
 		mClock->setHorizontalAlignment(ALIGN_RIGHT);
 		mClock->setVerticalAlignment(ALIGN_TOP);
-		mClock->setPosition(Renderer::getScreenWidth()*0.94, Renderer::getScreenHeight()*0.9965 - Font::get(FONT_SIZE_SMALL)->getHeight());
-		mClock->setSize(Renderer::getScreenWidth()*0.05, 0);
+		//mClock->setPosition(Renderer::getScreenWidth()*0.94, Renderer::getScreenHeight()*0.9965 - Font::get(FONT_SIZE_SMALL)->getHeight());
+		//mClock->setSize(Renderer::getScreenWidth()*0.05, 0);
+		mClock->setPosition(Renderer::getScreenWidth() * 0.92, Renderer::getScreenHeight() * 0.9965 - mClock->getFont()->getHeight());
+		mClock->setSize(Renderer::getScreenWidth() * 0.07, 0);
+
 		mClock->setColor(0x777777FF);
 	}
 
@@ -440,7 +443,7 @@ void Window::renderLoadingScreen(std::string text, float percent, unsigned char 
 	}
 	
 	ImageComponent splash(this, true);
-	splash.setResize(Renderer::getScreenWidth() * 0.4f, 0.0f);	
+	splash.setResize(Renderer::getScreenWidth() * 0.4f, 0.0f);
 
 	if (mSplash != NULL)
 		splash.setImage(mSplash);

@@ -13,22 +13,22 @@ struct VideoContext
 {
 	VideoContext()
 	{
-		surfaces[0] = nullptr;
-		surfaces[1] = nullptr;
-		component = nullptr;
-		valid = false;
-		hasFrame[0] = false;
-		hasFrame[1] = false;
-		surfaceId = 0;
+		surfaces[0] =		nullptr;
+		surfaces[1] =		nullptr;
+		component =			nullptr;
+		valid =					false;
+		hasFrame[0] =		false;
+		hasFrame[1] =		false;
+		surfaceId =			0;
 	}
 
-	int					surfaceId;
+	int								surfaceId;
 	unsigned char*		surfaces[2];
-	std::mutex			mutexes[2];
-	bool				hasFrame[2];
+	std::mutex				mutexes[2];
+	bool							hasFrame[2];
 
 	VideoComponent*		component;
-	bool				valid;
+	bool							valid;
 };
 
 
@@ -79,6 +79,8 @@ public:
 
 	void	setColorShift(unsigned int color);
 
+	void setEffect(VideoVlcFlags::VideoVlcEffect effect) { mEffect = effect; }
+
 private:
 	// Calculates the correct mSize from our resizing information (set by setResize/setMaxSize).
 	// Used internally whenever the resizing parameters or texture change.
@@ -95,8 +97,6 @@ private:
 	void setupContext();
 	void freeContext();
 
-	void setEffect(VideoVlcFlags::VideoVlcEffect effect) { mEffect = effect; }
-
 private:
 	static libvlc_instance_t*		mVLC;
 	libvlc_media_t*					mMedia;
@@ -104,12 +104,12 @@ private:
 	VideoContext					mContext;
 	std::shared_ptr<TextureResource> mTexture;
 
-	std::string					    mSubtitlePath;
-	std::string					    mSubtitleTmpFile;
+	std::string				mSubtitlePath;
+	std::string				mSubtitleTmpFile;
 
 	VideoVlcFlags::VideoVlcEffect	mEffect;
 
-	unsigned int					mColorShift;
+	unsigned int			mColorShift;
 	int								mElapsed;
 
 	int								mCurrentLoop;

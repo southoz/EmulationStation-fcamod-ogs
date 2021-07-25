@@ -7,6 +7,7 @@
 #include <pugixml/src/pugixml.hpp>
 #include <algorithm>
 #include <vector>
+#include "resources/ResourceManager.h"
 
 Settings* Settings::sInstance = NULL;
 static std::string mEmptyString = "";
@@ -194,6 +195,12 @@ void Settings::setDefaults()
 	// Log settings
 	mStringMap["LogLevel"] = "default";
 	mBoolMap["LogWithMilliseconds"] = false;
+
+	// Preload VLC player
+	mBoolMap["PreloadVlcPlayer"] = false;
+	mIntMap["PreloadVlcVideoTimeout"] = 10000; // milliseconds
+	mStringMap["PreloadVlcImage"] = ResourceManager::getInstance()->getResourcePath(":/resources/es_preload_vlc.png");
+	mStringMap["PreloadVlcVideo"] = ResourceManager::getInstance()->getResourcePath(":/resources/es_preload_vlc.mp4");
 
 	mDefaultBoolMap = mBoolMap;
 	mDefaultIntMap = mIntMap;

@@ -45,12 +45,17 @@ bool scrape_cmdline = false;
 #include "components/VideoVlcComponent.h"
 
 static std::string gPlayVideo;
+static std::string gPlayImage;
 static int gPlayVideoDuration = 0;
+static std::string vlcImage;
+static std::string vlcVideo;
 
 void playVideo()
 {
 	LOG(LogInfo) << "MAIN::playVideo() - playing video splash \"" << gPlayVideo << '"';
 	Settings::getInstance()->setBool("AlwaysOnTop", true);
+	bool isPreloadVlc = Settings::getInstance()->getBool("PreloadVlcPlayer");
+
 
 	Window window;
 	if (!window.init(true, true))
@@ -63,28 +68,34 @@ void playVideo()
 
 	bool exitLoop = false;
 
-	LOG(LogDebug) << "MAIN::playVideo():57 - configuring VideoVlcComponent";
 	VideoVlcComponent vid(&window);
 	vid.setVideo(gPlayVideo);
+
+	if (!gPlayImage.empty())
+	{
+		vid.setEffect(VideoVlcFlags::VideoVlcEffect::NONE);
+		vid.setImage(gPlayImage);
+		vid.setShowSnapshot(true);
+	}
+
 	vid.setOrigin(0.5f, 0.5f);
 	vid.setPosition(Renderer::getScreenWidth() / 2.0f, Renderer::getScreenHeight() / 2.0f);
 	vid.setMaxSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());
 
 	vid.setOnVideoEnded([&exitLoop]()
 	{
-		LOG(LogDebug) << "MAIN::playVideo():66 - setOnVideoEnded() - video finalizado";
 		exitLoop = true;
 		return false;
 	});
 
-	LOG(LogDebug) << "MAIN::playVideo():71 - window.pushGui(&vid) - video lanzadao a la ventana";
 	window.pushGui(&vid);
 
 	vid.onShow();
 	vid.topWindow(true);
 
-	int lastTime = SDL_GetTicks();	
+	int firstTime = SDL_GetTicks();
 	int totalTime = 0;
+	int deltaTime = 1000;
 
 	while (!exitLoop)
 	{
@@ -96,20 +107,33 @@ void playVideo()
 			{
 				if (event.type == SDL_QUIT)
 				{
-					LOG(LogDebug) << "MAIN::playVideo():90 - (event.type == SDL_QUIT) - forzando la salida del video";
+					LOG(LogInfo) << "MAIN::playVideo() - exit by SDL_QUIT";
 					return;
 				}
+				else if (event.type == SDL_JOYBUTTONDOWN)
+				{
+					if (isPreloadVlc && vid.isPlaying())
+					{
+						int curTime = SDL_GetTicks();
+						int totalTime = curTime - firstTime;
+						if (gPlayVideoDuration > 0 && totalTime > gPlayVideoDuration )
+						{
+							exitLoop = true;
+							break;
+						}
+					}
+				}
 			} while (SDL_PollEvent(&event));
+			if (exitLoop)
+				break;
 		}
 
-		int curTime = SDL_GetTicks();
-		int deltaTime = curTime - lastTime;
-
-		if (vid.isPlaying())
+		if (!isPreloadVlc && vid.isPlaying())
 		{
-			totalTime += deltaTime;
+			int curTime = SDL_GetTicks();
+			int totalTime = curTime - firstTime;
 
-			if (gPlayVideoDuration > 0 && totalTime > gPlayVideoDuration * 100)
+			if (gPlayVideoDuration > 0 && totalTime > gPlayVideoDuration )
 				break;
 		}
 
@@ -119,8 +143,6 @@ void playVideo()
 
 		Renderer::swapBuffers();
 	}
-	LOG(LogDebug) << "MAIN::playVideo():113 - salida del bucle, exitLoop: " << (exitLoop ? "true" : "false");
-	LOG(LogDebug) << "MAIN::playVideo():115 - window.deinit(true) - reinicio de la ventana";
 	window.deinit(true);
 }
 
@@ -148,19 +170,27 @@ bool parseArgs(int argc, char* argv[])
 	for(int i = 1; i < argc; i++)
 	{
 		LOG(LogInfo) << "MAIN::parseArgs() - execution argument: " << argv[i];
-		if (strcmp(argv[i], "--videoduration") == 0)
+		if (strcmp(argv[i], "--vlc-image") == 0)
+		{
+			vlcImage = argv[i + 1];
+			i++; // skip the argument value
+		}
+		else if (strcmp(argv[i], "--vlc-video") == 0)
+		{
+			vlcVideo = argv[i + 1];
+			i++; // skip the argument value
+		}
+		else if (strcmp(argv[i], "--videoduration") == 0)
 		{
 			gPlayVideoDuration = atoi(argv[i + 1]);
 			i++; // skip the argument value
 		}
-		else
-		if (strcmp(argv[i], "--video") == 0)
+		else if (strcmp(argv[i], "--video") == 0)
 		{
 			gPlayVideo = argv[i + 1];
 			i++; // skip the argument value
 		}
-		else
-		if (strcmp(argv[i], "--monitor") == 0)
+		else if (strcmp(argv[i], "--monitor") == 0)
 		{
 			if (i >= argc - 1)
 			{
@@ -336,7 +366,9 @@ bool parseArgs(int argc, char* argv[])
 				"--force-kiosk		Force the UI mode to be Kiosk\n"
 				"--force-disable-filters		Force the UI to ignore applied filters in gamelist\n"
 				"--video		path to the video spalsh\n"
-				"--videoduration		the video spalsh durarion in seconds\n"
+				"--videoduration		the video spalsh durarion in milliseconds\n"
+				"--vlc-image		the image for the vlc preload\n"
+				"--vlc-video		the video for the vlc preload\n"
 				"--help, -h			summon a sentient, angry tuba\n\n"
 				"More information available in README.md.\n";
 			return false; //exit after printing help
@@ -444,7 +476,33 @@ int main(int argc, char* argv[])
 	if (!gPlayVideo.empty())
 	{
 		playVideo();
-		//return 0;
+		return 0;
+	}
+
+	LOG(LogInfo) << "MAIN::main() - PreloadVlcPlayer(): " << (Settings::getInstance()->getBool("PreloadVlcPlayer") ? "true" : "false");
+	if (Settings::getInstance()->getBool("PreloadVlcPlayer"))
+	{
+		gPlayVideo = vlcVideo;
+		if (gPlayVideo.empty())
+		{
+			gPlayVideo = Settings::getInstance()->getString("PreloadVlcVideo");
+			if (gPlayVideo.empty() || !Utils::FileSystem::exists(gPlayVideo))
+				gPlayVideo = ResourceManager::getInstance()->getResourcePath(":/es_preload_vlc.mp4");
+		}
+		gPlayImage = vlcImage;
+		if (gPlayImage.empty())
+		{
+			gPlayImage = Settings::getInstance()->getString("PreloadVlcImage");
+			if (gPlayImage.empty() || !Utils::FileSystem::exists(gPlayImage))
+				gPlayImage = ResourceManager::getInstance()->getResourcePath(":/es_preload_vlc.png");
+		}
+		if ((gPlayVideoDuration <= 0) && Settings::getInstance()->getBool("PreloadVlcPlayer"))
+			gPlayVideoDuration = Settings::getInstance()->getInt("PreloadVlcVideoTimeout"); // milliseconds
+
+		LOG(LogInfo) << "MAIN::main() - gPlayImage: " << gPlayImage;
+		LOG(LogInfo) << "MAIN::main() - gPlayVideo: " << gPlayVideo;
+		LOG(LogInfo) << "MAIN::main() - gPlayVideoDuration: " << std::to_string(gPlayVideoDuration);
+		playVideo();
 	}
 
 	//if ~/.emulationstation doesn't exist and cannot be created, bail

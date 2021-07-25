@@ -487,6 +487,18 @@ msgid "THREADED LOADING"
 msgstr "Acelerar la carga del sistema"
 
 #:
+msgid "PRELOAD VLC SETTINGS"
+msgstr "CONFIGURACIÓN PRECARGA VLC"
+
+#:
+msgid "ENABLED"
+msgstr "HABILITAR"
+
+#:
+msgid "CAN STOP VIDEO AFTER (SECS)"
+msgstr "PUEDE PARAR EL VIDEO EN (SECS)"
+
+#:
 msgid "RANDOM"
 msgstr "ALEATORIO"
 
