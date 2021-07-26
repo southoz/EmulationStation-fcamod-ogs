@@ -504,14 +504,14 @@ float Font::getHeight(float lineSpacing) const
 
 float Font::getLetterHeight()
 {
-	Glyph* glyph = getGlyph('S');
+	Glyph* glyph = getGlyph('M');
 	assert(glyph);
 	return glyph->texSize.y() * glyph->texture->textureSize.y();
 }
 
 float Font::getLetterWidth()
 {
-	Glyph* glyph = getGlyph('S');
+	Glyph* glyph = getGlyph('M');
 	assert(glyph);
 	return glyph->texSize.x() * glyph->texture->textureSize.x();
 }
