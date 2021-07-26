@@ -141,6 +141,7 @@ void Window::reactivateGui()
 
 void Window::deinit(bool deinitRenderer)
 {
+	LOG(LogInfo) << "Window::deinit() - deinitRenderer: " << (deinitRenderer ? "true" : "false");
 	for (auto extra : mScreenExtras)
 		extra->onHide();
 

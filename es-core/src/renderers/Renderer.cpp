@@ -46,8 +46,6 @@ namespace Renderer
 			return false;
 		}
 
-
-
 		display = go2_display_create();
 		windowWidth = go2_display_height_get(display);
 		windowHeight = go2_display_width_get(display);
@@ -169,7 +167,6 @@ namespace Renderer
 	void deinit()
 	{
 		destroyWindow();
-
 	} // deinit
 
 	void pushClipRect(const Vector2i& _pos, const Vector2i& _size)

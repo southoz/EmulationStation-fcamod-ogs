@@ -658,7 +658,7 @@ int main(int argc, char* argv[])
 
 		int processDuration = SDL_GetTicks() - processStart;
 		
-		Renderer::swapBuffers();				
+		Renderer::swapBuffers();
 	}
 
 	ThreadedScraper::stop();
