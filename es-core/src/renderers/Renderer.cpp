@@ -73,19 +73,11 @@ namespace Renderer
 
 	static void destroyWindow()
 	{
-		if (Settings::getInstance()->getBool("Windowed") && Settings::getInstance()->getInt("WindowWidth") && Settings::getInstance()->getInt("WindowHeight"))
-		{
-			int x; int y;
-			//SDL_GetWindowPosition(sdlWindow, &x, &y);
-			sdlWindowPosition = Vector2i(x, y); // Save position to restore it later
-		}
-
 		destroyContext();
 		go2_display_destroy(display);
 		display = nullptr;
 
 		SDL_Quit();
-
 	} // destroyWindow
 
 	void activateWindow()

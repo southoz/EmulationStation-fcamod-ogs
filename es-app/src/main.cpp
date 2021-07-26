@@ -32,10 +32,6 @@
 #include "ImageIO.h"
 
 const std::string INVALID_HOME_PATH = "Invalid home path supplied.";
-const std::string INVALID_MONITOR = "Invalid monitor supplied.";
-const std::string INVALID_RESOLUTION = "Invalid resolution supplied.";
-const std::string INVALID_SCREEN_SIZE = "Invalid screensize supplied.";
-const std::string INVALID_SCREEN_OFFSET = "Invalid screenoffset supplied.";
 const std::string INVALID_SCREEN_ROTATE = "Invalid screenrotate supplied.";
 const std::string ERROR_CONFIG_DIRECTORY = "Config directory could not be created!";
 const std::string WINDOW_FAILED_INITIALIZE = "Window failed to initialize!";
@@ -190,65 +186,6 @@ bool parseArgs(int argc, char* argv[])
 			gPlayVideo = argv[i + 1];
 			i++; // skip the argument value
 		}
-		else if (strcmp(argv[i], "--monitor") == 0)
-		{
-			if (i >= argc - 1)
-			{
-				std::cerr << INVALID_MONITOR;
-				LOG(LogError) << "MAIN::parseArgs() - " << INVALID_MONITOR;
-				return false;
-			}
-
-			int monitorId = atoi(argv[i + 1]);		
-			i++; // skip the argument value
-			Settings::getInstance()->setInt("MonitorID", monitorId);
-		}
-		else if (strcmp(argv[i], "--resolution") == 0)
-		{
-			if(i >= argc - 2)
-			{
-				std::cerr << INVALID_RESOLUTION;
-				LOG(LogError) << "MAIN::parseArgs() - " << INVALID_RESOLUTION;
-				return false;
-			}
-
-			int width = atoi(argv[i + 1]);
-			int height = atoi(argv[i + 2]);
-			i += 2; // skip the argument value
-			Settings::getInstance()->setInt("WindowWidth", width);
-			Settings::getInstance()->setInt("WindowHeight", height);
-			Settings::getInstance()->setBool("FullscreenBorderless", false);
-		}
-		else if (strcmp(argv[i], "--screensize") == 0)
-		{
-			if (i >= argc - 2)
-			{
-				std::cerr << INVALID_SCREEN_SIZE;
-				LOG(LogError) << "MAIN::parseArgs() - " << INVALID_SCREEN_SIZE;
-				return false;
-			}
-
-			int width = atoi(argv[i + 1]);
-			int height = atoi(argv[i + 2]);
-			i += 2; // skip the argument value
-			Settings::getInstance()->setInt("ScreenWidth", width);
-			Settings::getInstance()->setInt("ScreenHeight", height);
-		}
-		else if (strcmp(argv[i], "--screenoffset") == 0)
-		{
-			if(i >= argc - 2)
-			{
-				std::cerr << INVALID_SCREEN_OFFSET;
-				LOG(LogError) << "MAIN::parseArgs() - " << INVALID_SCREEN_OFFSET;
-				return false;
-			}
-
-			int x = atoi(argv[i + 1]);
-			int y = atoi(argv[i + 2]);
-			i += 2; // skip the argument value
-			Settings::getInstance()->setInt("ScreenOffsetX", x);
-			Settings::getInstance()->setInt("ScreenOffsetY", y);
-		}
 		else if (strcmp(argv[i], "--screenrotate") == 0)
 		{
 			if (i >= argc - 1)
@@ -291,17 +228,9 @@ bool parseArgs(int argc, char* argv[])
 			Settings::getInstance()->setBool("Debug", true);
 			Log::setReportingLevel(LogDebug);
 		}
-		else if (strcmp(argv[i], "--fullscreen-borderless") == 0)
-		{
-			Settings::getInstance()->setBool("FullscreenBorderless", true);
-		}
 		else if (strcmp(argv[i], "--fullscreen") == 0)
 		{
-			Settings::getInstance()->setBool("FullscreenBorderless", false);
-		}
-		else if (strcmp(argv[i], "--windowed") == 0 || strcmp(argv[i], "-windowed") == 0)
-		{
-			Settings::getInstance()->setBool("Windowed", true);
+   Settings::getInstance()->setBool("FullScreenMode", true);
 		}
 		else if (strcmp(argv[i], "--vsync") == 0 || strcmp(argv[i], "-vsync") == 0)
 		{			
@@ -351,7 +280,6 @@ bool parseArgs(int argc, char* argv[])
 				"Written by Alec \"Aloshi\" Lofquist.\n"
 				"Version " << PROGRAM_VERSION_STRING << ", built " << PROGRAM_BUILT_STRING << "\n\n"
 				"Command line arguments:\n"
-				"--resolution [width] [height]	try and force a particular resolution\n"
 				"--gamelist-only			skip automatic game search, only read from gamelist.xml\n"
 				"--ignore-gamelist		ignore the gamelist (useful for troubleshooting)\n"
 				"--draw-framerate		display the framerate\n"
@@ -359,7 +287,6 @@ bool parseArgs(int argc, char* argv[])
 				"--no-splash			don't show the splash screen\n"
 				"--debug				more logging, show console on Windows\n"
 				"--scrape			scrape using command line interface\n"
-				"--windowed			not fullscreen, should be used with --resolution\n"
 				"--vsync [1/on or 0/off]		turn vsync on or off (default is on)\n"
 				"--max-vram [size]		Max VRAM to use in Mb before swapping. 0 for unlimited\n"
 				"--force-kid		Force the UI mode to be Kid\n"
@@ -367,6 +294,7 @@ bool parseArgs(int argc, char* argv[])
 				"--force-disable-filters		Force the UI to ignore applied filters in gamelist\n"
 				"--video		path to the video spalsh\n"
 				"--videoduration		the video spalsh durarion in milliseconds\n"
+				"--fullscreen		use fullscreen  mode\n"
 				"--vlc-image		the image for the vlc preload\n"
 				"--vlc-video		the video for the vlc preload\n"
 				"--help, -h			summon a sentient, angry tuba\n\n"
