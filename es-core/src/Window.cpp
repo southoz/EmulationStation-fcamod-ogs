@@ -115,8 +115,15 @@ bool Window::init(bool initRenderer, bool forceFullScreen)
 		mClock->setFont(Font::get(FONT_SIZE_SMALL));
 		mClock->setHorizontalAlignment(ALIGN_RIGHT);
 		mClock->setVerticalAlignment(ALIGN_TOP);
-		mClock->setPosition(Renderer::getScreenWidth() * 0.90f, Renderer::getScreenHeight() * 0.9965 - mClock->getFont()->getHeight());
-		mClock->setSize(mClock->getFont()->getLetterWidth() * 7.f, 0);
+		float clockPosition = Renderer::getScreenWidth() * 0.90f;
+		float clockSize = mClock->getFont()->getLetterWidth() * 7.f;
+		if (Settings::getInstance()->getBool("FullScreenMode"))
+		{
+			clockPosition = Renderer::getScreenWidth() * 0.89f;
+			clockSize = mClock->getFont()->getLetterWidth() * 7.f;
+		}
+		mClock->setPosition(clockPosition, Renderer::getScreenHeight() * 0.9965 - mClock->getFont()->getHeight());
+		mClock->setSize(clockSize, 0);
 		mClock->setColor(0x777777FF);
 	}
 
@@ -792,8 +799,15 @@ void Window::onThemeChanged(const std::shared_ptr<ThemeData>& theme)
 				mClock->setFont(Font::getFromTheme(elem, ThemeFlags::ALL, Font::get(FONT_SIZE_MEDIUM)));
 		}
 
-		mClock->setPosition(Renderer::getScreenWidth() * 0.90f, Renderer::getScreenHeight() * 0.9965 - mClock->getFont()->getHeight());
-		mClock->setSize(mClock->getFont()->getLetterWidth() * 7.f, 0);
+		float clockPosition = Renderer::getScreenWidth() * 0.90f;
+		float clockSize = mClock->getFont()->getLetterWidth() * 7.f;
+		if (Settings::getInstance()->getBool("FullScreenMode"))
+		{
+			clockPosition = Renderer::getScreenWidth() * 0.89f;
+			clockSize = mClock->getFont()->getLetterWidth() * 7.f;
+		}
+		mClock->setPosition(clockPosition, Renderer::getScreenHeight() * 0.9965 - mClock->getFont()->getHeight());
+		mClock->setSize(clockSize, 0);
 
 		mClock->applyTheme(theme, "screen", "clock", ThemeFlags::ALL ^ (ThemeFlags::TEXT));
 	}
