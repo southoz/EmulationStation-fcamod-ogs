@@ -509,6 +509,14 @@ float Font::getLetterHeight()
 	return glyph->texSize.y() * glyph->texture->textureSize.y();
 }
 
+float Font::getLetterWidth()
+{
+	Glyph* glyph = getGlyph('S');
+	assert(glyph);
+	return glyph->texSize.x() * glyph->texture->textureSize.x();
+}
+
+
 //the worst algorithm ever written
 //breaks up a normal string with newlines to make it fit xLen
 std::string Font::wrapText(std::string text, float xLen)
