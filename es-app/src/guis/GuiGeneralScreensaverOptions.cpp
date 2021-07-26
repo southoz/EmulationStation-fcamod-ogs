@@ -74,6 +74,6 @@ void GuiGeneralScreensaverOptions::openVideoScreensaverOptions() {
 }
 
 void GuiGeneralScreensaverOptions::openSlideshowScreensaverOptions() {
-    mWindow->pushGui(new GuiSlideshowScreensaverOptions(mWindow, _("SLIDESHOW SCREENSAVER").c_str()));
+	mWindow->pushGui(new GuiSlideshowScreensaverOptions(mWindow, _("SLIDESHOW SCREENSAVER").c_str()));
 }
 
