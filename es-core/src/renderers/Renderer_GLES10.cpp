@@ -85,16 +85,6 @@ namespace Renderer
 
 	void setupWindow()
 	{
-#if 0
-		SDL_GL_SetAttribute(SDL_GL_RED_SIZE,     8);
-		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,   8);
-		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,    8);
-		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,  24);
-		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 0);
-#endif
 	} // setupWindow
 
 	void createContext()
@@ -293,22 +283,6 @@ namespace Renderer
 
 	void setSwapInterval()
 	{
-#if 0
-		// vsync
-		if(Settings::getInstance()->getBool("VSync"))
-		{
-			// SDL_GL_SetSwapInterval(0) for immediate updates (no vsync, default),
-			// 1 for updates synchronized with the vertical retrace,
-			// or -1 for late swap tearing.
-			// SDL_GL_SetSwapInterval returns 0 on success, -1 on error.
-			// if vsync is requested, try normal vsync; if that doesn't work, try late swap tearing
-			// if that doesn't work, report an error
-			if(SDL_GL_SetSwapInterval(1) != 0 && SDL_GL_SetSwapInterval(-1) != 0)
-				LOG(LogWarning) << "Renderer_GLES10::setSwapInterval() - Tried to enable vsync, but failed! (" << SDL_GetError() << ")";
-		}
-		else
-			SDL_GL_SetSwapInterval(0);
-#endif
 	} // setSwapInterval
 
 	void swapBuffers()

@@ -34,37 +34,6 @@ namespace Renderer
 
 	static void setIcon()
 	{
-#if 0
-		size_t                     width   = 0;
-		size_t                     height  = 0;
-		ResourceData               resData = ResourceManager::getInstance()->getFileData(":/window_icon_256.png");
-		std::vector<unsigned char> rawData = ImageIO::loadFromMemoryRGBA32(resData.ptr.get(), resData.length, width, height);
-
-		if(!rawData.empty())
-		{
-			ImageIO::flipPixelsVert(rawData.data(), width, height);
-
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-			unsigned int rmask = 0xFF000000;
-			unsigned int gmask = 0x00FF0000;
-			unsigned int bmask = 0x0000FF00;
-			unsigned int amask = 0x000000FF;
-#else
-			unsigned int rmask = 0x000000FF;
-			unsigned int gmask = 0x0000FF00;
-			unsigned int bmask = 0x00FF0000;
-			unsigned int amask = 0xFF000000;
-#endif
-			// try creating SDL surface from logo data
-			SDL_Surface* logoSurface = SDL_CreateRGBSurfaceFrom((void*)rawData.data(), (int)width, (int)height, 32, (int)(width * 4), rmask, gmask, bmask, amask);
-
-			if(logoSurface != nullptr)
-			{
-				SDL_SetWindowIcon(sdlWindow, logoSurface);
-				SDL_FreeSurface(logoSurface);
-			}
-		}
-#endif
 	} // setIcon
 
 	static bool createWindow()
@@ -77,79 +46,7 @@ namespace Renderer
 			return false;
 		}
 
-#if 0
-		initialCursorState = (SDL_ShowCursor(0) != 0);
 
-		if (!Settings::getInstance()->getBool("Windowed"))
-			SDL_SetHint(SDL_HINT_VIDEO_HIGHDPI_DISABLED, "1");
-
-		SDL_DisplayMode dispMode;
-		SDL_GetDesktopDisplayMode(0, &dispMode);
-
-		windowWidth   = Settings::getInstance()->getInt("WindowWidth")   ? Settings::getInstance()->getInt("WindowWidth")   : dispMode.w;
-		windowHeight  = Settings::getInstance()->getInt("WindowHeight")  ? Settings::getInstance()->getInt("WindowHeight")  : dispMode.h;
-		screenWidth   = Settings::getInstance()->getInt("ScreenWidth")   ? Settings::getInstance()->getInt("ScreenWidth")   : windowWidth;
-		screenHeight  = Settings::getInstance()->getInt("ScreenHeight")  ? Settings::getInstance()->getInt("ScreenHeight")  : windowHeight;
-		screenOffsetX = Settings::getInstance()->getInt("ScreenOffsetX") ? Settings::getInstance()->getInt("ScreenOffsetX") : 0;
-		screenOffsetY = Settings::getInstance()->getInt("ScreenOffsetY") ? Settings::getInstance()->getInt("ScreenOffsetY") : 0;
-		screenRotate  = Settings::getInstance()->getInt("ScreenRotate")  ? Settings::getInstance()->getInt("ScreenRotate")  : 0;
-
-		int monitorId = Settings::getInstance()->getInt("MonitorID");
-		if (monitorId >= 0 && sdlWindowPosition == Vector2i(SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED))
-		{
-			int displays = SDL_GetNumVideoDisplays();
-			if (displays > monitorId)
-			{
-				SDL_Rect rc;
-				SDL_GetDisplayBounds(monitorId, &rc);
-
-				sdlWindowPosition = Vector2i(rc.x, rc.y);
-
-				if (Settings::getInstance()->getBool("Windowed") && (Settings::getInstance()->getInt("WindowWidth") || Settings::getInstance()->getInt("ScreenWidth")))
-				{
-					if (windowWidth != rc.w || windowHeight != rc.h)
-					{
-						sdlWindowPosition = Vector2i(
-							rc.x + (rc.w - windowWidth) / 2,
-							rc.y + (rc.h - windowHeight) / 2
-						);
-					}
-				}
-				else
-				{
-					windowWidth = rc.w;
-					windowHeight = rc.h;
-					screenWidth = rc.w;
-					screenHeight = rc.h;
-				}
-			}
-		}
-
-		setupWindow();
-
-		unsigned int windowFlags = (Settings::getInstance()->getBool("Windowed") ? 0 : (Settings::getInstance()->getBool("FullscreenBorderless") ? SDL_WINDOW_BORDERLESS : SDL_WINDOW_FULLSCREEN)) | getWindowFlags();
-
-		if (Settings::getInstance()->getBool("AlwaysOnTop"))
-			windowFlags |= SDL_WINDOW_ALWAYS_ON_TOP;
-
-		windowFlags |= SDL_WINDOW_ALLOW_HIGHDPI;
-	
-		if((sdlWindow = SDL_CreateWindow("EmulationStation", 
-			sdlWindowPosition.x(),
-			sdlWindowPosition.y(), 
-			windowWidth, windowHeight,
-			windowFlags)) == nullptr)
-		{
-			LOG(LogError) << "Renderer::createWindow() - Error creating SDL window!\n\t" << SDL_GetError();
-			return false;
-		}
-
-		LOG(LogInfo) << "Renderer::createWindow() - Created window successfully.";
-
-		createContext();
-		setIcon();
-		setSwapInterval();
-#endif
 
 		display = go2_display_create();
 		windowWidth = go2_display_height_get(display);
@@ -186,12 +83,6 @@ namespace Renderer
 		}
 
 		destroyContext();
-#if 0
-		SDL_DestroyWindow(sdlWindow);
-		sdlWindow = nullptr;
-
-		SDL_ShowCursor(initialCursorState);
-#endif
 		go2_display_destroy(display);
 		display = nullptr;
 
