@@ -59,7 +59,7 @@ public:
 
 	Vector3f getPosition() const;
 	inline void setPosition(const Vector3f& offset) { setPosition(offset.x(), offset.y(), offset.z()); }
-	void setPosition(float x, float y, float z = 0.0f);
+	virtual void setPosition(float x, float y, float z = 0.0f);
 	virtual void onPositionChanged() {};
 
 	//Sets the origin as a percentage of this image (e.g. (0, 0) is top left, (0.5, 0.5) is the center)

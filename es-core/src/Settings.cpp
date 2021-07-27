@@ -181,6 +181,8 @@ void Settings::setDefaults()
 	mStringMap["PreloadVlcImage"] = ResourceManager::getInstance()->getResourcePath(":/resources/es_preload_vlc.png");
 	mStringMap["PreloadVlcVideo"] = ResourceManager::getInstance()->getResourcePath(":/resources/es_preload_vlc.mp4");
 
+	mBoolMap["MenusOnDisplayTop"] = false;
+
 	mDefaultBoolMap = mBoolMap;
 	mDefaultIntMap = mIntMap;
 	mDefaultFloatMap = mFloatMap;

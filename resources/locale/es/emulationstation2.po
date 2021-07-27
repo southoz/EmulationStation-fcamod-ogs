@@ -483,6 +483,10 @@ msgid "GAME LAUNCH TRANSITION"
 msgstr "TRANSICIÓN AL LANZAR JUEGO"
 
 #:
+msgid "MENUS ON DISPLAY TOP"
+msgstr "MENÚS EN LA PARTE SUPERIOR"
+
+#:
 msgid "THREADED LOADING"
 msgstr "Acelerar la carga del sistema"
 

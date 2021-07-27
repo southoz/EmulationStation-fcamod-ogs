@@ -279,16 +279,24 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 		return false;
 	});
 
-
-	// resize + center
+	// resize
+	bool change_height_ratio = Settings::getInstance()->getBool("ShowHelpPrompts") || Settings::getInstance()->getBool("DrawClock");
 	float height_ratio = 1.0f;
-	if( Settings::getInstance()->getBool("ShowHelpPrompts") )
+	if ( change_height_ratio )
+	{
 		height_ratio = 0.88f;
+		if ( Settings::getInstance()->getBool("MenusOnDisplayTop") )
+			height_ratio = 0.93f;
+	}
 
 	setSize(Renderer::getScreenWidth(), Renderer::getScreenHeight() * height_ratio);
-	//float width = (float)Math::min(Renderer::getScreenHeight(), (int)(Renderer::getScreenWidth() * 3.0f));
-	//setSize(width, Renderer::getScreenHeight() * 1.0f);
-	setPosition((Renderer::getScreenWidth() - mSize.x()) / 2, (Renderer::getScreenHeight() - mSize.y()) / 2);
+
+	// center
+	float new_y = (Renderer::getScreenHeight() - mSize.y()) / 2;
+	if (Settings::getInstance()->getBool("MenusOnDisplayTop"))
+		new_y = 0.f;
+
+	setPosition((Renderer::getScreenWidth() - mSize.x()) / 2, new_y);
 }
 
 void GuiMetaDataEd::onSizeChanged()

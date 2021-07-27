@@ -55,6 +55,8 @@ public:
 		updateSize();
 	}
 
+	void setPosition(float x, float y, float z = 0.0f) override;
+
 private:
 	void updateSize();
 	void updateGrid();

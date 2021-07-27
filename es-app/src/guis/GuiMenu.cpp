@@ -83,11 +83,32 @@ GuiMenu::GuiMenu(Window* window, bool animate) : GuiComponent(window), mMenu(win
 	setSize(mMenu.getSize());
 
 	if (animate)
+	{
+		float x_start = (Renderer::getScreenWidth() - mSize.x()) / 2,
+					x_end = (Renderer::getScreenWidth() - mSize.x()) / 2,
+					y_start = Renderer::getScreenHeight() * 0.9,
+					y_end = (Renderer::getScreenHeight() - mSize.y()) / 2;
+
+		if (Settings::getInstance()->getBool("MenusOnDisplayTop"))
+		{
+			x_start = 0.1f;
+			y_start = 0.f;
+			y_end = 0.f;
+		}
+
 		animateTo(
-			Vector2f((Renderer::getScreenWidth() - mSize.x()) / 2, Renderer::getScreenHeight() * 0.9),
-			Vector2f((Renderer::getScreenWidth() - mSize.x()) / 2, (Renderer::getScreenHeight() - mSize.y()) / 2));
+			Vector2f(x_start, y_start),
+			Vector2f(x_end, y_end)
+		);
+	}
 	else
-		setPosition((Renderer::getScreenWidth() - mSize.x()) / 2, (Renderer::getScreenHeight() - mSize.y()) / 2);
+	{
+		float new_y = (Renderer::getScreenHeight() - mSize.y()) / 2;
+		if (Settings::getInstance()->getBool("MenusOnDisplayTop"))
+			new_y = 0.f;
+
+		setPosition((Renderer::getScreenWidth() - mSize.x()) / 2, new_y);
+	}
 }
 
 void GuiMenu::openDisplaySettings()
@@ -968,6 +989,18 @@ void GuiMenu::openUISettings()
 		Settings::getInstance()->setString("GameTransitionStyle", transitionOfGames_style->getSelected());
 	});
 
+	// menus on top
+	auto menusOnTop = std::make_shared<SwitchComponent>(mWindow);
+	menusOnTop->setState(Settings::getInstance()->getBool("MenusOnDisplayTop"));
+	s->addWithLabel(_("MENUS ON DISPLAY TOP"), menusOnTop);
+	s->addSaveFunc([s, menusOnTop] {
+		bool old_value = Settings::getInstance()->getBool("MenusOnDisplayTop");
+		if (old_value != menusOnTop->getState())
+		{
+			Settings::getInstance()->setBool("MenusOnDisplayTop", menusOnTop->getState());
+			s->setVariable("reloadGuiMenu", true);
+		}
+	});
 
 	// Optionally start in selected system
 	auto systemfocus_list = std::make_shared< OptionListComponent<std::string> >(mWindow, _("START ON SYSTEM"), false);
@@ -984,8 +1017,6 @@ void GuiMenu::openUISettings()
 	s->addSaveFunc([systemfocus_list] {
 		Settings::getInstance()->setString("StartupSystem", systemfocus_list->getSelected());
 	});
-
-
 
 	// Select systems to hide
 	auto hiddenSystems = Utils::String::split(Settings::getInstance()->getString("HiddenSystems"), ';');
@@ -1024,7 +1055,6 @@ void GuiMenu::openUISettings()
 		}		
 	});
 
-	
 	// Open gamelist at start
 	auto bootOnGamelist = std::make_shared<SwitchComponent>(mWindow);
 	bootOnGamelist->setState(Settings::getInstance()->getBool("StartupOnGameList"));
@@ -1113,7 +1143,6 @@ void GuiMenu::openUISettings()
 		if (Settings::getInstance()->setBool("ForceDisableFilters", !enable_filter->getState()))
 			s->setVariable("reloadAll", true);		
 	});
-
 
 	s->onFinalize([s, pthis, window]
 	{
