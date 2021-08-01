@@ -412,7 +412,7 @@ msgstr "COLECCIONES PERSONALIZADAS"
 
 #:
 msgid "CREATE NEW CUSTOM COLLECTION FROM THEME"
-msgstr "CREAR UNA COLECCIÓN DEL SISTEMA"
+msgstr "CREAR UNA COLECCIÓN DEL TEMA"
 
 #:
 msgid "SELECT THEME FOLDER"
@@ -485,6 +485,10 @@ msgstr "TRANSICIÓN AL LANZAR JUEGO"
 #:
 msgid "MENUS ON DISPLAY TOP"
 msgstr "MENÚS EN LA PARTE SUPERIOR"
+
+#:
+msgid "SHOW DETAILED SYSTEM INFO"
+msgstr "VER INFO. SISTEMA DETALLADA"
 
 #:
 msgid "THREADED LOADING"
@@ -776,6 +780,14 @@ msgid "BRIGHTNESS"
 msgstr "BRILLO"
 
 #:
+msgid "SYSTEM BRIGHTNESS"
+msgstr "BRILLO DEL SISTEMA"
+
+#:
+msgid "MAX SYSTEM BRIGHTNESS"
+msgstr "BRILLO MÁXIMO DEL SISTEMA"
+
+#:
 msgid "FULL SCREEN MODE"
 msgstr "MODO PANTALLA COMPLETA"
 
@@ -925,7 +937,7 @@ msgstr "CONECTADO"
 
 #:
 msgid "NOT CONNECTED"
-msgstr "NO CONECTADO"
+msgstr "DESCONECTADO"
 
 #:
 msgid "STATUS"
@@ -936,8 +948,36 @@ msgid "IP ADDRESS"
 msgstr "DIRECCIÓN IP"
 
 #:
+msgid "NETMASK"
+msgstr "MASCARA DE RED"
+
+#:
+msgid "SUBNET"
+msgstr "SUBRED"
+
+#:
 msgid "HOSTNAME"
 msgstr "NOMBRE HOST"
+
+#:
+msgid "WIFI SIGNAL"
+msgstr "SEÑAL WIFI"
+
+#:
+msgid "WIFI CHANNEL"
+msgstr "CANAL WIFI"
+
+#:
+msgid "WIFI SECURITY"
+msgstr "SEGURIDAD WIFI"
+
+#:
+msgid "CONNECTION RATE"
+msgstr "VELOCIDAD DE CONEXIÓN"
+
+#:
+msgid "OTHER INFORMATION"
+msgstr "OTRA INFORMACIÓN"
 
 #:
 msgid "ENABLE WIFI"
@@ -1802,6 +1842,210 @@ msgstr[1] "%i JUEGOS OCULTOS"
 #:
 msgid "ADVANCED SETTINGS"
 msgstr "CONFIGURACIÓN AVANZADA"
+
+#:
+msgid "SYSTEM INFORMATION"
+msgstr "INFORMACIÓN DEL SISTEMA"
+
+#:
+msgid "CPU AND SOCKET"
+msgstr "CPU Y SOCKET"
+
+#:
+msgid "VENDOR ID"
+msgstr "ID VENDEDOR"
+
+#:
+msgid "MODEL NAME"
+msgstr "MODELO"
+
+#:
+msgid "ARCHITECTURE"
+msgstr "ARQUITECTURA"
+
+#:
+msgid "THREAD(S) PER CORE"
+msgstr "HILOS POR NÚCLEO"
+
+#:
+msgid "CPU LOAD"
+msgstr "CARGA DE CPU"
+
+#:
+msgid "RAM MEMORY"
+msgstr "MEMORIA RAM"
+
+#:
+msgid "FREE RAM MEMORY"
+msgstr "MEMORIA RAM LIBRE"
+
+#:
+msgid "USED"
+msgstr "USADA"
+
+#:
+msgid "FREE"
+msgstr "LIBRE"
+
+#:
+msgid "BUFFERED / CACHED"
+msgstr "EN BUFFER / CACHEADA"
+
+#:
+msgid "DISPLAY AND GPU"
+msgstr "PANTALLA Y GPU"
+
+#:
+msgid "RESOLUTION"
+msgstr "RESOLUCIÓN"
+
+#:
+msgid "BITS PER PIXEL"
+msgstr "BITS POR PÍXEL"
+
+#:
+msgid "GOVERNOR"
+msgstr "GOBERNADOR"
+
+#:
+msgid "INTERACTIVE"
+msgstr "INTERACTIVO"
+
+#:
+msgid "SIMPLE ONDEMAND"
+msgstr "SIMPLE BAJO DEMANDA"
+
+#:
+msgid "TEMPERATURE"
+msgstr "TEMPERATURA"
+
+#:
+msgid "FREQUENCY"
+msgstr "FRECUENCIA"
+
+#:
+msgid "FREQUENCY MAX"
+msgstr "FRECUENCIA MÁXIMA"
+
+#:
+msgid "FREQUENCY MIN"
+msgstr "FRECUENCIA MÍNIMA"
+
+#:
+msgid "STORAGE"
+msgstr "ALMACENAMIENTO"
+
+#:
+msgid "BOOT DISK USAGE"
+msgstr "USO DISCO BOOT"
+
+#:
+msgid "SYSTEM DISK USAGE"
+msgstr "USO DISCO SISTEMA"
+
+#:
+msgid "ROMS DISK USAGE"
+msgstr "USO DISCO ROMS"
+
+#:
+msgid "NETWORK"
+msgstr "RED"
+
+#:
+msgid "BATTERY"
+msgstr "BATERÍA"
+
+#:
+msgid "LEVEL"
+msgstr "NIVEL"
+
+#:
+msgid "CHARGING"
+msgstr "CARGANDO"
+
+#:
+msgid "HEALTH"
+msgstr "ESTADO"
+
+#:
+msgid "GOOD"
+msgstr "BUENO"
+
+#:
+msgid "OVERHEAT"
+msgstr "SOBRECALENTADA"
+
+#:
+msgid "DEAD"
+msgstr "MUERTA"
+
+#:
+msgid "OVER VOLTAGE"
+msgstr "SOBRE VOLTAJE"
+
+#:
+msgid "UNSPECIFIED FAILURE"
+msgstr "FALLO DESCONOCIDO"
+
+#:
+msgid "COLD"
+msgstr "FRÍA"
+
+#:
+msgid "WATCHDOG TIMER EXPIRE"
+msgstr "TIMER EXPIRADO"
+
+#:
+msgid "SAFETY TIMER EXPIRE"
+msgstr "TIMER SEGURIDAD EXPIRADO"
+
+#:
+msgid "OVER CURRENT"
+msgstr "SOBRE CORRIENTE"
+
+#:
+msgid "CALIBRATION REQUIRED"
+msgstr "NECESITA CALIBRAR"
+
+#:
+msgid "WARM"
+msgstr "CALIENTE"
+
+#:
+msgid "COOL"
+msgstr "FRÍA"
+
+#:
+msgid "HOT"
+msgstr "CALIENTE"
+
+#:
+msgid "CAPACITY"
+msgstr "CAPACIDAD"
+
+#:
+msgid "VOLTAGE"
+msgstr "VOLTAJE"
+
+#:
+msgid "DEVICE"
+msgstr "DISPOSITIVO"
+
+#:
+msgid "REVISION"
+msgstr "REVISIÓN"
+
+#:
+msgid "SERIAL"
+msgstr "Nº SERIE"
+
+#:
+msgid "MACHINE ID"
+msgstr "ID MÁQUINA"
+
+#:
+msgid "BOOT ID"
+msgstr "ID ARRANQUE"
 
 #:
 msgid "BOOT SETTINGS"

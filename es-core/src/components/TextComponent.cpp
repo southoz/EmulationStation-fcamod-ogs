@@ -47,6 +47,9 @@ void TextComponent::onSizeChanged()
 
 void TextComponent::setFont(const std::shared_ptr<Font>& font)
 {
+	if (mFont == font)
+		return;
+
 	mFont = font;
 	onTextChanged();
 }
@@ -68,6 +71,7 @@ void TextComponent::setFont(std::string path, int size)
 //  Set the color of the font/text
 void TextComponent::setColor(unsigned int color)
 {
+//LOG(LogDebug) << "TextComponent::setColor() - mText: " << mText << ", mColor: " << std::to_string( mColor ) << ", color: " << std::to_string( color );
 	if (mColor == color)
 		return;
 
@@ -111,6 +115,9 @@ void TextComponent::setText(const std::string& text)
 
 void TextComponent::setUppercase(bool uppercase)
 {
+	if (mUppercase == uppercase)
+		return;
+
 	mUppercase = uppercase;
 	onTextChanged();
 }
@@ -327,6 +334,7 @@ void TextComponent::onTextChanged()
 	}
 
 	auto color = mColor & 0xFFFFFF00 | (unsigned char)((mColor & 0xFF) * (mOpacity / 255.0));
+	//LOG(LogDebug) << "TextComponent::onTextChanged() - mText: " << mText << ", mColor: " << std::to_string( mColor ) << ", color: " << std::to_string( color );
 
 	Vector2f size = f->sizeText(text);
 	if (!isMultiline)
@@ -407,6 +415,7 @@ void TextComponent::onColorChanged()
 	if (mTextCache)
 	{
 		auto color = mColor & 0xFFFFFF00 | (unsigned char)((mColor & 0xFF) * (mOpacity / 255.0));
+		//LOG(LogDebug) << "TextComponent::onColorChanged() - mText: " << mText << ", mColor: " << std::to_string( mColor ) << ", color: " << std::to_string( color );
 		mTextCache->setColor(color);
 	}
 }
@@ -427,6 +436,9 @@ void TextComponent::setVerticalAlignment(Alignment align)
 
 void TextComponent::setLineSpacing(float spacing)
 {
+	if (mLineSpacing == spacing)
+		return;
+
 	mLineSpacing = spacing;
 	onTextChanged();
 }
@@ -443,6 +455,7 @@ std::string TextComponent::getValue() const
 
 void TextComponent::applyTheme(const std::shared_ptr<ThemeData>& theme, const std::string& view, const std::string& element, unsigned int properties)
 {
+	//LOG(LogDebug) << "TextComponent::applyTheme() - mText: " << mText;
 	GuiComponent::applyTheme(theme, view, element, properties);
 
 	using namespace ThemeFlags;
@@ -500,7 +513,10 @@ void TextComponent::applyTheme(const std::shared_ptr<ThemeData>& theme, const st
 	if (properties & COLOR)
 	{
 		if (elem->has("color"))
+		{
+			//LOG(LogDebug) << "TextComponent::applyTheme() - mText: " << mText << ", mColor: " << std::to_string( mColor ) << ", theme->color: " << std::to_string( elem->get<unsigned int>("color") );
 			setColor(elem->get<unsigned int>("color"));
+		}
 
 		if (elem->has("backgroundColor"))
 		{

@@ -9,6 +9,7 @@
 #include "guis/GuiMsgBox.h"
 #include "guis/GuiScraperStart.h"
 #include "guis/GuiSettings.h"
+#include "guis/GuiSystemInformation.h"
 #include "views/UIModeController.h"
 #include "views/ViewController.h"
 #include "CollectionSystemManager.h"
@@ -65,16 +66,22 @@ GuiMenu::GuiMenu(Window* window, bool animate) : GuiComponent(window), mMenu(win
 		
 		addEntry(_("SCRAPER"), true, [this] { openScraperSettings(); }, "iconScraper");
 
-		addEntry(_("ADVANCED SETTINGS"), true, [this] { openOtherSettings(); }, "iconAdvanced");
+		addEntry(_("ADVANCED SETTINGS"), true, [this] { openAdvancedSettings(); }, "iconAdvanced");
+
+		addEntry(_("SYSTEM INFORMATION"), true, [this] { openSystemInformation(); }, "iconInformation");
+
 	}
 
 	addEntry(_("QUIT"), !Settings::getInstance()->getBool("ShowOnlyExit"), [this] {openQuitMenu(); }, "iconQuit");
 
 	if (Settings::getInstance()->getBool("FullScreenMode"))
 	{
-		addEntry("BAT: " + std::string(getShOutput(R"(cat /sys/class/power_supply/battery/capacity)")) + "%" + " | SND: " + std::string(getShOutput(R"(current_volume)")) + " | BRT: " + std::to_string( go2_display_backlight_get(NULL) ) + "% |" + " WIFI: " + std::string(getShOutput(R"(cat /sys/class/net/wlan0/operstate)")), false, [this] {  });
+		BatteryInformation battery = ApiSystem::getBatteryInformation();
+		SoftwareInformation software = ApiSystem::getSoftwareInformation();
 
-		addEntry("Distro Version: " + std::string(getShOutput(R"(cat /usr/share/plymouth/themes/text.plymouth | grep title | cut -c 7-50)")), false, [this] {  });
+		addEntry("BAT: " + std::to_string( battery.level ) + "%" + " | SND: " + std::string(getShOutput(R"(current_volume)")) + " | BRT: " + std::to_string( go2_display_backlight_get(NULL) ) + "% |" + _("NETWORK")+ ": " + _( (ApiSystem::isNetworkConnected() ? "CONNECTED" : "NOT CONNECTED") ), false, [this] {  });
+
+		addEntry("Distro Version: " + software.application_name + " " + software.version, false, [this] {  });
 	}
 
 	addChild(&mMenu);
@@ -290,7 +297,7 @@ void GuiMenu::openScraperSettings()
 			return;
 		}
 
-		mWindow->pushGui(new GuiScraperStart(mWindow)); 
+		mWindow->pushGui(new GuiScraperStart(mWindow));
 	};
 	std::function<void()> openAndSave = openScrapeNow;
 	openAndSave = [s, openAndSave] { s->save(); openAndSave(); };
@@ -1345,7 +1352,7 @@ void GuiMenu::openUpdateSettings()
 }
 	
 
-void GuiMenu::openOtherSettings()
+void GuiMenu::openAdvancedSettings()
 {
 	Window* window = mWindow;
 	auto s = new GuiSettings(mWindow, _("ADVANCED SETTINGS"));
@@ -1528,8 +1535,7 @@ void GuiMenu::openOtherSettings()
 		Settings::getInstance()->setBool("OptimizeVRAM", optimizeVram->getState());
 	});
 
-
-	// framerate	
+	// framerate
 	auto framerate = std::make_shared<SwitchComponent>(mWindow);
 	framerate->setState(Settings::getInstance()->getBool("DrawFramerate"));
 	s->addWithLabel(_("SHOW FRAMERATE"), framerate);
@@ -1541,19 +1547,33 @@ void GuiMenu::openOtherSettings()
 	s->addWithLabel(_("THREADED LOADING"), threadedLoading);
 	s->addSaveFunc([threadedLoading] { Settings::getInstance()->setBool("ThreadedLoading", threadedLoading->getState()); });
 
-	// preload VLC player
+	// preload VLCplayer
 	ComponentListRow preload_vlc_row;
 	preload_vlc_row.elements.clear();
 	preload_vlc_row.addElement(std::make_shared<TextComponent>(mWindow, _("PRELOAD VLC SETTINGS"), theme->Text.font, theme->Text.color), true);
 	preload_vlc_row.addElement(makeArrow(mWindow), false);
 	preload_vlc_row.makeAcceptInputHandler(std::bind(&GuiMenu::openPreloadVlcSettings, this));
-	s->addRow(preload_vlc_row);
+//	s->addRow(preload_vlc_row);
+
+	// show detailed system information
+	auto detailedSystemInfo = std::make_shared<SwitchComponent>(mWindow);
+	detailedSystemInfo->setState(Settings::getInstance()->getBool("ShowDetailedSystemInfo"));
+	s->addWithLabel(_("SHOW DETAILED SYSTEM INFO"), detailedSystemInfo);
+	s->addSaveFunc([s, detailedSystemInfo]{
+		bool old_value = Settings::getInstance()->getBool("ShowDetailedSystemInfo");
+		if (old_value != detailedSystemInfo->getState())
+		{
+			Settings::getInstance()->setBool("ShowDetailedSystemInfo", detailedSystemInfo->getState());
+			s->setVariable("reloadGuiMenu", true);
+		}
+	});
 
 	// full exit
 	auto fullExitMenu = std::make_shared<SwitchComponent>(mWindow);
 	fullExitMenu->setState(!Settings::getInstance()->getBool("ShowOnlyExit"));
 	s->addWithLabel(_("COMPLETE QUIT MENU"), fullExitMenu);
 	s->addSaveFunc([fullExitMenu] { Settings::getInstance()->setBool("ShowOnlyExit", !fullExitMenu->getState()); });
+
 
 	// log level
 	auto logLevel = std::make_shared< OptionListComponent<std::string> >(mWindow, _("LOG LEVEL"), false);
@@ -1611,6 +1631,11 @@ void GuiMenu::openOtherSettings()
 
 	mWindow->pushGui(s);
 
+}
+
+void GuiMenu::openSystemInformation()
+{
+	mWindow->pushGui(new GuiSystemInformation(mWindow));
 }
 
 void GuiMenu::openConfigInput()

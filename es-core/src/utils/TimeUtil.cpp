@@ -85,7 +85,6 @@ namespace Utils
 			return clockBuf;
 		}
 
-
 		Duration::Duration(const time_t& _time)
 		{
 			mTotalSeconds = (unsigned int)_time;

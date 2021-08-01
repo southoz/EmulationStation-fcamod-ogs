@@ -25,6 +25,7 @@ public:
 	static const std::string getLanguage() { return mCurrentLanguage; }
 
 	static const void reset() { mCurrentLanguageLoaded = false; }
+	static const bool isRTL();
 
 private:
 	static void checkLocalisationLoaded();

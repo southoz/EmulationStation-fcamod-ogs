@@ -4,11 +4,15 @@
 #include <stdarg.h>
 #include <cstring>
 
+#if defined(_WIN32)
+#include <Windows.h>
+#endif
+
 namespace Utils
 {
 	namespace String
 	{
-		static wchar_t unicode_lowers[] = 
+		static wchar_t unicode_lowers[] =
 		{
 			(wchar_t)0x0061, (wchar_t)0x0062, (wchar_t)0x0063, (wchar_t)0x0064, (wchar_t)0x0065, (wchar_t)0x0066, (wchar_t)0x0067, (wchar_t)0x0068, (wchar_t)0x0069,
 			(wchar_t)0x006A, (wchar_t)0x006B, (wchar_t)0x006C, (wchar_t)0x006D, (wchar_t)0x006E, (wchar_t)0x006F, (wchar_t)0x0070, (wchar_t)0x0071, (wchar_t)0x0072,
@@ -83,9 +87,9 @@ namespace Utils
 			(wchar_t)0x24E0, (wchar_t)0x24E1, (wchar_t)0x24E2, (wchar_t)0x24E3, (wchar_t)0x24E4, (wchar_t)0x24E5, (wchar_t)0x24E6, (wchar_t)0x24E7, (wchar_t)0x24E8,
 			(wchar_t)0x24E9, (wchar_t)0xFF41, (wchar_t)0xFF42, (wchar_t)0xFF43, (wchar_t)0xFF44, (wchar_t)0xFF45, (wchar_t)0xFF46, (wchar_t)0xFF47, (wchar_t)0xFF48,
 			(wchar_t)0xFF49, (wchar_t)0xFF4A, (wchar_t)0xFF4B, (wchar_t)0xFF4C, (wchar_t)0xFF4D, (wchar_t)0xFF4E, (wchar_t)0xFF4F, (wchar_t)0xFF50, (wchar_t)0xFF51,
-			(wchar_t)0xFF52, (wchar_t)0xFF53, (wchar_t)0xFF54, (wchar_t)0xFF55, (wchar_t)0xFF56, (wchar_t)0xFF57, (wchar_t)0xFF58, (wchar_t)0xFF59, (wchar_t)0xFF5A};
+			(wchar_t)0xFF52, (wchar_t)0xFF53, (wchar_t)0xFF54, (wchar_t)0xFF55, (wchar_t)0xFF56, (wchar_t)0xFF57, (wchar_t)0xFF58, (wchar_t)0xFF59, (wchar_t)0xFF5A };
 
-		static const wchar_t unicode_uppers[] = 
+		static const wchar_t unicode_uppers[] =
 		{
 			(wchar_t)0x0041, (wchar_t)0x0042, (wchar_t)0x0043, (wchar_t)0x0044, (wchar_t)0x0045, (wchar_t)0x0046, (wchar_t)0x0047, (wchar_t)0x0048, (wchar_t)0x0049,
 			(wchar_t)0x004A, (wchar_t)0x004B, (wchar_t)0x004C, (wchar_t)0x004D, (wchar_t)0x004E, (wchar_t)0x004F, (wchar_t)0x0050, (wchar_t)0x0051, (wchar_t)0x0052,
@@ -160,7 +164,7 @@ namespace Utils
 			(wchar_t)0x24C6, (wchar_t)0x24C7, (wchar_t)0x24C8, (wchar_t)0x24C9, (wchar_t)0x24CA, (wchar_t)0x24CB, (wchar_t)0x24CC, (wchar_t)0x24CD, (wchar_t)0x24CE,
 			(wchar_t)0x24CF, (wchar_t)0xFF21, (wchar_t)0xFF22, (wchar_t)0xFF23, (wchar_t)0xFF24, (wchar_t)0xFF25, (wchar_t)0xFF26, (wchar_t)0xFF27, (wchar_t)0xFF28,
 			(wchar_t)0xFF29, (wchar_t)0xFF2A, (wchar_t)0xFF2B, (wchar_t)0xFF2C, (wchar_t)0xFF2D, (wchar_t)0xFF2E, (wchar_t)0xFF2F, (wchar_t)0xFF30, (wchar_t)0xFF31,
-			(wchar_t)0xFF32, (wchar_t)0xFF33, (wchar_t)0xFF34, (wchar_t)0xFF35, (wchar_t)0xFF36, (wchar_t)0xFF37, (wchar_t)0xFF38, (wchar_t)0xFF39, (wchar_t)0xFF3A};
+			(wchar_t)0xFF32, (wchar_t)0xFF33, (wchar_t)0xFF34, (wchar_t)0xFF35, (wchar_t)0xFF36, (wchar_t)0xFF37, (wchar_t)0xFF38, (wchar_t)0xFF39, (wchar_t)0xFF3A };
 
 		static int compareWchar(const void* a, const void* b)
 		{
@@ -202,6 +206,9 @@ namespace Utils
 			}
 			else if((c & 0xE0) == 0xC0) // 110xxxxx, two byte character
 			{
+				// 0001xxxx
+
+
 				// 110xxxxx 10xxxxxx
 				result = ((_string[_cursor++] & 0x1F) <<  6) |
 						 ((_string[_cursor++] & 0x3F)      );
@@ -318,27 +325,29 @@ namespace Utils
 
 		} // moveCursor
 
-		static std::string changeUnicodeCasing(const std::string& _string, bool toUpper)
+		std::string toLower(const std::string& _string)
 		{
 			std::string text = _string;
 
 			size_t i = 0;
 			while (i < text.length())
 			{
-				if ((text[i] & 0x80) == 0)
+				char c = text[i];
+				if ((c & 0x80) == 0)
 				{
-					text[i] = toUpper ? toupper(text[i]) : tolower(text[i]);
+					if (c >= 'A' && c <= 'Z')
+						text[i] = c + 0x20;
+
 					i++;
 					continue;
 				}
 
 				int pos = i;
 				wchar_t character = (wchar_t)chars2Unicode(text, i);
-				wchar_t unicode = toUpper ? toupperUnicode(character) : tolowerUnicode(character);				
+				wchar_t unicode = tolowerUnicode(character);
 				if (unicode != character)
-				{					
+				{
 					int charSize = i - pos;
-
 					if (charSize == 2)
 					{
 						text[pos] = (char)(((unicode >> 6) & 0xFF) | 0xC0);
@@ -357,28 +366,69 @@ namespace Utils
 			return text;
 		}
 
-		std::string toLower(const std::string& _string) { return changeUnicodeCasing(_string, false); }
-		std::string toUpper(const std::string& _string) { return changeUnicodeCasing(_string, true); }
+		std::string toUpper(const std::string& _string)
+		{
+			std::string text = _string;
+
+			size_t i = 0;
+			while (i < text.length())
+			{
+				char c = text[i];
+				if ((c & 0x80) == 0)
+				{
+					if (c >= 'a' && c <= 'z')
+						text[i] = c - 0x20;
+
+					i++;
+					continue;
+				}
+
+				int pos = i;
+				wchar_t character = (wchar_t)chars2Unicode(text, i);
+				wchar_t unicode = toupperUnicode(character);
+				if (unicode != character)
+				{
+					int charSize = i - pos;
+					if (charSize == 2)
+					{
+						text[pos] = (char)(((unicode >> 6) & 0xFF) | 0xC0);
+						text[pos + 1] = (char)((unicode & 0x3F) | 0x80);
+					}
+					else if (charSize == 3)
+					{
+						text[pos] += (char)(((unicode >> 12) & 0xFF) | 0xE0);
+						text[pos + 1] += (char)(((unicode >> 6) & 0x3F) | 0x80);
+						text[pos + 2] += (char)((unicode & 0x3F) | 0x80);
+					}
+				}
+			}
+
+			return text;
+		}
 
 		std::string trim(const std::string& _string)
 		{
-			const size_t strBegin = _string.find_first_not_of(" \t");
-			const size_t strEnd   = _string.find_last_not_of(" \t");
-
+			const size_t strBegin = _string.find_first_not_of(" \t\r\n");
 			if(strBegin == std::string::npos)
 				return "";
 
+			const size_t strEnd = _string.find_last_not_of(" \t\r\n");
 			return _string.substr(strBegin, strEnd - strBegin + 1);
 
 		} // trim
-		
+
 		std::string replace(const std::string& _string, const std::string& _replace, const std::string& _with)
 		{
-			std::string string = _string;
-			size_t      pos;
+			if (_replace.empty())
+				return _string;
 
-			while((pos = string.find(_replace)) != std::string::npos)
-				string = string.replace(pos, _replace.length(), _with.c_str(), _with.length());
+			std::string string = _string;
+
+			size_t pos = 0;
+			while ((pos = string.find(_replace, pos)) != std::string::npos) {
+				string = string.replace(pos, _replace.length(), _with.c_str());
+				pos += _with.length();
+			}
 
 			return string;
 
@@ -386,16 +436,13 @@ namespace Utils
 
 		bool startsWith(const std::string& _string, const std::string& _start)
 		{
-			return (_string.find(_start) == 0);
-
+			return (strncmp(_string.c_str(), _start.c_str(), _start.size()) == 0);
 		} // startsWith
 
 		bool endsWith(const std::string& _string, const std::string& _end)
 		{
 			if (_end.size() > _string.size()) return false;
-			return std::equal(_end.rbegin(), _end.rend(), _string.rbegin());
-			//return (_string.find(_end, 0, ) == (_string.size() - _end.size()));
-
+			return (_string.rfind(_end) == (_string.size() - _end.size()));
 		} // endsWith
 
 		std::string removeParenthesis(const std::string& _string)
@@ -462,7 +509,7 @@ namespace Utils
 
 		std::string format(const char* _format, ...)
 		{
-			va_list args;
+			va_list	args;
 			va_list copy;
 
 			va_start(args, _format);
@@ -479,7 +526,7 @@ namespace Utils
 			va_end(args);
 
 			std::string out(buffer);
-			delete buffer;
+			delete[] buffer;
 
 			return out;
 
@@ -490,51 +537,357 @@ namespace Utils
 		{
 			std::string buffer = _input;
 
-			for (size_t i = 0; i < _input.size(); ++i) 
-			{               
+			for (size_t i = 0; i < _input.size(); ++i)
+			{
 				buffer[i] = _input[i] ^ key[i];
 			}
 
 			return buffer;
 
-		} // scramble	
+		} // scramble
 
-		std::vector<std::string> split(const std::string& s, char seperator)
+		std::vector<std::string> split(const std::string& s, char seperator, bool removeEmptyEntries)
 		{
 			std::vector<std::string> output;
 
-			std::string::size_type prev_pos = 0, pos = 0;
-			while ((pos = s.find(seperator, pos)) != std::string::npos)
+			if (s.empty())
+				return output;
+
+			const char* src = s.c_str();
+
+			while (true)
 			{
-				std::string substring(s.substr(prev_pos, pos - prev_pos));
+				const char* d = strchr(src, seperator);
+				size_t len = (d) ? d - src : strlen(src);
 
-				output.push_back(substring);
+				if (len || !removeEmptyEntries)
+					output.push_back(std::string(src, len)); // capture token
 
-				prev_pos = ++pos;
+				if (d) src += len + 1; else break;
 			}
-
-			output.push_back(s.substr(prev_pos, pos - prev_pos)); // Last word
 
 			return output;
 		}
 
-		std::vector<std::string> splitAny(const std::string& s, const std::string& seperator)
+		std::vector<std::string> splitAny(const std::string& s, const std::string& seperator, bool removeEmptyEntries)
 		{
 			std::vector<std::string> output;
 
-			char* str = new char[s.length() + 1];
-			std::strcpy(str, s.c_str());
-
-			char* pch = strtok(str, seperator.c_str());
-			while (pch != NULL)
+			unsigned prev_pos = 0;
+			auto pos = s.find_first_of(seperator);
+			while (pos != std::string::npos)
 			{
-				output.push_back(pch);
-				pch = strtok(NULL, seperator.c_str());
+				std::string token = s.substr(prev_pos, pos - prev_pos);
+				if (!removeEmptyEntries || !token.empty())
+					output.push_back(token);
+
+				pos++;
+				prev_pos = pos;
+				pos = s.find_first_of(seperator, pos);
 			}
 
-			delete str;
+			if (prev_pos < s.length())
+			{
+				std::string token = s.substr(prev_pos);
+				if (!removeEmptyEntries || !token.empty())
+					output.push_back(token); // Last word
+			}
 
 			return output;
+		}
+
+		std::string join(const std::vector<std::string>& items, std::string separator)
+		{
+			std::string data;
+
+			for (auto line : items)
+			{
+				if (!data.empty())
+					data += separator;
+
+				data += line;
+			}
+
+			return data;
+		}
+
+		std::vector<std::string> extractStrings(const std::string& _string, const std::string& startDelimiter, const std::string& endDelimiter)
+		{
+			std::vector<std::string> ret;
+
+			size_t pos = 0;
+			while (pos != std::string::npos)
+			{
+				pos = _string.find(startDelimiter, pos);
+				if (pos == std::string::npos)
+					break;
+
+				auto end = _string.find(endDelimiter, pos+1);
+				if (end == std::string::npos)
+					break;
+
+				std::string value = _string.substr(pos + 1, end - pos - 1);
+				if (!value.empty())
+					ret.push_back(value);
+
+				pos = end;
+			}
+
+			return ret;
+		}
+
+		bool startsWithIgnoreCase(const std::string& name1, const std::string& name2)
+		{
+			auto makeUp = [](unsigned int c)
+			{
+				if ((c & 0x80) == 0) return toupper(c);
+				return (int)toupperUnicode(c);
+			};
+
+			size_t p1 = 0;
+			size_t p2 = 0;
+
+			while (true)
+			{
+				int u1 = makeUp(chars2Unicode(name1, p1));
+				int u2 = makeUp(chars2Unicode(name2, p2));
+
+				if (u1 != 0 && u2 == 0)
+					return true;
+
+				if (u1 != u2)
+					return false;
+			}
+		}
+
+		int compareIgnoreCase(const std::string& name1, const std::string& name2)
+		{
+			size_t p1 = 0;
+			size_t p2 = 0;
+
+			int u1, u2;
+			char c1, c2;
+
+			while (true)
+			{
+				c1 = name1[p1];
+				if ((c1 & 0x80) == 0)
+				{
+					if (c1 >= 'a' && c1 <= 'z')
+						u1 = c1 - 0x20;
+					else
+						u1 = c1;
+
+					p1++;
+				}
+				else
+					u1 = toupperUnicode(chars2Unicode(name1, p1));
+
+				c2 = name2[p2];
+				if ((c2 & 0x80) == 0)
+				{
+					if (c2 >= 'a' && c2 <= 'z')
+						u2 = c2 - 0x20;
+					else
+						u2 = c2;
+
+					p2++;
+				}
+				else
+					u2 = toupperUnicode(chars2Unicode(name2, p2));
+
+				if (u1 == 0 && u2 != 0)
+					return -1;
+				else if (u1 != 0 && u2 == 0)
+					return 1;
+				else if (u1 == 0 || u2 == 0)
+					return 0;
+
+				u1 -= u2;
+				if (u1)
+					return u1;
+			}
+		}
+
+		bool containsIgnoreCase(const std::string & _string, const std::string & _what)
+		{
+			auto it = std::search(
+				_string.begin(), _string.end(),
+				_what.begin(), _what.end(),
+				[](char ch1, char ch2) { return toupper(ch1) == toupper(ch2); }
+			);
+
+			return (it != _string.end());
+		}
+
+		std::string proper(const std::string& _string)
+		{
+			if (_string.length() <= 1)
+				return Utils::String::toUpper(_string);
+
+			return Utils::String::toUpper(_string.substr(0, 1)) + _string.substr(1);
+		}
+
+		std::string removeHtmlTags(const std::string& html)
+		{
+			if (html.empty())
+				return html;
+
+			std::string text = html;
+
+			size_t start = 0, ss = 0;
+			while ((start = text.find("<", (ss = start))) != std::string::npos)
+			{
+				int end = text.find(">", start);
+				if (end != std::string::npos && end >= start)
+					text = text.erase(start, end - start + 1);
+				else
+				{
+					start++;
+					if (start >= text.size())
+						break;
+				}
+			}
+
+			return trim(text);
+		}
+
+		unsigned int fromHexString(const std::string& string)
+		{
+			if (string.empty())
+				return 0;
+
+			unsigned int value = 0;
+
+			int dec = 0;
+			for (int i = string.length() - 1; i >= 0; i--)
+			{
+				char c = string[i];
+				if (c == ' ')
+					continue;
+
+				if (c == 'x' || c == 'X')
+					return value;
+
+				if (c >= '0' && c <= '9')
+					value += (c - '0') << dec;
+				else if (c >= 'A' && c <= 'F')
+					value += (c - 'A' + 10) << dec;
+				else if (c >= 'a' && c <= 'f')
+					value += (c - 'a' + 10) << dec;
+				else
+					return 0;
+
+				dec += 4;
+			}
+
+			return value;
+		}
+
+		int	toInteger(const std::string& string)
+		{
+			if (string.empty())
+				return 0;
+
+			const char* str = string.c_str();
+			while (*str == ' ')
+				str++;
+
+			bool neg = false;
+			if (*str == '-')
+			{
+				neg = true;
+				++str;
+			}
+			else if (*str == '+')
+				++str;
+
+			int64_t value = 0;
+			for (; *str && *str != '.' && *str != ' '; str++)
+			{
+				if (*str < '0' || *str > '9')
+					return 0;
+
+				value *= 10;
+				value += *str - '0';
+			}
+
+			return neg ? -value : value;
+		}
+
+		float toFloat(const std::string& string)
+		{
+			if (string.empty())
+				return 0.0f;
+
+			const char* str = string.c_str();
+			while (*str == ' ')
+				str++;
+
+			bool neg = false;
+			if (*str == '-')
+			{
+				neg = true;
+				++str;
+			}
+			else if (*str == '+')
+				++str;
+
+			int64_t value = 0;
+			for (; *str && *str != '.' && *str != ' '; str++)
+			{
+				if (*str < '0' || *str > '9')
+					return 0;
+
+				value *= 10;
+				value += *str - '0';
+			}
+
+			if (*str == '.')
+			{
+				str++;
+
+				int64_t decimal = 0, weight = 1;
+
+				for (; *str && *str != ' '; str++)
+				{
+					if (*str < '0' || *str > '9')
+						return 0;
+
+					decimal *= 10;
+					decimal += *str - '0';
+					weight *= 10;
+				}
+
+				float ret = value + (decimal / (float)weight);
+				return neg ? -ret : ret;
+			}
+
+			return neg ? -value : value;
+		}
+
+		std::string decodeXmlString(const std::string& string)
+		{
+			std::string ret = string;
+
+			ret = replace(ret, "&amp;", "&");
+			ret = replace(ret, "&apos;", "'");
+			ret = replace(ret, "&lt;", "<");
+			ret = replace(ret, "&gt;", ">");
+			ret = replace(ret, "&quot;", "\"");
+			ret = replace(ret, "&nbsp;", " ");
+			ret = replace(ret, "&#39;", "'");
+
+			return ret;
+		}
+
+		std::string toHexString(unsigned int color)
+		{
+			char hex[10];
+			hex[0] = 0;
+			auto len = snprintf(hex, sizeof(hex) - 1, "%08X", color);
+			hex[len] = 0;
+			return hex;
 		}
 
 		const std::string hiddenSpecialCharacters(const std::string msg)
@@ -568,6 +921,15 @@ namespace Utils
 			msg_aux = Utils::String::replace(msg_aux, "\'", "\\'");
 			return msg_aux;
 		}
+
+		const std::string boolToString(bool value, bool uppercase)
+		{
+			if (uppercase)
+				return (value ? "TRUE" : "FALSE");
+
+			return (value ? "true" : "false");
+		}
+
 	} // String::
 
 } // Utils::

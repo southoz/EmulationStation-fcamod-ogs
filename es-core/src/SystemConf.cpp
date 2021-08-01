@@ -10,6 +10,17 @@
 #include <iostream>
 #include <SDL_timer.h>
 
+#include "Settings.h"
+#define NOBATOCERACONF
+// NOBATOCERACONF routes all SystemConf to es_settings
+std::string mapSettingsName(const std::string name)
+{
+	if (name == "system.language")
+		return "Language";
+
+	return name;
+}
+
 SystemConf *SystemConf::sInstance = NULL;
 
 static std::vector<std::string> dontRemoveAutoValue
@@ -37,7 +48,7 @@ std::string systemConfFileTmp = "~/.emulationstation.conf.tmp";
 
 SystemConf::SystemConf() 
 {
-    loadSystemConf();
+	loadSystemConf();
 }
 
 SystemConf *SystemConf::getInstance()
@@ -84,7 +95,7 @@ bool SystemConf::loadSystemConf()
 bool SystemConf::saveSystemConf()
 {
 #ifdef NOBATOCERACONF
-	return Settings::getInstance()->saveFile();	
+	return Settings::getInstance()->saveFile();
 #endif
 
 	if (!mWasChanged)
@@ -232,7 +243,7 @@ bool SystemConf::getBool(const std::string &name, bool defaultValue)
 
 bool SystemConf::setBool(const std::string &name, bool value)
 {
-#ifdef NOBATOCERACONF	
+#ifdef NOBATOCERACONF
 	return Settings::getInstance()->setBool(mapSettingsName(name), value);
 #endif
 

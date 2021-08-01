@@ -1,4 +1,6 @@
 #include "ApiSystem.h"
+#include <stdlib.h>
+#include <sys/statvfs.h>
 #include "HttpReq.h"
 #include "utils/FileSystemUtil.h"
 #include "utils/StringUtil.h"
@@ -206,4 +208,210 @@ bool downloadGitRepository(const std::string url, const std::string fileName, co
 std::pair<std::string, int> ApiSystem::installTheme(std::string themeName, const std::function<void(const std::string)>& func)
 {
 	return std::pair<std::string, int>(std::string("Theme not found"), 1);
+}
+
+	// Storage functions
+unsigned long ApiSystem::getFreeSpaceGB(std::string mountpoint)
+{
+	LOG(LogDebug) << "ApiSystem::getFreeSpaceGB";
+
+	int free = 0;
+
+	struct statvfs fiData;
+	if ((statvfs(mountpoint.c_str(), &fiData)) >= 0)
+		free = (fiData.f_bfree * fiData.f_bsize) / (1024 * 1024 * 1024);
+
+	return free;
+}
+
+std::string ApiSystem::getFreeSpaceSystemInfo() {
+	return getFreeSpaceInfo("/");
+}
+
+std::string ApiSystem::getFreeSpaceBootInfo() {
+	return getFreeSpaceInfo("/boot");
+}
+
+std::string ApiSystem::getFreeSpaceUserInfo() {
+	return getFreeSpaceInfo("/roms");
+}
+
+std::string ApiSystem::getFreeSpaceInfo(const std::string mountpoint)
+{
+	LOG(LogDebug) << "ApiSystem::getFreeSpaceInfo";
+
+	std::ostringstream oss;
+
+	struct statvfs fiData;
+	if ((statvfs(mountpoint.c_str(), &fiData)) < 0)
+		return "";
+
+	unsigned long long total = (unsigned long long) fiData.f_blocks * (unsigned long long) (fiData.f_bsize);
+	unsigned long long free = (unsigned long long) fiData.f_bfree * (unsigned long long) (fiData.f_bsize);
+	unsigned long long used = total - free;
+	unsigned long percent = 0;
+
+	if (total != 0)
+	{  //for small SD card ;) with share < 1GB
+		percent = used * 100 / total;
+		oss << Utils::FileSystem::megaBytesToString(used / (1024L * 1024L)) << "/" << Utils::FileSystem::megaBytesToString(total / (1024L * 1024L)) << " (" << percent << " %)";
+	}
+	else
+		oss << "N/A";
+
+	return oss.str();
+}
+
+bool ApiSystem::isFreeSpaceSystemLimit() {
+	return isFreeSpaceLimit("/");
+}
+
+bool ApiSystem::isFreeSpaceBootLimit() {
+	return isFreeSpaceLimit("/boot");
+}
+
+bool ApiSystem::isFreeSpaceUserLimit() {
+	return isFreeSpaceLimit("/roms", 2);
+}
+
+bool ApiSystem::isFreeSpaceLimit(const std::string mountpoint, int limit)
+{
+	return ((int) getFreeSpaceGB(mountpoint)) < limit;
+}
+
+bool ApiSystem::isTemperatureLimit(float temperature, float limit)
+{
+	return temperature > limit;
+}
+
+bool ApiSystem::isLoadCpuLimit(float load_cpu, float limit) // %
+{
+	return load_cpu > limit;
+}
+
+bool ApiSystem::isMemoryLimit(float total_memory, float free_memory, int limit) // %
+{
+	int percent = ( (int) ( (free_memory * 100) / total_memory ) );
+	return percent < limit;
+	//return ( (int) ( (free_memory * 100) / total_memory ) ) < limit;
+}
+
+bool ApiSystem::isBatteryLimit(float battery_level, int limit) // %
+{
+	return battery_level < limit;
+}
+
+
+std::string ApiSystem::getVersion()
+{
+	LOG(LogDebug) << "ApiSystem::getVersion()";
+	return querySoftwareInformation(true).version;
+}
+
+std::string ApiSystem::getApplicationName()
+{
+	LOG(LogDebug) << "ApiSystem::getApplicationName()";
+	return querySoftwareInformation(true).application_name;
+}
+
+std::string ApiSystem::getHostname()
+{
+	LOG(LogDebug) << "ApiSystem::getHostname()";
+	return querySoftwareInformation(true).hostname;
+}
+
+std::string ApiSystem::getIpAddress()
+{
+	LOG(LogDebug) << "ApiSystem::getIpAddress()";
+
+	std::string result = queryIPAddress(); // platform.h
+	if (result.empty())
+		return "NOT CONNECTED";
+
+	return result;
+}
+
+float ApiSystem::getLoadCpu()
+{
+	LOG(LogDebug) << "ApiSystem::getLoadCpu()";
+	return queryLoadCpu();
+}
+
+int ApiSystem::getFrequencyCpu()
+{
+	LOG(LogDebug) << "ApiSystem::getFrequencyCpu()";
+	return queryFrequencyCpu();
+}
+
+float ApiSystem::getTemperatureCpu()
+{
+	LOG(LogDebug) << "ApiSystem::getTemperatureCpu()";
+	return queryTemperatureCpu();
+}
+
+float ApiSystem::getTemperatureGpu()
+{
+	LOG(LogDebug) << "ApiSystem::getTemperatureGpu()";
+	return queryTemperatureGpu();
+}
+
+int ApiSystem::getFrequencyGpu()
+{
+	LOG(LogDebug) << "ApiSystem::getFrequencyGpu()";
+	return queryFrequencyGpu();
+}
+
+bool ApiSystem::isNetworkConnected()
+{
+	LOG(LogDebug) << "ApiSystem::isNetworkConnected()";
+	return queryNetworkConnected();
+}
+
+NetworkInformation ApiSystem::getNetworkInformation(bool summary)
+{
+	LOG(LogDebug) << "ApiSystem::getNetworkInformation()";
+
+	return queryNetworkInformation(summary); // platform.h
+}
+
+BatteryInformation ApiSystem::getBatteryInformation(bool summary)
+{
+	LOG(LogDebug) << "ApiSystem::getBatteryInformation()";
+
+	return queryBatteryInformation(summary); // platform.h
+}
+
+CpuAndSocketInformation ApiSystem::getCpuAndChipsetInformation(bool summary)
+{
+	LOG(LogDebug) << "ApiSystem::getCpuAndChipsetInformation()";
+
+	return queryCpuAndChipsetInformation(summary); // platform.h
+}
+
+RamMemoryInformation ApiSystem::getRamMemoryInformation(bool summary)
+{
+	LOG(LogDebug) << "ApiSystem::getRamMemoryInformation()";
+
+	return queryRamMemoryInformation(summary); // platform.h
+}
+
+DisplayAndGpuInformation ApiSystem::getDisplayAndGpuInformation(bool summary)
+{
+	LOG(LogDebug) << "ApiSystem::getDisplayAndGpuInformation()";
+
+	return queryDisplayAndGpuInformation(summary); // platform.h
+}
+
+SoftwareInformation ApiSystem::getSoftwareInformation(bool summary)
+{
+	LOG(LogDebug) << "ApiSystem::getSoftwareInformation()";
+
+	return querySoftwareInformation(summary); // platform.h
+}
+
+DeviceInformation ApiSystem::getDeviceInformation(bool summary)
+{
+	LOG(LogDebug) << "ApiSystem::getDeviceInformation()";
+
+	return queryDeviceInformation(summary); // platform.h
 }

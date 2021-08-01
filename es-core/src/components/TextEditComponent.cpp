@@ -49,6 +49,9 @@ void TextEditComponent::onSizeChanged()
 
 void TextEditComponent::setValue(const std::string& val)
 {
+	if (mText == val)
+		return;
+
 	mText = val;
 	onTextChanged();
 }
@@ -216,6 +219,8 @@ void TextEditComponent::setCursor(size_t pos)
 {
 	if (pos == std::string::npos)
 		mCursor = (unsigned int)mText.length();
+	else if (mCursor == (int) pos)
+		return;
 	else
 		mCursor = (int)pos;
 

@@ -183,6 +183,8 @@ void Settings::setDefaults()
 
 	mBoolMap["MenusOnDisplayTop"] = false;
 
+	mBoolMap["ShowDetailedSystemInfo"] = false;
+
 	mDefaultBoolMap = mBoolMap;
 	mDefaultIntMap = mIntMap;
 	mDefaultFloatMap = mFloatMap;

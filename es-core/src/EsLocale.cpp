@@ -78,6 +78,12 @@ const std::string EsLocale::nGetText(const std::string msgid, const std::string 
 	return msgid_plural;
 }
 
+const bool EsLocale::isRTL()
+{
+	std::string language = Settings::getInstance()->getString("Language");
+	return language.find("ar") == 0 || language.find("he") == 0;
+}
+
 const std::vector<PluralRule> pluralRules(rules, rules + sizeof(rules) / sizeof(rules[0]));
 
 void EsLocale::checkLocalisationLoaded()

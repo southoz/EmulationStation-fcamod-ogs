@@ -14,7 +14,7 @@ set(ES_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/src/SystemScreenSaver.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/CollectionSystemManager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ApiSystem.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/ContentInstaller.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ContentInstaller.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/NetworkThread.h
 
     # GuiComponents
@@ -24,6 +24,7 @@ set(ES_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/src/components/TextListComponent.h
 
     # Guis
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiSettings.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiFastSelect.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiMetaDataEd.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiGameScraper.h
@@ -32,20 +33,20 @@ set(ES_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiGeneralScreensaverOptions.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiVideoScreensaverOptions.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiSlideshowScreensaverOptions.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiSystemInformation.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiMenu.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiSettings.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiScraperMulti.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiScraperStart.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiGamelistFilter.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiThemeInstall.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiCollectionSystemsOptions.h    
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiThemeInstall.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiCollectionSystemsOptions.h
 
     # Scrapers
     ${CMAKE_CURRENT_SOURCE_DIR}/src/scrapers/Scraper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/scrapers/GamesDBJSONScraper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/scrapers/GamesDBJSONScraperResources.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/scrapers/ScreenScraper.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/scrapers/ThreadedScraper.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/scrapers/ThreadedScraper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/scrapers/md5.h
 
     # Views
@@ -77,9 +78,9 @@ set(ES_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/FileFilterIndex.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/SystemScreenSaver.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/CollectionSystemManager.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/ApiSystem.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/ContentInstaller.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/NetworkThread.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ApiSystem.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ContentInstaller.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/NetworkThread.cpp
 
     # GuiComponents
     ${CMAKE_CURRENT_SOURCE_DIR}/src/components/AsyncReqComponent.cpp
@@ -87,6 +88,7 @@ set(ES_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/components/ScraperSearchComponent.cpp
 
     # Guis
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiSettings.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiFastSelect.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiMetaDataEd.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiGameScraper.cpp
@@ -95,21 +97,20 @@ set(ES_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiGeneralScreensaverOptions.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiVideoScreensaverOptions.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiSlideshowScreensaverOptions.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiSystemInformation.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiMenu.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiSettings.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiScraperMulti.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiScraperStart.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiGamelistFilter.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiThemeInstall.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiCollectionSystemsOptions.cpp    
-
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiThemeInstall.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiCollectionSystemsOptions.cpp
     # Scrapers
     ${CMAKE_CURRENT_SOURCE_DIR}/src/scrapers/Scraper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/scrapers/GamesDBJSONScraper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/scrapers/GamesDBJSONScraperResources.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/scrapers/ScreenScraper.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/scrapers/ThreadedScraper.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/scrapers/md5.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/scrapers/ThreadedScraper.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/scrapers/md5.cpp
 
     # Views
     ${CMAKE_CURRENT_SOURCE_DIR}/src/views/gamelist/BasicGameListView.cpp

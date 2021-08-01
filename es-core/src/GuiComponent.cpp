@@ -3,12 +3,12 @@
 #include "animations/Animation.h"
 #include "animations/AnimationController.h"
 #include "animations/LambdaAnimation.h"
-//#include "Log.h"
+#include "Log.h"
 #include "renderers/Renderer.h"
 #include "ThemeData.h"
 #include "Window.h"
 #include <algorithm>
-
+//#include <SDL_timer.h>
 
 bool GuiComponent::ALLOWANIMATIONS = true;
 
@@ -19,6 +19,9 @@ GuiComponent::GuiComponent(Window* window) : mWindow(window), mParent(NULL), mOp
 {
 	for(unsigned char i = 0; i < MAX_ANIMATIONS; i++)
 		mAnimationMap[i] = NULL;
+
+
+//	mAutoUpdatedStartTime = SDL_GetTicks();
 }
 
 GuiComponent::~GuiComponent()
@@ -58,14 +61,26 @@ void GuiComponent::updateChildren(int deltaTime)
 		getChild(i)->update(deltaTime);
 	}
 }
-
+/*
+void GuiComponent::executeAutoUpdate()
+{
+	LOG(LogDebug) << "GuiComponent::executeAutoUpdate() -  executing auto update";
+	int mAutoUpdatedEndTime = SDL_GetTicks();
+	int time = mAutoUpdatedEndTime - mAutoUpdatedStartTime;
+	if (time > mAutoUpdateElapsedTime)
+	{
+		mAutoUpdateCallback();
+		mAutoUpdatedStartTime = SDL_GetTicks();
+	}
+}
+*/
 void GuiComponent::update(int deltaTime)
 {
 	updateSelf(deltaTime);
 	updateChildren(deltaTime);
 
-	if (isAutoUpdated())
-		executeAutoUpdate();
+//	if (isAutoUpdated())
+//		executeAutoUpdate();
 
 }
 
