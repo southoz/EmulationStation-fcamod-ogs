@@ -3,11 +3,12 @@
 #include "animations/Animation.h"
 #include "animations/AnimationController.h"
 #include "animations/LambdaAnimation.h"
-#include "Log.h"
+//#include "Log.h"
 #include "renderers/Renderer.h"
 #include "ThemeData.h"
 #include "Window.h"
 #include <algorithm>
+
 
 bool GuiComponent::ALLOWANIMATIONS = true;
 
@@ -62,6 +63,10 @@ void GuiComponent::update(int deltaTime)
 {
 	updateSelf(deltaTime);
 	updateChildren(deltaTime);
+
+	if (isAutoUpdated())
+		executeAutoUpdate();
+
 }
 
 void GuiComponent::render(const Transform4x4f& parentTrans)
