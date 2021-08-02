@@ -2,6 +2,7 @@
 
 #include "utils/FileSystemUtil.h"
 #include "utils/StringUtil.h"
+#include "utils/TimeUtil.h"
 
 #include "Settings.h"
 #include <sys/stat.h>
@@ -725,6 +726,30 @@ namespace Utils
 				return (size_t) info.st_size;
 
 			return 0;
+		}
+
+		Utils::Time::DateTime getFileCreationDate(const std::string& _path)
+		{
+			std::string path = getGenericPath(_path);
+			struct stat64 info;
+
+			// check if stat64 succeeded
+			if ((stat64(path.c_str(), &info) == 0))
+				return Utils::Time::DateTime(info.st_ctime);
+
+			return Utils::Time::DateTime();
+		}
+
+		Utils::Time::DateTime getFileModificationDate(const std::string& _path)
+		{
+			std::string path = getGenericPath(_path);
+			struct stat64 info;
+
+			// check if stat64 succeeded
+			if ((stat64(path.c_str(), &info) == 0))
+				return Utils::Time::DateTime(info.st_mtime);
+
+			return Utils::Time::DateTime();
 		}
 
 		bool isAbsolute(const std::string& _path)

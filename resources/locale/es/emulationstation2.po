@@ -1086,8 +1086,8 @@ msgid "UNABLE TO PAIR CONTROLLER"
 msgstr "NO SE PUEDE EMPAREJAR EL MANDO"
 
 #:
-msgid "AN ERROR OCCURED"
-msgstr "OCURRIÓ UN ERROR"
+msgid "AN ERROR HAS OCCURED"
+msgstr "HA OCURRIDO UN ERROR"
 
 #:
 msgid "NO CONTROLLERS FOUND"
@@ -1450,6 +1450,14 @@ msgstr "introducir la última vez que jugó"
 msgid "enter arcade system name"
 msgstr "introducir nombre del sistema arcade"
 
+#:
+msgid "game time"
+msgstr "tiempo jugado"
+
+#:
+msgid "how long the game has been played in total (seconds)"
+msgstr "tiempo total jugado (segundos)"
+
 #, c-format
 msgid "%i GAME AVAILABLE"
 msgid_plural "%i GAMES AVAILABLE"
@@ -1569,6 +1577,38 @@ msgstr "SISTEMA, ASCENDENTE"
 #:
 msgid "SYSTEM, DESCENDING"
 msgstr "SISTEMA, DESCENDENTE"
+
+#:
+msgid "FILE CREATION DATE, ASCENDING"
+msgstr "FECHA DE CREACIÓN, ASCENDENTE"
+
+#:
+msgid "FILE CREATION DATE, DESCENDING"
+msgstr "FECHA DE CREACIÓN, DESCENDENTE"
+
+#:
+msgid "GAME TIME, ASCENDING"
+msgstr "TIEMPO JUGADO, ASCENDENTE"
+
+#:
+msgid "GAME TIME, DESCENDING"
+msgstr "TIEMPO JUGADO, DESCENDENTE"
+
+#:
+msgid "SYSTEM, RELEASE YEAR, ASCENDING"
+msgstr "SISTEMA, AÑO DE LANZAMIENTO, ASCENDENTE"
+
+#:
+msgid "SYSTEM, RELEASE YEAR, DESCENDING"
+msgstr "SISTEMA, AÑO DE LANZAMIENTO, DESCENDENTE"
+
+#:
+msgid "RELEASE YEAR, SYSTEM, ASCENDING"
+msgstr "AÑO DE LANZAMIENTO, SISTEMA, ASCENDENTE"
+
+#:
+msgid "RELEASE YEAR, SYSTEM, DESCENDING"
+msgstr "AÑO DE LANZAMIENTO, SISTEMA, DESCENDENTE"
 
 #:
 msgid "WORKING..."

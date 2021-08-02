@@ -29,7 +29,8 @@ MetaDataDecl gameDecls[] = {
 	{ 17, "kidgame",     MD_BOOL,                "false",            false,      "kidgame",              "enter kidgame off/on" },
 	{ 18, "playcount",   MD_INT,                 "0",                true,       "play count",           "enter number of times played"},
 	{ 19, "lastplayed",  MD_TIME,                "0",                true,       "last played",          "enter last played date"},
-	{ 20, "arcadesystemname",  MD_STRING,        "",                 false,      "arcade system",        "enter arcade system name"}
+	{ 20, "arcadesystemname",  MD_STRING,        "",                 false,      "arcade system",        "enter arcade system name"},
+	{ 21, "gametime",    MD_INT,                 "0",                true,       "game time",            "how long the game has been played in total (seconds)"}
 };
 
 const std::vector<MetaDataDecl> gameMDD(gameDecls, gameDecls + sizeof(gameDecls) / sizeof(gameDecls[0]));

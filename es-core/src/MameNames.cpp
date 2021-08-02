@@ -56,6 +56,9 @@ MameNames::MameNames()
 	{
 		NamePair namePair = { gameNode.child("mamename").text().get(), gameNode.child("realname").text().get() };
 		mNamePairs.push_back(namePair);
+
+		if (gameNode.attribute("vert") && gameNode.attribute("vert").value() == "true")
+			mVerticalGames.insert(namePair.mameName);
 	}
 
 	// Read bios
@@ -137,3 +140,8 @@ const bool MameNames::isDevice(const std::string& _deviceName)
 {
 	return (mMameDevices.find(_deviceName) != mMameDevices.cend());
 } // isDevice
+
+const bool MameNames::isVertical(const std::string& _nameName)
+{
+	return (mVerticalGames.find(_nameName) != mVerticalGames.cend());
+} // isVertical

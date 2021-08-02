@@ -432,7 +432,7 @@ void DetailedGameListView::updateInfoPanel()
 			{
 				if (isFadeOut)
 				{
-					if (mVideo != nullptr) mVideo->setImage("");
+					if (mVideo != nullptr) { mVideo->setImage(""); mVideo->setVideo(""); }
 					if (mImage != nullptr) mImage->setImage("");
 					if (mThumbnail != nullptr) mThumbnail->setImage("");
 					if (mMarquee != nullptr) mMarquee->setImage("");

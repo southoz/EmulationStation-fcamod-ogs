@@ -35,6 +35,7 @@ std::vector<CollectionSystemDecl> CollectionSystemManager::getSystemDecls()
 		{ AUTO_AT2PLAYERS,      "2players",	    "2 players",         "filename, ascending",      "auto-at2players",         false,       true },
 		{ AUTO_AT4PLAYERS,      "4players",     "4 players",         "filename, ascending",      "auto-at4players",         false,       true },
 		{ AUTO_NEVER_PLAYED,    "neverplayed",  "never played",      "filename, ascending",      "auto-neverplayed",        false,       true },
+		{ AUTO_VERTICALARCADE,  "vertical",     "vertical arcade",   "filename, ascending",      "auto-verticalarcade",     false,       true }, // batocera
 
 		// Arcade meta 
 		{ AUTO_ARCADE,          "arcade",       "arcade",            "filename, ascending",      "arcade",                  false,       true },
@@ -393,7 +394,7 @@ void CollectionSystemManager::deleteCollectionFiles(FileData* file)
 			FileData* collectionEntry = (sysDataIt->second.system)->getRootFolder()->FindByPath(key);
 			if (collectionEntry != nullptr)
 			{
-				sysDataIt->second.needsSave = true;				
+				sysDataIt->second.needsSave = true;
 				SystemData* systemViewToUpdate = getSystemToView(sysDataIt->second.system);
 				ViewController::get()->getGameListView(systemViewToUpdate).get()->remove(collectionEntry, false);
 			}
@@ -834,6 +835,9 @@ void CollectionSystemManager::populateAutoCollection(CollectionSystemData* sysDa
 					case AUTO_FAVORITES:
 						// we may still want to add files we don't want in auto collections in "favorites"
 						include = (*gameIt)->getMetadata().get("favorite") == "true";
+						break;
+					case AUTO_VERTICALARCADE: // batocera
+						include = (*gameIt)->isVerticalArcadeGame();
 						break;
 					case AUTO_ARCADE:
 						include = include && isArcade;
