@@ -27,12 +27,13 @@ private:
 	void addVersionInfo();
 	void openCollectionSystemSettings();
 	void openConfigInput();
-	void openOtherSettings();
+	void openAdvancedSettings();
 	void openQuitMenu();
 	void openScraperSettings();
 	void openScreensaverOptions();
 	void openSoundSettings();
 	void openUISettings();
+	void openSystemInformation();
 
 	void openUpdateSettings();
 	void openEmulatorSettings();
@@ -40,6 +41,7 @@ private:
 
 	void createInputTextRow(GuiSettings *gui, std::string title, const char *settingsID, bool password);
 	void openDisplaySettings();
+	void openPreloadVlcSettings();
 
 	MenuComponent mMenu;
 	TextComponent mVersion;

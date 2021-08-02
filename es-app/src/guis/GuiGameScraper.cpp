@@ -44,7 +44,7 @@ GuiGameScraper::GuiGameScraper(Window* window, ScraperSearchParams params, std::
 	// buttons
 	std::vector< std::shared_ptr<ButtonComponent> > buttons;
 
-	buttons.push_back(std::make_shared<ButtonComponent>(mWindow, _("INPUT"), _("search"), [&] {
+	buttons.push_back(std::make_shared<ButtonComponent>(mWindow, _("INPUT"), _("SEARCH"), [&] {
 		mSearch->openInputScreen(mSearchParams);
 		mGrid.resetCursor();
 	}));

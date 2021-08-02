@@ -1,0 +1,13 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<!-- Created using Krita: https://krita.org -->
+<svg xmlns="http://www.w3.org/2000/svg" 
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:krita="http://krita.org/namespaces/svg/krita"
+    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+    width="15.36pt"
+    height="15.36pt"
+    viewBox="0 0 15.36 15.36">
+<defs/>
+<circle id="outline_east" transform="matrix(0.24 0 0 0.24 9.6 5.28)" r="10" cx="10" cy="10" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2"/><circle id="outline_south" transform="matrix(0.24 0 0 0.24 5.28 9.6)" r="10" cx="10" cy="10" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2"/><circle id="outline_north" transform="matrix(0.24 0 0 0.24 5.28 0.96)" r="10" cx="10" cy="10" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2"/><circle id="outline_west" transform="matrix(0.24 0 0 0.24 0.96 5.28)" r="10" cx="10" cy="10" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2"/><path id="button_south" transform="matrix(0.24 0 0 0.24 5.28 9.6)" fill="#ffffff" stroke="#000000" stroke-opacity="0" stroke-width="0" stroke-linecap="square" stroke-linejoin="bevel" d="M10 0C4.47715 0 0 4.47715 0 10C0 15.5228 4.47715 20 10 20C15.5228 20 20 15.5228 20 10C20 4.47715 15.5228 0 10 0ZM5.83614 3.25783L10 3.25783C11.2708 3.25783 12.1953 3.49481 12.7734 3.96877C13.3516 4.44273 14.2093 5.04402 14.2093 6.08048C14.2093 6.74194 13.7015 8.34088 13.389 8.81483C13.1754 9.15338 12.2995 9.55208 11.8984 9.70313C12.4557 9.91667 13.4306 10.0857 13.6858 10.518C13.9463 10.945 14.1915 12.0753 14.1915 12.7524C14.1915 13.8045 13.8868 14.63 13.2774 15.229C12.6733 15.8227 11.2921 16.2787 10.2713 16.2892L5.83614 16.212ZM8.32267 6.32914L8.32267 8.67289L10.2796 8.59608C10.5869 8.59608 10.8056 8.49713 10.9358 8.29921C11.0661 8.09608 11.1312 7.794 11.1312 7.39296C11.1312 6.98671 11.0556 6.69504 10.9046 6.51796C10.7588 6.34088 9.95573 6.40625 9.63281 6.40625ZM8.32267 10.7276L8.32267 13.4932L10.3733 13.4164C10.9983 13.4164 11.3108 12.9346 11.3108 11.9711C11.3108 11.0909 10.9879 10.6508 10.3421 10.6508Z"/>
+</svg>

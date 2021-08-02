@@ -15,18 +15,20 @@
 #define ENTRY_SPACING 16 // space between [text] and next [icon] (px)
 
 static const std::map<std::string, const char*> ICON_PATH_MAP {
-	{ "up/down", ":/help/dpad_updown.svg" },
-	{ "left/right", ":/help/dpad_leftright.svg" },
-	{ "up/down/left/right", ":/help/dpad_all.svg" },
-	{ "a", ":/help/button_a.svg" },
-	{ "b", ":/help/button_b.svg" },
-	{ "x", ":/help/button_x.svg" },
-	{ "y", ":/help/button_y.svg" },
-	{ "l", ":/help/button_l.svg" },
-	{ "r", ":/help/button_r.svg" },
-	{ "lr", ":/help/button_lr.svg" },
-	{ "start", ":/help/button_start.svg" },
-	{ "select", ":/help/button_select.svg" }
+	{ "up/down",            ":/help/dpad_updown_gt.svg" },
+	{ "left/right",         ":/help/dpad_leftright_gt.svg" },
+	{ "up/down/left/right", ":/help/dpad_all_gt.svg" },
+	{ "a",                  ":/help/button_a_gt.svg" },
+	{ "b",                  ":/help/button_b_gt.svg" },
+	{ "x",                  ":/help/button_x_gt.svg" },
+	{ "y",                  ":/help/button_y_gt.svg" },
+	{ "l",                  ":/help/button_l_gt.svg" },
+	{ "r",                  ":/help/button_r_gt.svg" },
+	{ "lr",                 ":/help/button_lr_gt.svg" },
+	{ "lt",                 ":/help/button_lt_gt.svg" },
+	{ "rt",                 ":/help/button_rt_gt.svg" },
+	{ "start",              ":/help/button_start_gt.svg" },
+	{ "select",             ":/help/button_select_gt.svg" }
 };
 
 HelpComponent::HelpComponent(Window* window) : GuiComponent(window)
@@ -114,12 +116,12 @@ std::shared_ptr<TextureResource> HelpComponent::getIconTexture(const char* name)
 	auto pathLookup = ICON_PATH_MAP.find(name);
 	if(pathLookup == ICON_PATH_MAP.cend())
 	{
-		LOG(LogError) << "Unknown help icon \"" << name << "\"!";
+		LOG(LogError) << "HelpComponent::getIconTexture():119 - Unknown help icon \"" << name << "\"!";
 		return nullptr;
 	}
 	if(!ResourceManager::getInstance()->fileExists(pathLookup->second))
 	{
-		LOG(LogError) << "Help icon \"" << name << "\" - corresponding image file \"" << pathLookup->second << "\" misisng!";
+		LOG(LogError) << "HelpComponent::getIconTexture():124 - Help icon \"" << name << "\" - corresponding image file \"" << pathLookup->second << "\" misisng!";
 		return nullptr;
 	}
 

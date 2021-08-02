@@ -7,6 +7,7 @@
 #include <pugixml/src/pugixml.hpp>
 #include <algorithm>
 #include <vector>
+#include "resources/ResourceManager.h"
 
 Settings* Settings::sInstance = NULL;
 static std::string mEmptyString = "";
@@ -21,27 +22,13 @@ std::vector<const char*> settings_dont_save {
 	{ "ForceKid" },
 	{ "ForceKiosk" },
 	{ "IgnoreGamelist" },
-	{ "HideConsole" },
 	{ "ShowExit" },
 	{ "SplashScreen" },
 	{ "SplashScreenProgress" },
-#if !defined(_WIN32)
 	{ "VSync" },
-#endif
-	{ "FullscreenBorderless" },
-	{ "Windowed" },
-	{ "WindowWidth" },
-	{ "WindowHeight" },
-	{ "ScreenWidth" },
-	{ "ScreenHeight" },
-	{ "ScreenOffsetX" },
-	{ "ScreenOffsetY" },
-	{ "ScreenRotate" },
-	{ "MonitorID" },
-	{ "ExePath" },
-	{ "HomePath" },
-	{ "MusicDirectory"},
-	{ "UserMusicDirectory" }
+	{ "MusicDirectory" },
+	{ "UserMusicDirectory" },
+	{ "ThemeRandomSet" }
 };
 
 Settings::Settings()
@@ -72,20 +59,14 @@ void Settings::setDefaults()
 	mBoolMap["DrawFramerate"] = false;
 	mBoolMap["ShowExit"] = true;		
 
-#if WIN32
-	mBoolMap["ShowOnlyExit"] = true;
-	mBoolMap["FullscreenBorderless"] = true;
-#else
 	mBoolMap["ShowOnlyExit"] = false;
-	mBoolMap["FullscreenBorderless"] = false;
-#endif
 
-	mBoolMap["Windowed"] = false;
 	mBoolMap["SplashScreen"] = true;
 	mBoolMap["SplashScreenProgress"] = true;
 	mBoolMap["PreloadUI"] = false;
 	mBoolMap["StartupOnGameList"] = false;
 	mBoolMap["HideSystemView"] = false;
+	mBoolMap["FullScreenMode"] = false;
 	
 	mStringMap["StartupSystem"] = "";
 
@@ -96,7 +77,6 @@ void Settings::setDefaults()
 	mBoolMap["ShowHelpPrompts"] = true;
 	mBoolMap["ScrapeRatings"] = true;
 	mBoolMap["IgnoreGamelist"] = false;
-	mBoolMap["HideConsole"] = true;
 	mBoolMap["QuickSystemSelect"] = true;
 	mBoolMap["MoveCarousel"] = true;
 	mBoolMap["SaveGamelistsOnExit"] = true;
@@ -113,21 +93,10 @@ void Settings::setDefaults()
 	mIntMap["ScraperResizeWidth"] = 400;
 	mIntMap["ScraperResizeHeight"] = 0;
 
-#if defined(_WIN32)
-	mIntMap["MaxVRAM"] = 256;
-#else
-	#ifdef _RPI_
-		mIntMap["MaxVRAM"] = 80;
-	#else
-		mIntMap["MaxVRAM"] = 100;
-	#endif
-#endif
+	mIntMap["MaxVRAM"] = 100;
 
-#if defined(_WIN32)
-	mBoolMap["HideWindow"] = false;
-#else
 	mBoolMap["HideWindow"] = true;
-#endif
+
 	mStringMap["GameTransitionStyle"] = "fade";
 	mStringMap["TransitionStyle"] = "auto";
 	mStringMap["Language"] = "en";	
@@ -136,7 +105,8 @@ void Settings::setDefaults()
 	mStringMap["GamelistViewStyle"] = "automatic";
 	mStringMap["DefaultGridSize"] = "";
 	mStringMap["HiddenSystems"] = "";
-
+	mBoolMap["ThemeRandom"] = false;
+	mBoolMap["ThemeRandomSet"] = false;
 	mStringMap["ThemeColorSet"] = "";
 	mStringMap["ThemeIconSet"] = "";
 	mStringMap["ThemeMenu"] = "";
@@ -156,31 +126,12 @@ void Settings::setDefaults()
 	mStringMap["SlideshowScreenSaverImageFilter"] = ".png,.jpg";
 	mBoolMap["SlideshowScreenSaverRecurse"] = false;
 	mBoolMap["SlideshowScreenSaverGameName"] = true;
-	
-	mBoolMap["ShowFilenames"] = false;
-
-	// This setting only applies to raspberry pi but set it for all platforms so
-	// we don't get a warning if we encounter it on a different platform
-	mBoolMap["VideoOmxPlayer"] = false;
-	#ifdef _RPI_
-		// we're defaulting to OMX Player for full screen video on the Pi
-		mBoolMap["ScreenSaverOmxPlayer"] = true;
-		// use OMX Player defaults
-		mStringMap["SubtitleFont"] = "/usr/share/fonts/truetype/freefont/FreeSans.ttf";
-		mStringMap["SubtitleItalicFont"] = "/usr/share/fonts/truetype/freefont/FreeSansOblique.ttf";
-		mIntMap["SubtitleSize"] = 55;
-		mStringMap["SubtitleAlignment"] = "left";
-	#else
-		mBoolMap["ScreenSaverOmxPlayer"] = false;
-	#endif
-
 	mIntMap["ScreenSaverSwapVideoTimeout"] = 30000;
+
+	mBoolMap["ShowFilenames"] = false;
 
 	mBoolMap["VideoAudio"] = true;
 	mBoolMap["VideoLowersMusic"] = true;
-	mBoolMap["CaptionsCompatibility"] = true;
-	// Audio out device for Video playback using OMX player.
-	mStringMap["OMXAudioDev"] = "both";
 	mStringMap["CollectionSystemsAuto"] = "";
 	mStringMap["CollectionSystemsCustom"] = "";
 	mBoolMap["CollectionShowSystemInfo"] = true;
@@ -192,11 +143,7 @@ void Settings::setDefaults()
 	mBoolMap["LocalArt"] = false;
 
 	// Audio out device for volume control
-	#ifdef _RPI_
-		mStringMap["AudioDevice"] = "PCM";
-	#else
-		mStringMap["AudioDevice"] = "Master";
-	#endif
+	mStringMap["AudioDevice"] = "Master";
 
 	mStringMap["AudioCard"] = "default";
 	mStringMap["UIMode"] = "Full";
@@ -204,16 +151,6 @@ void Settings::setDefaults()
 	mBoolMap["ForceKiosk"] = false;
 	mBoolMap["ForceKid"] = false;
 	mBoolMap["ForceDisableFilters"] = false;
-
-	mIntMap["WindowWidth"]   = 0;
-	mIntMap["WindowHeight"]  = 0;
-	mIntMap["ScreenWidth"]   = 0;
-	mIntMap["ScreenHeight"]  = 0;
-	mIntMap["ScreenOffsetX"] = 0;
-	mIntMap["ScreenOffsetY"] = 0;
-	mIntMap["ScreenRotate"]  = 0;
-	mIntMap["MonitorID"] = -1;	
-	mStringMap["ExePath"] = "";
 
 	mStringMap["Scraper"] = "ScreenScraper";
 	mStringMap["ScrapperImageSrc"] = "ss";
@@ -229,9 +166,24 @@ void Settings::setDefaults()
 	mStringMap["MusicDirectory"] = "/roms/bgmusic";
 	mStringMap["UserMusicDirectory"] = "";
 
-	mBoolMap["updates.enabled"] = true;
+	mBoolMap["updates.enabled"] = false;
 	
 	mBoolMap["DrawClock"] = true;
+	mBoolMap["ClockMode12"] = false;
+
+	// Log settings
+	mStringMap["LogLevel"] = "default";
+	mBoolMap["LogWithMilliseconds"] = false;
+
+	// Preload VLC player
+	mBoolMap["PreloadVlcPlayer"] = false;
+	mIntMap["PreloadVlcVideoTimeout"] = 10000; // milliseconds
+	mStringMap["PreloadVlcImage"] = ResourceManager::getInstance()->getResourcePath(":/resources/es_preload_vlc.png");
+	mStringMap["PreloadVlcVideo"] = ResourceManager::getInstance()->getResourcePath(":/resources/es_preload_vlc.mp4");
+
+	mBoolMap["MenusOnDisplayTop"] = false;
+
+	mBoolMap["ShowDetailedSystemInfo"] = false;
 
 	mDefaultBoolMap = mBoolMap;
 	mDefaultIntMap = mIntMap;

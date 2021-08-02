@@ -41,14 +41,14 @@ MameNames::MameNames()
 	if(!Utils::FileSystem::exists(xmlpath))
 		return;
 
-	LOG(LogInfo) << "Parsing XML file \"" << xmlpath << "\"...";
+	LOG(LogInfo) << "MameNames::MameNames() - Parsing XML file \"" << xmlpath << "\"...";
 
 	pugi::xml_document doc;
 	pugi::xml_parse_result result = doc.load_file(xmlpath.c_str());
 
 	if(!result)
 	{
-		LOG(LogError) << "Error parsing XML file \"" << xmlpath << "\"!\n	" << result.description();
+		LOG(LogError) << "MameNames::MameNames() - Error parsing XML file \"" << xmlpath << "\"!\n	" << result.description();
 		return;
 	}
 
@@ -64,13 +64,13 @@ MameNames::MameNames()
 	if(!Utils::FileSystem::exists(xmlpath))
 		return;
 
-	LOG(LogInfo) << "Parsing XML file \"" << xmlpath << "\"...";
+	LOG(LogInfo) << "MameNames::MameNames() - Parsing XML file \"" << xmlpath << "\"...";
 
 	result = doc.load_file(xmlpath.c_str());
 
 	if(!result)
 	{
-		LOG(LogError) << "Error parsing XML file \"" << xmlpath << "\"!\n	" << result.description();
+		LOG(LogError) << "MameNames::MameNames() - Error parsing XML file \"" << xmlpath << "\"!\n	" << result.description();
 		return;
 	}
 
@@ -86,13 +86,13 @@ MameNames::MameNames()
 	if(!Utils::FileSystem::exists(xmlpath))
 		return;
 
-	LOG(LogInfo) << "Parsing XML file \"" << xmlpath << "\"...";
+	LOG(LogInfo) << "MameNames::MameNames() - Parsing XML file \"" << xmlpath << "\"...";
 
 	result = doc.load_file(xmlpath.c_str());
 
 	if(!result)
 	{
-		LOG(LogError) << "Error parsing XML file \"" << xmlpath << "\"!\n	" << result.description();
+		LOG(LogError) << "MameNames::MameNames() - Error parsing XML file \"" << xmlpath << "\"!\n	" << result.description();
 		return;
 	}
 

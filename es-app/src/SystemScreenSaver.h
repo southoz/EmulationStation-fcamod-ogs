@@ -107,7 +107,6 @@ private:
 	bool			mImagesCounted;
 	unsigned long		mImageCount;
 
-	//VideoComponent*		mVideoScreensaver;
 	std::shared_ptr<VideoScreenSaver>		mVideoScreensaver;
 
 	std::shared_ptr<ImageScreenSaver>		mFadingImageScreensaver;

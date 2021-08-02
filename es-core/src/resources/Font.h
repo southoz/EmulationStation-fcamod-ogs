@@ -59,6 +59,7 @@ public:
 	void reload() override;
 
 	int getSize() const;
+	float getLetterWidth();
 	inline const std::string& getPath() const { return mPath; }
 
 	inline static const char* getDefaultPath() { return FONT_PATH_REGULAR; }

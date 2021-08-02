@@ -1,4 +1,6 @@
 #include "ApiSystem.h"
+#include <stdlib.h>
+#include <sys/statvfs.h>
 #include "HttpReq.h"
 #include "utils/FileSystemUtil.h"
 #include "utils/StringUtil.h"
@@ -87,206 +89,15 @@ private:
 
 void ApiSystem::startUpdate(Window* c)
 {
-#if WIN32
-	new ThreadedUpdater(c);
-#endif
 }
 
 std::string ApiSystem::checkUpdateVersion()
 {
-#if WIN32
-	std::string localVersion;
-	std::string localVersionFile = Utils::FileSystem::getExePath() + "/version.info";
-	if (Utils::FileSystem::exists(localVersionFile))
-	{
-		localVersion = Utils::FileSystem::readAllText(localVersionFile);
-		localVersion = Utils::String::replace(Utils::String::replace(localVersion, "\r", ""), "\n", "");
-	}
-	
-	HttpReq httpreq("https://github.com/fabricecaruso/EmulationStation/releases/download/continuous-master/version.info");	
-	if (httpreq.wait())
-	{
-		std::string serverVersion = httpreq.getContent();
-		serverVersion = Utils::String::replace(Utils::String::replace(serverVersion, "\r", ""), "\n", "");
-		if (!serverVersion.empty() && serverVersion != localVersion)
-			return serverVersion;
-	}
-#endif
-
 	return "";
 }
 
-#if WIN32
-#include <ShlDisp.h>
-#include <comutil.h> // #include for _bstr_t
-#pragma comment(lib, "shell32.lib")
-#pragma comment (lib, "comsuppw.lib" ) // link with "comsuppw.lib" (or debug version: "comsuppwd.lib")
-
-bool unzipFile(const std::string fileName, const std::string dest)
-{
-	bool	ret = false;
-
-	HRESULT          hResult;
-	IShellDispatch*	 pISD;
-	Folder*			 pFromZip = nullptr;
-	VARIANT          vDir, vFile, vOpt;
-
-	OleInitialize(NULL);
-	CoInitialize(NULL);
-
-	hResult = CoCreateInstance(CLSID_Shell, NULL, CLSCTX_INPROC_SERVER, IID_IShellDispatch, (void **)&pISD);
-
-	if (SUCCEEDED(hResult))
-	{
-		VariantInit(&vDir);
-		vDir.vt = VT_BSTR;
-
-		int zipDirLen = (lstrlenA(fileName.c_str()) + 1) * sizeof(WCHAR);
-		BSTR bstrZip = SysAllocStringByteLen(NULL, zipDirLen);
-		MultiByteToWideChar(CP_ACP, 0, fileName.c_str(), -1, bstrZip, zipDirLen);
-		vDir.bstrVal = bstrZip;
-
-		hResult = pISD->NameSpace(vDir, &pFromZip);
-
-		if (hResult == S_OK && pFromZip != nullptr)
-		{
-			if (!Utils::FileSystem::exists(dest))
-				Utils::FileSystem::createDirectory(dest);
-
-			Folder *pToFolder = NULL;
-
-			VariantInit(&vFile);
-			vFile.vt = VT_BSTR;
-
-			int fnLen = (lstrlenA(dest.c_str()) + 1) * sizeof(WCHAR);
-			BSTR bstrFolder = SysAllocStringByteLen(NULL, fnLen);
-			MultiByteToWideChar(CP_ACP, 0, dest.c_str(), -1, bstrFolder, fnLen);
-			vFile.bstrVal = bstrFolder;
-
-			hResult = pISD->NameSpace(vFile, &pToFolder);
-			if (hResult == S_OK && pToFolder)
-			{
-				FolderItems *fi = NULL;
-				pFromZip->Items(&fi);
-
-				VariantInit(&vOpt);
-				vOpt.vt = VT_I4;
-				vOpt.lVal = FOF_NO_UI; //4; // Do not display a progress dialog box
-
-				VARIANT newV;
-				VariantInit(&newV);
-				newV.vt = VT_DISPATCH;
-				newV.pdispVal = fi;
-				hResult = pToFolder->CopyHere(newV, vOpt);
-				if (hResult == S_OK)
-					ret = true;
-
-				pFromZip->Release();
-				pToFolder->Release();
-			}
-		}
-		pISD->Release();
-	}
-
-	CoUninitialize();
-	return ret;
-}
-
-bool downloadFile(const std::string url, const std::string fileName, const std::string label, const std::function<void(const std::string)>& func)
-{
-	if (func != nullptr)
-		func("Downloading " + label);
-
-	HttpReq httpreq(url, fileName);
-	while (httpreq.status() == HttpReq::REQ_IN_PROGRESS)
-	{
-		if (func != nullptr)
-			func(std::string("Downloading " + label + " >>> " + std::to_string(httpreq.getPercent()) + " %"));
-
-		std::this_thread::sleep_for(std::chrono::milliseconds(20));
-	}
-
-	if (httpreq.status() != HttpReq::REQ_SUCCESS)
-		return false;
-
-	return true;
-}
-
-
-void deleteDirectoryFiles(const std::string path)
-{
-	auto files = Utils::FileSystem::getDirContent(path, true, true);
-	std::reverse(std::begin(files), std::end(files));
-	for (auto file : files)
-	{
-		if (Utils::FileSystem::isDirectory(file))
-			::RemoveDirectoryA(Utils::FileSystem::getPreferredPath(file).c_str());
-		else
-			Utils::FileSystem::removeFile(file);
-	}
-}
-#endif
-
 std::pair<std::string, int> ApiSystem::updateSystem(const std::function<void(const std::string)>& func)
 {
-#if WIN32
-	std::string url = "https://github.com/fabricecaruso/EmulationStation/releases/download/continuous-master/EmulationStation-Win32-no-deps.zip";
-
-	std::string fileName = Utils::FileSystem::getFileName(url);
-	std::string path = Utils::FileSystem::getHomePath() + "/.emulationstation/update";
-
-	if (!Utils::FileSystem::exists(path))
-		Utils::FileSystem::createDirectory(path);
-	else
-		deleteDirectoryFiles(path);
-
-	std::string zipFile = path + "/" + fileName;
-
-	if (downloadFile(url, zipFile, "update", func))
-	{
-		if (func != nullptr)
-			func(std::string("Extracting update"));
-
-		unzipFile(Utils::FileSystem::getPreferredPath(zipFile), Utils::FileSystem::getPreferredPath(path));
-		Utils::FileSystem::removeFile(zipFile);
-
-		auto files = Utils::FileSystem::getDirContent(path, true, true);
-		for (auto file : files)
-		{
-			
-			std::string relative = Utils::FileSystem::createRelativePath(file, path, false);
-			if (Utils::String::startsWith(relative, "./"))
-				relative = relative.substr(2);
-
-			std::string localPath = Utils::FileSystem::getExePath() + "/" + relative;
-
-			if (Utils::FileSystem::isDirectory(file))
-			{
-				if (!Utils::FileSystem::exists(localPath))
-					Utils::FileSystem::createDirectory(localPath);
-			}
-			else
-			{
-				if (Utils::FileSystem::exists(localPath))
-				{
-					Utils::FileSystem::removeFile(localPath + ".old");
-					rename(localPath.c_str(), (localPath + ".old").c_str());
-				}
-
-				if (Utils::FileSystem::copyFile(file, localPath))
-				{
-					Utils::FileSystem::removeFile(localPath + ".old");
-					Utils::FileSystem::removeFile(file);
-				}
-			}
-		}
-
-		deleteDirectoryFiles(path);
-
-		return std::pair<std::string, int>("done.", 0);
-	}
-#endif
-
 	return std::pair<std::string, int>("error.", 1);
 }
 
@@ -396,45 +207,211 @@ bool downloadGitRepository(const std::string url, const std::string fileName, co
 
 std::pair<std::string, int> ApiSystem::installTheme(std::string themeName, const std::function<void(const std::string)>& func)
 {
-#if WIN32
-	for (auto theme : getThemesList())
-	{		
-		if (theme.name != themeName)
-			continue;
-
-		std::string themeFileName = Utils::FileSystem::getFileName(theme.url);
-		std::string zipFile = Utils::FileSystem::getHomePath() + "/.emulationstation/themes/" + themeFileName + ".zip";
-		zipFile = Utils::String::replace(zipFile, "/", "\\");
-
-		if (downloadGitRepository(theme.url, zipFile, themeName, func))
-		{
-			if (func != nullptr)
-				func(_("Extracting") + " " + themeName);
-
-			if (!unzipFile(zipFile, Utils::String::replace(Utils::FileSystem::getHomePath() + "/.emulationstation/themes", "/", "\\")))
-				return std::pair<std::string, int>(std::string("An error occured while extracting"), 1);
-
-			std::string folderName = Utils::FileSystem::getHomePath() + "/.emulationstation/themes/" + themeFileName + "-master";
-			if (Utils::FileSystem::isDirectory(folderName))
-			{
-				std::string finalfolderName = Utils::FileSystem::getParent(folderName) + "/" + themeName;
-
-				if (Utils::FileSystem::isDirectory(finalfolderName))
-					deleteDirectoryFiles(finalfolderName);
-
-				rename(folderName.c_str(), finalfolderName.c_str());
-
-				Utils::FileSystem::removeFile(zipFile);
-
-				return std::pair<std::string, int>(std::string("OK"), 0);
-			}			
-
-			return std::pair<std::string, int>(std::string("Invalid extraction folder"), 1);
-		}
-				
-		return std::pair<std::string, int>(std::string("An error occured while downloading"), 1);
-	}
-#endif
-
 	return std::pair<std::string, int>(std::string("Theme not found"), 1);
+}
+
+	// Storage functions
+unsigned long ApiSystem::getFreeSpaceGB(std::string mountpoint)
+{
+	LOG(LogDebug) << "ApiSystem::getFreeSpaceGB";
+
+	int free = 0;
+
+	struct statvfs fiData;
+	if ((statvfs(mountpoint.c_str(), &fiData)) >= 0)
+		free = (fiData.f_bfree * fiData.f_bsize) / (1024 * 1024 * 1024);
+
+	return free;
+}
+
+std::string ApiSystem::getFreeSpaceSystemInfo() {
+	return getFreeSpaceInfo("/");
+}
+
+std::string ApiSystem::getFreeSpaceBootInfo() {
+	return getFreeSpaceInfo("/boot");
+}
+
+std::string ApiSystem::getFreeSpaceUserInfo() {
+	return getFreeSpaceInfo("/roms");
+}
+
+std::string ApiSystem::getFreeSpaceInfo(const std::string mountpoint)
+{
+	LOG(LogDebug) << "ApiSystem::getFreeSpaceInfo";
+
+	std::ostringstream oss;
+
+	struct statvfs fiData;
+	if ((statvfs(mountpoint.c_str(), &fiData)) < 0)
+		return "";
+
+	unsigned long long total = (unsigned long long) fiData.f_blocks * (unsigned long long) (fiData.f_bsize);
+	unsigned long long free = (unsigned long long) fiData.f_bfree * (unsigned long long) (fiData.f_bsize);
+	unsigned long long used = total - free;
+	unsigned long percent = 0;
+
+	if (total != 0)
+	{  //for small SD card ;) with share < 1GB
+		percent = used * 100 / total;
+		oss << Utils::FileSystem::megaBytesToString(used / (1024L * 1024L)) << "/" << Utils::FileSystem::megaBytesToString(total / (1024L * 1024L)) << " (" << percent << " %)";
+	}
+	else
+		oss << "N/A";
+
+	return oss.str();
+}
+
+bool ApiSystem::isFreeSpaceSystemLimit() {
+	return isFreeSpaceLimit("/");
+}
+
+bool ApiSystem::isFreeSpaceBootLimit() {
+	return isFreeSpaceLimit("/boot");
+}
+
+bool ApiSystem::isFreeSpaceUserLimit() {
+	return isFreeSpaceLimit("/roms", 2);
+}
+
+bool ApiSystem::isFreeSpaceLimit(const std::string mountpoint, int limit)
+{
+	return ((int) getFreeSpaceGB(mountpoint)) < limit;
+}
+
+bool ApiSystem::isTemperatureLimit(float temperature, float limit)
+{
+	return temperature > limit;
+}
+
+bool ApiSystem::isLoadCpuLimit(float load_cpu, float limit) // %
+{
+	return load_cpu > limit;
+}
+
+bool ApiSystem::isMemoryLimit(float total_memory, float free_memory, int limit) // %
+{
+	int percent = ( (int) ( (free_memory * 100) / total_memory ) );
+	return percent < limit;
+	//return ( (int) ( (free_memory * 100) / total_memory ) ) < limit;
+}
+
+bool ApiSystem::isBatteryLimit(float battery_level, int limit) // %
+{
+	return battery_level < limit;
+}
+
+
+std::string ApiSystem::getVersion()
+{
+	LOG(LogDebug) << "ApiSystem::getVersion()";
+	return querySoftwareInformation(true).version;
+}
+
+std::string ApiSystem::getApplicationName()
+{
+	LOG(LogDebug) << "ApiSystem::getApplicationName()";
+	return querySoftwareInformation(true).application_name;
+}
+
+std::string ApiSystem::getHostname()
+{
+	LOG(LogDebug) << "ApiSystem::getHostname()";
+	return querySoftwareInformation(true).hostname;
+}
+
+std::string ApiSystem::getIpAddress()
+{
+	LOG(LogDebug) << "ApiSystem::getIpAddress()";
+
+	std::string result = queryIPAddress(); // platform.h
+	if (result.empty())
+		return "NOT CONNECTED";
+
+	return result;
+}
+
+float ApiSystem::getLoadCpu()
+{
+	LOG(LogDebug) << "ApiSystem::getLoadCpu()";
+	return queryLoadCpu();
+}
+
+int ApiSystem::getFrequencyCpu()
+{
+	LOG(LogDebug) << "ApiSystem::getFrequencyCpu()";
+	return queryFrequencyCpu();
+}
+
+float ApiSystem::getTemperatureCpu()
+{
+	LOG(LogDebug) << "ApiSystem::getTemperatureCpu()";
+	return queryTemperatureCpu();
+}
+
+float ApiSystem::getTemperatureGpu()
+{
+	LOG(LogDebug) << "ApiSystem::getTemperatureGpu()";
+	return queryTemperatureGpu();
+}
+
+int ApiSystem::getFrequencyGpu()
+{
+	LOG(LogDebug) << "ApiSystem::getFrequencyGpu()";
+	return queryFrequencyGpu();
+}
+
+bool ApiSystem::isNetworkConnected()
+{
+	LOG(LogDebug) << "ApiSystem::isNetworkConnected()";
+	return queryNetworkConnected();
+}
+
+NetworkInformation ApiSystem::getNetworkInformation(bool summary)
+{
+	LOG(LogDebug) << "ApiSystem::getNetworkInformation()";
+
+	return queryNetworkInformation(summary); // platform.h
+}
+
+BatteryInformation ApiSystem::getBatteryInformation(bool summary)
+{
+	LOG(LogDebug) << "ApiSystem::getBatteryInformation()";
+
+	return queryBatteryInformation(summary); // platform.h
+}
+
+CpuAndSocketInformation ApiSystem::getCpuAndChipsetInformation(bool summary)
+{
+	LOG(LogDebug) << "ApiSystem::getCpuAndChipsetInformation()";
+
+	return queryCpuAndChipsetInformation(summary); // platform.h
+}
+
+RamMemoryInformation ApiSystem::getRamMemoryInformation(bool summary)
+{
+	LOG(LogDebug) << "ApiSystem::getRamMemoryInformation()";
+
+	return queryRamMemoryInformation(summary); // platform.h
+}
+
+DisplayAndGpuInformation ApiSystem::getDisplayAndGpuInformation(bool summary)
+{
+	LOG(LogDebug) << "ApiSystem::getDisplayAndGpuInformation()";
+
+	return queryDisplayAndGpuInformation(summary); // platform.h
+}
+
+SoftwareInformation ApiSystem::getSoftwareInformation(bool summary)
+{
+	LOG(LogDebug) << "ApiSystem::getSoftwareInformation()";
+
+	return querySoftwareInformation(summary); // platform.h
+}
+
+DeviceInformation ApiSystem::getDeviceInformation(bool summary)
+{
+	LOG(LogDebug) << "ApiSystem::getDeviceInformation()";
+
+	return queryDeviceInformation(summary); // platform.h
 }

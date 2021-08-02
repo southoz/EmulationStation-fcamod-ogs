@@ -8,8 +8,10 @@
 #include "HelpStyle.h"
 #include "InputConfig.h"
 #include "EsLocale.h"
+//#include "Log.h"
 #include <functional>
 #include <memory>
+//#include <SDL_timer.h>
 
 class Animation;
 class AnimationController;
@@ -59,7 +61,7 @@ public:
 
 	Vector3f getPosition() const;
 	inline void setPosition(const Vector3f& offset) { setPosition(offset.x(), offset.y(), offset.z()); }
-	void setPosition(float x, float y, float z = 0.0f);
+	virtual void setPosition(float x, float y, float z = 0.0f);
 	virtual void onPositionChanged() {};
 
 	//Sets the origin as a percentage of this image (e.g. (0, 0) is top left, (0.5, 0.5) is the center)
@@ -74,9 +76,9 @@ public:
 	inline void setRotationOrigin(Vector2f origin) { setRotationOrigin(origin.x(), origin.y()); }
 
 	virtual Vector2f getSize() const;
-    inline void setSize(const Vector2f& size) { setSize(size.x(), size.y()); }
-    void setSize(float w, float h);
-    virtual void onSizeChanged() {};
+	inline void setSize(const Vector2f& size) { setSize(size.x(), size.y()); }
+	void setSize(float w, float h);
+	virtual void onSizeChanged() {};
 
 	virtual void setColor(unsigned int color) {};
 
@@ -89,14 +91,14 @@ public:
 	Vector3f getScale() const;
 	void setScale(Vector3f scale);
 
-    float getZIndex() const;
-    void setZIndex(float zIndex);
+	float getZIndex() const;
+	void setZIndex(float zIndex);
 
-    float getDefaultZIndex() const;
-    void setDefaultZIndex(float zIndex);
+	float getDefaultZIndex() const;
+	void setDefaultZIndex(float zIndex);
 
-    bool isVisible() const;
-    void setVisible(bool visible);
+	bool isVisible() const;
+	void setVisible(bool visible);
 
 	// Returns the center point of the image (takes origin into account).
 	Vector2f getCenter() const;
@@ -166,7 +168,21 @@ public:
 
 	bool isStaticExtra() const { return mStaticExtra; }
 	void setIsStaticExtra(bool value) { mStaticExtra = value; }
-
+/*
+	void setAutoUpdateFunction(const std::function<void()> &autoUpdateCallback, int autoUpdateElapsedTime = 100)
+	{
+		if (!autoUpdateCallback || (mAutoUpdateElapsedTime < 100))
+		{
+			clearAutoUpdateProperties();
+			LOG(LogError) << "GuiComponent::setAutoUpdateFunction() - Error in data to configure auto-update feature!!!";
+			return;
+		}
+//		mAutoUpdatedStartTime = SDL_GetTicks();
+		mAutoUpdated = true;
+		mAutoUpdateElapsedTime = autoUpdateElapsedTime;
+		mAutoUpdateCallback = autoUpdateCallback;
+	};
+*/
 protected:
 	void renderChildren(const Transform4x4f& transform) const;
 	void updateSelf(int deltaTime); // updates animations
@@ -200,8 +216,39 @@ public:
 	const static unsigned char MAX_ANIMATIONS = 4;
 
 private:
+/*
+	bool isAutoUpdated() { return mAutoUpdated; };
+
+	void clearAutoUpdateProperties()
+	{
+		mAutoUpdatedStartTime = 0;
+		mAutoUpdated = false;
+		mAutoUpdateElapsedTime = 100;
+		mAutoUpdateCallback = nullptr;
+	}
+
+	void executeAutoUpdate();
+*/
+/*
+	void executeAutoUpdate()
+	{
+		int mAutoUpdatedEndTime = SDL_GetTicks();
+		int time = mAutoUpdatedEndTime - mAutoUpdatedStartTime;
+		if (time > mAutoUpdateElapsedTime)
+		{
+			mAutoUpdateCallback();
+			mAutoUpdatedStartTime = SDL_GetTicks();
+		}
+	}
+*/
 	Transform4x4f mTransform; //Don't access this directly! Use getTransform()!
 	AnimationController* mAnimationMap[MAX_ANIMATIONS];
+/*
+	bool mAutoUpdated = false;
+	int mAutoUpdateElapsedTime = 100;
+	std::function<void()> mAutoUpdateCallback;
+	int mAutoUpdatedStartTime = 0;
+*/
 };
 
 #endif // ES_CORE_GUI_COMPONENT_H

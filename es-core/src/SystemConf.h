@@ -10,11 +10,11 @@ class SystemConf
 public:
 	static SystemConf* getInstance();
 	
-    bool loadSystemConf();
-    bool saveSystemConf();
+	bool loadSystemConf();
+	bool saveSystemConf();
 
-    std::string get(const std::string &name);
-    bool set(const std::string &name, const std::string &value);
+	std::string get(const std::string &name);
+	bool set(const std::string &name, const std::string &value);
 
 	bool getBool(const std::string &name, bool defaultValue = false);
 	bool setBool(const std::string &name, bool value);

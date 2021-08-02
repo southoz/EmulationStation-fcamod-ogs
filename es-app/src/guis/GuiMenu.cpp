@@ -9,6 +9,7 @@
 #include "guis/GuiMsgBox.h"
 #include "guis/GuiScraperStart.h"
 #include "guis/GuiSettings.h"
+#include "guis/GuiSystemInformation.h"
 #include "views/UIModeController.h"
 #include "views/ViewController.h"
 #include "CollectionSystemManager.h"
@@ -35,11 +36,11 @@
 
 GuiMenu::GuiMenu(Window* window, bool animate) : GuiComponent(window), mMenu(window, _("MAIN MENU")), mVersion(window)
 {
-	addEntry(_("DISPLAY SETTINGS"), true, [this] { openDisplaySettings(); });
+	addEntry(_("DISPLAY SETTINGS"), true, [this] { openDisplaySettings(); }, "iconDisplay");
 
 	auto theme = ThemeData::getMenuTheme();
 
-	bool isFullUI = UIModeController::getInstance()->isUIModeFull();	
+	bool isFullUI = UIModeController::getInstance()->isUIModeFull();
 	
 	if (isFullUI)
 	{
@@ -65,39 +66,113 @@ GuiMenu::GuiMenu(Window* window, bool animate) : GuiComponent(window), mMenu(win
 		
 		addEntry(_("SCRAPER"), true, [this] { openScraperSettings(); }, "iconScraper");
 
-#if WIN32
-		addEntry(_("DOWNLOADS AND UPDATES"), true, [this] { openUpdateSettings(); }, "iconUpdates");
-#endif
+		addEntry(_("ADVANCED SETTINGS"), true, [this] { openAdvancedSettings(); }, "iconAdvanced");
 
-		addEntry(_("ADVANCED SETTINGS"), true, [this] { openOtherSettings(); }, "iconAdvanced");
+		addEntry(_("SYSTEM INFORMATION"), true, [this] { openSystemInformation(); }, "iconInformation");
+
 	}
-	
+
 	addEntry(_("QUIT"), !Settings::getInstance()->getBool("ShowOnlyExit"), [this] {openQuitMenu(); }, "iconQuit");
+
+	if (Settings::getInstance()->getBool("FullScreenMode"))
+	{
+		BatteryInformation battery = ApiSystem::getBatteryInformation();
+		SoftwareInformation software = ApiSystem::getSoftwareInformation();
+
+		addEntry("BAT: " + std::to_string( battery.level ) + "%" + " | SND: " + std::string(getShOutput(R"(current_volume)")) + " | BRT: " + std::to_string( go2_display_backlight_get(NULL) ) + "% |" + _("NETWORK")+ ": " + _( (ApiSystem::isNetworkConnected() ? "CONNECTED" : "NOT CONNECTED") ), false, [this] {  });
+
+		addEntry("Distro Version: " + software.application_name + " " + software.version, false, [this] {  });
+	}
 
 	addChild(&mMenu);
 	addVersionInfo();
 
 	setSize(mMenu.getSize());
 
-	if (animate)	
+	if (animate)
+	{
+		float x_start = (Renderer::getScreenWidth() - mSize.x()) / 2,
+					x_end = (Renderer::getScreenWidth() - mSize.x()) / 2,
+					y_start = Renderer::getScreenHeight() * 0.9,
+					y_end = (Renderer::getScreenHeight() - mSize.y()) / 2;
+
+		if (Settings::getInstance()->getBool("MenusOnDisplayTop"))
+		{
+			x_start = 0.1f;
+			y_start = 0.f;
+			y_end = 0.f;
+		}
+
 		animateTo(
-			Vector2f((Renderer::getScreenWidth() - mSize.x()) / 2, Renderer::getScreenHeight() * 0.9),
-			Vector2f((Renderer::getScreenWidth() - mSize.x()) / 2, (Renderer::getScreenHeight() - mSize.y()) / 2));
+			Vector2f(x_start, y_start),
+			Vector2f(x_end, y_end)
+		);
+	}
 	else
-		setPosition((Renderer::getScreenWidth() - mSize.x()) / 2, (Renderer::getScreenHeight() - mSize.y()) / 2);
+	{
+		float new_y = (Renderer::getScreenHeight() - mSize.y()) / 2;
+		if (Settings::getInstance()->getBool("MenusOnDisplayTop"))
+			new_y = 0.f;
+
+		setPosition((Renderer::getScreenWidth() - mSize.x()) / 2, new_y);
+	}
 }
 
 void GuiMenu::openDisplaySettings()
 {
-	// Brightness
+	auto pthis = this;
+	Window* window = mWindow;
+
 	auto s = new GuiSettings(mWindow, _("DISPLAY"));
 
+	// Brightness
 	auto bright = std::make_shared<SliderComponent>(mWindow, 1.0f, 100.f, 1.0f, "%");
 	bright->setValue((float)go2_display_backlight_get(NULL)+1.0);
 	s->addWithLabel(_("BRIGHTNESS"), bright);
-	s->addSaveFunc([bright] { go2_display_backlight_set(NULL, (int)Math::round(bright->getValue())); });
+	s->addSaveFunc([s, bright]
+		{
+			go2_display_backlight_set(NULL, (int)Math::round(bright->getValue()));
+			if (Settings::getInstance()->getBool("FullScreenMode"))
+				s->setVariable("reloadGuiMenu", true);
+		});
 
-	mWindow->pushGui(s);
+	// Select Full Screen Mode
+	auto fullScreenMode = std::make_shared<SwitchComponent>(mWindow);
+	fullScreenMode->setState(Settings::getInstance()->getBool("FullScreenMode"));
+	s->addWithLabel(_("FULL SCREEN MODE"), fullScreenMode);
+	s->addSaveFunc([window, fullScreenMode] {
+		bool old_value = Settings::getInstance()->getBool("FullScreenMode");
+		if (old_value != fullScreenMode->getState())
+		{
+			window->pushGui(new GuiMsgBox(window, _("REALLY WANT TO CHANGE THE SCREEN MODE ?"), _("YES"),
+				[fullScreenMode] {
+				LOG(LogInfo) << "GuiMenu::openDisplaySettings() - change to screen mode: " << ( fullScreenMode->getState() ? "full" : "header" );
+				Settings::getInstance()->setBool("FullScreenMode", fullScreenMode->getState());
+				Settings::getInstance()->saveFile();
+				Scripting::fireEvent("quit");
+				//quitES();
+				if(quitES(QuitMode::RESTART) != 0)
+					LOG(LogWarning) << "GuiMenu::openDisplaySettings() - Restart terminated with non-zero result!";
+			}, _("NO"), nullptr));
+
+		}
+	});
+
+	if (Settings::getInstance()->getBool("FullScreenMode"))
+	{
+
+		s->onFinalize([s, pthis, window]
+		{
+			if (s->getVariable("reloadGuiMenu"))
+			{
+				delete pthis;
+				window->pushGui(new GuiMenu(window, false));
+			}
+		});
+
+	}
+
+ mWindow->pushGui(s);
 }
 
 void GuiMenu::openScraperSettings()
@@ -222,7 +297,7 @@ void GuiMenu::openScraperSettings()
 			return;
 		}
 
-		mWindow->pushGui(new GuiScraperStart(mWindow)); 
+		mWindow->pushGui(new GuiScraperStart(mWindow));
 	};
 	std::function<void()> openAndSave = openScrapeNow;
 	openAndSave = [s, openAndSave] { s->save(); openAndSave(); };
@@ -256,16 +331,9 @@ void GuiMenu::openSoundSettings()
 
 	if (UIModeController::getInstance()->isUIModeFull())
 	{
-#if defined(__linux__)
 		// audio card
 		auto audio_card = std::make_shared< OptionListComponent<std::string> >(mWindow, _("AUDIO CARD"), false);
 		std::vector<std::string> audio_cards;
-	#ifdef _RPI_
-		// RPi Specific  Audio Cards
-		audio_cards.push_back("local");
-		audio_cards.push_back("hdmi");
-		audio_cards.push_back("both");
-	#endif
 		audio_cards.push_back("default");
 		audio_cards.push_back("sysdefault");
 		audio_cards.push_back("dmix");
@@ -307,7 +375,7 @@ void GuiMenu::openSoundSettings()
 			VolumeControl::getInstance()->deinit();
 			VolumeControl::getInstance()->init();
 		});
-#endif
+
 		// disable sounds
 		auto music_enabled = std::make_shared<SwitchComponent>(mWindow);
 		music_enabled->setState(Settings::getInstance()->getBool("audio.bgmusic"));
@@ -369,30 +437,6 @@ void GuiMenu::openSoundSettings()
 		videolowermusic->setState(Settings::getInstance()->getBool("VideoLowersMusic"));
 		s->addWithLabel(_("LOWER MUSIC WHEN PLAYING VIDEO"), videolowermusic);
 		s->addSaveFunc([videolowermusic] { Settings::getInstance()->setBool("VideoLowersMusic", videolowermusic->getState()); });
-
-#ifdef _RPI_
-		// OMX player Audio Device
-		auto omx_audio_dev = std::make_shared< OptionListComponent<std::string> >(mWindow, "OMX PLAYER AUDIO DEVICE", false);
-		std::vector<std::string> omx_cards;
-		// RPi Specific  Audio Cards
-		omx_cards.push_back("local");
-		omx_cards.push_back("hdmi");
-		omx_cards.push_back("both");
-		omx_cards.push_back("alsa:hw:0,0");
-		omx_cards.push_back("alsa:hw:1,0");
-		if (Settings::getInstance()->getString("OMXAudioDev") != "") {
-			if (std::find(omx_cards.begin(), omx_cards.end(), Settings::getInstance()->getString("OMXAudioDev")) == omx_cards.end()) {
-				omx_cards.push_back(Settings::getInstance()->getString("OMXAudioDev"));
-			}
-		}
-		for (auto it = omx_cards.cbegin(); it != omx_cards.cend(); it++)
-			omx_audio_dev->add(_(it->c_str()), *it, Settings::getInstance()->getString("OMXAudioDev") == *it);
-		s->addWithLabel(_("OMX PLAYER AUDIO DEVICE"), omx_audio_dev);
-		s->addSaveFunc([omx_audio_dev] {
-			if (Settings::getInstance()->getString("OMXAudioDev") != omx_audio_dev->getSelected())
-				Settings::getInstance()->setString("OMXAudioDev", omx_audio_dev->getSelected());
-		});
-#endif
 	}
 
 	s->updatePosition();
@@ -532,7 +576,7 @@ void GuiMenu::openThemeConfiguration(Window* mWindow, GuiComponent* s, std::shar
 				if (it->name == selectedName)
 					selectedColorSet = it;
 
-			std::shared_ptr<OptionListComponent<std::string>> item = std::make_shared<OptionListComponent<std::string> >(mWindow, _(("THEME " + Utils::String::toUpper(subset)).c_str()), false);
+			std::shared_ptr<OptionListComponent<std::string>> item = std::make_shared<OptionListComponent<std::string> >(mWindow, _("THEME") + " " + Utils::String::toUpper(subset).c_str(), false);
 			item->setTag(!perSystemSettingName.empty()? perSystemSettingName : settingName);
 
 			for (auto it = themeColorSets.begin(); it != themeColorSets.end(); it++)
@@ -584,7 +628,7 @@ void GuiMenu::openThemeConfiguration(Window* mWindow, GuiComponent* s, std::shar
 					themeconfig->addWithLabel(displayName + prefix, item);
 				}
 				else
-					themeconfig->addWithLabel(_(("THEME " + Utils::String::toUpper(subset)).c_str()), item);
+					themeconfig->addWithLabel(_("THEME") + " " + Utils::String::toUpper(subset).c_str(), item);
 			}
 
 			ThemeConfigOption opt;
@@ -724,12 +768,16 @@ void GuiMenu::openUISettings()
 		if (selectedSet == themeSets.cend())
 			selectedSet = themeSets.cbegin();
 
-		auto theme_set = std::make_shared< OptionListComponent<std::string> >(mWindow, _("THEME"), false);
+			// Load theme randomly
+		auto themeRandom = std::make_shared<SwitchComponent>(mWindow);
+		themeRandom->setState(Settings::getInstance()->getBool("ThemeRandom"));
+
+		auto theme_set = std::make_shared< OptionListComponent<std::string> >(mWindow, _("THEMES"), false);
 		for (auto it = themeSets.cbegin(); it != themeSets.cend(); it++)
 			theme_set->add(it->first, it->first, it == selectedSet);
 
 		s->addWithLabel(_("THEME"), theme_set);
-		s->addSaveFunc([s, theme_set, window]
+		s->addSaveFunc([s, theme_set, window, themeRandom]
 		{
 			std::string oldTheme = Settings::getInstance()->getString("ThemeSet");
 			if (oldTheme != theme_set->getSelected())
@@ -756,6 +804,14 @@ void GuiMenu::openUISettings()
 				s->setVariable("reloadCollections", true);
 				s->setVariable("reloadAll", true);
 				s->setVariable("reloadGuiMenu", true);
+
+					// if theme is manual set, disable random theme selection
+				if (Settings::getInstance()->getBool("ThemeRandom"))
+				{
+					Settings::getInstance()->setBool("ThemeRandom", false);
+					themeRandom->setState(Settings::getInstance()->getBool("ThemeRandom"));
+					window->pushGui(new GuiMsgBox(window, _("YOU SELECTED A THEME MANUALLY, THE RANDOM THEME SELECTION HAS BEEN DISABLED"), _("OK")));
+				}
 
 				Scripting::fireEvent("theme-changed", theme_set->getSelected(), oldTheme);
 			}
@@ -804,6 +860,12 @@ void GuiMenu::openUISettings()
 				}
 			});
 		}
+
+			// Load theme randomly
+		s->addWithLabel(_("SHOW RANDOM THEME"), themeRandom);
+		s->addSaveFunc([themeRandom] {
+			Settings::getInstance()->setBool("ThemeRandom", themeRandom->getState());
+		});
 	}
 
 	// screensaver
@@ -815,8 +877,7 @@ void GuiMenu::openUISettings()
 	s->addRow(screensaver_row);
 
 
-	//#ifndef WIN32
-		//UI mode
+	//UI mode
 	auto UImodeSelection = std::make_shared< OptionListComponent<std::string> >(mWindow, _("UI MODE"), false);
 	std::vector<std::string> UImodes = UIModeController::getInstance()->getUIModes();
 	for (auto it = UImodes.cbegin(); it != UImodes.cend(); it++)
@@ -828,20 +889,18 @@ void GuiMenu::openUISettings()
 		std::string selectedMode = UImodeSelection->getSelected();
 		if (selectedMode != "Full")
 		{
-			std::string msg = "You are changing the UI to a restricted mode:\n" + selectedMode + "\n";
-			msg += "This will hide most menu-options to prevent changes to the system.\n";
-			msg += "To unlock and return to the full UI, enter this code: \n";
+			std::string msg = _("You are changing the UI to a restricted mode:") + "\n" + selectedMode + "\n";
+			msg += _("This will hide most menu-options to prevent changes to the system.\nTo unlock and return to the full UI, enter this code:") + "\n";
 			msg += "\"" + UIModeController::getInstance()->getFormattedPassKeyStr() + "\"\n\n";
-			msg += "Do you want to proceed?";
+			msg += _("Do you want to proceed?");
 			window->pushGui(new GuiMsgBox(window, msg,
-				"YES", [selectedMode] {
-				LOG(LogDebug) << "Setting UI mode to " << selectedMode;
+				_("YES"), [selectedMode] {
+				LOG(LogDebug) << "GuiMenu::openUISettings() - Setting UI mode to " << selectedMode;
 				Settings::getInstance()->setString("UIMode", selectedMode);
 				Settings::getInstance()->saveFile();
-			}, "NO", nullptr));
+			}, _("NO"), nullptr));
 		}
 	});
-	//#endif
 
 	// LANGUAGE
 	/*
@@ -937,6 +996,18 @@ void GuiMenu::openUISettings()
 		Settings::getInstance()->setString("GameTransitionStyle", transitionOfGames_style->getSelected());
 	});
 
+	// menus on top
+	auto menusOnTop = std::make_shared<SwitchComponent>(mWindow);
+	menusOnTop->setState(Settings::getInstance()->getBool("MenusOnDisplayTop"));
+	s->addWithLabel(_("MENUS ON DISPLAY TOP"), menusOnTop);
+	s->addSaveFunc([s, menusOnTop] {
+		bool old_value = Settings::getInstance()->getBool("MenusOnDisplayTop");
+		if (old_value != menusOnTop->getState())
+		{
+			Settings::getInstance()->setBool("MenusOnDisplayTop", menusOnTop->getState());
+			s->setVariable("reloadGuiMenu", true);
+		}
+	});
 
 	// Optionally start in selected system
 	auto systemfocus_list = std::make_shared< OptionListComponent<std::string> >(mWindow, _("START ON SYSTEM"), false);
@@ -953,8 +1024,6 @@ void GuiMenu::openUISettings()
 	s->addSaveFunc([systemfocus_list] {
 		Settings::getInstance()->setString("StartupSystem", systemfocus_list->getSelected());
 	});
-
-
 
 	// Select systems to hide
 	auto hiddenSystems = Utils::String::split(Settings::getInstance()->getString("HiddenSystems"), ';');
@@ -993,7 +1062,6 @@ void GuiMenu::openUISettings()
 		}		
 	});
 
-	
 	// Open gamelist at start
 	auto bootOnGamelist = std::make_shared<SwitchComponent>(mWindow);
 	bootOnGamelist->setState(Settings::getInstance()->getBool("StartupOnGameList"));
@@ -1012,15 +1080,6 @@ void GuiMenu::openUISettings()
 		if (!hideSysView && hideSystemView->getState())
 			ViewController::get()->goToStart(true);
 	});
-
-
-#if defined(_WIN32)
-	// quick system select (left/right in game list view)
-	auto hideWindowScreen = std::make_shared<SwitchComponent>(mWindow);
-	hideWindowScreen->setState(Settings::getInstance()->getBool("HideWindow"));
-	s->addWithLabel(_("HIDE WHEN RUNNING GAME"), hideWindowScreen);
-	s->addSaveFunc([hideWindowScreen] { Settings::getInstance()->setBool("HideWindow", hideWindowScreen->getState()); });
-#endif
 
 	// quick system select (left/right in game list view)
 	auto quick_sys_select = std::make_shared<SwitchComponent>(mWindow);
@@ -1049,6 +1108,14 @@ void GuiMenu::openUISettings()
 	s->addWithLabel(_("SHOW CLOCK"), clock);
 	s->addSaveFunc(
 		[clock] { Settings::getInstance()->setBool("DrawClock", clock->getState()); });
+
+	// Clock time format (14:42 or 2:42 pm)
+	auto tmFormat = std::make_shared<SwitchComponent>(mWindow);
+	tmFormat->setState(Settings::getInstance()->getBool("ClockMode12"));
+	s->addWithLabel(_("SHOW CLOCK IN 12-HOUR FORMAT"), tmFormat);
+	s->addSaveFunc([tmFormat] {
+			Settings::getInstance()->setBool("ClockMode12", tmFormat->getState());
+	});
 
 	// show help
 	auto show_help = std::make_shared<SwitchComponent>(mWindow);
@@ -1084,7 +1151,6 @@ void GuiMenu::openUISettings()
 			s->setVariable("reloadAll", true);		
 	});
 
-
 	s->onFinalize([s, pthis, window]
 	{
 		if (s->getVariable("reloadCollections"))
@@ -1113,8 +1179,8 @@ void GuiMenu::openSystemEmulatorSettings(SystemData* system)
 
 	GuiSettings* s = new GuiSettings(mWindow, system->getFullName().c_str());
 
-	auto emul_choice = std::make_shared<OptionListComponent<std::string>>(mWindow, _("EMULATOR"), false);
-	auto core_choice = std::make_shared<OptionListComponent<std::string>>(mWindow, _("CORE"), false);
+	auto emul_choice = std::make_shared<OptionListComponent<std::string>>(mWindow, _("SELECT EMULATOR"), false);
+	auto core_choice = std::make_shared<OptionListComponent<std::string>>(mWindow, _("SELECT CORE"), false);
 
 	std::string currentEmul = Settings::getInstance()->getString(system->getName() + ".emulator");
 	std::string defaultEmul = (system->getSystemEnvData()->mEmulators.size() == 0 ? "" : system->getSystemEnvData()->mEmulators[0].mName);
@@ -1258,7 +1324,7 @@ void GuiMenu::openUpdateSettings()
 		if (ApiSystem::state == UpdateState::State::UPDATE_READY)
 		{
 			if (quitES(QuitMode::QUIT))
-				LOG(LogWarning) << "Reboot terminated with non-zero result!";
+				LOG(LogWarning) << "GuiMenu::openUpdateSettings() - Reboot terminated with non-zero result!";
 		}
 		else if (ApiSystem::state == UpdateState::State::UPDATER_RUNNING)
 			mWindow->pushGui(new GuiMsgBox(mWindow, _("UPDATE IS ALREADY RUNNING")));
@@ -1286,10 +1352,12 @@ void GuiMenu::openUpdateSettings()
 }
 	
 
-void GuiMenu::openOtherSettings()
+void GuiMenu::openAdvancedSettings()
 {
 	Window* window = mWindow;
 	auto s = new GuiSettings(mWindow, _("ADVANCED SETTINGS"));
+
+	auto theme = ThemeData::getMenuTheme();
 
 	/*
 	// Emulator settings 
@@ -1391,7 +1459,29 @@ void GuiMenu::openOtherSettings()
 			auto language = std::make_shared< OptionListComponent<std::string> >(mWindow, _("LANGUAGE"), false);
 
 			for (auto it = langues.cbegin(); it != langues.cend(); it++)
-				language->add(*it, *it, Settings::getInstance()->getString("Language") == *it);
+			{
+				std::string language_label;
+				if (*it == "br")
+					language_label = "PORTUGUESE BRAZIL";
+				else if (*it == "de")
+					language_label = "DEUTSCHE";
+				else if (*it == "es")
+					language_label = "SPANISH";
+				else if (*it == "en")
+					language_label = "ENGLISH";
+				else if (*it == "fr")
+					language_label = "FRENCH";
+				else if (*it == "ko")
+					language_label = "KOREAN";
+				else if (*it == "pt")
+					language_label = "PORTUGUESE PORTUGAL";
+				else if (*it == "zh-CN")
+					language_label = "SIMPLIFIED CHINESE";
+				else
+					language_label = *it;
+
+				language->add(_(language_label), *it, Settings::getInstance()->getString("Language") == *it);
+			}
 
 			s->addWithLabel(_("LANGUAGE"), language);
 			s->addSaveFunc([language, window, s] {
@@ -1413,43 +1503,6 @@ void GuiMenu::openOtherSettings()
 	s->addSaveFunc([max_vram] { Settings::getInstance()->setInt("MaxVRAM", (int)Math::round(max_vram->getValue())); });
 
 
-	/*
-#if WIN32
-
-	// Enable updates
-	auto updates_enabled = std::make_shared<SwitchComponent>(mWindow);
-	updates_enabled->setState(Settings::getInstance()->getBool("updates.enabled"));
-	s->addWithLabel(_("AUTO UPDATES"), updates_enabled);
-	s->addSaveFunc([updates_enabled]
-	{
-		Settings::getInstance()->setBool("updates.enabled", updates_enabled->getState());
-	});
-
-	// Start update
-	s->addEntry(ApiSystem::state == UpdateState::State::UPDATE_READY ? _("APPLY UPDATE") : _("START UPDATE"), true, [this]
-	{
-		if (ApiSystem::checkUpdateVersion().empty())
-		{
-			mWindow->pushGui(new GuiMsgBox(mWindow, _("NO UPDATE AVAILABLE")));
-			return;
-		}
-
-		if (ApiSystem::state == UpdateState::State::UPDATE_READY)
-		{
-			if (quitES(QuitMode::QUIT))
-				LOG(LogWarning) << "Reboot terminated with non-zero result!";
-		}
-		else if (ApiSystem::state == UpdateState::State::UPDATER_RUNNING)
-			mWindow->pushGui(new GuiMsgBox(mWindow, _("UPDATE IS ALREADY RUNNING")));
-		else
-			ApiSystem::startUpdate(mWindow);
-	});
-#endif
-*/
-
-
-
-
 	// gamelists
 	auto save_gamelists = std::make_shared<SwitchComponent>(mWindow);
 	save_gamelists->setState(Settings::getInstance()->getBool("SaveGamelistsOnExit"));
@@ -1460,33 +1513,11 @@ void GuiMenu::openOtherSettings()
 	parse_gamelists->setState(Settings::getInstance()->getBool("ParseGamelistOnly"));
 	s->addWithLabel(_("PARSE GAMESLISTS ONLY"), parse_gamelists);
 	s->addSaveFunc([parse_gamelists] { Settings::getInstance()->setBool("ParseGamelistOnly", parse_gamelists->getState()); });
-	
-#ifndef WIN32
+
 	auto local_art = std::make_shared<SwitchComponent>(mWindow);
 	local_art->setState(Settings::getInstance()->getBool("LocalArt"));
 	s->addWithLabel(_("SEARCH FOR LOCAL ART"), local_art);
 	s->addSaveFunc([local_art] { Settings::getInstance()->setBool("LocalArt", local_art->getState()); });
-#endif
-
-#ifdef _RPI_
-	// Video Player - VideoOmxPlayer
-	auto omx_player = std::make_shared<SwitchComponent>(mWindow);
-	omx_player->setState(Settings::getInstance()->getBool("VideoOmxPlayer"));
-	s->addWithLabel("USE OMX PLAYER (HW ACCELERATED)", omx_player);
-	s->addSaveFunc([omx_player]
-	{
-		// need to reload all views to re-create the right video components
-		bool needReload = false;
-		if(Settings::getInstance()->getBool("VideoOmxPlayer") != omx_player->getState())
-			needReload = true;
-
-		Settings::getInstance()->setBool("VideoOmxPlayer", omx_player->getState());
-
-		if(needReload)
-			ViewController::get()->reloadAll();
-	});
-
-#endif
 
 	// preload UI
 	auto preloadUI = std::make_shared<SwitchComponent>(mWindow);
@@ -1504,19 +1535,7 @@ void GuiMenu::openOtherSettings()
 		Settings::getInstance()->setBool("OptimizeVRAM", optimizeVram->getState());
 	});
 
-#ifdef WIN32
-	// vsync
-	auto vsync = std::make_shared<SwitchComponent>(mWindow);
-	vsync->setState(Settings::getInstance()->getBool("VSync"));
-	s->addWithLabel(_("VSYNC"), vsync);
-	s->addSaveFunc([vsync] 
-	{ 
-		Settings::getInstance()->setBool("VSync", vsync->getState()); 
-		Renderer::setSwapInterval();
-	});
-#endif
-
-	// framerate	
+	// framerate
 	auto framerate = std::make_shared<SwitchComponent>(mWindow);
 	framerate->setState(Settings::getInstance()->getBool("DrawFramerate"));
 	s->addWithLabel(_("SHOW FRAMERATE"), framerate);
@@ -1528,13 +1547,33 @@ void GuiMenu::openOtherSettings()
 	s->addWithLabel(_("THREADED LOADING"), threadedLoading);
 	s->addSaveFunc([threadedLoading] { Settings::getInstance()->setBool("ThreadedLoading", threadedLoading->getState()); });
 
-#ifndef _RPI_
+	// preload VLCplayer
+	ComponentListRow preload_vlc_row;
+	preload_vlc_row.elements.clear();
+	preload_vlc_row.addElement(std::make_shared<TextComponent>(mWindow, _("PRELOAD VLC SETTINGS"), theme->Text.font, theme->Text.color), true);
+	preload_vlc_row.addElement(makeArrow(mWindow), false);
+	preload_vlc_row.makeAcceptInputHandler(std::bind(&GuiMenu::openPreloadVlcSettings, this));
+//	s->addRow(preload_vlc_row);
+
+	// show detailed system information
+	auto detailedSystemInfo = std::make_shared<SwitchComponent>(mWindow);
+	detailedSystemInfo->setState(Settings::getInstance()->getBool("ShowDetailedSystemInfo"));
+	s->addWithLabel(_("SHOW DETAILED SYSTEM INFO"), detailedSystemInfo);
+	s->addSaveFunc([s, detailedSystemInfo]{
+		bool old_value = Settings::getInstance()->getBool("ShowDetailedSystemInfo");
+		if (old_value != detailedSystemInfo->getState())
+		{
+			Settings::getInstance()->setBool("ShowDetailedSystemInfo", detailedSystemInfo->getState());
+			s->setVariable("reloadGuiMenu", true);
+		}
+	});
+
 	// full exit
 	auto fullExitMenu = std::make_shared<SwitchComponent>(mWindow);
 	fullExitMenu->setState(!Settings::getInstance()->getBool("ShowOnlyExit"));
 	s->addWithLabel(_("COMPLETE QUIT MENU"), fullExitMenu);
 	s->addSaveFunc([fullExitMenu] { Settings::getInstance()->setBool("ShowOnlyExit", !fullExitMenu->getState()); });
-#endif
+
 
 	// log level
 	auto logLevel = std::make_shared< OptionListComponent<std::string> >(mWindow, _("LOG LEVEL"), false);
@@ -1562,6 +1601,18 @@ void GuiMenu::openOtherSettings()
 		}
 	});
 
+	auto logWithMilliseconds = std::make_shared<SwitchComponent>(mWindow);
+	logWithMilliseconds->setState(Settings::getInstance()->getBool("LogWithMilliseconds"));
+	s->addWithLabel(_("LOG WITH MILLISECONDS"), logWithMilliseconds);
+	s->addSaveFunc([logWithMilliseconds] {
+		bool old_value = Settings::getInstance()->getBool("LogWithMilliseconds");
+		if (old_value != logWithMilliseconds->getState())
+		{
+			Settings::getInstance()->setBool("LogWithMilliseconds", logWithMilliseconds->getState());
+			Log::setupReportingLevel();
+			Log::init();
+		}
+	});
 
 
 
@@ -1580,6 +1631,11 @@ void GuiMenu::openOtherSettings()
 
 	mWindow->pushGui(s);
 
+}
+
+void GuiMenu::openSystemInformation()
+{
+	mWindow->pushGui(new GuiSystemInformation(mWindow));
 }
 
 void GuiMenu::openConfigInput()
@@ -1611,19 +1667,17 @@ void GuiMenu::openQuitMenu()
 	ComponentListRow row;
 	if (UIModeController::getInstance()->isUIModeFull())
 	{
-#ifndef WIN32
 		// Restart does not work on Windows
 		row.makeAcceptInputHandler([window] {
 			window->pushGui(new GuiMsgBox(window, _("REALLY RESTART?"), _("YES"),
 				[] {
 				Scripting::fireEvent("quit");
 				if(quitES(QuitMode::RESTART) != 0)
-					LOG(LogWarning) << "Restart terminated with non-zero result!";
+					LOG(LogWarning) << "GuiMenu::openQuitMenu() - Restart terminated with non-zero result!";
 			}, _("NO"), nullptr));
 		});
 		row.addElement(std::make_shared<TextComponent>(window, _("RESTART EMULATIONSTATION"), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color), true);
 		s->addRow(row);
-#endif
 
 		if(Settings::getInstance()->getBool("ShowExit"))
 		{
@@ -1646,7 +1700,7 @@ void GuiMenu::openQuitMenu()
 			Scripting::fireEvent("quit", "reboot");
 			Scripting::fireEvent("reboot");
 			if (quitES(QuitMode::REBOOT) != 0)
-				LOG(LogWarning) << "Restart terminated with non-zero result!";
+				LOG(LogWarning) << "GuiMenu::openQuitMenu() - Restart terminated with non-zero result!";
 		}, _("NO"), nullptr));
 	});
 	row.addElement(std::make_shared<TextComponent>(window, _("RESTART SYSTEM"), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color), true);
@@ -1659,7 +1713,7 @@ void GuiMenu::openQuitMenu()
 			Scripting::fireEvent("quit", "shutdown");
 			Scripting::fireEvent("shutdown");
 			if (quitES(QuitMode::SHUTDOWN) != 0)
-				LOG(LogWarning) << "Shutdown terminated with non-zero result!";
+				LOG(LogWarning) << "GuiMenu::openQuitMenu() - Shutdown terminated with non-zero result!";
 		}, _("NO"), nullptr));
 	});
 	row.addElement(std::make_shared<TextComponent>(window, _("SHUTDOWN SYSTEM"), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color), true);
@@ -1722,19 +1776,8 @@ void GuiMenu::addVersionInfo()
 	mVersion.setColor(theme->Footer.color);
 
 	mVersion.setLineSpacing(0);
-
-#if WIN32
-	std::string localVersion;
-	std::string localVersionFile = Utils::FileSystem::getExePath() + "/version.info";
-	if (Utils::FileSystem::exists(localVersionFile))
-	{
-		localVersion = Utils::FileSystem::readAllText(localVersionFile);
-		localVersion = Utils::String::replace(Utils::String::replace(localVersion, "\r", ""), "\n", "");	
-		mVersion.setText("EMULATIONSTATION V" + localVersion+" FCAMOD");	
-	}
-	else
-#endif
-		mVersion.setText("EMULATIONSTATION V" + Utils::String::toUpper(PROGRAM_VERSION_STRING) + " BUILD " + buildDate);
+	
+	mVersion.setText("EMULATIONSTATION V" + Utils::String::toUpper(PROGRAM_VERSION_STRING) + " BUILD " + buildDate);
 
 	mVersion.setHorizontalAlignment(ALIGN_CENTER);	
 	mVersion.setVerticalAlignment(ALIGN_CENTER);
@@ -1754,6 +1797,95 @@ void GuiMenu::openCollectionSystemSettings()
 	}
 
 	mWindow->pushGui(new GuiCollectionSystemsOptions(mWindow));
+}
+
+void GuiMenu::openPreloadVlcSettings()
+{
+	auto pthis = this;
+	Window* window = mWindow;
+
+	auto theme = ThemeData::getMenuTheme();
+
+	auto s = new GuiSettings(mWindow, _("PRELOAD VLC SETTINGS"));
+
+	// preload VLC player
+	auto preloadVlcPlayer = std::make_shared<SwitchComponent>(mWindow);
+	preloadVlcPlayer->setState(Settings::getInstance()->getBool("PreloadVlcPlayer"));
+	s->addWithLabel(_("ENABLED"), preloadVlcPlayer);
+	s->addSaveFunc([preloadVlcPlayer] { Settings::getInstance()->setBool("PreloadVlcPlayer", preloadVlcPlayer->getState()); });
+
+	// preload VLC video timeout
+	auto preloadVlcVideoTimeout = std::make_shared<SliderComponent>(mWindow, 5.f, 300.f, 1.f, "s");
+	preloadVlcVideoTimeout->setValue((float)(Settings::getInstance()->getInt("PreloadVlcVideoTimeout") / (1000)));
+	s->addWithLabel(_("CAN STOP VIDEO AFTER (SECS)"), preloadVlcVideoTimeout);
+	s->addSaveFunc([preloadVlcVideoTimeout] {
+		Settings::getInstance()->setInt("PreloadVlcVideoTimeout", (int)Math::round(preloadVlcVideoTimeout->getValue()) * (1000));
+	});
+
+	ComponentListRow rowImage;
+
+	auto lbl = std::make_shared<TextComponent>(mWindow, _("IMAGE"), theme->Text.font, theme->Text.color);
+	rowImage.addElement(lbl, true); // label
+
+	std::shared_ptr<GuiComponent> ed = std::make_shared<TextComponent>(window, "", theme->Text.font, theme->Text.color, ALIGN_RIGHT);
+	rowImage.addElement(ed, true); // image path
+
+	auto spacer = std::make_shared<GuiComponent>(mWindow);
+	spacer->setSize(Renderer::getScreenWidth() * 0.005f, 0);
+	rowImage.addElement(spacer, false); // image spacer
+
+	auto bracket = std::make_shared<ImageComponent>(mWindow);
+	bracket->setImage(ThemeData::getMenuTheme()->Icons.arrow);// ":/arrow.svg");
+	bracket->setResize(Vector2f(0, lbl->getFont()->getLetterHeight()));
+	rowImage.addElement(bracket, false); // image bracket
+
+	ed->setValue(Settings::getInstance()->getString("PreloadVlcImage"));
+
+	auto updateValImage = [ed](const std::string& newVal) {
+		ed->setValue(newVal);
+		Settings::getInstance()->setString("PreloadVlcImage", newVal);
+	}; // ok callback (apply new value to ed)
+	rowImage.makeAcceptInputHandler([this, ed, updateValImage]
+	{
+		mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, _("enter path to image"), ed->getValue(), updateValImage, false));
+	});
+
+	assert(ed);
+	s->addRow(rowImage);
+
+	ComponentListRow rowVideo;
+
+	lbl = std::make_shared<TextComponent>(mWindow, _("VIDEO"), theme->Text.font, theme->Text.color);
+	rowVideo.addElement(lbl, true); // label
+
+	ed = std::make_shared<TextComponent>(window, "", theme->Text.font, theme->Text.color, ALIGN_RIGHT);
+	rowVideo.addElement(ed, true); // image path
+
+	spacer = std::make_shared<GuiComponent>(mWindow);
+	spacer->setSize(Renderer::getScreenWidth() * 0.005f, 0);
+	rowVideo.addElement(spacer, false); // image spacer
+
+	bracket = std::make_shared<ImageComponent>(mWindow);
+	bracket->setImage(ThemeData::getMenuTheme()->Icons.arrow);// ":/arrow.svg");
+	bracket->setResize(Vector2f(0, lbl->getFont()->getLetterHeight()));
+	rowVideo.addElement(bracket, false); // image bracket
+
+	ed->setValue(Settings::getInstance()->getString("PreloadVlcVideo"));
+
+	auto updateValVideo = [ed](const std::string& newVal) {
+		ed->setValue(newVal);
+		Settings::getInstance()->setString("PreloadVlcVideo", newVal);
+	}; // ok callback (apply new value to ed)
+	rowVideo.makeAcceptInputHandler([this, ed, updateValVideo]
+	{
+		mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, _("enter path to video"), ed->getValue(), updateValVideo, false));
+	});
+
+	assert(ed);
+	s->addRow(rowVideo);
+
+//	s->updatePosition();
+	mWindow->pushGui(s);
 }
 
 void GuiMenu::onSizeChanged()

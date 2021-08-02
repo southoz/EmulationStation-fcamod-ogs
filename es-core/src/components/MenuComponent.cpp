@@ -1,6 +1,7 @@
 #include "components/MenuComponent.h"
 
 #include "components/ButtonComponent.h"
+#include "Settings.h"
 
 #define BUTTON_GRID_VERT_PADDING  (Renderer::getScreenHeight()*0.0296296) //32
 #define BUTTON_GRID_HORIZ_PADDING (Renderer::getScreenWidth()*0.0052083333) //10
@@ -194,6 +195,15 @@ float MenuComponent::getButtonGridHeight() const
 	auto menuTheme = ThemeData::getMenuTheme();
 	return (mButtonGrid ? mButtonGrid->getSize().y() : menuTheme->Text.font->getHeight() + BUTTON_GRID_VERT_PADDING);
 	//return (mButtonGrid ? mButtonGrid->getSize().y() : Font::get(FONT_SIZE_MEDIUM)->getHeight() + BUTTON_GRID_VERT_PADDING);
+}
+
+void MenuComponent::setPosition(float x, float y, float z)
+{
+	float new_y = y;
+	if (Settings::getInstance()->getBool("MenusOnDisplayTop"))
+		new_y = 0.f;
+
+	GuiComponent::setPosition(x, new_y, z);
 }
 
 void MenuComponent::updateSize()

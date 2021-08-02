@@ -75,7 +75,11 @@ GuiScraperStart::GuiScraperStart(Window* window) : GuiComponent(window),
 	mMenu.addButton(_("START"), _("START"), std::bind(&GuiScraperStart::pressedStart, this));
 	mMenu.addButton(_("BACK"), _("BACK"), [&] { delete this; });
 
-	mMenu.setPosition((Renderer::getScreenWidth() - mMenu.getSize().x()) / 2, Renderer::getScreenHeight() * 0.0f);
+	float new_y = (Renderer::getScreenHeight() - mMenu.getSize().y()) / 2;
+	if (Settings::getInstance()->getBool("MenusOnDisplayTop"))
+		new_y = 0.f;
+
+	mMenu.setPosition((Renderer::getScreenWidth() - mMenu.getSize().x()) / 2, new_y);
 }
 
 void GuiScraperStart::pressedStart()
@@ -86,8 +90,8 @@ void GuiScraperStart::pressedStart()
 		if((*it)->getPlatformIds().empty())
 		{
 			mWindow->pushGui(new GuiMsgBox(mWindow, 
-				_(Utils::String::toUpper("Warning: some of your selected systems do not have a platform set. Results may be even more inaccurate than usual!\nContinue anyway?")), 
-				_("YES"), std::bind(&GuiScraperStart::start, this), 
+				_("WARNING: SOME OF YOUR SELECTED SYSTEMS DO NOT HAVE A PLATFORM SET. RESULTS MAY BE EVEN MORE INACCURATE THAN USUAL!\nCONTINUE ANYWAY?"),
+				_("YES"), std::bind(&GuiScraperStart::start, this),
 				_("NO"), nullptr));
 			return;
 		}

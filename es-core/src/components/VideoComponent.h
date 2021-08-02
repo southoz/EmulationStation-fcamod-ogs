@@ -26,11 +26,12 @@ class VideoComponent : public GuiComponent
 	// Structure that groups together the configuration of the video component
 	struct Configuration
 	{
-		unsigned						startDelay;
+		unsigned					startDelay;
 		bool							showSnapshotNoVideo;
 		bool							showSnapshotDelay;
-		ImageSource						snapshotSource;
-		std::string						defaultVideoPath;
+		bool							showSnapshot;
+		ImageSource				snapshotSource;
+		std::string				defaultVideoPath;
 	};
 
 public:
@@ -115,6 +116,13 @@ public:
 	ImageSource getSnapshotSource() { return mConfig.snapshotSource; };
 	void setSnapshotSource(ImageSource source) { mConfig.snapshotSource = source; };
 
+	void setShowSnapshot(bool showSnapshot = false) { mConfig.showSnapshot = showSnapshot; };
+	bool isShowSnapshot() { return mConfig.showSnapshot; };
+
+
+	void setStaticImage(ImageComponent staticImage) { mStaticImage = staticImage; }
+	ImageComponent getStaticImage() { return mStaticImage; }
+
 	inline void setOnVideoEnded(const std::function<bool()>& callback) {
 		mVideoEnded = callback;
 	}
@@ -172,21 +180,21 @@ protected:
 	unsigned						mVideoHeight;
 	Vector2f						mTargetSize;
 	std::shared_ptr<TextureResource> mTexture;
-	float							mFadeIn;
-	std::string						mStaticImagePath;
-	ImageComponent					mStaticImage;
+	float								mFadeIn;
+	std::string					mStaticImagePath;
+	ImageComponent			mStaticImage;
 
-	std::string						mVideoPath;
-	std::string						mPlayingVideoPath;
-	bool							mStartDelayed;
+	std::string					mVideoPath;
+	std::string					mPlayingVideoPath;
+	bool								mStartDelayed;
 	unsigned						mStartTime;
-	bool							mIsPlaying;
-	bool							mShowing;
-	bool							mDisable;
-	bool							mScreensaverActive;
-	bool							mScreensaverMode;
-	bool							mTargetIsMax;
-	bool							mTargetIsMin;
+	bool								mIsPlaying;
+	bool								mShowing;
+	bool								mDisable;
+	bool								mScreensaverActive;
+	bool								mScreensaverMode;
+	bool								mTargetIsMax;
+	bool								mTargetIsMin;
 
 	bool							mIsWaitingForVideoToStart;
 

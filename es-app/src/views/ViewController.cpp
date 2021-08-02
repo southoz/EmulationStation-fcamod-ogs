@@ -470,10 +470,6 @@ bool ViewController::input(InputConfig* config, Input input)
 		ResourceManager::getInstance()->unloadAll();
 		ResourceManager::getInstance()->reloadAll();
 
-#if WIN32
-		EsLocale::reset();
-#endif
-
 		ViewController::get()->reloadAll(mWindow);
 		mWindow->endRenderLoadingScreen();
 		return true;
@@ -726,7 +722,7 @@ std::vector<HelpPrompt> ViewController::getHelpPrompts()
 
 	prompts = mCurrentView->getHelpPrompts();
 	if(!UIModeController::getInstance()->isUIModeKid())
-		prompts.push_back(HelpPrompt("start", "menu"));
+		prompts.push_back(HelpPrompt("start", _("MENU")));
 
 	return prompts;
 }

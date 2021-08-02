@@ -5,10 +5,6 @@
 #include "utils/StringUtil.h"
 #include "Log.h"
 
-#ifdef WIN32
-#include <Windows.h>
-#endif
-
 FT_Library Font::sLibrary = NULL;
 
 int Font::getSize() const { return mSize; }
@@ -246,38 +242,6 @@ void Font::getTextureForNewGlyph(const Vector2i& glyphSize, FontTexture*& tex_ou
 
 std::vector<std::string> getFallbackFontPaths()
 {
-#ifdef WIN32
-	// Windows
-
-	// get this system's equivalent of "C:\Windows" (might be on a different drive or in a different folder)
-	// so we can check the Fonts subdirectory for fallback fonts
-	TCHAR winDir[MAX_PATH];
-	GetWindowsDirectory(winDir, MAX_PATH);
-	std::string fontDir = winDir;
-	fontDir += "\\Fonts\\";
-
-	const char* fontNames[] = {
-		":/glyphs.ttf",   // latin		
-		":/DroidSansFallbackFull.ttf",// japanese, chinese, present on Debian
-		":/NanumMyeongjo.ttf" // korean font
-		"arial.ttf",   // latin		
-	};
-
-	//prepend to font file names
-	std::vector<std::string> fontPaths;
-	fontPaths.reserve(sizeof(fontNames) / sizeof(fontNames[0]));
-
-	for(unsigned int i = 0; i < sizeof(fontNames) / sizeof(fontNames[0]); i++)
-	{
-		std::string path = Utils::String::startsWith(fontNames[i], ":/") ? fontNames[i] : fontDir + fontNames[i];
-		if (ResourceManager::getInstance()->fileExists(path))
-			fontPaths.push_back(path);
-	}
-
-	fontPaths.shrink_to_fit();
-	return fontPaths;
-
-#else
 	// Linux
 
 	const char* paths[] = { 
@@ -295,8 +259,6 @@ std::vector<std::string> getFallbackFontPaths()
 
 	fontPaths.shrink_to_fit();
 	return fontPaths;
-
-#endif
 }
 
 FT_Face Font::getFaceForChar(unsigned int id)
@@ -542,10 +504,18 @@ float Font::getHeight(float lineSpacing) const
 
 float Font::getLetterHeight()
 {
-	Glyph* glyph = getGlyph('S');
+	Glyph* glyph = getGlyph('M');
 	assert(glyph);
 	return glyph->texSize.y() * glyph->texture->textureSize.y();
 }
+
+float Font::getLetterWidth()
+{
+	Glyph* glyph = getGlyph('M');
+	assert(glyph);
+	return glyph->texSize.x() * glyph->texture->textureSize.x();
+}
+
 
 //the worst algorithm ever written
 //breaks up a normal string with newlines to make it fit xLen

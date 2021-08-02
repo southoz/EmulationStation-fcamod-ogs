@@ -35,12 +35,13 @@ namespace Utils
 		bool        removeFile         (const std::string& _path);
 		bool        createDirectory    (const std::string& _path);
 		bool        exists             (const std::string& _path);
-		size_t		getFileSize(const std::string& _path);
+		size_t      getFileSize        (const std::string& _path);
 		bool        isAbsolute         (const std::string& _path);
 		bool        isRegularFile      (const std::string& _path);
 		bool        isDirectory        (const std::string& _path);
 		bool        isSymlink          (const std::string& _path);
 		bool        isHidden           (const std::string& _path);
+		std::string megaBytesToString  (unsigned long size);
 	
 		// FCA
 		struct FileInfo
@@ -53,17 +54,17 @@ namespace Utils
 
 		typedef std::list<FileInfo> fileList;
 
-		fileList  getDirInfo(const std::string& _path/*, const bool _recursive = false*/);
+		fileList        getDirInfo     (const std::string& _path/*, const bool _recursive = false*/);
 
-		std::string	readAllText(const std::string fileName);
-		void		writeAllText	   (const std::string fileName, const std::string text);
-		bool		copyFile(const std::string src, const std::string dst);
+		std::string readAllText        (const std::string fileName);
+		void        writeAllText       (const std::string fileName, const std::string text);
+		bool        copyFile           (const std::string src, const std::string dst);
 
 		class FileSystemCacheActivator
 		{
 		public:
 			FileSystemCacheActivator();
-			~FileSystemCacheActivator();			
+			~FileSystemCacheActivator();
 
 		private:
 			static int mReferenceCount;

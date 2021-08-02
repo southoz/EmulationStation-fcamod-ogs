@@ -57,8 +57,8 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 
 	SystemData* system = file->getSystem();
 
-	auto emul_choice = std::make_shared<OptionListComponent<std::string>>(mWindow, _("EMULATOR"), false);
-	auto core_choice = std::make_shared<OptionListComponent<std::string>>(mWindow, _("CORE"), false);
+	auto emul_choice = std::make_shared<OptionListComponent<std::string>>(mWindow, _("SELECT EMULATOR"), false);
+	auto core_choice = std::make_shared<OptionListComponent<std::string>>(mWindow, _("SELECT CORE"), false);
 
 	// populate list
 	for(auto iter = mdd.cbegin(); iter != mdd.cend(); iter++)
@@ -68,14 +68,7 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 		// don't add statistics
 		if(iter->isStatistic)
 			continue;
-		/*
-#if defined(_WIN32)
-		if (iter->displayName == "sortname" || iter->displayName == "image" || iter->displayName == "video" || iter->displayName == "marquee" || 
-			iter->displayName == "thumbnail" || iter->displayName == "kidgame" || iter->displayName == "description" || iter->displayName == "release date" || 
-			iter->displayName == "genre" || iter->displayName == "publisher" || iter->displayName == "developer" || iter->displayName == "players")
-			continue;
-#endif
-*/
+
 		// create ed and add it (and any related components) to mMenu
 		// ed's value will be set below
 		ComponentListRow row;
@@ -112,9 +105,9 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 				if (defaultCore.length() == 0)
 					core_choice->add(_("DEFAULT"), "", false);
 				else 
-					core_choice->add(_("DEFAULT")+" ("+ defaultCore+")", "", false);
+					core_choice->add(_("DEFAULT") + " (" + defaultCore + ")", "", false);
 							
-				std::vector<std::string> cores = system->getSystemEnvData()->getCores(emulatorName);				
+				std::vector<std::string> cores = system->getSystemEnvData()->getCores(emulatorName);
 
 				bool found = false;
 
@@ -169,7 +162,7 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 				ed = std::make_shared<RatingComponent>(window);
 				const float height = lbl->getSize().y() * 0.71f;
 				ed->setSize(0, height);
-				row.addElement(ed, false, true);
+				row.addElement(ed, false, true, true);
 
 				auto spacer = std::make_shared<GuiComponent>(mWindow);
 				spacer->setSize(Renderer::getScreenWidth() * 0.0025f, 0);
@@ -183,7 +176,7 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 			case MD_DATE:
 			{
 				ed = std::make_shared<DateTimeEditComponent>(window);
-				row.addElement(ed, false);
+				row.addElement(ed, false, true, true);
 
 				auto spacer = std::make_shared<GuiComponent>(mWindow);
 				spacer->setSize(Renderer::getScreenWidth() * 0.0025f, 0);
@@ -218,7 +211,16 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 
 				bool multiLine = iter->type == MD_MULTILINE_STRING;
 				const std::string title = _(iter->displayPrompt.c_str());
-				auto updateVal = [ed](const std::string& newVal) { ed->setValue(newVal); }; // ok callback (apply new value to ed)
+				if (ed->getValue() == "unknown")
+					ed->setValue(_("unknown"));
+
+				auto updateVal = [ed](const std::string& newVal) {
+						std::string new_value = newVal;
+						if (new_value == "unknown")
+							new_value = _("unknown").c_str();
+
+					ed->setValue(new_value);
+				}; // ok callback (apply new value to ed)
 				row.makeAcceptInputHandler([this, title, ed, updateVal, multiLine] 
 				{
 					if (multiLine)
@@ -228,13 +230,17 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 				});
 				break;
 			}
-		}		
+		}
 
 		assert(ed);
 		mList->addRow(row);
-				
+
+		std::string ed_value = mMetaData->get(iter->key);
+		if (ed_value == "unknown")
+			ed_value = _("unknown");
+
 		ed->setTag(iter->key);
-		ed->setValue(mMetaData->get(iter->key));
+		ed->setValue(ed_value);
 
 		mEditors.push_back(ed);
 	}
@@ -250,7 +256,9 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 	if(mDeleteFunc)
 	{
 		auto deleteFileAndSelf = [&] { mDeleteFunc(); delete this; };
-		auto deleteBtnFunc = [this, deleteFileAndSelf] { mWindow->pushGui(new GuiMsgBox(mWindow, _("THIS WILL DELETE THE ACTUAL GAME FILE(S)!\nARE YOU SURE?"), _("YES"), deleteFileAndSelf, _("NO"), nullptr)); };
+		auto deleteBtnFunc = [this, deleteFileAndSelf] { mWindow->pushGui(new GuiMsgBox(mWindow,
+			_("THIS WILL DELETE THE ACTUAL GAME FILE(S)!\nARE YOU SURE?"),
+			_("YES"), deleteFileAndSelf, _("NO"), nullptr)); };
 		buttons.push_back(std::make_shared<ButtonComponent>(mWindow, _("DELETE"), _("DELETE"), deleteBtnFunc));
 	}
 
@@ -271,12 +279,24 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 		return false;
 	});
 
+	// resize
+	bool change_height_ratio = Settings::getInstance()->getBool("ShowHelpPrompts") || Settings::getInstance()->getBool("DrawClock");
+	float height_ratio = 1.0f;
+	if ( change_height_ratio )
+	{
+		height_ratio = 0.88f;
+		if ( Settings::getInstance()->getBool("MenusOnDisplayTop") )
+			height_ratio = 0.93f;
+	}
 
-	// resize + center	
-	setSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());
-	//float width = (float)Math::min(Renderer::getScreenHeight(), (int)(Renderer::getScreenWidth() * 3.0f));
-	//setSize(width, Renderer::getScreenHeight() * 1.0f);
-	setPosition((Renderer::getScreenWidth() - mSize.x()) / 2, (Renderer::getScreenHeight() - mSize.y()) / 2);
+	setSize(Renderer::getScreenWidth(), Renderer::getScreenHeight() * height_ratio);
+
+	// center
+	float new_y = (Renderer::getScreenHeight() - mSize.y()) / 2;
+	if (Settings::getInstance()->getBool("MenusOnDisplayTop"))
+		new_y = 0.f;
+
+	setPosition((Renderer::getScreenWidth() - mSize.x()) / 2, new_y);
 }
 
 void GuiMetaDataEd::onSizeChanged()
@@ -346,7 +366,7 @@ void GuiMetaDataEd::fetchDone(const ScraperSearchResult& result)
 	for(unsigned int i = 0; i < mEditors.size(); i++)
 	{
 		auto val = mEditors.at(i)->getValue();
-		auto key = mEditors.at(i)->getTag();		
+		auto key = mEditors.at(i)->getTag();
 
 		// Don't override favorite & hidden values, as they are not statistics
 		if (key == "favorite" || key == "hidden")

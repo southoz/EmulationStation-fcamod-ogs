@@ -3,6 +3,7 @@
 #include "components/ButtonComponent.h"
 #include "components/MenuComponent.h"
 #include "components/TextEditComponent.h"
+#include "Settings.h"
 
 GuiTextEditPopup::GuiTextEditPopup(Window* window, const std::string& title, const std::string& initValue,
 	const std::function<void(const std::string&)>& okCallback, bool multiLine, const char* acceptBtnText)
@@ -27,7 +28,7 @@ GuiTextEditPopup::GuiTextEditPopup(Window* window, const std::string& title, con
 
 	std::vector< std::shared_ptr<ButtonComponent> > buttons;
 	buttons.push_back(std::make_shared<ButtonComponent>(mWindow, acceptBtnText, acceptBtnText, [this, okCallback] { okCallback(mText->getValue()); delete this; }));
-	buttons.push_back(std::make_shared<ButtonComponent>(mWindow, _("CANCEL"), _("discard changes"), [this] { delete this; }));
+	buttons.push_back(std::make_shared<ButtonComponent>(mWindow, _("CANCEL"), _("DISCARD CHANGES"), [this] { delete this; }));
 
 	mButtonGrid = makeButtonGrid(mWindow, buttons);
 
@@ -41,7 +42,11 @@ GuiTextEditPopup::GuiTextEditPopup(Window* window, const std::string& title, con
 	mText->setSize(0, textHeight);
 
 	setSize(Renderer::getScreenWidth() * 0.5f, mTitle->getFont()->getHeight() + textHeight + mButtonGrid->getSize().y() + 40);
-	setPosition((Renderer::getScreenWidth() - mSize.x()) / 2, (Renderer::getScreenHeight() - mSize.y()) / 2);
+	float new_y = (Renderer::getScreenHeight() - mSize.y()) / 2;
+	if (Settings::getInstance()->getBool("MenusOnDisplayTop"))
+		new_y = 0.f;
+
+	setPosition((Renderer::getScreenWidth() - mSize.x()) / 2, new_y);
 }
 
 void GuiTextEditPopup::onSizeChanged()

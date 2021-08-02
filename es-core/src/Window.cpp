@@ -15,6 +15,8 @@
 #include "components/AsyncNotificationComponent.h"
 #include "guis/GuiMsgBox.h"
 #include "AudioManager.h"
+#include <string>
+#include "utils/TimeUtil.h"
 
 Window::Window() : mNormalizeNextUpdate(false), mFrameTimeElapsed(0), mFrameCountElapsed(0), mAverageDeltaTime(10),
   mAllowSleep(true), mSleeping(false), mTimeSinceLastInput(0), mScreenSaver(NULL), mRenderScreenSaver(false), mInfoPopup(NULL), mClockElapsed(0) // batocera
@@ -77,15 +79,15 @@ GuiComponent* Window::peekGui()
 	return mGuiStack.back();
 }
 
-bool Window::init(bool initRenderer)
+bool Window::init(bool initRenderer, bool forceFullScreen)
 {
-	LOG(LogInfo) << "Window::init";
+	LOG(LogInfo) << "Window::init() - initRenderer: " << (initRenderer ? "true" : "false") << ", forceFullScreen: " << (forceFullScreen ? "true" : "false");
 	
 	if (initRenderer)
 	{
-		if (!Renderer::init())
+		if (!Renderer::init(forceFullScreen))
 		{
-			LOG(LogError) << "Renderer failed to initialize!";
+			LOG(LogError) << "Window::init() --> Renderer failed to initialize!";
 			return false;
 		}
 
@@ -93,7 +95,7 @@ bool Window::init(bool initRenderer)
 	}
 	else
 		Renderer::activateWindow();
-		
+
 	ResourceManager::getInstance()->reloadAll();
 
 	//keep a reference to the default fonts, so they don't keep getting destroyed/recreated
@@ -113,8 +115,15 @@ bool Window::init(bool initRenderer)
 		mClock->setFont(Font::get(FONT_SIZE_SMALL));
 		mClock->setHorizontalAlignment(ALIGN_RIGHT);
 		mClock->setVerticalAlignment(ALIGN_TOP);
-		mClock->setPosition(Renderer::getScreenWidth()*0.94, Renderer::getScreenHeight()*0.9965 - Font::get(FONT_SIZE_SMALL)->getHeight());
-		mClock->setSize(Renderer::getScreenWidth()*0.05, 0);
+		float clockPosition = Renderer::getScreenWidth() * 0.90f;
+		float clockSize = mClock->getFont()->getLetterWidth() * 7.f;
+		if (Settings::getInstance()->getBool("FullScreenMode"))
+		{
+			clockPosition = Renderer::getScreenWidth() * 0.89f;
+			clockSize = mClock->getFont()->getLetterWidth() * 7.f;
+		}
+		mClock->setPosition(clockPosition, Renderer::getScreenHeight() * 0.9965 - mClock->getFont()->getHeight());
+		mClock->setSize(clockSize, 0);
 		mClock->setColor(0x777777FF);
 	}
 
@@ -139,6 +148,7 @@ void Window::reactivateGui()
 
 void Window::deinit(bool deinitRenderer)
 {
+	LOG(LogInfo) << "Window::deinit() - deinitRenderer: " << (deinitRenderer ? "true" : "false");
 	for (auto extra : mScreenExtras)
 		extra->onHide();
 
@@ -167,7 +177,7 @@ void Window::input(InputConfig* config, Input input)
 {
 	if (mScreenSaver) {
 		if (mScreenSaver->isScreenSaverActive() && Settings::getInstance()->getBool("ScreenSaverControls") &&
-			((Settings::getInstance()->getString("ScreenSaverBehavior") == "slideshow") || 			
+			((Settings::getInstance()->getString("ScreenSaverBehavior") == "slideshow") || 
 			(Settings::getInstance()->getString("ScreenSaverBehavior") == "random video")))
 		{
 			if(mScreenSaver->getCurrentGame() != NULL && (config->isMappedLike("right", input) || config->isMappedTo("start", input) || config->isMappedTo("select", input)))
@@ -280,27 +290,14 @@ void Window::update(int deltaTime)
 
 			if (clockTstruct.tm_year > 100) 
 			{ 
-				// Display the clock only if year is more than 1900+100 ; rpi have no internal clock and out of the networks, the date time information has no value */
+				// Display the clock only if year is more than 1900+100
 				// Visit http://en.cppreference.com/w/cpp/chrono/c/strftime for more information about date/time format
 				
-				char       clockBuf[32];
-
-#if WIN32
-				std::string oldLocale = setlocale(LC_TIME, nullptr);
-				setlocale(LC_TIME, "");
-
-				char       ampm[32];
-				strftime(ampm, sizeof(ampm), "%p", &clockTstruct);
-
-				if (!std::string(&ampm[0]).empty())
-					strftime(clockBuf, sizeof(clockBuf), "%I:%M %p", &clockTstruct);
+				std::string clockBuf;
+				if (Settings::getInstance()->getBool("ClockMode12"))
+					clockBuf = Utils::Time::timeToString(clockNow, "%I:%M %p");
 				else
-#endif
-					strftime(clockBuf, sizeof(clockBuf), "%H:%M", &clockTstruct);
-				
-#if WIN32
-				setlocale(LC_TIME, oldLocale.c_str());
-#endif
+					clockBuf = Utils::Time::timeToString(clockNow, "%H:%M");
 
 				mClock->setText(clockBuf);
 			}
@@ -451,7 +448,7 @@ void Window::renderLoadingScreen(std::string text, float percent, unsigned char 
 	}
 	
 	ImageComponent splash(this, true);
-	splash.setResize(Renderer::getScreenWidth() * 0.4f, 0.0f);	
+	splash.setResize(Renderer::getScreenWidth() * 0.4f, 0.0f);
 
 	if (mSplash != NULL)
 		splash.setImage(mSplash);
@@ -472,12 +469,6 @@ void Window::renderLoadingScreen(std::string text, float percent, unsigned char 
 	delete cache;
 
 	Renderer::swapBuffers();
-	
-#if defined(_WIN32)
-	// Avoid Window Freezing on Windows
-	SDL_Event event;
-	while (SDL_PollEvent(&event));
-#endif
 }
 
 void Window::loadCustomImageLoadingScreen(std::string imagePath, std::string customText)
@@ -575,16 +566,16 @@ void Window::setHelpPrompts(const std::vector<HelpPrompt>& prompts, const HelpSt
 				// yes, it has!
 
 				// can we combine? (dpad only)
-				if((it->first == "up/down" && addPrompts.at(mappedTo->second).first != "left/right") ||
-					(it->first == "left/right" && addPrompts.at(mappedTo->second).first != "up/down"))
-				{
+				//if((it->first == "up/down" && addPrompts.at(mappedTo->second).first != "left/right") ||
+					//(it->first == "left/right" && addPrompts.at(mappedTo->second).first != "up/down"))
+				//{
 					// yes!
-					addPrompts.at(mappedTo->second).first = "up/down/left/right";
+					//addPrompts.at(mappedTo->second).first = "up/down/left/right";
 					// don't need to add this to addPrompts since we just merged
-				}else{
+				//}else{
 					// no, we can't combine!
 					addPrompts.push_back(*it);
-				}
+				//}
 			}else{
 				// no, it hasn't!
 				mappedToSeenMap.emplace(it->second, (int)addPrompts.size());
@@ -713,11 +704,11 @@ void Window::processNotificationMessages()
 	NotificationMessage msg = mNotificationMessages.back();
 	mNotificationMessages.pop_back();
 
-	LOG(LogDebug) << "Notification message :" << msg.first.c_str();
+	LOG(LogDebug) << "Notification message : [\"" << msg.first.c_str() << "\", " << msg.second << "]";
 
 	if (mInfoPopup)
 		delete mInfoPopup;
-
+	// TODO translate msg fields
 	mInfoPopup = new GuiInfoPopup(this, msg.first, msg.second);
 }
 
@@ -792,9 +783,9 @@ void Window::onThemeChanged(const std::shared_ptr<ThemeData>& theme)
 	if (mClock)
 	{
 		mClock->setFont(Font::get(FONT_SIZE_SMALL));
-		mClock->setColor(0x777777FF);		
-		mClock->setHorizontalAlignment(ALIGN_RIGHT);
+		mClock->setColor(0x777777FF);
 		mClock->setVerticalAlignment(ALIGN_TOP);
+		mClock->setHorizontalAlignment(ALIGN_RIGHT);
 		
 		// if clock element does not exist in screen view -> <view name="screen"><text name="clock"> 
 		// skin it from system.helpsystem -> <view name="system"><helpsystem name="help"> )
@@ -807,9 +798,16 @@ void Window::onThemeChanged(const std::shared_ptr<ThemeData>& theme)
 			if (elem && (elem->has("fontPath") || elem->has("fontSize")))
 				mClock->setFont(Font::getFromTheme(elem, ThemeFlags::ALL, Font::get(FONT_SIZE_MEDIUM)));
 		}
-		
-		mClock->setPosition(Renderer::getScreenWidth()*0.94, Renderer::getScreenHeight()*0.9965 - mClock->getFont()->getHeight());
-		mClock->setSize(Renderer::getScreenWidth()*0.05, 0);
+
+		float clockPosition = Renderer::getScreenWidth() * 0.90f;
+		float clockSize = mClock->getFont()->getLetterWidth() * 7.f;
+		if (Settings::getInstance()->getBool("FullScreenMode"))
+		{
+			clockPosition = Renderer::getScreenWidth() * 0.89f;
+			clockSize = mClock->getFont()->getLetterWidth() * 7.f;
+		}
+		mClock->setPosition(clockPosition, Renderer::getScreenHeight() * 0.9965 - mClock->getFont()->getHeight());
+		mClock->setSize(clockSize, 0);
 
 		mClock->applyTheme(theme, "screen", "clock", ThemeFlags::ALL ^ (ThemeFlags::TEXT));
 	}

@@ -77,8 +77,9 @@ VideoComponent::VideoComponent(Window* window) :
 	// Setup the default configuration
 	mConfig.showSnapshotDelay 		= false;
 	mConfig.showSnapshotNoVideo		= false;
-	mConfig.snapshotSource = IMAGE;
-	mConfig.startDelay				= 0;
+	mConfig.showSnapshot					= false;
+	mConfig.snapshotSource				= IMAGE;
+	mConfig.startDelay						= 0;
 	if (mWindow->getGuiStackSize() > 1) {
 		topWindow(false);
 	}
@@ -104,7 +105,7 @@ void VideoComponent::onOriginChanged()
 
 void VideoComponent::onSizeChanged()
 {
-	// Update the embeded static image	
+	// Update the embeded static image
 	mStaticImage.onSizeChanged();
 }
 
@@ -187,8 +188,8 @@ void VideoComponent::renderSnapshot(const Transform4x4f& parentTrans)
 {
 	// This is the case where the video is not currently being displayed. Work out
 	// if we need to display a static image
-	if ((mConfig.showSnapshotNoVideo && mVideoPath.empty()) || ((mStartDelayed || mFadeIn < 1.0) && mConfig.showSnapshotDelay))
-	{		
+	if ((mConfig.showSnapshotNoVideo && mVideoPath.empty()) || ((mStartDelayed || mFadeIn < 1.0) && mConfig.showSnapshotDelay)) // force show video snapshot image
+	{
 		float t = 1.0 - mFadeIn;
 		t -= 1; // cubic ease out
 		t = Math::lerp(0, 1, t*t*t + 1);
@@ -198,7 +199,11 @@ void VideoComponent::renderSnapshot(const Transform4x4f& parentTrans)
 			return;
 		
 		mStaticImage.setOpacity((unsigned char)t);
-		mStaticImage.render(parentTrans);		
+		mStaticImage.render(parentTrans);
+	}
+	else if (mConfig.showSnapshot)
+	{
+		mStaticImage.render(parentTrans);
 	}
 }
 
@@ -498,6 +503,6 @@ void VideoComponent::setPlaylist(std::shared_ptr<IPlaylist> playList)
 
 void VideoComponent::setRoundCorners(float value) 
 { 
-	mRoundCorners = value; 
+	mRoundCorners = value;
 	mStaticImage.setRoundCorners(value);
 }

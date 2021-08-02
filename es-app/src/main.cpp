@@ -22,11 +22,7 @@
 #include <iostream>
 #include <time.h>
 
-#if defined(_WIN32)
-#include <Windows.h>
-#elif defined(__linux__)
 #include <unistd.h>
-#endif
 
 #include "resources/TextureData.h"
 #include <FreeImage.h>
@@ -34,6 +30,11 @@
 #include "NetworkThread.h"
 #include "scrapers/ThreadedScraper.h"
 #include "ImageIO.h"
+
+const std::string INVALID_HOME_PATH = "Invalid home path supplied.";
+const std::string INVALID_SCREEN_ROTATE = "Invalid screenrotate supplied.";
+const std::string ERROR_CONFIG_DIRECTORY = "Config directory could not be created!";
+const std::string WINDOW_FAILED_INITIALIZE = "Window failed to initialize!";
 
 bool scrape_cmdline = false;
 
@@ -44,12 +45,13 @@ static int gPlayVideoDuration = 0;
 
 void playVideo()
 {
+	LOG(LogInfo) << "MAIN::playVideo() - playing video splash \"" << gPlayVideo << '"';
 	Settings::getInstance()->setBool("AlwaysOnTop", true);
 
 	Window window;
-	if (!window.init(true))
+	if (!window.init(true, true))
 	{
-		LOG(LogError) << "Window failed to initialize!";
+		LOG(LogError) << WINDOW_FAILED_INITIALIZE;
 		return;
 	}
 
@@ -64,7 +66,7 @@ void playVideo()
 	vid.setMaxSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());
 
 	vid.setOnVideoEnded([&exitLoop]()
-	{ 
+	{
 		exitLoop = true;
 		return false;
 	});
@@ -74,8 +76,9 @@ void playVideo()
 	vid.onShow();
 	vid.topWindow(true);
 
-	int lastTime = SDL_GetTicks();	
+	int firstTime = SDL_GetTicks();
 	int totalTime = 0;
+	int deltaTime = 1000;
 
 	while (!exitLoop)
 	{
@@ -86,19 +89,23 @@ void playVideo()
 			do
 			{
 				if (event.type == SDL_QUIT)
+				{
+					LOG(LogInfo) << "MAIN::playVideo() - exit by SDL_QUIT";
 					return;
+				}
 			} while (SDL_PollEvent(&event));
 		}
 
-		int curTime = SDL_GetTicks();
-		int deltaTime = curTime - lastTime;
-
 		if (vid.isPlaying())
 		{
-			totalTime += deltaTime;
+			int curTime = SDL_GetTicks();
+			int totalTime = curTime - firstTime;
 
-			if (gPlayVideoDuration > 0 && totalTime > gPlayVideoDuration * 100)
+			if (gPlayVideoDuration > 0 && totalTime > gPlayVideoDuration )
+			{
+				LOG(LogInfo) << "MAIN::playVideo() - exit by videoduration";
 				break;
+			}
 		}
 
 		Transform4x4f transform = Transform4x4f::Identity();
@@ -107,12 +114,12 @@ void playVideo()
 
 		Renderer::swapBuffers();
 	}
-
 	window.deinit(true);
 }
 
 bool parseArgs(int argc, char* argv[])
 {
+	LOG(LogInfo) << "MAIN::parseArgs() - parsing arguments, number: " << std::to_string(argc);
 	Utils::FileSystem::setExePath(argv[0]);
 	// We need to process --home before any call to Settings::getInstance(), because settings are loaded from homepath
 	for (int i = 1; i < argc; i++)
@@ -121,7 +128,8 @@ bool parseArgs(int argc, char* argv[])
 		{
 			if (i >= argc - 1)
 			{
-				std::cerr << "Invalid home path supplied.";
+				std::cerr << INVALID_HOME_PATH;
+				LOG(LogError) << "MAIN::parseArgs()" << INVALID_HOME_PATH;
 				return false;
 			}
 
@@ -129,81 +137,26 @@ bool parseArgs(int argc, char* argv[])
 			break;
 		}
 	}
-	   
+
 	for(int i = 1; i < argc; i++)
 	{
+		LOG(LogInfo) << "MAIN::parseArgs() - execution argument: " << argv[i];
 		if (strcmp(argv[i], "--videoduration") == 0)
 		{
 			gPlayVideoDuration = atoi(argv[i + 1]);
 			i++; // skip the argument value
 		}
-		else
-		if (strcmp(argv[i], "--video") == 0)
-		{			
+		else if (strcmp(argv[i], "--video") == 0)
+		{
 			gPlayVideo = argv[i + 1];
 			i++; // skip the argument value
-		}
-		else
-		if (strcmp(argv[i], "--monitor") == 0)
-		{
-			if (i >= argc - 1)
-			{
-				std::cerr << "Invalid monitor supplied.";
-				return false;
-			}
-
-			int monitorId = atoi(argv[i + 1]);		
-			i++; // skip the argument value
-			Settings::getInstance()->setInt("MonitorID", monitorId);
-		}
-		else if (strcmp(argv[i], "--resolution") == 0)
-		{
-			if(i >= argc - 2)
-			{
-				std::cerr << "Invalid resolution supplied.";
-				return false;
-			}
-
-			int width = atoi(argv[i + 1]);
-			int height = atoi(argv[i + 2]);
-			i += 2; // skip the argument value
-			Settings::getInstance()->setInt("WindowWidth", width);
-			Settings::getInstance()->setInt("WindowHeight", height);
-			Settings::getInstance()->setBool("FullscreenBorderless", false);
-		}
-		else if (strcmp(argv[i], "--screensize") == 0)
-		{
-			if (i >= argc - 2)
-			{
-				std::cerr << "Invalid screensize supplied.";
-				return false;
-			}
-
-			int width = atoi(argv[i + 1]);
-			int height = atoi(argv[i + 2]);
-			i += 2; // skip the argument value
-			Settings::getInstance()->setInt("ScreenWidth", width);
-			Settings::getInstance()->setInt("ScreenHeight", height);
-		}
-		else if (strcmp(argv[i], "--screenoffset") == 0)
-		{
-			if(i >= argc - 2)
-			{
-				std::cerr << "Invalid screenoffset supplied.";
-				return false;
-			}
-
-			int x = atoi(argv[i + 1]);
-			int y = atoi(argv[i + 2]);
-			i += 2; // skip the argument value
-			Settings::getInstance()->setInt("ScreenOffsetX", x);
-			Settings::getInstance()->setInt("ScreenOffsetY", y);
 		}
 		else if (strcmp(argv[i], "--screenrotate") == 0)
 		{
 			if (i >= argc - 1)
 			{
-				std::cerr << "Invalid screenrotate supplied.";
+				std::cerr << INVALID_SCREEN_ROTATE;
+				LOG(LogError) << "MAIN::parseArgs() - " << INVALID_SCREEN_ROTATE;
 				return false;
 			}
 
@@ -238,20 +191,11 @@ bool parseArgs(int argc, char* argv[])
 		else if (strcmp(argv[i], "--debug") == 0)
 		{
 			Settings::getInstance()->setBool("Debug", true);
-			Settings::getInstance()->setBool("HideConsole", false);
 			Log::setReportingLevel(LogDebug);
-		}
-		else if (strcmp(argv[i], "--fullscreen-borderless") == 0)
-		{
-			Settings::getInstance()->setBool("FullscreenBorderless", true);
 		}
 		else if (strcmp(argv[i], "--fullscreen") == 0)
 		{
-			Settings::getInstance()->setBool("FullscreenBorderless", false);
-		}
-		else if (strcmp(argv[i], "--windowed") == 0 || strcmp(argv[i], "-windowed") == 0)
-		{
-			Settings::getInstance()->setBool("Windowed", true);
+   Settings::getInstance()->setBool("FullScreenMode", true);
 		}
 		else if (strcmp(argv[i], "--vsync") == 0 || strcmp(argv[i], "-vsync") == 0)
 		{			
@@ -296,20 +240,11 @@ bool parseArgs(int argc, char* argv[])
 		}
 		else if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0)
 		{
-#ifdef WIN32
-			// This is a bit of a hack, but otherwise output will go to nowhere
-			// when the application is compiled with the "WINDOWS" subsystem (which we usually are).
-			// If you're an experienced Windows programmer and know how to do this
-			// the right way, please submit a pull request!
-			AttachConsole(ATTACH_PARENT_PROCESS);
-			freopen("CONOUT$", "wb", stdout);
-#endif
 			std::cout <<
 				"EmulationStation, a graphical front-end for ROM browsing.\n"
 				"Written by Alec \"Aloshi\" Lofquist.\n"
 				"Version " << PROGRAM_VERSION_STRING << ", built " << PROGRAM_BUILT_STRING << "\n\n"
 				"Command line arguments:\n"
-				"--resolution [width] [height]	try and force a particular resolution\n"
 				"--gamelist-only			skip automatic game search, only read from gamelist.xml\n"
 				"--ignore-gamelist		ignore the gamelist (useful for troubleshooting)\n"
 				"--draw-framerate		display the framerate\n"
@@ -317,12 +252,14 @@ bool parseArgs(int argc, char* argv[])
 				"--no-splash			don't show the splash screen\n"
 				"--debug				more logging, show console on Windows\n"
 				"--scrape			scrape using command line interface\n"
-				"--windowed			not fullscreen, should be used with --resolution\n"
 				"--vsync [1/on or 0/off]		turn vsync on or off (default is on)\n"
 				"--max-vram [size]		Max VRAM to use in Mb before swapping. 0 for unlimited\n"
 				"--force-kid		Force the UI mode to be Kid\n"
 				"--force-kiosk		Force the UI mode to be Kiosk\n"
 				"--force-disable-filters		Force the UI to ignore applied filters in gamelist\n"
+				"--video		path to the video spalsh\n"
+				"--videoduration		the video spalsh durarion in milliseconds\n"
+				"--fullscreen		use fullscreen  mode\n"
 				"--help, -h			summon a sentient, angry tuba\n\n"
 				"More information available in README.md.\n";
 			return false; //exit after printing help
@@ -339,11 +276,12 @@ bool verifyHomeFolderExists()
 	std::string configDir = home + "/.emulationstation";
 	if(!Utils::FileSystem::exists(configDir))
 	{
-		std::cout << "Creating config directory \"" << configDir << "\"\n";
+		LOG(LogInfo) << "MAIN::verifyHomeFolderExists() - Creating config directory \"" << configDir << '"';
 		Utils::FileSystem::createDirectory(configDir);
 		if(!Utils::FileSystem::exists(configDir))
 		{
-			std::cerr << "Config directory could not be created!\n";
+			std::cerr << ERROR_CONFIG_DIRECTORY << '\n';
+			LOG(LogError) << "MAIN::verifyHomeFolderExists() - " << ERROR_CONFIG_DIRECTORY;
 			return false;
 		}
 	}
@@ -360,7 +298,7 @@ bool loadSystemConfigFile(Window* window, const char** errorString)
 
 	if (!SystemData::loadConfig(window))
 	{
-		LOG(LogError) << "Error while parsing systems configuration file!";
+		LOG(LogError) << "MAIN::loadSystemConfigFile() - Error while parsing systems configuration file!";
 
 		*errorString = "IT LOOKS LIKE YOUR SYSTEMS CONFIGURATION FILE HAS NOT BEEN SET UP OR IS INVALID. YOU'LL NEED TO DO THIS BY HAND, UNFORTUNATELY.\n\n"
 			"VISIT EMULATIONSTATION.ORG FOR MORE INFORMATION.";
@@ -370,7 +308,7 @@ bool loadSystemConfigFile(Window* window, const char** errorString)
 
 	if(SystemData::sSystemVector.size() == 0)
 	{
-		LOG(LogError) << "No systems found! Does at least one system have a game present? (check that extensions match!)\n(Also, make sure you've updated your es_systems.cfg for XML!)";
+		LOG(LogError) << "MAIN::loadSystemConfigFile() - No systems found! Does at least one system have a game present? (check that extensions match!)\n(Also, make sure you've updated your es_systems.cfg for XML!)";
 
 		*errorString = "WE CAN'T FIND ANY SYSTEMS!\n"
 			"CHECK THAT YOUR PATHS ARE CORRECT IN THE SYSTEMS CONFIGURATION FILE, "
@@ -399,20 +337,18 @@ void processAudioTitles(Window* window)
 	}
 }
 
-#include "ApiSystem.h"
+//#include "ApiSystem.h"
 
 int main(int argc, char* argv[])
 {
 	srand((unsigned int)time(NULL));
 
-#if WIN32
-	std::locale::global(std::locale("en-US"));
-	setlocale(LC_NUMERIC, "C");
-	setlocale(LC_TIME, "C");
-	setlocale(LC_MONETARY, "C");
-#else
 	std::locale::global(std::locale("C"));
-#endif
+
+	//start the logger
+	Log::setupReportingLevel();
+	Log::init();
+	LOG(LogInfo) << "MAIN::main() - EmulationStation - v" << PROGRAM_VERSION_STRING << ", built " << PROGRAM_BUILT_STRING;
 
 	if(!parseArgs(argc, argv))
 		return 0;
@@ -422,37 +358,6 @@ int main(int argc, char* argv[])
 	return 0;
 	*/
 	// only show the console on Windows if HideConsole is false
-#ifdef WIN32
-	// MSVC has a "SubSystem" option, with two primary options: "WINDOWS" and "CONSOLE".
-	// In "WINDOWS" mode, no console is automatically created for us.  This is good,
-	// because we can choose to only create the console window if the user explicitly
-	// asks for it, preventing it from flashing open and then closing.
-	// In "CONSOLE" mode, a console is always automatically created for us before we
-	// enter main. In this case, we can only hide the console after the fact, which
-	// will leave a brief flash.
-	// TL;DR: You should compile ES under the "WINDOWS" subsystem.
-	// I have no idea how this works with non-MSVC compilers.
-	if(!Settings::getInstance()->getBool("HideConsole"))
-	{
-		// we want to show the console
-		// if we're compiled in "CONSOLE" mode, this is already done.
-		// if we're compiled in "WINDOWS" mode, no console is created for us automatically;
-		// the user asked for one, so make one and then hook stdin/stdout/sterr up to it
-		if(AllocConsole()) // should only pass in "WINDOWS" mode
-		{
-			freopen("CONIN$", "r", stdin);
-			freopen("CONOUT$", "wb", stdout);
-			freopen("CONOUT$", "wb", stderr);
-		}
-	}else{
-		// we want to hide the console
-		// if we're compiled with the "WINDOWS" subsystem, this is already done.
-		// if we're compiled with the "CONSOLE" subsystem, a console is already created;
-		// it'll flash open, but we hide it nearly immediately
-		if(GetConsoleWindow()) // should only pass in "CONSOLE" mode
-			ShowWindow(GetConsoleWindow(), SW_HIDE);
-	}
-#endif
 
 	// call this ONLY when linking with FreeImage as a static library
 #ifdef FREEIMAGE_LIB
@@ -468,11 +373,6 @@ int main(int argc, char* argv[])
 	//if ~/.emulationstation doesn't exist and cannot be created, bail
 	if(!verifyHomeFolderExists())
 		return 1;
-
-	//start the logger
-	Log::setupReportingLevel();
-	Log::init();	
-	LOG(LogInfo) << "EmulationStation - v" << PROGRAM_VERSION_STRING << ", built " << PROGRAM_BUILT_STRING;
 
 	//always close the log on exit
 	atexit(&onExit);
@@ -493,9 +393,9 @@ int main(int argc, char* argv[])
 
 	if (!scrape_cmdline)
 	{
-		if(!window.init(true))
+		if(!window.init(true, Settings::getInstance()->getBool("FullScreenMode")))
 		{
-			LOG(LogError) << "Window failed to initialize!";
+			LOG(LogError) << WINDOW_FAILED_INITIALIZE;
 			return 1;
 		}
 
@@ -509,7 +409,7 @@ int main(int argc, char* argv[])
 		// something went terribly wrong
 		if (errorMsg == NULL)
 		{
-			LOG(LogError) << "Unknown error occured while parsing system config file.";
+			LOG(LogError) << "MAIN::main() - Unknown error occured while parsing system config file.";
 
 			if (!scrape_cmdline)
 				Renderer::deinit();
@@ -519,7 +419,7 @@ int main(int argc, char* argv[])
 
 		// we can't handle es_systems.cfg file problems inside ES itself, so display the error message then quit
 		window.pushGui(new GuiMsgBox(&window,
-			errorMsg,
+			_(errorMsg),
 			_("QUIT"), [] {
 				SDL_Event* quit = new SDL_Event();
 				quit->type = SDL_QUIT;
@@ -530,11 +430,6 @@ int main(int argc, char* argv[])
 	//run the command line scraper then quit
 	if (scrape_cmdline)
 		return run_scraper_cmdline();
-
-#if WIN32
-	if (Settings::getInstance()->getBool("updates.enabled"))
-		NetworkThread* nthread = new NetworkThread(&window);
-#endif
 
 	//dont generate joystick events while we're loading (hopefully fixes "automatically started emulator" bug)
 	SDL_JoystickEventState(SDL_DISABLE);
@@ -561,25 +456,32 @@ int main(int argc, char* argv[])
 	SDL_JoystickEventState(SDL_ENABLE);
 
 	window.endRenderLoadingScreen();
+/*
+	LOG(LogInfo) << "MAIN::main() - PreloadVlcPlayer(): " << (Settings::getInstance()->getBool("PreloadVlcPlayer") ? "true" : "false");
+	if (Settings::getInstance()->getBool("PreloadVlcPlayer"))
+	{
+		//Settings::getInstance()->getBool("PreloadVlcPlayer")
+		std::string path = Settings::getInstance()->getString("PreloadVlcVideo");
+		LOG(LogDebug) << "MAIN::main() - start video ScreenSaver " << path.c_str();
+		if (!path.empty() && Utils::FileSystem::exists(path))
+		{
+			std::shared_ptr<VideoScreenSaver> mVideoScreensaver = std::make_shared<VideoScreenSaver>(&window);
+			//FileData* game = new FileData();
+			//mVideoScreensaver->setGame(game);
+			mVideoScreensaver->setVideo(path);
+			Transform4x4f transform = Transform4x4f::Identity();
+			// Render black background
+			Renderer::setMatrix(Transform4x4f::Identity());
+			Renderer::drawRect(0.0f, 0.0f, Renderer::getScreenWidth(), Renderer::getScreenHeight(), 0x000000FF, 0x000000FF);
+			mVideoScreensaver->render(transform);
 
+			//Settings::getInstance()->getString("ScreenSaverGameInfo")
+			//Settings::getInstance()->getBool("StretchVideoOnScreenSaver")
+		}
+	}
+*/
 	if (Settings::getInstance()->getBool("audio.bgmusic"))
 		AudioManager::getInstance()->playRandomMusic();
-
-#ifdef WIN32	
-	DWORD displayFrequency = 60;
-
-	DEVMODE lpDevMode;
-	memset(&lpDevMode, 0, sizeof(DEVMODE));
-	lpDevMode.dmSize = sizeof(DEVMODE);
-	lpDevMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFLAGS | DM_DISPLAYFREQUENCY;
-	lpDevMode.dmDriverExtra = 0;
-
-	if (EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &lpDevMode) != 0) {
-		displayFrequency = lpDevMode.dmDisplayFrequency; // default value if cannot retrieve from user settings.
-	}
-	
-	int timeLimit = (1000 / displayFrequency) - 6;	 // Margin for vsync
-#endif
 
 	int lastTime = SDL_GetTicks();
 	int ps_time = SDL_GetTicks();
@@ -644,27 +546,7 @@ int main(int argc, char* argv[])
 
 		int processDuration = SDL_GetTicks() - processStart;
 		
-#ifdef WIN32		
-		if (processDuration < timeLimit)
-		{
-			int timeToWait = timeLimit - processDuration;
-			if (timeToWait > 0 && timeToWait < 100)
-				Sleep(timeToWait);
-		}
-
-		int swapStart = SDL_GetTicks();
-#endif
-
-		Renderer::swapBuffers();				
-/*
-#ifdef WIN32	
-		int swapDuration = SDL_GetTicks() - swapStart;
-		
-		char buffer[100];
-		sprintf_s(buffer, "px=%d swap=%d, sleep=%d\n", processDuration, swapDuration, timeLimit - processDuration);
-		OutputDebugStringA(buffer);
-#endif
-*/
+		Renderer::swapBuffers();
 	}
 
 	ThreadedScraper::stop();
@@ -689,7 +571,7 @@ int main(int argc, char* argv[])
 
 	processQuitMode();
 
-	LOG(LogInfo) << "EmulationStation cleanly shutting down.";
+	LOG(LogInfo) << "MAIN::main() - EmulationStation cleanly shutting down.";
 
 	return 0;
 }

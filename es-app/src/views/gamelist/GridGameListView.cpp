@@ -9,9 +9,6 @@
 #include "Window.h"
 #include "guis/GuiGamelistOptions.h"
 
-#ifdef _RPI_
-#include "components/VideoPlayerComponent.h"
-#endif
 #include "components/VideoVlcComponent.h"
 
 GridGameListView::GridGameListView(Window* window, FolderData* root, const std::shared_ptr<ThemeData>& theme, std::string themeName, Vector2f gridSize) :
@@ -100,13 +97,8 @@ void GridGameListView::createVideo()
 	const float padding = 0.01f;
 
 	// video
-// Create the correct type of video window
-#ifdef _RPI_
-	if (Settings::getInstance()->getBool("VideoOmxPlayer"))
-		mVideo = new VideoPlayerComponent(mWindow, "");
-	else
-#endif
-		mVideo = new VideoVlcComponent(mWindow,"");
+	// Create the correct type of video window
+	mVideo = new VideoVlcComponent(mWindow,"");
 
 	mVideo->setSnapshotSource(IMAGE);
 	mVideo->setOrigin(0.5f, 0.5f);
@@ -785,7 +777,7 @@ std::vector<HelpPrompt> GridGameListView::getHelpPrompts()
 	if (mRoot->getSystem()->isGameSystem() && !UIModeController::getInstance()->isUIModeKid())
 	{
 		std::string prompt = CollectionSystemManager::get()->getEditingCollection();
-		prompts.push_back(HelpPrompt("y", prompt));
+		prompts.push_back(HelpPrompt("y", _(prompt)));
 	}
 	return prompts;
 }
