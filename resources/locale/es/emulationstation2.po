@@ -1455,6 +1455,10 @@ msgid "game time"
 msgstr "tiempo jugado"
 
 #:
+msgid "Game time"
+msgstr "Tiempo jugado"
+
+#:
 msgid "how long the game has been played in total (seconds)"
 msgstr "tiempo total jugado (segundos)"
 
