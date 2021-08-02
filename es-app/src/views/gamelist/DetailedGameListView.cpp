@@ -2,15 +2,9 @@
 
 #include "animations/LambdaAnimation.h"
 
-#ifdef _RPI_
-#include "components/VideoPlayerComponent.h"
-#endif
 #include "components/VideoVlcComponent.h"
 #include "utils/FileSystemUtil.h"
 #include "views/ViewController.h"
-#ifdef _RPI_
-#include "Settings.h"
-#endif
 
 DetailedGameListView::DetailedGameListView(Window* window, FolderData* root) :
 	BasicGameListView(window, root), 
@@ -137,13 +131,8 @@ void DetailedGameListView::createVideo()
 	const float padding = 0.01f;
 
 	// video
-// Create the correct type of video window
-#ifdef _RPI_
-	if (Settings::getInstance()->getBool("VideoOmxPlayer"))
-		mVideo = new VideoPlayerComponent(mWindow, "");
-	else
-#endif
-		mVideo = new VideoVlcComponent(mWindow, "");
+	// Create the correct type of video window
+	mVideo = new VideoVlcComponent(mWindow, "");
 
 	// Default is IMAGE in Recalbox themes -> video view does not exist
 	mVideo->setSnapshotSource(IMAGE);

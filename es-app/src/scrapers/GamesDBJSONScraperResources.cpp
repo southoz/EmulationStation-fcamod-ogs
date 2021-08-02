@@ -7,6 +7,7 @@
 
 #include "scrapers/GamesDBJSONScraperResources.h"
 #include "utils/FileSystemUtil.h"
+#include "utils/StringUtil.h"
 
 
 #include <rapidjson/document.h>
@@ -103,7 +104,7 @@ void TheGamesDBJSONRequestResources::ensureResources()
 			gamesdb_publishers_resource_request.reset(nullptr);
 		}
 		if (gamesdb_genres_resource_request && saveResource(gamesdb_genres_resource_request.get(), gamesdb_new_genres_map,
-												   "genres", genFilePath(GENRES_JSON_FILE)))
+														"genres", genFilePath(GENRES_JSON_FILE)))
 		{
 			gamesdb_genres_resource_request.reset(nullptr);
 		}
@@ -137,7 +138,8 @@ bool TheGamesDBJSONRequestResources::saveResource(HttpReq* req, std::unordered_m
 	}
 	if (req->status() != HttpReq::REQ_SUCCESS)
 	{
-		LOG(LogError) << "Resource request for " << file_name << " failed:\n\t" << req->getErrorMsg();
+		LOG(LogError) << "GamesDBJSONRequestResources::saveResource():141 - Resource request for " << file_name << " failed:\n\t" << req->getErrorMsg();
+		LOG(LogInfo) << "GamesDBJSONRequestResources::saveResource():142 - Request Error Message for traslations: " << Utils::String::showSpecialCharacters(req->getErrorMsg());
 		return true; // Request failed, resetting request.
 	}
 

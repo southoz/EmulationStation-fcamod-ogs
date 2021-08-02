@@ -27,13 +27,10 @@ namespace Utils
 		std::string  vectorToCommaString(stringVector _vector);
 		std::string  format             (const char* _string, ...);
 		std::string  scramble           (const std::string& _input, const std::string& key);
-		std::vector<std::string> split	(const std::string& s, char seperator);	
+		std::vector<std::string> split  (const std::string& s, char seperator);
 		std::vector<std::string> splitAny(const std::string& s, const std::string& seperator);
-
-#if defined(_WIN32)
-		const std::string convertFromWideString(const std::wstring wstring);
-		const std::wstring convertToWideString(const std::string string);
-#endif
+		const std::string hiddenSpecialCharacters(const std::string msg);
+		const std::string showSpecialCharacters(const std::string msg);
 	} // String::
 
 } // Utils::

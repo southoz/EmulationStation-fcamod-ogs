@@ -1,0 +1,13 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<!-- Created using Krita: https://krita.org -->
+<svg xmlns="http://www.w3.org/2000/svg" 
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:krita="http://krita.org/namespaces/svg/krita"
+    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+    width="15.36pt"
+    height="15.36pt"
+    viewBox="0 0 15.36 15.36">
+<defs/>
+<path id="outline_up" transform="matrix(0.24 0 0 0.24 5.28 0.48)" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="butt" stroke-linejoin="round" d="M0 21.5L0 4C0 1.79086 1.79086 8.88178e-16 4 0L16 0C18.2091 -2.22045e-16 20 1.79086 20 4L20 21.5"/><path id="outline_right" transform="matrix(0.24 0 0 0.24 9.72 5.28)" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="butt" stroke-linejoin="round" d="M0 0L17.5 0C19.7091 0 21.5 1.79086 21.5 4L21.5 16C21.5 18.2091 19.7091 20 17.5 20L0 20"/><path id="outline_down" transform="matrix(0.24 0 0 0.24 5.28 9.72)" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="butt" stroke-linejoin="round" d="M0 0L0 17.5C0 19.7091 1.79086 21.5 4 21.5L16 21.5C18.2091 21.5 20 19.7091 20 17.5L20 0"/><path id="outline_left" transform="matrix(0.24 0 0 0.24 0.48 5.28)" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="butt" stroke-linejoin="round" d="M21.5 0L4 0C1.79086 0 -2.22045e-16 1.79086 0 4L2.22045e-16 16C1.11022e-15 18.2091 1.79086 20 4 20L21.5 20"/><path id="dpad_up" transform="matrix(0.24 0 0 0.24 6.48 1.488)" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="butt" stroke-linejoin="round" d="M0 7.8L10 7.8L5 0Z"/><path id="dpad_right" transform="matrix(0.24 0 0 0.24 10.4929156626506 5.99595180722891)" fill="#ffffff" stroke="#ffffff" stroke-width="2" stroke-linecap="butt" stroke-linejoin="round" d="M0 0L0 14.188L14.0795 7.09398Z"/><path id="dpad_down" transform="matrix(0.24 0 0 0.24 6.48 12)" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="butt" stroke-linejoin="round" d="M0 0L10 0L5 7.8Z"/><path id="dpad_left" transform="matrix(0.24 0 0 0.24 1.488 6.48)" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="butt" stroke-linejoin="round" d="M7.8 0L7.8 10L0 5Z"/><circle id="dpad_thumb" transform="matrix(0.24 0 0 0.24 6.48 6.48)" r="5" cx="5" cy="5" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="butt" stroke-linejoin="round"/>
+</svg>

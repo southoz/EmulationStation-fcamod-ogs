@@ -23,6 +23,7 @@
 #include "BlankIcon.h"
 #include "ArkOS.h"
 
+
 static go2_input_t* input = nullptr;
 //static go2_surface_t* titlebarSurface = nullptr;
 //static unsigned int frame = 0;
@@ -308,12 +309,6 @@ namespace Renderer
 
 	void swapBuffers()
 	{
-#ifdef WIN32		
-		glFlush();
-		glFinish();
-		Sleep(0);
-#endif
-
 		//SDL_GL_SwapWindow(getSDLWindow());
 
 		if (context)
@@ -585,22 +580,11 @@ namespace Renderer
 				int dst_stride = go2_surface_stride_get(titlebarSurface);
 
 				int brightnessIndex = 0;
-				int brightness = 0;
-				int fd;
-				char buffer[10];
-				fd = open("/sys/class/backlight/backlight/brightness", O_RDONLY);
-				if (fd > 0)
-				{
-					memset(buffer, 0, 10);
-					ssize_t count = read(fd, buffer, 10);
-					if( count > 0 )
-					{
-						brightness = atoi(buffer);
-						brightness = brightness*100/255;
-					}
-					close(fd);
-				}
+				int brightness = 50;
 
+				try {
+					brightness = (int) go2_display_backlight_get(NULL);
+				} catch (...) {}
 
 				if (brightness == 0)
 				{
@@ -690,7 +674,7 @@ namespace Renderer
 				{
 					brightnessIndex = 20;
 				}
-				
+
 				src += (brightnessIndex * 16 * src_stride);
 				dst += (64) * sizeof(short);
 
@@ -836,10 +820,6 @@ namespace Renderer
 						GO2_ROTATION_DEGREES_270);
 			go2_context_surface_unlock(context, surface);
 		}
-
-#ifdef WIN32		
-		Sleep(0);
-#endif
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		//printf("Frame %d\n", frame++);

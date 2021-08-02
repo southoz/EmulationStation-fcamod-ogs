@@ -2,6 +2,7 @@
 
 #include "resources/Font.h"
 #include "utils/StringUtil.h"
+#include "EsLocale.h"
 
 DateTimeEditComponent::DateTimeEditComponent(Window* window, DisplayMode dispMode) : GuiComponent(window),
 	mEditing(false), mEditIndex(0), mDisplayMode(dispMode), mRelativeUpdateAccumulator(0),
@@ -45,6 +46,7 @@ bool DateTimeEditComponent::input(InputConfig* config, Input input)
 			}
 		}
 
+		updateHelpPrompts();
 		return true;
 	}
 
@@ -55,6 +57,7 @@ bool DateTimeEditComponent::input(InputConfig* config, Input input)
 			mEditing = false;
 			mTime = mTimeBeforeEdit;
 			updateTextCache();
+			updateHelpPrompts();
 			return true;
 		}
 
@@ -206,7 +209,7 @@ std::string DateTimeEditComponent::getDisplayString(DisplayMode mode) const
 		break;
 	case DISP_DATE_TIME:
 		if(mTime.getTime() == 0)
-			return "unknown";
+			return _("unknown");
 		fmt = "%m/%d/%Y %H:%M:%S";
 		break;
 	case DISP_RELATIVE_TO_NOW:
@@ -221,13 +224,13 @@ std::string DateTimeEditComponent::getDisplayString(DisplayMode mode) const
 			char buf[64];
 
 			if(dur.getDays() > 0)
-				sprintf(buf, "%d day%s ago", dur.getDays(), (dur.getDays() > 1) ? "s" : "");
+				snprintf(buf, 64, EsLocale::nGetText("%i day ago", "%i days ago", dur.getDays()).c_str(), dur.getDays());
 			else if(dur.getHours() > 0)
-				sprintf(buf, "%d hour%s ago", dur.getHours(), (dur.getHours() > 1) ? "s" : "");
+				snprintf(buf, 64, EsLocale::nGetText("%i hour ago", "%i hours ago", dur.getHours()).c_str(), dur.getHours());
 			else if(dur.getMinutes() > 0)
-				sprintf(buf, "%d minute%s ago", dur.getMinutes(), (dur.getMinutes() > 1) ? "s" : "");
+				snprintf(buf, 64, EsLocale::nGetText("%i min ago", "%i mins ago", dur.getMinutes()).c_str(), dur.getMinutes());
 			else
-				sprintf(buf, "%d second%s ago", dur.getSeconds(), (dur.getSeconds() > 1) ? "s" : "");
+				snprintf(buf, 64, EsLocale::nGetText("%i sec ago", "%i secs ago", dur.getSeconds()).c_str(), dur.getSeconds());
 
 			return std::string(buf);
 		}
@@ -339,4 +342,20 @@ void DateTimeEditComponent::applyTheme(const std::shared_ptr<ThemeData>& theme, 
 		setUppercase(elem->get<bool>("forceUppercase"));
 
 	setFont(Font::getFromTheme(elem, properties, mFont));
+}
+
+std::vector<HelpPrompt> DateTimeEditComponent::getHelpPrompts()
+{
+	std::vector<HelpPrompt> prompts;
+	if (mEditing)
+	{
+		prompts.push_back(HelpPrompt("left/right", _("MOVE CURSOR"))); // batocera
+		prompts.push_back(HelpPrompt("up/down", _("CHANGE VALUE"))); // batocera
+		prompts.push_back(HelpPrompt("b", _("SKIP")));
+		prompts.push_back(HelpPrompt("a", _("ACCEPT RESULT")));
+	}
+	else {
+		prompts.push_back(HelpPrompt("a", _("EDIT")));
+	}
+	return prompts;
 }

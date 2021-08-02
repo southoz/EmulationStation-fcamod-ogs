@@ -14,14 +14,14 @@ FileFilterIndex::FileFilterIndex()
 {
 	clearAllFilters();
 	FilterDataDecl filterDecls[] = {
-		//type 				//allKeys 				//filteredBy 		//filteredKeys 				//primaryKey 	//hasSecondaryKey 	//secondaryKey 	//menuLabel
-		{ FAVORITES_FILTER, &favoritesIndexAllKeys, &filterByFavorites,	&favoritesIndexFilteredKeys,"favorite",		false,				"",				"FAVORITES"	},
-		{ GENRE_FILTER, 	&genreIndexAllKeys, 	&filterByGenre,		&genreIndexFilteredKeys, 	"genre",		true,				"genre",		"GENRE"	},
-		{ PLAYER_FILTER, 	&playersIndexAllKeys, 	&filterByPlayers,	&playersIndexFilteredKeys, 	"players",		false,				"",				"PLAYERS"	},
-		{ PUBDEV_FILTER, 	&pubDevIndexAllKeys, 	&filterByPubDev,	&pubDevIndexFilteredKeys, 	"developer",	true,				"publisher",	"PUBLISHER / DEVELOPER"	},
-		{ RATINGS_FILTER, 	&ratingsIndexAllKeys, 	&filterByRatings,	&ratingsIndexFilteredKeys, 	"rating",		false,				"",				"RATING"	},
-		{ KIDGAME_FILTER, 	&kidGameIndexAllKeys, 	&filterByKidGame,	&kidGameIndexFilteredKeys, 	"kidgame",		false,				"",				"KIDGAME" },
-	//	{ HIDDEN_FILTER, 	&hiddenIndexAllKeys, 	&filterByHidden,	&hiddenIndexFilteredKeys, 	"hidden",		false,				"",				"HIDDEN" }
+		//type              //allKeys               //filteredBy        //filteredKeys               //primaryKey  //hasSecondaryKey  //secondaryKey  //menuLabel
+		{ FAVORITES_FILTER, &favoritesIndexAllKeys, &filterByFavorites, &favoritesIndexFilteredKeys, "favorite",   false,             "",             "FAVORITES" },
+		{ GENRE_FILTER,     &genreIndexAllKeys,     &filterByGenre,     &genreIndexFilteredKeys,     "genre",      true,              "genre",        "GENRE" },
+		{ PLAYER_FILTER,    &playersIndexAllKeys,   &filterByPlayers,   &playersIndexFilteredKeys,   "players",    false,             "",             "PLAYERS" },
+		{ PUBDEV_FILTER,    &pubDevIndexAllKeys,    &filterByPubDev,    &pubDevIndexFilteredKeys,    "developer",  true,              "publisher",    "PUBLISHER / DEVELOPER" },
+		{ RATINGS_FILTER,   &ratingsIndexAllKeys,   &filterByRatings,   &ratingsIndexFilteredKeys,   "rating",     false,             "",             "RATING" },
+		{ KIDGAME_FILTER,   &kidGameIndexAllKeys,   &filterByKidGame,   &kidGameIndexFilteredKeys,   "kidgame",    false,             "",             "KIDGAME" },
+		//{ HIDDEN_FILTER,    &hiddenIndexAllKeys,    &filterByHidden,    &hiddenIndexFilteredKeys,     "hidden",    false,             "",             "HIDDEN" }
 	};
 
 	filterDataDecl = std::vector<FilterDataDecl>(filterDecls, filterDecls + sizeof(filterDecls) / sizeof(filterDecls[0]));
@@ -46,13 +46,13 @@ void FileFilterIndex::importIndex(FileFilterIndex* indexToImport)
 	};
 
 	IndexImportStructure indexStructDecls[] = {
-		{ &genreIndexAllKeys, &(indexToImport->genreIndexAllKeys) },
-		{ &playersIndexAllKeys, &(indexToImport->playersIndexAllKeys) },
-		{ &pubDevIndexAllKeys, &(indexToImport->pubDevIndexAllKeys) },
-		{ &ratingsIndexAllKeys, &(indexToImport->ratingsIndexAllKeys) },
+		{ &genreIndexAllKeys,     &(indexToImport->genreIndexAllKeys) },
+		{ &playersIndexAllKeys,   &(indexToImport->playersIndexAllKeys) },
+		{ &pubDevIndexAllKeys,    &(indexToImport->pubDevIndexAllKeys) },
+		{ &ratingsIndexAllKeys,   &(indexToImport->ratingsIndexAllKeys) },
 		{ &favoritesIndexAllKeys, &(indexToImport->favoritesIndexAllKeys) },
-	//	{ &hiddenIndexAllKeys, &(indexToImport->hiddenIndexAllKeys) },
-		{ &kidGameIndexAllKeys, &(indexToImport->kidGameIndexAllKeys) },
+		//{ &hiddenIndexAllKeys,    &(indexToImport->hiddenIndexAllKeys) },
+		{ &kidGameIndexAllKeys,   &(indexToImport->kidGameIndexAllKeys) },
 	};
 
 	std::vector<IndexImportStructure> indexImportDecl = std::vector<IndexImportStructure>(indexStructDecls, indexStructDecls + sizeof(indexStructDecls) / sizeof(indexStructDecls[0]));
@@ -73,6 +73,7 @@ void FileFilterIndex::importIndex(FileFilterIndex* indexToImport)
 		}
 	}
 }
+
 void FileFilterIndex::resetIndex()
 {
 	clearAllFilters();
@@ -302,7 +303,7 @@ bool FileFilterIndex::showFile(FileData* game)
 
 	// if folder, needs further inspection - i.e. see if folder contains at least one element
 	// that should be shown
-	if (game->getType() == FOLDER) 
+	if (game->getType() == FOLDER)
 	{
 		std::vector<FileData*> children = ((FolderData*) game)->getChildren();
 		// iterate through all of the children, until there's a match
@@ -354,7 +355,7 @@ bool FileFilterIndex::showFile(FileData* game)
 bool FileFilterIndex::isKeyBeingFilteredBy(std::string key, FilterIndexType type)
 {
 	const FilterIndexType filterTypes[6] = { FAVORITES_FILTER, GENRE_FILTER, PLAYER_FILTER, PUBDEV_FILTER, RATINGS_FILTER, KIDGAME_FILTER }; // ,HIDDEN_FILTER
-	std::vector<std::string> filterKeysList[6] = { favoritesIndexFilteredKeys, genreIndexFilteredKeys, playersIndexFilteredKeys, pubDevIndexFilteredKeys, ratingsIndexFilteredKeys, kidGameIndexFilteredKeys }; // hiddenIndexFilteredKeys, 
+	std::vector<std::string> filterKeysList[6] = { favoritesIndexFilteredKeys, genreIndexFilteredKeys, playersIndexFilteredKeys, pubDevIndexFilteredKeys, ratingsIndexFilteredKeys, kidGameIndexFilteredKeys }; // hiddenIndexFilteredKeys
 
 	for (int i = 0; i < 6; i++)
 	{
@@ -454,7 +455,6 @@ void FileFilterIndex::managePubDevEntryInIndex(FileData* game, bool remove)
 void FileFilterIndex::manageRatingsEntryInIndex(FileData* game, bool remove)
 {
 	std::string key = getIndexableKey(game, RATINGS_FILTER, false);
-
 	// flag for including unknowns
 	bool includeUnknown = INCLUDE_UNKNOWN;
 

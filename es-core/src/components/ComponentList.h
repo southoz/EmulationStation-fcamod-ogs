@@ -23,6 +23,7 @@ struct ComponentListRow
 
 	bool selectable;
 	std::vector<ComponentListElement> elements;
+	std::shared_ptr<GuiComponent> guiPrompt;
 
 	// The input handler is called when the user enters any input while this row is highlighted (including up/down).
 	// Return false to let the list try to use it or true if the input has been consumed.
@@ -30,9 +31,14 @@ struct ComponentListRow
 	// the rightmost element in the currently selected row.
 	std::function<bool(InputConfig*, Input)> input_handler;
 
-	inline void addElement(const std::shared_ptr<GuiComponent>& component, bool resize_width, bool invert_when_selected = true)
+	inline void addElement(const std::shared_ptr<GuiComponent>& component, bool resize_width, bool invert_when_selected = true, bool prompt_component = false)
 	{
 		elements.push_back(ComponentListElement(component, resize_width, invert_when_selected));
+
+		if (prompt_component)
+		{
+			guiPrompt = component;
+		}
 	}
 
 	// Utility method for making an input handler for "when the users presses A on this, do func."

@@ -7,11 +7,7 @@
 #include <thread>
 #include <SDL.h>
 
-#ifdef WIN32
-#include <time.h>
-#else
 #include <unistd.h>
-#endif
 
 #include <mutex>
 static std::mutex mMutex;
@@ -48,48 +44,6 @@ bool HttpReq::isUrl(const std::string& str)
 	return (!str.empty() && !Utils::FileSystem::exists(str) && 
 		(str.find("http://") != std::string::npos || str.find("https://") != std::string::npos || str.find("www.") != std::string::npos));
 }
-
-#ifdef WIN32
-LONG _regGetDWORD(HKEY hKey, const std::string &strPath, const std::string &strValueName)
-{
-	HKEY hSubKey;
-	LONG nRet = ::RegOpenKeyEx(hKey, strPath.c_str(), 0L, KEY_QUERY_VALUE, &hSubKey);
-	if (nRet == ERROR_SUCCESS)
-	{
-		DWORD dwBufferSize(sizeof(DWORD));
-		DWORD nResult(0);
-
-		nRet = ::RegQueryValueExA(hSubKey, strValueName.c_str(), 0, NULL, reinterpret_cast<LPBYTE>(&nResult), &dwBufferSize);
-		::RegCloseKey(hSubKey);
-
-		if (nRet == ERROR_SUCCESS)
-			return nResult;
-	}
-
-	return 0;
-}
-
-std::string _regGetString(HKEY hKey, const std::string &strPath, const std::string &strValueName)
-{
-	std::string ret;
-
-	HKEY hSubKey;
-	LONG nRet = ::RegOpenKeyEx(hKey, strPath.c_str(), 0L, KEY_QUERY_VALUE, &hSubKey);
-	if (nRet == ERROR_SUCCESS)
-	{
-		char szBuffer[1024];
-		DWORD dwBufferSize = sizeof(szBuffer);
-
-		nRet = ::RegQueryValueExA(hSubKey, strValueName.c_str(), 0, NULL, (LPBYTE)szBuffer, &dwBufferSize);
-		::RegCloseKey(hSubKey);
-
-		if (nRet == ERROR_SUCCESS)
-			ret = szBuffer;
-	}
-
-	return ret;
-}
-#endif
 
 HttpReq::HttpReq(const std::string& url, const std::string outputFilename)
 	: mStatus(REQ_IN_PROGRESS), mHandle(NULL)
@@ -171,34 +125,6 @@ HttpReq::HttpReq(const std::string& url, const std::string outputFilename)
 		return;
 	}
 
-#ifdef WIN32
-	// Setup system proxy on Windows if required
-	if (_regGetDWORD(HKEY_CURRENT_USER, "Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", "ProxyEnable"))
-	{
-		auto proxyServer = _regGetString(HKEY_CURRENT_USER, "Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", "ProxyServer");
-		if (!proxyServer.empty())
-		{
-			std::string protocol = (url.find("https:/") == 0 ? "https=" : "http=");
-
-			size_t pxs = proxyServer.find(protocol);
-			if (pxs != std::string::npos)
-			{
-				size_t pxe = proxyServer.find(";", pxs);
-				if (pxe == std::string::npos)
-					pxe = proxyServer.size() - 1;
-
-				proxyServer = proxyServer.substr(pxs + protocol.size(), pxe - pxs - protocol.size());
-			}
-
-			if (!proxyServer.empty())
-			{
-				CURLcode ret;
-				curl_easy_setopt(mHandle, CURLOPT_PROXY, proxyServer.c_str());
-				curl_easy_setopt(mHandle, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
-			}
-		}
-	}
-#endif
 	
 	std::unique_lock<std::mutex> lock(mMutex);
 

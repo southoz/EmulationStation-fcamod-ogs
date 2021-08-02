@@ -232,7 +232,7 @@ std::vector<HelpPrompt> BasicGameListView::getHelpPrompts()
 	prompts.push_back(HelpPrompt("b", _("BACK")));
 
 	if(!UIModeController::getInstance()->isUIModeKid())
-		prompts.push_back(HelpPrompt("select", _("options")));
+		prompts.push_back(HelpPrompt("select", _("OPTIONS")));
 	
 	if(mRoot->getSystem()->isGameSystem())
 		prompts.push_back(HelpPrompt("x", _("RANDOM")));
@@ -243,7 +243,7 @@ std::vector<HelpPrompt> BasicGameListView::getHelpPrompts()
 		if (prompt == "Favorites")
 			prompt = "FAVORITE";
 
-		prompts.push_back(HelpPrompt("y", prompt));
+		prompts.push_back(HelpPrompt("y", _(prompt)));
 	}
 	return prompts;
 }

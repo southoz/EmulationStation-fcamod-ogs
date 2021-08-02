@@ -454,12 +454,9 @@ private:
 		if(mMultiSelect)
 		{
 			// display # selected
-
-			
-
-			char strbuf[256];
+			char strbuf[64];
 			int x = getSelectedObjects().size();
-			snprintf(strbuf, 256, EsLocale::nGetText("%i SELECTED", "%i SELECTED", x).c_str(), x);
+			snprintf(strbuf, 64, EsLocale::nGetText("%i SELECTED", "%i SELECTED", x).c_str(), x);
 			mText.setText(strbuf);
 
 
@@ -491,9 +488,9 @@ private:
 	{
 		std::vector<HelpPrompt> prompts;
 		if(!mMultiSelect)
-			prompts.push_back(HelpPrompt("left/right", "MODIFIER"));
+			prompts.push_back(HelpPrompt("left/right", _("MODIFIER")));
 
-		prompts.push_back(HelpPrompt("a", "SELECTIONNER"));
+		prompts.push_back(HelpPrompt("a", _("SELECTIONNER")));
 		return prompts;
 	}
 

@@ -12,10 +12,6 @@
 
 #include <go2/display.h>
 
-#if WIN32
-#include <Windows.h>
-#endif
-
 namespace Renderer
 {
 	static std::stack<Rect> clipStack;
@@ -87,15 +83,6 @@ namespace Renderer
 
 		SDL_DisplayMode dispMode;
 		SDL_GetDesktopDisplayMode(0, &dispMode);
-
-#if WIN32
-		if (!Settings::getInstance()->getBool("Windowed") && !Settings::getInstance()->getInt("WindowWidth"))
-		{
-			::SetProcessDPIAware();			
-			dispMode.w = ::GetSystemMetrics(SM_CXSCREEN);
-			dispMode.h = ::GetSystemMetrics(SM_CYSCREEN);
-		}
-#endif
 
 		windowWidth   = Settings::getInstance()->getInt("WindowWidth")   ? Settings::getInstance()->getInt("WindowWidth")   : dispMode.w;
 		windowHeight  = Settings::getInstance()->getInt("WindowHeight")  ? Settings::getInstance()->getInt("WindowHeight")  : dispMode.h;

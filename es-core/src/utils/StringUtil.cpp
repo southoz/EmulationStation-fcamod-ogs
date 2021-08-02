@@ -4,10 +4,6 @@
 #include <stdarg.h>
 #include <cstring>
 
-#if defined(_WIN32)
-#include <Windows.h>
-#endif
-
 namespace Utils
 {
 	namespace String
@@ -466,7 +462,7 @@ namespace Utils
 
 		std::string format(const char* _format, ...)
 		{
-			va_list	args;
+			va_list args;
 			va_list copy;
 
 			va_start(args, _format);
@@ -522,32 +518,6 @@ namespace Utils
 			return output;
 		}
 
-
-
-#if defined(_WIN32)
-		const std::string convertFromWideString(const std::wstring wstring)
-		{
-			int numBytes = WideCharToMultiByte(CP_UTF8, 0, wstring.c_str(), (int)wstring.length(), nullptr, 0, nullptr, nullptr);
-
-			std::string string;
-			string.resize(numBytes);
-			WideCharToMultiByte(CP_UTF8, 0, wstring.c_str(), (int)wstring.length(), (char*)string.c_str(), numBytes, nullptr, nullptr);
-
-			return string;
-		}
-
-		const std::wstring convertToWideString(const std::string string)
-		{
-			int numBytes = MultiByteToWideChar(CP_UTF8, 0, string.c_str(), (int)string.length(), nullptr, 0);
-
-			std::wstring wstring;
-			wstring.resize(numBytes);
-			MultiByteToWideChar(CP_UTF8, 0, string.c_str(), (int)string.length(), (WCHAR*)wstring.c_str(), numBytes);
-
-			return wstring;
-		}
-#endif
-
 		std::vector<std::string> splitAny(const std::string& s, const std::string& seperator)
 		{
 			std::vector<std::string> output;
@@ -565,6 +535,38 @@ namespace Utils
 			delete str;
 
 			return output;
+		}
+
+		const std::string hiddenSpecialCharacters(const std::string msg)
+		{
+			std::string msg_aux = Utils::String::replace(msg, "\\\"", "\"");
+			msg_aux = Utils::String::replace(msg_aux, "\\n", "\n");
+			msg_aux = Utils::String::replace(msg_aux, "\\t", "\t");
+			msg_aux = Utils::String::replace(msg_aux, "\\v", "\v");
+			msg_aux = Utils::String::replace(msg_aux, "\\b", "\b");
+			msg_aux = Utils::String::replace(msg_aux, "\\r", "\r");
+			msg_aux = Utils::String::replace(msg_aux, "\\f", "\f");
+			msg_aux = Utils::String::replace(msg_aux, "\\a", "\a");
+			msg_aux = Utils::String::replace(msg_aux, "\\\\", "\\");
+			msg_aux = Utils::String::replace(msg_aux, "\\\?", "\?");
+			msg_aux = Utils::String::replace(msg_aux, "\\'", "\'");
+			return msg_aux;
+		}
+
+		const std::string showSpecialCharacters(const std::string msg)
+		{
+			std::string  msg_aux = Utils::String::replace(msg, "\\", "\\\\");
+			msg_aux = Utils::String::replace(msg_aux, "\"", "\\\"");
+			msg_aux = Utils::String::replace(msg_aux, "\n", "\\n");
+			msg_aux = Utils::String::replace(msg_aux, "\t", "\\t");
+			msg_aux = Utils::String::replace(msg_aux, "\v", "\\v");
+			msg_aux = Utils::String::replace(msg_aux, "\b", "\\b");
+			msg_aux = Utils::String::replace(msg_aux, "\r", "\\r");
+			msg_aux = Utils::String::replace(msg_aux, "\f", "\\f");
+			msg_aux = Utils::String::replace(msg_aux, "\a", "\\a");
+			msg_aux = Utils::String::replace(msg_aux, "\?", "\\?");
+			msg_aux = Utils::String::replace(msg_aux, "\'", "\\'");
+			return msg_aux;
 		}
 	} // String::
 
