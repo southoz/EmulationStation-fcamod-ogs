@@ -986,7 +986,7 @@ void CollectionSystemManager::populateCustomCollection(CollectionSystemData* sys
 	std::unordered_map<std::string, FileData*> map;
 
 	if (pMap == nullptr)
-	{		
+	{
 		folder->createChildrenByFilenameMap(map);
 		pMap = &map;
 	}
@@ -994,7 +994,7 @@ void CollectionSystemManager::populateCustomCollection(CollectionSystemData* sys
 	// iterate list of files in config file
 	for(std::string gameKey; getline(input, gameKey); )
 	{
-		gameKey = Utils::FileSystem::resolveRelativePath(gameKey, "portnawak", true);
+		gameKey = Utils::FileSystem::resolveRelativePath(Utils::String::trim(gameKey), "portnawak", true);
 
 		std::unordered_map<std::string, FileData*>::const_iterator it = pMap->find(gameKey);
 		if (it != pMap->cend())
