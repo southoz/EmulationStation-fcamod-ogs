@@ -191,6 +191,9 @@ bool parseArgs(int argc, char* argv[])
 		else if (strcmp(argv[i], "--debug") == 0)
 		{
 			Settings::getInstance()->setBool("Debug", true);
+			Settings::getInstance()->setBool("DebugGrid", true);
+			Settings::getInstance()->setBool("DebugText", true);
+			Settings::getInstance()->setBool("DebugImage", true);
 			Log::setReportingLevel(LogDebug);
 		}
 		else if (strcmp(argv[i], "--fullscreen") == 0)

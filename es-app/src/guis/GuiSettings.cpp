@@ -48,6 +48,9 @@ void GuiSettings::close()
 
 void GuiSettings::save()
 {
+	if (!mDoSave)
+		return;
+
 	if (!mSaveFuncs.size())
 		return;
 

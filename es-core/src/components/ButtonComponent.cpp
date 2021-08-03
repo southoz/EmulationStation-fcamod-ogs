@@ -65,12 +65,18 @@ void ButtonComponent::setText(const std::string& text, const std::string& helpTe
 
 void ButtonComponent::onFocusGained()
 {
+	if (mFocused)
+		return;
+
 	mFocused = true;
 	updateImage();
 }
 
 void ButtonComponent::onFocusLost()
 {
+	if (!mFocused)
+		return;
+
 	mFocused = false;
 	updateImage();
 }
@@ -128,18 +134,12 @@ void ButtonComponent::render(const Transform4x4f& parentTrans)
 
 unsigned int ButtonComponent::getCurTextColor() const
 {
-	if(!mFocused)
-		return mTextColorUnfocused;
-	else
-		return mTextColorFocused;
+	return mFocused ? mTextColorFocused : mTextColorUnfocused;
 }
 
 unsigned int ButtonComponent::getCurBackColor() const
 {
-	if (!mFocused)
-		return mColor;
-	else
-		return mColorFocused;
+	return mFocused ? mColorFocused : mColor;
 }
 
 std::vector<HelpPrompt> ButtonComponent::getHelpPrompts()
