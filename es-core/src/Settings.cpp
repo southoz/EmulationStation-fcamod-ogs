@@ -146,8 +146,8 @@ void Settings::setDefaults()
 
 	// Audio out device for volume control
 	mStringMap["AudioDevice"] = "Master";
-
 	mStringMap["AudioCard"] = "default";
+
 	mStringMap["UIMode"] = "Full";
 	mStringMap["UIMode_passkey"] = "uuddlrlrba";
 	mBoolMap["ForceKiosk"] = false;

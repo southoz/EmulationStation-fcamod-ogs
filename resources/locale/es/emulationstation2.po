@@ -904,6 +904,10 @@ msgid "Analogue"
 msgstr "Analógico"
 
 #:
+msgid "Playback"
+msgstr "Reproductor"
+
+#:
 msgid "FRONTEND MUSIC"
 msgstr "MÚSICA DE FONDO"
 

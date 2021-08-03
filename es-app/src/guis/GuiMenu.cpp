@@ -371,6 +371,7 @@ void GuiMenu::openSoundSettings()
 		transitions.push_back("Master");
 		transitions.push_back("Digital");
 		transitions.push_back("Analogue");
+		transitions.push_back("Playback");
 		if (Settings::getInstance()->getString("AudioDevice") != "") {
 			if(std::find(transitions.begin(), transitions.end(), Settings::getInstance()->getString("AudioDevice")) == transitions.end()) {
 				transitions.push_back(Settings::getInstance()->getString("AudioDevice"));

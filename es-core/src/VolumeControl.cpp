@@ -4,7 +4,7 @@
 #include "Log.h"
 #include "Settings.h"
 
-std::string VolumeControl::mixerName = "Master";
+std::string VolumeControl::mixerName = "Playback";
 std::string VolumeControl::mixerCard = "default";
 
 std::weak_ptr<VolumeControl> VolumeControl::sInstance;
@@ -96,7 +96,8 @@ void VolumeControl::init()
 									snd_mixer_selem_get_id(mxe, mxid);
 									mixerName = snd_mixer_selem_id_get_name(mxid);
 
-									LOG(LogInfo) << "mixername : " << mixerName;
+									LOG(LogInfo) << "VolumeControl::init() - mixername : " << mixerName;
+									Settings::getInstance()->setString("AudioDevice", mixerName);
 
 									snd_mixer_selem_id_set_name(mixerSelemId, mixerName.c_str());
 									mixerElem = snd_mixer_find_selem(mixerHandle, mixerSelemId);
