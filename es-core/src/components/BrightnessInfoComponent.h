@@ -21,7 +21,7 @@ public:
 
 private:
 	NinePatchComponent* mFrame;
-	TextComponent*		mLabel;
+	TextComponent*      mLabel;
 
 	int mBrightness;
 
