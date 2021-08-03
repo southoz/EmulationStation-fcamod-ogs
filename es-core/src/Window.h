@@ -21,6 +21,7 @@ class TextureResource;
 class AsyncNotificationComponent;
 class ThemeData;
 class TextComponent;
+class VolumeInfoComponent;
 
 struct HelpStyle;
 
@@ -137,7 +138,8 @@ private:
 	// clock // batocera
 	int mClockElapsed;
 	
-	std::shared_ptr<TextComponent>	mClock;
+	std::shared_ptr<TextComponent> mClock;
+	std::shared_ptr<VolumeInfoComponent> mVolumeInfo;
 
 	bool mNormalizeNextUpdate;
 

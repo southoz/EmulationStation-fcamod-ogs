@@ -17,6 +17,7 @@
 #include "AudioManager.h"
 #include <string>
 #include "utils/TimeUtil.h"
+#include "components/VolumeInfoComponent.h"
 
 Window::Window() : mNormalizeNextUpdate(false), mFrameTimeElapsed(0), mFrameCountElapsed(0), mAverageDeltaTime(10),
   mAllowSleep(true), mSleeping(false), mTimeSinceLastInput(0), mScreenSaver(NULL), mRenderScreenSaver(false), mInfoPopup(NULL), mClockElapsed(0) // batocera
@@ -126,6 +127,9 @@ bool Window::init(bool initRenderer, bool forceFullScreen)
 		mClock->setSize(clockSize, 0);
 		mClock->setColor(0x777777FF);
 	}
+
+	if (Settings::getInstance()->getBool("VolumePopup") && (mVolumeInfo == nullptr))
+		mVolumeInfo = std::make_shared<VolumeInfoComponent>(this);
 
 	// update our help because font sizes probably changed
 	if (peekGui())
@@ -251,6 +255,9 @@ void Window::update(int deltaTime)
 			deltaTime = mAverageDeltaTime;
 	}
 
+	if (Settings::getInstance()->getBool("VolumePopup") && mVolumeInfo)
+		mVolumeInfo->update(deltaTime);
+
 	mFrameTimeElapsed += deltaTime;
 	mFrameCountElapsed++;
 	if(mFrameTimeElapsed > 500)
@@ -358,7 +365,7 @@ void Window::render()
 	}
 
 
-        // clock // batocera
+	// clock // batocera
 	if (Settings::getInstance()->getBool("DrawClock") && mClock && (mGuiStack.size() < 2 || !Renderer::isSmallScreen()))
 	{
 		mClock->render(transform);
@@ -389,6 +396,9 @@ void Window::render()
 	
 	for (auto extra : mScreenExtras)
 		extra->render(transform);
+
+	if (mVolumeInfo)
+		mVolumeInfo->render(transform);
 
 	if(mTimeSinceLastInput >= screensaverTime && screensaverTime != 0)
 	{
@@ -811,4 +821,7 @@ void Window::onThemeChanged(const std::shared_ptr<ThemeData>& theme)
 
 		mClock->applyTheme(theme, "screen", "clock", ThemeFlags::ALL ^ (ThemeFlags::TEXT));
 	}
+
+	if (Settings::getInstance()->getBool("VolumePopup"))
+		mVolumeInfo = std::make_shared<VolumeInfoComponent>(this);
 }

@@ -131,6 +131,7 @@ void Settings::setDefaults()
 	mBoolMap["ShowFilenames"] = false;
 
 	mBoolMap["VideoAudio"] = true;
+	mBoolMap["VolumePopup"] = true;
 	mBoolMap["VideoLowersMusic"] = true;
 	mStringMap["CollectionSystemsAuto"] = "";
 	mStringMap["CollectionSystemsCustom"] = "";
@@ -184,6 +185,8 @@ void Settings::setDefaults()
 	mBoolMap["MenusOnDisplayTop"] = false;
 
 	mBoolMap["ShowDetailedSystemInfo"] = false;
+
+	mBoolMap["UseOSK"] = true;
 
 	mDefaultBoolMap = mBoolMap;
 	mDefaultIntMap = mIntMap;
