@@ -6,6 +6,7 @@
 #include <pugixml/src/pugixml.hpp>
 #include "SystemData.h"
 #include "Settings.h"
+#include "ImageIO.h"
 
 MetaDataDecl gameDecls[] = {
 	//    key,           type,                   default,            statistic,  name in GuiMetaDataEd,  prompt in GuiMetaDataEd
@@ -315,5 +316,13 @@ void MetaDataList::importScrappedMetadata(const MetaDataList& source)
 			continue;
 
 		set(mdd.key, source.get(mdd.key));
+
+		if (mdd.type == MetaDataType::MD_PATH)
+		{
+			ImageIO::removeImageCache(source.get(mdd.key));
+
+			unsigned int x, y;
+			ImageIO::getImageSize(source.get(mdd.key).c_str(), &x, &y);
+		}
 	}
 }
