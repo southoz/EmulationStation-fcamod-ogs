@@ -373,4 +373,4 @@ http://www.emulationstation.org
 Thanks
 ======
 
-Special thanks to both (Batocera)[https://github.com/batocera-linux/batocera-emulationstation] and (Emuelec)[https://github.com/EmuELEC/emuelec-emulationstation] teams . Sometimes I used their code.
+Special thanks to both [Batocera](https://github.com/batocera-linux/batocera-emulationstation) and [Emuelec](https://github.com/EmuELEC/emuelec-emulationstation) teams . Sometimes I used their code.
