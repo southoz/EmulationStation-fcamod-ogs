@@ -19,6 +19,8 @@ ScraperSearchComponent::ScraperSearchComponent(Window* window, SearchType type) 
 	mGrid(window, Vector2i(4, 3)), mBusyAnim(window), 
 	mSearchType(type)
 {
+	mBusyAnim.setText(_("SEARCHING"));
+
 	auto theme = ThemeData::getMenuTheme();
 
 	auto font = theme->TextSmall.font; // Font::get(FONT_SIZE_SMALL); // this gets replaced in onSizeChanged() so its just a placeholder

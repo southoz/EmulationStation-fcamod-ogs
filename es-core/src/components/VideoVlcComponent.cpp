@@ -549,7 +549,6 @@ void VideoVlcComponent::startVideo()
 					if (!mTargetSize.empty() && (mTargetSize.x() < maxSize.x() || mTargetSize.y() < maxSize.y()))
 						maxSize = mTargetSize;
 
-
 					// If video is bigger than display, ask VLC for a smaller image
 					auto sz = ImageIO::adjustPictureSize(Vector2i(mVideoWidth, mVideoHeight), Vector2i(mTargetSize.x(), mTargetSize.y()), mTargetIsMin);
 					if (sz.x() < mVideoWidth || sz.y() < mVideoHeight)

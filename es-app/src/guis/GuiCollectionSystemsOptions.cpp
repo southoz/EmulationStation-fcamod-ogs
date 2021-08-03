@@ -133,7 +133,7 @@ void GuiCollectionSystemsOptions::initializeMenu()
 	{
 		if (Settings::getInstance()->setBool("FavoritesFirst", favoritesFirstSwitch->getState()))
 			setVariable("reloadAll", true);
-        });
+	});
 
 
 	if (CollectionSystemManager::get()->isEditing())
