@@ -30,8 +30,6 @@
 #include "scrapers/ThreadedScraper.h"
 #include "ApiSystem.h"
 #include "views/gamelist/IGameListView.h"
-
-#include <go2/display.h>
 #include "SystemConf.h"
 
 GuiMenu::GuiMenu(Window* window, bool animate) : GuiComponent(window), mMenu(window, _("MAIN MENU")), mVersion(window)
@@ -79,7 +77,7 @@ GuiMenu::GuiMenu(Window* window, bool animate) : GuiComponent(window), mMenu(win
 		BatteryInformation battery = ApiSystem::getBatteryInformation();
 		SoftwareInformation software = ApiSystem::getSoftwareInformation();
 
-		addEntry("BAT: " + std::to_string( battery.level ) + "%" + " | SND: " + std::string(getShOutput(R"(current_volume)")) + " | BRT: " + std::to_string( go2_display_backlight_get(NULL) ) + "% |" + _("NETWORK")+ ": " + _( (ApiSystem::isNetworkConnected() ? "CONNECTED" : "NOT CONNECTED") ), false, [this] {  });
+		addEntry("BAT: " + std::to_string( battery.level ) + "%" + " | SND: " + std::to_string(ApiSystem::getVolume()) + " | BRT: " + std::to_string( ApiSystem::getBrightnessLevel() ) + "% |" + _("NETWORK")+ ": " + _( (ApiSystem::isNetworkConnected() ? "CONNECTED" : "NOT CONNECTED") ), false, [this] {  });
 
 		addEntry("Distro Version: " + software.application_name + " " + software.version, false, [this] {  });
 	}
@@ -127,11 +125,11 @@ void GuiMenu::openDisplaySettings()
 
 	// Brightness
 	auto bright = std::make_shared<SliderComponent>(mWindow, 1.0f, 100.f, 1.0f, "%");
-	bright->setValue((float)go2_display_backlight_get(NULL)+1.0);
+	bright->setValue((float) ApiSystem::getBrightnessLevel());
 	s->addWithLabel(_("BRIGHTNESS"), bright);
 	s->addSaveFunc([s, bright]
 		{
-			go2_display_backlight_set(NULL, (int)Math::round(bright->getValue()));
+			ApiSystem::setBrightnessLevel( (int) Math::round(bright->getValue()) );
 			if (Settings::getInstance()->getBool("FullScreenMode"))
 				s->setVariable("reloadGuiMenu", true);
 		});

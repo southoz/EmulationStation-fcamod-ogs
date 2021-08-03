@@ -25,8 +25,7 @@ Vector2f ImageComponent::getSize() const
 ImageComponent::ImageComponent(Window* window, bool forceLoad, bool dynamic) : GuiComponent(window),
 	mTargetIsMax(false), mTargetIsMin(false), mFlipX(false), mFlipY(false), mTargetSize(0, 0), mColorShift(0xFFFFFFFF), mColorShiftEnd(0xFFFFFFFF),
 	mForceLoad(forceLoad), mDynamic(dynamic), mFadeOpacity(0), mFading(false), mRotateByTargetSize(false), mVisible(true),
-	mTopLeftCrop(0.0f, 0.0f), mBottomRightCrop(1.0f, 1.0f), mMirror(0.0f, 0.0f), mAllowAsync(false),
-	mPadding(Vector4f(0, 0, 0, 0))
+	mTopLeftCrop(0.0f, 0.0f), mBottomRightCrop(1.0f, 1.0f), mMirror(0.0f, 0.0f), mPadding(Vector4f(0, 0, 0, 0))
 {
 	mLinear = false;
 	mHorizontalAlignment = ALIGN_CENTER;

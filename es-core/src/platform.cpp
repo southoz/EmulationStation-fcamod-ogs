@@ -505,8 +505,7 @@ DisplayAndGpuInformation queryDisplayAndGpuInformation(bool summary)
 	try
 	{
 		data.temperature = queryTemperatureGpu();
-
-		data.brightness_level = (int) go2_display_backlight_get(NULL);
+		data.brightness_level = queryBrightnessLevel();
 
 		if (!summary)
 		{
@@ -576,6 +575,16 @@ int queryFrequencyGpu()
 		LOG(LogError) << "Platform::queryFrequencyGpu() - Error reading frequency GPU data!!!";
 	}
 	return 0;
+}
+
+int queryBrightnessLevel()
+{
+	return (int) go2_display_backlight_get(NULL);
+}
+
+void saveBrightnessLevel(int brightness_level)
+{
+	go2_display_backlight_set(NULL, brightness_level);
 }
 
 SoftwareInformation querySoftwareInformation(bool summary)

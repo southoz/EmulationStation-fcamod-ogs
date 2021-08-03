@@ -195,6 +195,8 @@ struct DisplayAndGpuInformation
 DisplayAndGpuInformation queryDisplayAndGpuInformation(bool summary);
 float queryTemperatureGpu();
 int queryFrequencyGpu();
+int queryBrightnessLevel();
+void saveBrightnessLevel(int brightness_level);
 
 struct SoftwareInformation
 {

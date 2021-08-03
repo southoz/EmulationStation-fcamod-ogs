@@ -65,6 +65,12 @@ public:
 	static SoftwareInformation getSoftwareInformation(bool summary = true);
 	static DeviceInformation getDeviceInformation(bool summary = true);
 
+	static int getBrightnessLevel();
+  static void setBrightnessLevel(int brightnessLevel);
+
+	static int getVolume();
+  static void setVolume(int volumeLevel);
+
 	static UpdateState::State state;
 
 	static std::pair<std::string, int> updateSystem(const std::function<void(const std::string)>& func = nullptr);

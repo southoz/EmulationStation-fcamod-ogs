@@ -10,6 +10,7 @@
 #include "Log.h"
 #include "Window.h"
 #include "components/AsyncNotificationComponent.h"
+#include "VolumeControl.h"
 
 UpdateState::State ApiSystem::state = UpdateState::State::NO_UPDATE;
 
@@ -414,4 +415,32 @@ DeviceInformation ApiSystem::getDeviceInformation(bool summary)
 	LOG(LogDebug) << "ApiSystem::getDeviceInformation()";
 
 	return queryDeviceInformation(summary); // platform.h
+}
+
+int ApiSystem::getBrightnessLevel()
+{
+	LOG(LogDebug) << "ApiSystem::getBrightnessLevel()";
+
+	return queryBrightnessLevel();
+}
+
+void ApiSystem::setBrightnessLevel(int brightnessLevel)
+{
+	LOG(LogDebug) << "ApiSystem::setBrightnessLevel()";
+
+	saveBrightnessLevel(brightnessLevel);
+}
+
+int ApiSystem::getVolume()
+{
+	LOG(LogDebug) << "ApiSystem::getVolume()";
+
+	return VolumeControl::getInstance()->getVolume();
+}
+
+void ApiSystem::setVolume(int volumeLevel)
+{
+	LOG(LogDebug) << "ApiSystem::setVolume()";
+
+	VolumeControl::getInstance()->setVolume(volumeLevel);
 }
