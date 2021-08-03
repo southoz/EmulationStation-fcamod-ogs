@@ -369,3 +369,8 @@ If you're using RetroPie, you should already have a nice set of themes automatic
 -Alec "Aloshi" Lofquist
 http://www.aloshi.com
 http://www.emulationstation.org
+
+Thanks
+======
+
+Special thanks to both (Batocera)[https://github.com/batocera-linux/batocera-emulationstation] and (Emuelec)[https://github.com/EmuELEC/emuelec-emulationstation] teams . Sometimes I used their code.
