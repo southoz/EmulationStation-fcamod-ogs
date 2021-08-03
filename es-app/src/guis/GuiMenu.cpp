@@ -125,14 +125,25 @@ void GuiMenu::openDisplaySettings()
 
 	// Brightness
 	auto bright = std::make_shared<SliderComponent>(mWindow, 1.0f, 100.f, 1.0f, "%");
-	bright->setValue((float) ApiSystem::getBrightnessLevel());
+	bright->setValue(((float) ApiSystem::getBrightnessLevel()) + 1.f);
 	s->addWithLabel(_("BRIGHTNESS"), bright);
 	s->addSaveFunc([s, bright]
 		{
-			ApiSystem::setBrightnessLevel( (int) Math::round(bright->getValue()) );
+			ApiSystem::setBrightnessLevel( (int) bright->getValue() );
 			if (Settings::getInstance()->getBool("FullScreenMode"))
 				s->setVariable("reloadGuiMenu", true);
 		});
+
+		auto brightnessPopup = std::make_shared<SwitchComponent>(mWindow);
+		brightnessPopup->setState(Settings::getInstance()->getBool("BrightnessPopup"));
+		s->addWithLabel(_("SHOW OVERLAY WHEN BRIGHTNESS CHANGES"), brightnessPopup);
+		s->addSaveFunc([brightnessPopup]
+			{
+				bool old_value = Settings::getInstance()->getBool("BrightnessPopup");
+				if (old_value != brightnessPopup->getState())
+					Settings::getInstance()->setBool("BrightnessPopup", brightnessPopup->getState());
+			}
+		);
 
 	// Select Full Screen Mode
 	auto fullScreenMode = std::make_shared<SwitchComponent>(mWindow);

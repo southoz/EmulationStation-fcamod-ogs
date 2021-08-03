@@ -18,6 +18,7 @@
 #include <string>
 #include "utils/TimeUtil.h"
 #include "components/VolumeInfoComponent.h"
+#include "components/BrightnessInfoComponent.h"
 
 Window::Window() : mNormalizeNextUpdate(false), mFrameTimeElapsed(0), mFrameCountElapsed(0), mAverageDeltaTime(10),
   mAllowSleep(true), mSleeping(false), mTimeSinceLastInput(0), mScreenSaver(NULL), mRenderScreenSaver(false), mInfoPopup(NULL), mClockElapsed(0) // batocera
@@ -130,6 +131,10 @@ bool Window::init(bool initRenderer, bool forceFullScreen)
 
 	if (Settings::getInstance()->getBool("VolumePopup") && (mVolumeInfo == nullptr))
 		mVolumeInfo = std::make_shared<VolumeInfoComponent>(this);
+
+	if (Settings::getInstance()->getBool("BrightnessPopup") && (mBrightnessInfo == nullptr))
+		mBrightnessInfo = std::make_shared<BrightnessInfoComponent>(this);
+
 
 	// update our help because font sizes probably changed
 	if (peekGui())
@@ -257,6 +262,9 @@ void Window::update(int deltaTime)
 
 	if (Settings::getInstance()->getBool("VolumePopup") && mVolumeInfo)
 		mVolumeInfo->update(deltaTime);
+
+	if (Settings::getInstance()->getBool("BrightnessPopup") && mBrightnessInfo)
+		mBrightnessInfo->update(deltaTime);
 
 	mFrameTimeElapsed += deltaTime;
 	mFrameCountElapsed++;
@@ -399,6 +407,9 @@ void Window::render()
 
 	if (mVolumeInfo)
 		mVolumeInfo->render(transform);
+
+	if (mBrightnessInfo)
+		mBrightnessInfo->render(transform);
 
 	if(mTimeSinceLastInput >= screensaverTime && screensaverTime != 0)
 	{
@@ -824,4 +835,7 @@ void Window::onThemeChanged(const std::shared_ptr<ThemeData>& theme)
 
 	if (Settings::getInstance()->getBool("VolumePopup"))
 		mVolumeInfo = std::make_shared<VolumeInfoComponent>(this);
+
+	if (Settings::getInstance()->getBool("BrightnessPopup"))
+		mBrightnessInfo = std::make_shared<BrightnessInfoComponent>(this);
 }

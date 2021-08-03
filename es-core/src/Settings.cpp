@@ -67,6 +67,7 @@ void Settings::setDefaults()
 	mBoolMap["StartupOnGameList"] = false;
 	mBoolMap["HideSystemView"] = false;
 	mBoolMap["FullScreenMode"] = false;
+	mBoolMap["BrightnessPopup"] = true;
 	
 	mStringMap["StartupSystem"] = "";
 
