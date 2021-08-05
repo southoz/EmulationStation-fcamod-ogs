@@ -431,6 +431,13 @@ void ApiSystem::setBrightnessLevel(int brightnessLevel)
 	saveBrightnessLevel(brightnessLevel);
 }
 
+int ApiSystem::getBrightness()
+{
+	LOG(LogDebug) << "ApiSystem::getBrightness()";
+
+	return queryBrightness();
+}
+
 int ApiSystem::getVolume()
 {
 	LOG(LogDebug) << "ApiSystem::getVolume()";
@@ -443,4 +450,25 @@ void ApiSystem::setVolume(int volumeLevel)
 	LOG(LogDebug) << "ApiSystem::setVolume()";
 
 	VolumeControl::getInstance()->setVolume(volumeLevel);
+}
+
+int ApiSystem::getBatteryLevel()
+{
+	LOG(LogDebug) << "ApiSystem::getBatteryLevel()";
+
+	return queryBatteryLevel();
+}
+
+bool ApiSystem::isBatteryCharging()
+{
+	LOG(LogDebug) << "ApiSystem::isBatteryCharging()";
+
+	return queryBatteryCharging();
+}
+
+float ApiSystem::getBatteryVoltage()
+{
+	LOG(LogDebug) << "ApiSystem::getBatteryVoltage()";
+
+	return queryBatteryVoltage();
 }

@@ -56,6 +56,9 @@ public:
 	static float getTemperatureGpu();
 	static int getFrequencyGpu();
 	static bool isNetworkConnected();
+	static int getBatteryLevel();
+	static bool isBatteryCharging();
+	static float getBatteryVoltage();
 
 	static NetworkInformation getNetworkInformation(bool summary = true);
 	static BatteryInformation getBatteryInformation(bool summary = true);
@@ -65,11 +68,12 @@ public:
 	static SoftwareInformation getSoftwareInformation(bool summary = true);
 	static DeviceInformation getDeviceInformation(bool summary = true);
 
+	static int getBrightness();
 	static int getBrightnessLevel();
-  static void setBrightnessLevel(int brightnessLevel);
+	static void setBrightnessLevel(int brightnessLevel);
 
 	static int getVolume();
-  static void setVolume(int volumeLevel);
+	static void setVolume(int volumeLevel);
 
 	static UpdateState::State state;
 

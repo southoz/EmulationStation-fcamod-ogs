@@ -60,7 +60,9 @@ struct BatteryInformation
 };
 
 BatteryInformation queryBatteryInformation(bool summary);
-
+int queryBatteryLevel();
+bool queryBatteryCharging();
+float queryBatteryVoltage();
 
 struct NetworkInformation
 {
@@ -195,6 +197,7 @@ struct DisplayAndGpuInformation
 DisplayAndGpuInformation queryDisplayAndGpuInformation(bool summary);
 float queryTemperatureGpu();
 int queryFrequencyGpu();
+int queryBrightness();
 int queryBrightnessLevel();
 void saveBrightnessLevel(int brightness_level);
 

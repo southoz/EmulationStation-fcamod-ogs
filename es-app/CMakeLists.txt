@@ -21,9 +21,11 @@ set(ES_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/src/components/RatingComponent.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/components/ScraperSearchComponent.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/components/TextListComponent.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/components/UpdatableTextComponent.h
 
     # Guis
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiSettings.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/UpdatableGuiSettings.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiFastSelect.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiMetaDataEd.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiGameScraper.h
@@ -84,9 +86,11 @@ set(ES_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/components/AsyncReqComponent.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/components/RatingComponent.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/components/ScraperSearchComponent.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/components/UpdatableTextComponent.cpp
 
     # Guis
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiSettings.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/UpdatableGuiSettings.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiFastSelect.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiMetaDataEd.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiGameScraper.cpp

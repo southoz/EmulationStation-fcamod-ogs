@@ -105,21 +105,12 @@ void processQuitMode()
 	}
 }
 
-BatteryInformation queryBatteryInformation(bool summary)
+std::string queryBatteryRootPath()
 {
-	BatteryInformation ret;
+	static std::string batteryRootPath;
 
-	static std::string batteryStatusPath;
-	static std::string batteryCapacityPath;
-	static std::string batteryHealthPath;
-	static std::string batteryMaxCapacityPath;
-	static std::string batteryVoltagePath;
-
-	// Find battery path - only at the first call
-	if (batteryStatusPath.empty())
+	if (batteryRootPath.empty())
 	{
-		std::string batteryRootPath;
-
 		auto files = Utils::FileSystem::getDirContent("/sys/class/power_supply");
 		for (auto file : files)
 		{
@@ -129,38 +120,64 @@ BatteryInformation queryBatteryInformation(bool summary)
 				break;
 			}
 		}
-
-		if (batteryRootPath.empty())
-			batteryStatusPath = ".";
-		else
-		{
-			batteryStatusPath = batteryRootPath + "/status";
-			batteryCapacityPath = batteryRootPath + "/capacity";
-			batteryHealthPath = batteryRootPath + "/health";
-			batteryMaxCapacityPath = batteryRootPath + "/charge_full";
-			batteryVoltagePath = batteryRootPath + "/voltage_now";
-		}
 	}
-	try
+	return batteryRootPath;
+}
+
+BatteryInformation queryBatteryInformation(bool summary)
+{
+	BatteryInformation ret;
+
+	std::string batteryRootPath = queryBatteryRootPath();
+
+	// Find battery path - only at the first call
+	if (!queryBatteryRootPath().empty())
 	{
-		if (batteryStatusPath.length() > 1)
+		try
 		{
 			ret.hasBattery = true;
-			ret.level = std::atoi(Utils::FileSystem::readAllText(batteryCapacityPath).c_str());
+			ret.level = queryBatteryLevel();
 			if (!summary)
 			{
-				ret.isCharging = Utils::String::compareIgnoreCase( Utils::String::replace(Utils::FileSystem::readAllText(batteryStatusPath), "\n", ""), "discharging" );
-				ret.health = Utils::String::toLower( Utils::String::replace( Utils::FileSystem::readAllText(batteryHealthPath), "\n", "" ) );
-				ret.max_capacity = std::atoi(Utils::FileSystem::readAllText(batteryMaxCapacityPath).c_str()) / 1000; // milli amperes
-				ret.voltage = std::atof(Utils::FileSystem::readAllText(batteryVoltagePath).c_str()) / 1000000; // volts
+				ret.isCharging = queryBatteryCharging();
+				ret.health = Utils::String::toLower( Utils::String::replace( Utils::FileSystem::readAllText(batteryRootPath + "/health"), "\n", "" ) );
+				ret.max_capacity = std::atoi(Utils::FileSystem::readAllText(batteryRootPath + "/charge_full").c_str()) / 1000; // milli amperes
+				ret.voltage = queryBatteryVoltage();
 			}
+		} catch (...) {
+			LOG(LogError) << "Platform::queryBatteryInformation() - Error reading battery data!!!";
 		}
-	} catch (...) {
-		LOG(LogError) << "Platform::queryBatteryInformation() - Error reading battery data!!!";
 	}
+
 	return ret;
 }
 
+int queryBatteryLevel()
+{
+	std::string batteryCapacityPath = queryBatteryRootPath() + "/capacity";
+	if ( Utils::FileSystem::exists(batteryCapacityPath) )
+		return std::atoi(Utils::FileSystem::readAllText(batteryCapacityPath).c_str());
+
+	return 0;
+}
+
+bool queryBatteryCharging()
+{
+	std::string batteryStatusPath = queryBatteryRootPath() + "/status";
+	if ( Utils::FileSystem::exists(batteryStatusPath) )
+		return Utils::String::compareIgnoreCase( Utils::String::replace(Utils::FileSystem::readAllText(batteryStatusPath), "\n", ""), "discharging" );
+
+	return false;
+}
+
+float queryBatteryVoltage()
+{
+	std::string batteryVoltagePath = queryBatteryRootPath() + "/voltage_now";
+	if ( Utils::FileSystem::exists(batteryVoltagePath) )
+		return std::atof(Utils::FileSystem::readAllText(batteryVoltagePath).c_str()) / 1000000; // volts
+
+	return false;
+}
 
 std::string calculateIp4Netmask(std::string nbits_str)
 {
@@ -402,7 +419,7 @@ CpuAndSocketInformation queryCpuAndChipsetInformation(bool summary)
 
 		if (!summary)
 		{
-			if(Utils::FileSystem::exists("/usr/bin/lscpu"))
+			if (Utils::FileSystem::exists("/usr/bin/lscpu"))
 			{
 				chipset.vendor_id = getShOutput(R"(lscpu | egrep 'Vendor ID' | awk '{print $3}')");
 				chipset.model_name = getShOutput(R"(lscpu | egrep 'Model name' | awk '{print $3}')");
@@ -410,17 +427,17 @@ CpuAndSocketInformation queryCpuAndChipsetInformation(bool summary)
 				chipset.architecture = getShOutput(R"(lscpu | egrep 'Architecture' | awk '{print $2}')");
 				chipset.nthreads_core = std::atoi( getShOutput(R"(lscpu | egrep 'Thread' | awk '{print $4}')").c_str() );
 			}
-			if(Utils::FileSystem::exists("/sys/devices/system/cpu/cpufreq/policy0/scaling_governor"))
+			if (Utils::FileSystem::exists("/sys/devices/system/cpu/cpufreq/policy0/scaling_governor"))
 			{
 				chipset.governor = Utils::String::replace ( getShOutput(R"(cat /sys/devices/system/cpu/cpufreq/policy0/scaling_governor)"), "_" , " ");
 			}
 			chipset.frequency = queryFrequencyCpu(); // MHZ
-			if(Utils::FileSystem::exists("/sys/devices/system/cpu/cpufreq/policy0/cpuinfo_max_freq"))
+			if (Utils::FileSystem::exists("/sys/devices/system/cpu/cpufreq/policy0/cpuinfo_max_freq"))
 			{
 				chipset.frequency_max = std::atoi( getShOutput(R"(sudo cat /sys/devices/system/cpu/cpufreq/policy0/cpuinfo_max_freq)").c_str() );
 				chipset.frequency_max = chipset.frequency_max / 1000; // MHZ
 			}
-			if(Utils::FileSystem::exists("/sys/devices/system/cpu/cpufreq/policy0/cpuinfo_min_freq"))
+			if (Utils::FileSystem::exists("/sys/devices/system/cpu/cpufreq/policy0/cpuinfo_min_freq"))
 			{
 				chipset.frequency_min = std::atoi( getShOutput(R"(sudo cat /sys/devices/system/cpu/cpufreq/policy0/cpuinfo_min_freq)").c_str() );
 				chipset.frequency_min = chipset.frequency_min / 1000; // MHZ
@@ -437,7 +454,7 @@ float queryLoadCpu()
 {
 	try
 	{
-		if(Utils::FileSystem::exists("/usr/bin/top"))
+		if (Utils::FileSystem::exists("/usr/bin/top"))
 		{
 			float cpu_iddle = std::atof( getShOutput(R"(top -b -n 1 | egrep '%Cpu' | awk '{print $8}')").c_str() );
 			return 100.0f - cpu_iddle;
@@ -452,7 +469,7 @@ float queryTemperatureCpu()
 {
 	try
 	{
-		if(Utils::FileSystem::exists("/sys/devices/virtual/thermal/thermal_zone0/temp"))
+		if (Utils::FileSystem::exists("/sys/devices/virtual/thermal/thermal_zone0/temp"))
 		{
 			float temperature = std::atof( getShOutput(R"(cat /sys/devices/virtual/thermal/thermal_zone0/temp)").c_str() );
 			return temperature / 1000;
@@ -467,7 +484,7 @@ int queryFrequencyCpu()
 {
 	try
 	{
-		if(Utils::FileSystem::exists("/sys/devices/system/cpu/cpufreq/policy0/cpuinfo_cur_freq"))
+		if (Utils::FileSystem::exists("/sys/devices/system/cpu/cpufreq/policy0/cpuinfo_cur_freq"))
 		{
 			int frequency = std::atoi( getShOutput(R"(sudo cat /sys/devices/system/cpu/cpufreq/policy0/cpuinfo_cur_freq)").c_str() );
 			return frequency / 1000; // MHZ
@@ -483,7 +500,7 @@ RamMemoryInformation queryRamMemoryInformation(bool summary)
 	RamMemoryInformation memory;
 	try
 	{
-		if(Utils::FileSystem::exists("/usr/bin/top"))
+		if (Utils::FileSystem::exists("/usr/bin/top"))
 		{
 			memory.total = std::atof( getShOutput(R"(top -b -n 1 | egrep 'MiB Mem' | awk '{print $4}')").c_str() );
 			memory.free = std::atof( getShOutput(R"(top -b -n 1 | egrep 'MiB Mem' | awk '{print $6}')").c_str() );
@@ -509,36 +526,35 @@ DisplayAndGpuInformation queryDisplayAndGpuInformation(bool summary)
 
 		if (!summary)
 		{
-			if(Utils::FileSystem::exists("/sys/devices/platform/ff400000.gpu/gpuinfo"))
+			if (Utils::FileSystem::exists("/sys/devices/platform/ff400000.gpu/gpuinfo"))
 				data.gpu_model = getShOutput(R"(cat /sys/devices/platform/ff400000.gpu/gpuinfo | awk '{print $1}')");
 
-			if(Utils::FileSystem::exists("/sys/devices/platform/display-subsystem/drm/card0/card0-DSI-1/mode"))
+			if (Utils::FileSystem::exists("/sys/devices/platform/display-subsystem/drm/card0/card0-DSI-1/mode"))
 				data.resolution = getShOutput(R"(cat /sys/devices/platform/display-subsystem/drm/card0/card0-DSI-1/mode)");
 
-			if(Utils::FileSystem::exists("/sys/devices/platform/display-subsystem/graphics/fb0/bits_per_pixel"))
+			if (Utils::FileSystem::exists("/sys/devices/platform/display-subsystem/graphics/fb0/bits_per_pixel"))
 				data.bits_per_pixel = std::atoi( getShOutput(R"(cat /sys/devices/platform/display-subsystem/graphics/fb0/bits_per_pixel)").c_str() );
 
-			if(Utils::FileSystem::exists("/sys/devices/platform/ff400000.gpu/devfreq/ff400000.gpu/governor"))
+			if (Utils::FileSystem::exists("/sys/devices/platform/ff400000.gpu/devfreq/ff400000.gpu/governor"))
 				data.governor = Utils::String::replace ( getShOutput(R"(cat /sys/devices/platform/ff400000.gpu/devfreq/ff400000.gpu/governor)"), "_" , " ");
 
 			data.frequency = queryFrequencyGpu();
 
-			if(Utils::FileSystem::exists("/sys/devices/platform/ff400000.gpu/devfreq/ff400000.gpu/max_freq"))
+			if (Utils::FileSystem::exists("/sys/devices/platform/ff400000.gpu/devfreq/ff400000.gpu/max_freq"))
 			{
 				data.frequency_max = std::atoi( getShOutput(R"(cat /sys/devices/platform/ff400000.gpu/devfreq/ff400000.gpu/max_freq)").c_str() );
 				data.frequency_max = data.frequency_max / 1000000; // MHZ
 			}
 
-			if(Utils::FileSystem::exists("/sys/devices/platform/ff400000.gpu/devfreq/ff400000.gpu/min_freq"))
+			if (Utils::FileSystem::exists("/sys/devices/platform/ff400000.gpu/devfreq/ff400000.gpu/min_freq"))
 			{
 				data.frequency_min = std::atoi( getShOutput(R"(cat /sys/devices/platform/ff400000.gpu/devfreq/ff400000.gpu/min_freq)").c_str() );
 				data.frequency_min = data.frequency_min / 1000000; // MHZ
 			}
 
-			if(Utils::FileSystem::exists("/sys/devices/platform/backlight/backlight/backlight/actual_brightness"))
-				data.brightness_system = std::atoi( getShOutput(R"(cat /sys/devices/platform/backlight/backlight/backlight/actual_brightness)").c_str() );
+			data.brightness_system = queryBrightness();
 
-			if(Utils::FileSystem::exists("/sys/devices/platform/backlight/backlight/backlight/max_brightness"))
+			if (Utils::FileSystem::exists("/sys/devices/platform/backlight/backlight/backlight/max_brightness"))
 				data.brightness_system_max = std::atoi( getShOutput(R"(cat /sys/devices/platform/backlight/backlight/backlight/max_brightness)").c_str() );
 		}
 	} catch (...) {
@@ -551,7 +567,7 @@ float queryTemperatureGpu()
 {
 	try
 	{
-		if(Utils::FileSystem::exists("/sys/devices/virtual/thermal/thermal_zone1/temp"))
+		if (Utils::FileSystem::exists("/sys/devices/virtual/thermal/thermal_zone1/temp"))
 		{
 			float temperature = std::atof( getShOutput(R"(cat /sys/devices/virtual/thermal/thermal_zone1/temp)").c_str() );
 			return temperature / 1000;
@@ -566,7 +582,7 @@ int queryFrequencyGpu()
 {
 	try
 	{
-		if(Utils::FileSystem::exists("/sys/devices/platform/ff400000.gpu/devfreq/ff400000.gpu/cur_freq"))
+		if (Utils::FileSystem::exists("/sys/devices/platform/ff400000.gpu/devfreq/ff400000.gpu/cur_freq"))
 		{
 			int frequency = std::atoi( getShOutput(R"(cat /sys/devices/platform/ff400000.gpu/devfreq/ff400000.gpu/cur_freq)").c_str() );
 			return frequency / 1000000; // MHZ
@@ -574,6 +590,14 @@ int queryFrequencyGpu()
 	} catch (...) {
 		LOG(LogError) << "Platform::queryFrequencyGpu() - Error reading frequency GPU data!!!";
 	}
+	return 0;
+}
+
+int queryBrightness()
+{
+	if (Utils::FileSystem::exists("/sys/devices/platform/backlight/backlight/backlight/actual_brightness"))
+		return std::atoi( getShOutput(R"(cat /sys/devices/platform/backlight/backlight/backlight/actual_brightness)").c_str() );
+
 	return 0;
 }
 
