@@ -3,7 +3,6 @@
 #include "components/ButtonComponent.h"
 #include "Settings.h"
 #include "resources/Font.h"
-#include "Log.h"
 
 #define BUTTON_GRID_VERT_PADDING  (Renderer::getScreenHeight()*0.0296296) //32
 #define BUTTON_GRID_HORIZ_PADDING (Renderer::getScreenWidth()*0.0052083333) //10
