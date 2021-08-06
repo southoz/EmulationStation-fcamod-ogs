@@ -1162,6 +1162,21 @@ void GuiMenu::openUISettings()
 		});
 	}
 
+	// Auto adjust menu with by font size
+	auto menu_auto_width = std::make_shared<SwitchComponent>(mWindow);
+	menu_auto_width->setState(Settings::getInstance()->getBool("AutoMenuWidth"));
+	s->addWithLabel(_("AUTO SIZED MENUS"), menu_auto_width);
+	s->addSaveFunc([menu_auto_width, s]
+	{
+		bool old_value = Settings::getInstance()->getBool("AutoMenuWidth");
+		if (old_value != menu_auto_width->getState())
+		{
+			Settings::getInstance()->setBool("AutoMenuWidth", menu_auto_width->getState());
+			//Settings::getInstance()->saveFile();
+			s->setVariable("reloadGuiMenu", true);
+		}
+	});
+
 	// filenames
 	auto hidden_files = std::make_shared<SwitchComponent>(mWindow);
 	hidden_files->setState(Settings::getInstance()->getBool("ShowFilenames"));
@@ -1183,7 +1198,7 @@ void GuiMenu::openUISettings()
 	s->addSaveFunc([enable_filter, s] { 
 		bool filter_is_enabled = !Settings::getInstance()->getBool("ForceDisableFilters");
 		if (Settings::getInstance()->setBool("ForceDisableFilters", !enable_filter->getState()))
-			s->setVariable("reloadAll", true);		
+			s->setVariable("reloadAll", true);
 	});
 
 	s->onFinalize([s, pthis, window]
@@ -1592,6 +1607,7 @@ void GuiMenu::openAdvancedSettings()
 	});
 
 	// CONTROLLER ACTIVITY
+/*
 	auto activity = std::make_shared<SwitchComponent>(mWindow);
 	activity->setState(Settings::getInstance()->getBool("ShowControllerActivity"));
 	s->addWithLabel(_("SHOW CONTROLLER ACTIVITY"), activity);
@@ -1603,7 +1619,7 @@ void GuiMenu::openAdvancedSettings()
 			Settings::getInstance()->setBool("ShowControllerActivity", activity->getState());
 		}
 	});
-
+*/
 		// Battery Indicator
 	auto battery = std::make_shared<SwitchComponent>(mWindow);
 	battery->setState(Settings::getInstance()->getBool("ShowBatteryIndicator"));

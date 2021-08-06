@@ -864,6 +864,10 @@ msgstr "AYUDA EN PANTALLA"
 msgid "SHOW BATTERY STATUS"
 msgstr "MOSTRAR ESTADO DE BATERÍA"
 
+#:
+msgid "AUTO SIZED MENUS"
+msgstr "MENÚS DE TAMAÑO AUTOMÁTICO"
+
 msgid "ICON"
 msgstr "ICONO"
 

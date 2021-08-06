@@ -79,6 +79,8 @@ void Settings::setDefaults()
 	mBoolMap["ShowNetworkIndicator"] = false;
 
 	mBoolMap["VSync"] = true;
+	mBoolMap["DrawClock"] = true;
+	mBoolMap["ClockMode12"] = false;
 	mBoolMap["EnableSounds"] = true;
 	mBoolMap["ShowHelpPrompts"] = true;
 	mBoolMap["ScrapeRatings"] = true;
@@ -88,8 +90,9 @@ void Settings::setDefaults()
 	mBoolMap["SaveGamelistsOnExit"] = true;
 	mStringMap["ShowBattery"] = "text";
 	mBoolMap["OptimizeVRAM"] = true;	
-	mBoolMap["ThreadedLoading"] = true;	
+	mBoolMap["ThreadedLoading"] = true;
 	mBoolMap["MusicTitles"] = true;
+	mBoolMap["AutoMenuWidth"] = false;
 
 	mBoolMap["Debug"] = false;
 	mBoolMap["DebugGrid"] = false;
@@ -175,9 +178,6 @@ void Settings::setDefaults()
 	mStringMap["UserMusicDirectory"] = "";
 
 	mBoolMap["updates.enabled"] = false;
-	
-	mBoolMap["DrawClock"] = true;
-	mBoolMap["ClockMode12"] = false;
 
 	// Log settings
 	mStringMap["LogLevel"] = "default";

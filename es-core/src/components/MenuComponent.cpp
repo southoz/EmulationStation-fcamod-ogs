@@ -2,6 +2,8 @@
 
 #include "components/ButtonComponent.h"
 #include "Settings.h"
+#include "resources/Font.h"
+#include "Log.h"
 
 #define BUTTON_GRID_VERT_PADDING  (Renderer::getScreenHeight()*0.0296296) //32
 #define BUTTON_GRID_HORIZ_PADDING (Renderer::getScreenWidth()*0.0052083333) //10
@@ -204,6 +206,26 @@ void MenuComponent::setPosition(float x, float y, float z)
 		new_y = 0.f;
 
 	GuiComponent::setPosition(x, new_y, z);
+}
+
+void MenuComponent::setSize(float w, float h)
+{
+	float new_width = w;
+
+	if (Settings::getInstance()->getBool("AutoMenuWidth") && (((int) w) < Renderer::getScreenWidth()))
+	{
+		float font_size = ThemeData::getMenuTheme()->Text.font->getSize(),
+					ratio = 1.0f;
+
+		if ((font_size >= FONT_SIZE_MEDIUM) && (font_size < FONT_SIZE_LARGE))
+			ratio = 1.1f;
+		else if ((font_size >= FONT_SIZE_LARGE))
+			ratio = 1.2f;
+
+		new_width = (float)Math::min((int)(new_width * ratio), Renderer::getScreenWidth());
+	}
+
+	GuiComponent::setSize(new_width, h);
 }
 
 void MenuComponent::updateSize()

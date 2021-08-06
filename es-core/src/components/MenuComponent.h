@@ -56,6 +56,7 @@ public:
 	}
 
 	void setPosition(float x, float y, float z = 0.0f) override;
+	void setSize(float w, float h) override;
 
 private:
 	void updateSize();
