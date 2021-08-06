@@ -7,6 +7,7 @@
 #include "EsLocale.h"
 #include "platform.h"
 #include "Window.h"
+#include "Log.h"
 
 #define PADDING_PX			(Renderer::getScreenWidth()*0.006)
 #define PADDING_BAR			(Renderer::isSmallScreen() ? Renderer::getScreenWidth()*0.02 : Renderer::getScreenWidth()*0.006)
@@ -14,7 +15,7 @@
 #define VISIBLE_TIME		2650
 #define FADE_TIME			350
 #define BASEOPACITY			200
-#define CHECKBRIGHTNESSDELAY	40
+#define CHECKBRIGHTNESSDELAY	200
 
 BrightnessInfoComponent::BrightnessInfoComponent(Window* window, bool actionLine)
 	: GuiComponent(window)
@@ -93,7 +94,10 @@ void BrightnessInfoComponent::update(int deltaTime)
 
 	mCheckTime = 0;
 
-	int brightness = queryBrightnessLevel() + 1;
+	//LOG(LogDebug) << "BrightnessInfoComponent::update() - mBrightness: " << std::to_string(mBrightness);
+	int brightness = queryBrightnessLevel();
+	//LOG(LogDebug) << "BrightnessInfoComponent::update() - brightness: " << std::to_string(brightness);
+
 	if (brightness != mBrightness)
 	{
 		bool firstTime = (mBrightness < 0);

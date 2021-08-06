@@ -2,6 +2,7 @@
 
 #include <mutex>
 #include "GuiComponent.h"
+#include "Log.h"
 
 class ComponentGrid;
 class NinePatchComponent;

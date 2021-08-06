@@ -131,27 +131,21 @@ bool Window::init(bool initRenderer, bool forceFullScreen)
 		mClock->setColor(0x777777FF);
 	}
 
-	if (Settings::getInstance()->getBool("ShowControllerActivity") && (mControllerActivity == nullptr))
+	if (mControllerActivity == nullptr)
 		mControllerActivity = std::make_shared<ControllerActivityComponent>(this);
 
-	if (Settings::getInstance()->getBool("ShowBatteryIndicator") && (mBatteryIndicator == nullptr))
+	if (mBatteryIndicator == nullptr)
 		mBatteryIndicator = std::make_shared<BatteryIndicatorComponent>(this);
 
-	if (Settings::getInstance()->getBool("VolumePopup"))
-	{
-		if (mVolumeInfo == nullptr)
-			mVolumeInfo = std::make_shared<VolumeInfoComponent>(this);
-		else
-			mVolumeInfo->reset();
-	}
+	if (mVolumeInfo == nullptr)
+		mVolumeInfo = std::make_shared<VolumeInfoComponent>(this);
+	else
+		mVolumeInfo->reset();
 
-	if (Settings::getInstance()->getBool("BrightnessPopup"))
-	{
-		if (mBrightnessInfo == nullptr)
-			mBrightnessInfo = std::make_shared<BrightnessInfoComponent>(this);
-		else
-			mBrightnessInfo->reset();
-	}
+	if (mBrightnessInfo == nullptr)
+		mBrightnessInfo = std::make_shared<BrightnessInfoComponent>(this);
+	else
+		mBrightnessInfo->reset();
 
 	// update our help because font sizes probably changed
 	if (peekGui())
@@ -430,10 +424,10 @@ void Window::render()
 	for (auto extra : mScreenExtras)
 		extra->render(transform);
 
-	if (mVolumeInfo)
+	if (Settings::getInstance()->getBool("VolumePopup") && mVolumeInfo)
 		mVolumeInfo->render(transform);
 
-	if (mBrightnessInfo)
+	if (Settings::getInstance()->getBool("BrightnessPopup") && mBrightnessInfo)
 		mBrightnessInfo->render(transform);
 
 	if(mTimeSinceLastInput >= screensaverTime && screensaverTime != 0)
@@ -869,4 +863,5 @@ void Window::onThemeChanged(const std::shared_ptr<ThemeData>& theme)
 
 	if (Settings::getInstance()->getBool("BrightnessPopup"))
 		mBrightnessInfo = std::make_shared<BrightnessInfoComponent>(this);
+
 }

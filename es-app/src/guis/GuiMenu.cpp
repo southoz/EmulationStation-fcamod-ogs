@@ -124,14 +124,18 @@ void GuiMenu::openDisplaySettings()
 	auto s = new GuiSettings(mWindow, _("DISPLAY"));
 
 	// Brightness
-	auto bright = std::make_shared<SliderComponent>(mWindow, 1.0f, 100.f, 1.0f, "%");
-	bright->setValue(((float) ApiSystem::getBrightnessLevel()) + 1.f);
-	s->addWithLabel(_("BRIGHTNESS"), bright);
-	s->addSaveFunc([s, bright]
+	auto brightness = std::make_shared<SliderComponent>(mWindow, 1.0f, 100.f, 2.0f, "%");
+	int old_brightness_level = ApiSystem::getBrightnessLevel();
+	brightness->setValue((float) old_brightness_level);
+	s->addWithLabel(_("BRIGHTNESS"), brightness);
+	s->addSaveFunc([s, brightness, old_brightness_level]
 		{
-			ApiSystem::setBrightnessLevel( (int) bright->getValue() );
-			if (Settings::getInstance()->getBool("FullScreenMode"))
-				s->setVariable("reloadGuiMenu", true);
+			if (old_brightness_level != (int)Math::round( brightness->getValue() ))
+			{
+				ApiSystem::setBrightnessLevel( (int)Math::round( brightness->getValue() ));
+				if (Settings::getInstance()->getBool("FullScreenMode"))
+					s->setVariable("reloadGuiMenu", true);
+			}
 		});
 
 		auto brightnessPopup = std::make_shared<SwitchComponent>(mWindow);
