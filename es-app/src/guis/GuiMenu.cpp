@@ -1148,6 +1148,20 @@ void GuiMenu::openUISettings()
 			s->setVariable("reloadAll", true);
 	});
 
+	// Battery indicator
+	if (ApiSystem::getBatteryInformation().hasBattery)
+	{
+		auto batteryStatus = std::make_shared<OptionListComponent<std::string> >(mWindow, _("SHOW BATTERY STATUS"), false);
+		batteryStatus->addRange({ { _("NO"), "" },{ _("ICON"), "icon" },{ _("ICON AND TEXT"), "text" } }, Settings::getInstance()->getString("ShowBattery"));
+		s->addWithLabel(_("SHOW BATTERY STATUS"), batteryStatus);
+		s->addSaveFunc([batteryStatus]
+		{
+			std::string old_value = Settings::getInstance()->getString("ShowBattery");
+			if (old_value != batteryStatus->getSelected())
+				Settings::getInstance()->setString("ShowBattery", batteryStatus->getSelected());
+		});
+	}
+
 	// filenames
 	auto hidden_files = std::make_shared<SwitchComponent>(mWindow);
 	hidden_files->setState(Settings::getInstance()->getBool("ShowFilenames"));
@@ -1380,18 +1394,6 @@ void GuiMenu::openAdvancedSettings()
 
 	auto theme = ThemeData::getMenuTheme();
 
-	/*
-	// Emulator settings 
-	for (auto system : SystemData::sSystemVector)
-	{
-		if (system->isCollection() || system->getSystemEnvData()->mEmulators.size() == 0 || (system->getSystemEnvData()->mEmulators.size() == 1 && system->getSystemEnvData()->mEmulators[0].mCores.size() <= 1))
-			continue;
-
-		s->addEntry(_("EMULATOR SETTINGS"), true, [this] { openEmulatorSettings(); }, "iconGames");
-		break;
-	}
-	*/
-
 	//Timezone - Adapted from emuelec
 
 	auto es_timezones = std::make_shared<OptionListComponent<std::string> >(mWindow, _("TIMEZONE"), false);
@@ -1587,6 +1589,41 @@ void GuiMenu::openAdvancedSettings()
 			Settings::getInstance()->setBool("ShowDetailedSystemInfo", detailedSystemInfo->getState());
 			s->setVariable("reloadGuiMenu", true);
 		}
+	});
+
+	// CONTROLLER ACTIVITY
+	auto activity = std::make_shared<SwitchComponent>(mWindow);
+	activity->setState(Settings::getInstance()->getBool("ShowControllerActivity"));
+	s->addWithLabel(_("SHOW CONTROLLER ACTIVITY"), activity);
+	s->addSaveFunc([activity]
+	{
+		bool old_value = Settings::getInstance()->getBool("ShowControllerActivity");
+		if (old_value != activity->getState())
+		{
+			Settings::getInstance()->setBool("ShowControllerActivity", activity->getState());
+		}
+	});
+
+		// Battery Indicator
+	auto battery = std::make_shared<SwitchComponent>(mWindow);
+	battery->setState(Settings::getInstance()->getBool("ShowBatteryIndicator"));
+	s->addWithLabel(_("SHOW BATTERY LEVEL"), battery);
+	s->addSaveFunc([battery]
+	{
+		bool old_value = Settings::getInstance()->getBool("ShowBatteryIndicator");
+		if (old_value != battery->getState())
+			Settings::getInstance()->setBool("ShowBatteryIndicator", battery->getState());
+	});
+
+	// Network Indicator
+	auto networkIndicator = std::make_shared<SwitchComponent>(mWindow);
+	networkIndicator->setState(Settings::getInstance()->getBool("ShowNetworkIndicator"));
+	s->addWithLabel(_("SHOW NETWORK INDICATOR"), networkIndicator);
+	s->addSaveFunc([networkIndicator]
+	{
+		bool old_value = Settings::getInstance()->getBool("ShowNetworkIndicator");
+		if (old_value != networkIndicator->getState())
+			Settings::getInstance()->setBool("ShowNetworkIndicator", networkIndicator->getState());
 	});
 
 	// full exit

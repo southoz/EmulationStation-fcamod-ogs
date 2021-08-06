@@ -34,6 +34,8 @@ set(CORE_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/ButtonComponent.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/ComponentGrid.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/ComponentList.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/components/ControllerActivityComponent.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/components/BatteryIndicatorComponent.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/DateTimeComponent.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/DateTimeEditComponent.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/HelpComponent.h
@@ -119,6 +121,8 @@ set(CORE_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/ButtonComponent.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/ComponentGrid.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/ComponentList.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/components/ControllerActivityComponent.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/components/BatteryIndicatorComponent.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/DateTimeComponent.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/DateTimeEditComponent.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/HelpComponent.cpp

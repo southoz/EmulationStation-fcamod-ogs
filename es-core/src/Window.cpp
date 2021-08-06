@@ -13,6 +13,8 @@
 #include <SDL_events.h>
 #include "guis/GuiInfoPopup.h"
 #include "components/AsyncNotificationComponent.h"
+#include "components/ControllerActivityComponent.h"
+#include "components/BatteryIndicatorComponent.h"
 #include "guis/GuiMsgBox.h"
 #include "AudioManager.h"
 #include <string>
@@ -129,12 +131,27 @@ bool Window::init(bool initRenderer, bool forceFullScreen)
 		mClock->setColor(0x777777FF);
 	}
 
-	if (Settings::getInstance()->getBool("VolumePopup") && (mVolumeInfo == nullptr))
-		mVolumeInfo = std::make_shared<VolumeInfoComponent>(this);
+	if (Settings::getInstance()->getBool("ShowControllerActivity") && (mControllerActivity == nullptr))
+		mControllerActivity = std::make_shared<ControllerActivityComponent>(this);
 
-	if (Settings::getInstance()->getBool("BrightnessPopup") && (mBrightnessInfo == nullptr))
-		mBrightnessInfo = std::make_shared<BrightnessInfoComponent>(this);
+	if (Settings::getInstance()->getBool("ShowBatteryIndicator") && (mBatteryIndicator == nullptr))
+		mBatteryIndicator = std::make_shared<BatteryIndicatorComponent>(this);
 
+	if (Settings::getInstance()->getBool("VolumePopup"))
+	{
+		if (mVolumeInfo == nullptr)
+			mVolumeInfo = std::make_shared<VolumeInfoComponent>(this);
+		else
+			mVolumeInfo->reset();
+	}
+
+	if (Settings::getInstance()->getBool("BrightnessPopup"))
+	{
+		if (mBrightnessInfo == nullptr)
+			mBrightnessInfo = std::make_shared<BrightnessInfoComponent>(this);
+		else
+			mBrightnessInfo->reset();
+	}
 
 	// update our help because font sizes probably changed
 	if (peekGui())
@@ -241,6 +258,9 @@ void Window::input(InputConfig* config, Input input)
 	}
 	else
 	{
+		if (Settings::getInstance()->getBool("ShowControllerActivity") && (mControllerActivity != nullptr))
+			mControllerActivity->input(config, input);
+
 		if (peekGui())
 		{
 			this->peekGui()->input(config, input); // this is where the majority of inputs will be consumed: the GuiComponent Stack
@@ -330,6 +350,13 @@ void Window::update(int deltaTime)
 	if (mScreenSaver)
 		mScreenSaver->update(deltaTime);
 
+	// update pads // batocera
+	if (Settings::getInstance()->getBool("ShowControllerActivity") && mControllerActivity)
+		mControllerActivity->update(deltaTime);
+
+	if (Settings::getInstance()->getBool("ShowBatteryIndicator") && mBatteryIndicator)
+		mBatteryIndicator->update(deltaTime);
+
 	AudioManager::update(deltaTime);
 }
 
@@ -374,16 +401,14 @@ void Window::render()
 
 
 	// clock // batocera
-	if (Settings::getInstance()->getBool("DrawClock") && mClock && (mGuiStack.size() < 2 || !Renderer::isSmallScreen()))
-	{
+	if (Settings::getInstance()->getBool("DrawClock") && (mClock != nullptr) && (mGuiStack.size() < 2 || !Renderer::isSmallScreen()))
 		mClock->render(transform);
-	//	Renderer::setMatrix(Transform4x4f::Identity());
-		/*
-		if (mClockFont == nullptr)
-			mClockFont = mDefaultFonts.at(0);
 
-		mClockFont->renderTextCache(mClockText.get());*/
-	}
+	if (Settings::getInstance()->getBool("ShowControllerActivity") && (mControllerActivity != nullptr) && (mGuiStack.size() < 2 || !Renderer::isSmallScreen()))
+		mControllerActivity->render(transform);
+
+	if (Settings::getInstance()->getBool("ShowBatteryIndicator") && (mBatteryIndicator != nullptr) && (mGuiStack.size() < 2 || !Renderer::isSmallScreen()))
+		mBatteryIndicator->render(transform);
 
 	// pads // batocera
 	Renderer::setMatrix(Transform4x4f::Identity());
@@ -832,6 +857,12 @@ void Window::onThemeChanged(const std::shared_ptr<ThemeData>& theme)
 
 		mClock->applyTheme(theme, "screen", "clock", ThemeFlags::ALL ^ (ThemeFlags::TEXT));
 	}
+
+	if (Settings::getInstance()->getBool("ShowControllerActivity") && mControllerActivity)
+		mControllerActivity->applyTheme(theme, "screen", "controllerActivity", ThemeFlags::ALL ^ (ThemeFlags::TEXT));
+
+	if (Settings::getInstance()->getBool("ShowBatteryIndicator") && mBatteryIndicator)
+		mBatteryIndicator->applyTheme(theme, "screen", "batteryIndicator", ThemeFlags::ALL);
 
 	if (Settings::getInstance()->getBool("VolumePopup"))
 		mVolumeInfo = std::make_shared<VolumeInfoComponent>(this);

@@ -73,6 +73,11 @@ void Settings::setDefaults()
 
 	mStringMap["FolderViewMode"] = "never";
 
+	mBoolMap["UseOSK"] = true;
+	mBoolMap["ShowControllerActivity"] = false;
+	mBoolMap["ShowBatteryIndicator"] = false;
+	mBoolMap["ShowNetworkIndicator"] = false;
+
 	mBoolMap["VSync"] = true;
 	mBoolMap["EnableSounds"] = true;
 	mBoolMap["ShowHelpPrompts"] = true;
@@ -81,6 +86,7 @@ void Settings::setDefaults()
 	mBoolMap["QuickSystemSelect"] = true;
 	mBoolMap["MoveCarousel"] = true;
 	mBoolMap["SaveGamelistsOnExit"] = true;
+	mStringMap["ShowBattery"] = "text";
 	mBoolMap["OptimizeVRAM"] = true;	
 	mBoolMap["ThreadedLoading"] = true;	
 	mBoolMap["MusicTitles"] = true;
@@ -187,7 +193,6 @@ void Settings::setDefaults()
 
 	mBoolMap["ShowDetailedSystemInfo"] = false;
 
-	mBoolMap["UseOSK"] = true;
 
 	mDefaultBoolMap = mBoolMap;
 	mDefaultIntMap = mIntMap;
