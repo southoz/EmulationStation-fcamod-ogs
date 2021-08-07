@@ -6,6 +6,7 @@
 #include "components/TextComponent.h"
 
 class TextComponent;
+class Window;
 
 class UpdatableTextComponent : public TextComponent
 {
@@ -15,22 +16,21 @@ public:
 
 	~UpdatableTextComponent();
 
-	virtual void update(int deltaTime);
+	void update(int deltaTime) override;
 
-	void setUpdatableFunction(const std::string& id, const std::function<void()>& updateFunction = nullptr, int updateElapsedTime = 100);
+	void setUpdatableFunction(const std::function<void()>& updateFunction = nullptr, int updateElapsedTime = 100);
 
 	void clearUpdateData();
 
 	bool isUpdatable() const;
 
 private:
-	void initializeStartTime(const std::string& id, unsigned startTime);
 	void executeUpdateFunction(int deltaTime);
 	unsigned getStartTime(const std::string& id) const;
 
-	std::string mId;
 	bool mUpdatable;
 	std::function<void()> mUpdateFunction;
+	int mCheckTime;
 	int mUpdateElapsedTime;
 
 };

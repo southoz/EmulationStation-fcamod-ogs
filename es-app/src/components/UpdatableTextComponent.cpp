@@ -5,41 +5,33 @@
 #include "utils/StringUtil.h"
 #include "Log.h"
 #include "Settings.h"
-#include <SDL_timer.h>
 
-namespace UTC
-{
-	std::map<std::string, unsigned> startTimes;
-}
 
 UpdatableTextComponent::UpdatableTextComponent(Window* window) : TextComponent(window)
 {
+	mCheckTime = 0;
 }
 
 
 UpdatableTextComponent::UpdatableTextComponent(Window* window, const std::string& text, const std::shared_ptr<Font>& font, unsigned int color, Alignment align,
 	Vector3f pos, Vector2f size, unsigned int bgcolor) : TextComponent(window, text, font, color, align, pos, size, bgcolor)
 {
+	mCheckTime = 0;
 }
 
 UpdatableTextComponent::~UpdatableTextComponent()
 {
 }
 
-void UpdatableTextComponent::initializeStartTime(const std::string& id, unsigned startTime)
-{
-	UTC::startTimes[id] = startTime;
-}
-
 void UpdatableTextComponent::update(int deltaTime)
 {
+	TextComponent::update(deltaTime);
+
 	if (isUpdatable())
 		executeUpdateFunction(deltaTime);
-
-	TextComponent::update(deltaTime);
 }
 
-void UpdatableTextComponent::setUpdatableFunction(const std::string& id, const std::function<void()>& updateFunction, int updateElapsedTime)
+void UpdatableTextComponent::setUpdatableFunction(const std::function<void()>& updateFunction, int updateElapsedTime)
 {
 	if ((updateFunction == nullptr) || (updateElapsedTime < 100))
 	{
@@ -47,11 +39,9 @@ void UpdatableTextComponent::setUpdatableFunction(const std::string& id, const s
 		clearUpdateData();
 		return;
 	}
-	mId = id;
 	mUpdatable = true;
 	mUpdateFunction = updateFunction;
 	mUpdateElapsedTime = updateElapsedTime;
-	initializeStartTime(id, SDL_GetTicks());
 }
 
 void UpdatableTextComponent::clearUpdateData()
@@ -59,7 +49,7 @@ void UpdatableTextComponent::clearUpdateData()
 	mUpdatable = false;
 	mUpdateFunction = nullptr;
 	mUpdateElapsedTime = 100;
-	UTC::startTimes.erase(mId);
+	mCheckTime = 0;
 }
 
 bool UpdatableTextComponent::isUpdatable() const
@@ -67,21 +57,12 @@ bool UpdatableTextComponent::isUpdatable() const
 	return mUpdatable;
 }
 
-unsigned UpdatableTextComponent::getStartTime(const std::string& id) const
-{
-	return UTC::startTimes[id];
-}
-
 void UpdatableTextComponent::executeUpdateFunction(int deltaTime)
 {
-	unsigned mEndTime = SDL_GetTicks();
-	unsigned mStartTime = getStartTime(mId);
+	mCheckTime += deltaTime;
+	if (mCheckTime < mUpdateElapsedTime)
+		return;
 
-	if ((mUpdateFunction != nullptr) && (mUpdateElapsedTime < (int) (mEndTime - mStartTime)))
-	{
-		Log::flush();
-		mUpdateFunction();
-		mEndTime = 0;
-		initializeStartTime(mId, SDL_GetTicks());
-	}
+	mCheckTime = 0;
+	mUpdateFunction();
 }
