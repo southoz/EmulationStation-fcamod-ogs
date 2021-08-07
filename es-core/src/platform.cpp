@@ -692,3 +692,9 @@ std::string getShOutput(const std::string& mStr)
 	pclose(pipe);
 	return result;
 }
+
+bool isUsbDriveMounted(std::string device)
+{
+	return ( Utils::FileSystem::exists(device) && Utils::FileSystem::exists("/bin/lsblk")
+		&& !getShOutput("lsblk -no MOUNTPOINT " + device).empty() );
+}

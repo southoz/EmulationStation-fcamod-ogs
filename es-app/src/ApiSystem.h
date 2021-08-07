@@ -34,11 +34,13 @@ public:
 	static std::string getFreeSpaceBootInfo();
 	static std::string getFreeSpaceSystemInfo();
 	static std::string getFreeSpaceUserInfo();
+	static std::string getFreeSpaceUsbDriveInfo();
 	static std::string getFreeSpaceInfo(const std::string mountpoint);
 
 	static bool isFreeSpaceBootLimit();
 	static bool isFreeSpaceSystemLimit();
 	static bool isFreeSpaceUserLimit();
+	static bool isFreeSpaceUsbDriveLimit();
 
 	static bool isFreeSpaceLimit(const std::string mountpoint, int limit = 1); // GB
 	static bool isTemperatureLimit(float temperature, float limit = 70.0f); // ° C

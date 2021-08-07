@@ -2027,6 +2027,10 @@ msgid "ROMS DISK USAGE"
 msgstr "USO DISCO ROMS"
 
 #:
+msgid "USB DISK USAGE"
+msgstr "USO DISCO USB"
+
+#:
 msgid "NETWORK"
 msgstr "RED"
 

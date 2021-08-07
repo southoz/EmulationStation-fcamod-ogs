@@ -97,9 +97,30 @@ void GuiSystemInformation::showSummarySystemInfo()
 			bool warning = ApiSystem::isFreeSpaceUserLimit();
 			userSpace->setText(ApiSystem::getFreeSpaceUserInfo());
 			userSpace->setColor(warning ? 0xFF0000FF : color);
-		}, 60000);
+		}, 30000);
 	mUpdatables.push_back(userSpace.get());
 	addWithLabel(_("ROMS DISK USAGE"), userSpace);
+
+	// usbdrive
+	std::string value = ApiSystem::getFreeSpaceUsbDriveInfo();
+	warning = ApiSystem::isFreeSpaceUsbDriveLimit();
+	auto usbdrive = std::make_shared<UpdatableTextComponent>(mWindow, value, font, warning ? 0xFF0000FF : color);
+	usbdrive->setVisible(!value.empty());
+	usbdrive->setUpdatableFunction([usbdrive, color]
+		{
+			LOG(LogDebug) << "GuiSystemInformation::showSummarySystemInfo() - update usbdrive";
+			if (usbdrive->isVisible())
+			{
+				std::string value = ApiSystem::getFreeSpaceUsbDriveInfo();
+				bool warning = ApiSystem::isFreeSpaceUsbDriveLimit();
+				usbdrive->setVisible(!value.empty());
+				usbdrive->setText(value);
+				usbdrive->setColor(warning ? 0xFF0000FF : color);
+			}
+		}, 30000);
+	mUpdatables.push_back(usbdrive.get());
+	if (usbdrive->isVisible())
+		addWithLabel(_("USB DISK USAGE"), usbdrive);
 
 	// free ram
 	warning = ApiSystem::isMemoryLimit( memory.total, memory.free );
@@ -382,7 +403,14 @@ void GuiSystemInformation::openStorage()
 	// roms
 	warning = ApiSystem::isFreeSpaceUserLimit();
 	auto userSpace = std::make_shared<UpdatableTextComponent>(window, ApiSystem::getFreeSpaceUserInfo(), font, warning ? 0xFF0000FF : color);
-	userSpace->setUpdatableFunction([bootSpace, systemSpace, userSpace, color]
+
+	// usbdrive
+	std::string value = ApiSystem::getFreeSpaceUsbDriveInfo();
+	auto usbdrive = std::make_shared<TextComponent>(mWindow, value, font, warning ? 0xFF0000FF : color);
+	usbdrive->setVisible(!value.empty());
+	warning = ApiSystem::isFreeSpaceUsbDriveLimit();
+
+	userSpace->setUpdatableFunction([bootSpace, systemSpace, userSpace, usbdrive, color]
 		{
 			LOG(LogDebug) << "GuiSystemInformation::showSummarySystemInfo() - update storage";
 			bool warning = ApiSystem::isFreeSpaceBootLimit();
@@ -396,11 +424,22 @@ void GuiSystemInformation::openStorage()
 			warning = ApiSystem::isFreeSpaceUserLimit();
 			userSpace->setText(ApiSystem::getFreeSpaceUserInfo());
 			userSpace->setColor(warning ? 0xFF0000FF : color);
+
+			if (usbdrive->isVisible())
+			{
+				std::string value = ApiSystem::getFreeSpaceUsbDriveInfo();
+				usbdrive->setVisible(!value.empty());
+				warning = ApiSystem::isFreeSpaceUsbDriveLimit();
+				usbdrive->setText(value);
+				usbdrive->setColor(warning ? 0xFF0000FF : color);
+			}
 		}, 30000);
 	s->addUpdatableComponent(userSpace.get());
 	s->addWithLabel(_("BOOT DISK USAGE"), bootSpace);
 	s->addWithLabel(_("SYSTEM DISK USAGE"), systemSpace);
 	s->addWithLabel(_("ROMS DISK USAGE"), userSpace);
+	if (usbdrive->isVisible())
+		s->addWithLabel(_("USB DISK USAGE"), usbdrive);
 
 	window->pushGui(s);
 }

@@ -25,10 +25,10 @@ UpdatableTextComponent::~UpdatableTextComponent()
 
 void UpdatableTextComponent::update(int deltaTime)
 {
-	TextComponent::update(deltaTime);
-
 	if (isUpdatable())
 		executeUpdateFunction(deltaTime);
+
+	TextComponent::update(deltaTime);
 }
 
 void UpdatableTextComponent::setUpdatableFunction(const std::function<void()>& updateFunction, int updateElapsedTime)

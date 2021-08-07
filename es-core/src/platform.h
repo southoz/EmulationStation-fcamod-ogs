@@ -241,6 +241,8 @@ struct DeviceInformation
 
 DeviceInformation queryDeviceInformation(bool summary);
 
+bool isUsbDriveMounted(std::string device = "/dev/sda1");
+
 std::string getShOutput(const std::string& mStr);
 
 #endif // ES_CORE_PLATFORM_H
