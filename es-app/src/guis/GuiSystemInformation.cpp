@@ -130,12 +130,7 @@ void GuiSystemInformation::showSummarySystemInfo()
 			networkStatus->setText(formatNetworkStatus( ni.isConnected ));
 			if (ni.isConnected)
 			{
-				if (ni.isWifi) // Wifi ssid
-				{
-					wifiSsid->setText(ni.ssid);
-				}
-
-				// IP address
+				wifiSsid->setText(ni.ssid);
 				ipAddress->setText(ni.ip_address);
 			}
 			else

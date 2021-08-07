@@ -89,16 +89,16 @@ void processQuitMode()
 	switch (quitMode)
 	{
 	case QuitMode::RESTART:
-		LOG(LogInfo) << "Restarting EmulationStation";
+		LOG(LogInfo) << "Platform::processQuitMode() - Restarting EmulationStation";
 		touch("/tmp/es-restart");
 		break;
 	case QuitMode::REBOOT:
-		LOG(LogInfo) << "Rebooting system";
+		LOG(LogInfo) << "Platform::processQuitMode() - Rebooting system";
 		touch("/tmp/es-sysrestart");
 		runRestartCommand();
 		break;
 	case QuitMode::SHUTDOWN:
-		LOG(LogInfo) << "Shutting system down";
+		LOG(LogInfo) << "Platform::processQuitMode() - Shutting system down";
 		touch("/tmp/es-shutdown");
 		runShutdownCommand();
 		break;
@@ -223,6 +223,7 @@ std::string calculateIp4Netmask(std::string nbits_str)
 NetworkInformation queryNetworkInformation(bool summary)
 {
 	NetworkInformation network;
+	static bool executed;
 	try
 	{
 		struct ifaddrs *ifAddrStruct = NULL;
@@ -383,6 +384,22 @@ NetworkInformation queryNetworkInformation(bool summary)
 	} catch (...) {
 		LOG(LogError) << "Platform::queryNetworkInformation() - Error reading network data!!!";
 	}
+	if (executed)
+	{
+		executed = false;
+		return network;
+	}
+	// checking integrity data
+	if ( (network.isConnected && network.ip_address.empty()) || (!network.isConnected && !network.ip_address.empty())
+			|| (network.isWifi && network.ssid.empty()) || (!network.isWifi && !network.ssid.empty())
+			|| (network.isIPv6 && (network.ip_address.size() > 15)) || (!network.isIPv6 && (network.ip_address.size() < 7))
+			|| (!summary && (network.isWifi && (network.channel < 1)) || (!network.isWifi && (network.channel > 0))) )
+	{
+		LOG(LogInfo) << "Platform::queryNetworkInformation() - bad data, query again";
+		executed = true;
+		return queryNetworkInformation(summary);
+	}
+
 	return network;
 }
 
