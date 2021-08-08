@@ -67,12 +67,20 @@ void Settings::setDefaults()
 	mBoolMap["StartupOnGameList"] = false;
 	mBoolMap["HideSystemView"] = false;
 	mBoolMap["FullScreenMode"] = false;
+	mBoolMap["BrightnessPopup"] = true;
 	
 	mStringMap["StartupSystem"] = "";
 
 	mStringMap["FolderViewMode"] = "never";
 
+	mBoolMap["UseOSK"] = true;
+	mBoolMap["ShowControllerActivity"] = false;
+	mBoolMap["ShowBatteryIndicator"] = false;
+	mBoolMap["ShowNetworkIndicator"] = false;
+
 	mBoolMap["VSync"] = true;
+	mBoolMap["DrawClock"] = true;
+	mBoolMap["ClockMode12"] = false;
 	mBoolMap["EnableSounds"] = true;
 	mBoolMap["ShowHelpPrompts"] = true;
 	mBoolMap["ScrapeRatings"] = true;
@@ -80,9 +88,11 @@ void Settings::setDefaults()
 	mBoolMap["QuickSystemSelect"] = true;
 	mBoolMap["MoveCarousel"] = true;
 	mBoolMap["SaveGamelistsOnExit"] = true;
+	mStringMap["ShowBattery"] = "text";
 	mBoolMap["OptimizeVRAM"] = true;	
-	mBoolMap["ThreadedLoading"] = true;	
+	mBoolMap["ThreadedLoading"] = true;
 	mBoolMap["MusicTitles"] = true;
+	mBoolMap["AutoMenuWidth"] = false;
 
 	mBoolMap["Debug"] = false;
 	mBoolMap["DebugGrid"] = false;
@@ -131,6 +141,7 @@ void Settings::setDefaults()
 	mBoolMap["ShowFilenames"] = false;
 
 	mBoolMap["VideoAudio"] = true;
+	mBoolMap["VolumePopup"] = true;
 	mBoolMap["VideoLowersMusic"] = true;
 	mStringMap["CollectionSystemsAuto"] = "";
 	mStringMap["CollectionSystemsCustom"] = "";
@@ -144,8 +155,8 @@ void Settings::setDefaults()
 
 	// Audio out device for volume control
 	mStringMap["AudioDevice"] = "Master";
-
 	mStringMap["AudioCard"] = "default";
+
 	mStringMap["UIMode"] = "Full";
 	mStringMap["UIMode_passkey"] = "uuddlrlrba";
 	mBoolMap["ForceKiosk"] = false;
@@ -167,9 +178,6 @@ void Settings::setDefaults()
 	mStringMap["UserMusicDirectory"] = "";
 
 	mBoolMap["updates.enabled"] = false;
-	
-	mBoolMap["DrawClock"] = true;
-	mBoolMap["ClockMode12"] = false;
 
 	// Log settings
 	mStringMap["LogLevel"] = "default";
@@ -184,6 +192,7 @@ void Settings::setDefaults()
 	mBoolMap["MenusOnDisplayTop"] = false;
 
 	mBoolMap["ShowDetailedSystemInfo"] = false;
+
 
 	mDefaultBoolMap = mBoolMap;
 	mDefaultIntMap = mIntMap;

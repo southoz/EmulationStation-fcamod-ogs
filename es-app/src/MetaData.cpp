@@ -6,6 +6,7 @@
 #include <pugixml/src/pugixml.hpp>
 #include "SystemData.h"
 #include "Settings.h"
+#include "ImageIO.h"
 
 MetaDataDecl gameDecls[] = {
 	//    key,           type,                   default,            statistic,  name in GuiMetaDataEd,  prompt in GuiMetaDataEd
@@ -29,7 +30,8 @@ MetaDataDecl gameDecls[] = {
 	{ 17, "kidgame",     MD_BOOL,                "false",            false,      "kidgame",              "enter kidgame off/on" },
 	{ 18, "playcount",   MD_INT,                 "0",                true,       "play count",           "enter number of times played"},
 	{ 19, "lastplayed",  MD_TIME,                "0",                true,       "last played",          "enter last played date"},
-	{ 20, "arcadesystemname",  MD_STRING,        "",                 false,      "arcade system",        "enter arcade system name"}
+	{ 20, "arcadesystemname",  MD_STRING,        "",                 false,      "arcade system",        "enter arcade system name"},
+	{ 21, "gametime",    MD_INT,                 "0",                true,       "game time",            "how long the game has been played in total (seconds)"}
 };
 
 const std::vector<MetaDataDecl> gameMDD(gameDecls, gameDecls + sizeof(gameDecls) / sizeof(gameDecls[0]));
@@ -314,5 +316,13 @@ void MetaDataList::importScrappedMetadata(const MetaDataList& source)
 			continue;
 
 		set(mdd.key, source.get(mdd.key));
+
+		if (mdd.type == MetaDataType::MD_PATH)
+		{
+			ImageIO::removeImageCache(source.get(mdd.key));
+
+			unsigned int x, y;
+			ImageIO::getImageSize(source.get(mdd.key).c_str(), &x, &y);
+		}
 	}
 }

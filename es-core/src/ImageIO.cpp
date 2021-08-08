@@ -20,7 +20,7 @@ struct CachedFileInfo
 	{
 		size = sz;
 		x = sx;
-		y = sy;		
+		y = sy;
 	};
 
 	CachedFileInfo()
@@ -45,6 +45,13 @@ static bool sizeCacheDirty = false;
 std::string getImageCacheFilename()
 {
 	return Utils::FileSystem::getHomePath() + "/.emulationstation/imagecache.db";	
+}
+
+void ImageIO::clearImageCache()
+{
+	std::string fname = getImageCacheFilename();
+	Utils::FileSystem::removeFile(fname);
+	sizeCache.clear();
 }
 
 void ImageIO::loadImageCache()
@@ -116,6 +123,15 @@ void ImageIO::saveImageCache()
 
 static std::mutex sizeCacheLock;
 
+void ImageIO::removeImageCache(const std::string fn)
+{
+	std::unique_lock<std::mutex> lock(sizeCacheLock);
+
+	auto it = sizeCache.find(fn);
+	if (it != sizeCache.cend())
+		sizeCache.erase(fn);
+}
+
 void ImageIO::updateImageCache(const std::string fn, int sz, int x, int y)
 {
 	std::unique_lock<std::mutex> lock(sizeCacheLock);
@@ -162,12 +178,12 @@ bool ImageIO::getImageSize(const char *fn, unsigned int *x, unsigned int *y)
 		}
 	}
 
-	LOG(LogDebug) << "ImageIO::loadImageSize " << fn;
+	LOG(LogDebug) << "ImageIO::getImageSize " << fn;
 
 	auto ext = Utils::String::toLower(Utils::FileSystem::getExtension(fn));
 	if (ext != ".jpg" && ext != ".png" && ext != ".jpeg" && ext != ".gif")
 	{
-		LOG(LogWarning) << "ImageIO::loadImageSize\tUnknown file type";
+		LOG(LogWarning) << "ImageIO::getImageSize\tUnknown file type";
 		return false;
 	}
 
@@ -177,7 +193,7 @@ bool ImageIO::getImageSize(const char *fn, unsigned int *x, unsigned int *y)
 	FILE *f = fopen(fn, "rb");
 	if (f == 0)
 	{
-		LOG(LogWarning) << "ImageIO::loadImageSize\tUnable to open file";
+		LOG(LogWarning) << "ImageIO::getImageSize\tUnable to open file";
 		updateImageCache(fn, -1, -1, -1);
 		return false;
 	}
@@ -227,7 +243,7 @@ bool ImageIO::getImageSize(const char *fn, unsigned int *x, unsigned int *y)
 		*y = (buf[7] << 8) + buf[8];
 		*x = (buf[9] << 8) + buf[10];
 
-		LOG(LogDebug) << "ImageIO::loadImageSize\tJPG size " << std::string(std::to_string(*x) + "x" + std::to_string(*y)).c_str();
+		LOG(LogDebug) << "ImageIO::getImageSize\tJPG size " << std::string(std::to_string(*x) + "x" + std::to_string(*y)).c_str();
 
 		if (*x > 5000) // security ?
 		{
@@ -245,7 +261,7 @@ bool ImageIO::getImageSize(const char *fn, unsigned int *x, unsigned int *y)
 		*x = buf[6] + (buf[7] << 8);
 		*y = buf[8] + (buf[9] << 8);
 
-		LOG(LogDebug) << "ImageIO::loadImageSize\tGIF size " << std::string(std::to_string(*x) + "x" + std::to_string(*y)).c_str();
+		LOG(LogDebug) << "ImageIO::getImageSize\tGIF size " << std::string(std::to_string(*x) + "x" + std::to_string(*y)).c_str();
 
 		updateImageCache(fn, size, *x, *y);
 		return true;
@@ -257,14 +273,14 @@ bool ImageIO::getImageSize(const char *fn, unsigned int *x, unsigned int *y)
 		*x = (buf[16] << 24) + (buf[17] << 16) + (buf[18] << 8) + (buf[19] << 0);
 		*y = (buf[20] << 24) + (buf[21] << 16) + (buf[22] << 8) + (buf[23] << 0);
 
-		LOG(LogDebug) << "ImageIO::loadImageSize\tPNG size " << std::string(std::to_string(*x) + "x" + std::to_string(*y)).c_str();
+		LOG(LogDebug) << "ImageIO::getImageSize\tPNG size " << std::string(std::to_string(*x) + "x" + std::to_string(*y)).c_str();
 
 		updateImageCache(fn, size, *x, *y);
 		return true;
 	}
 
 	updateImageCache(fn, -1, -1, -1);
-	LOG(LogWarning) << "ImageIO::loadImageSize\tUnable to extract size";
+	LOG(LogWarning) << "ImageIO::getImageSize\tUnable to extract size";
 	return false;
 }
 
@@ -333,12 +349,12 @@ std::vector<unsigned char> ImageIO::loadFromMemoryRGBA32(const unsigned char * d
 			}
 			else
 			{
-				LOG(LogError) << "Error - Failed to load image from memory!";
+				LOG(LogError) << "ImageIO::loadFromMemoryRGBA32 - Error - Failed to load image from memory!";
 			}
 		}
 		else
 		{
-			LOG(LogError) << "Error - File type " << (format == FIF_UNKNOWN ? "unknown" : "unsupported") << "!";
+			LOG(LogError) << "ImageIO::loadFromMemoryRGBA32 - Error - File type " << (format == FIF_UNKNOWN ? "unknown" : "unsupported") << "!";
 		}
 		//free FIMEMORY again
 		FreeImage_CloseMemory(fiMemory);
@@ -476,12 +492,12 @@ unsigned char* ImageIO::loadFromMemoryRGBA32Ex(const unsigned char * data, const
 			}
 			else
 			{
-				LOG(LogError) << "Error - Failed to load image from memory!";
+				LOG(LogError) << "ImageIO::loadFromMemoryRGBA32Ex - Error - Failed to load image from memory!";
 			}
 		}
 		else
 		{
-			LOG(LogError) << "Error - File type " << (format == FIF_UNKNOWN ? "unknown" : "unsupported") << "!";
+			LOG(LogError) << "ImageIO::loadFromMemoryRGBA32Ex - Error - File type " << (format == FIF_UNKNOWN ? "unknown" : "unsupported") << "!";
 		}
 		//free FIMEMORY again
 		FreeImage_CloseMemory(fiMemory);

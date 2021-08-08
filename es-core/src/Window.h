@@ -21,6 +21,10 @@ class TextureResource;
 class AsyncNotificationComponent;
 class ThemeData;
 class TextComponent;
+class ControllerActivityComponent;
+class VolumeInfoComponent;
+class BrightnessInfoComponent;
+class BatteryIndicatorComponent;
 
 struct HelpStyle;
 
@@ -114,17 +118,17 @@ private:
 	// Returns true if at least one component on the stack is processing
 	bool isProcessing();
 
-	HelpComponent* mHelp;
+	HelpComponent*  mHelp;
 	ImageComponent* mBackgroundOverlay;
-	ScreenSaver*	mScreenSaver;
-	InfoPopup*		mInfoPopup;
-	bool			mRenderScreenSaver;
+	ScreenSaver*    mScreenSaver;
+	InfoPopup*      mInfoPopup;
+	bool            mRenderScreenSaver;
 
 	std::shared_ptr<TextureResource> mSplash;
-	std::string						 mCustomSplash;
+	std::string                      mCustomSplash;
 	
-	std::vector<GuiComponent*> mScreenExtras;
-	std::vector<GuiComponent*> mGuiStack;
+	std::vector<GuiComponent*>       mScreenExtras;
+	std::vector<GuiComponent*>       mGuiStack;
 
 	std::vector< std::shared_ptr<Font> > mDefaultFonts;
 
@@ -137,7 +141,11 @@ private:
 	// clock // batocera
 	int mClockElapsed;
 	
-	std::shared_ptr<TextComponent>	mClock;
+	std::shared_ptr<TextComponent> mClock;
+	std::shared_ptr<ControllerActivityComponent> mControllerActivity;
+	std::shared_ptr<VolumeInfoComponent> mVolumeInfo;
+	std::shared_ptr<BrightnessInfoComponent> mBrightnessInfo;
+	std::shared_ptr<BatteryIndicatorComponent>	mBatteryIndicator;
 
 	bool mNormalizeNextUpdate;
 

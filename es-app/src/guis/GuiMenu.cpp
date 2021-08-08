@@ -30,8 +30,6 @@
 #include "scrapers/ThreadedScraper.h"
 #include "ApiSystem.h"
 #include "views/gamelist/IGameListView.h"
-
-#include <go2/display.h>
 #include "SystemConf.h"
 
 GuiMenu::GuiMenu(Window* window, bool animate) : GuiComponent(window), mMenu(window, _("MAIN MENU")), mVersion(window)
@@ -79,7 +77,7 @@ GuiMenu::GuiMenu(Window* window, bool animate) : GuiComponent(window), mMenu(win
 		BatteryInformation battery = ApiSystem::getBatteryInformation();
 		SoftwareInformation software = ApiSystem::getSoftwareInformation();
 
-		addEntry("BAT: " + std::to_string( battery.level ) + "%" + " | SND: " + std::string(getShOutput(R"(current_volume)")) + " | BRT: " + std::to_string( go2_display_backlight_get(NULL) ) + "% |" + _("NETWORK")+ ": " + _( (ApiSystem::isNetworkConnected() ? "CONNECTED" : "NOT CONNECTED") ), false, [this] {  });
+		addEntry("BAT: " + std::to_string( battery.level ) + "%" + " | SND: " + std::to_string(ApiSystem::getVolume()) + " | BRT: " + std::to_string( ApiSystem::getBrightnessLevel() ) + "% |" + _("NETWORK")+ ": " + _( (ApiSystem::isNetworkConnected() ? "CONNECTED" : "NOT CONNECTED") ), false, [this] {  });
 
 		addEntry("Distro Version: " + software.application_name + " " + software.version, false, [this] {  });
 	}
@@ -126,15 +124,30 @@ void GuiMenu::openDisplaySettings()
 	auto s = new GuiSettings(mWindow, _("DISPLAY"));
 
 	// Brightness
-	auto bright = std::make_shared<SliderComponent>(mWindow, 1.0f, 100.f, 1.0f, "%");
-	bright->setValue((float)go2_display_backlight_get(NULL)+1.0);
-	s->addWithLabel(_("BRIGHTNESS"), bright);
-	s->addSaveFunc([s, bright]
+	auto brightness = std::make_shared<SliderComponent>(mWindow, 1.0f, 100.f, 2.0f, "%");
+	int old_brightness_level = ApiSystem::getBrightnessLevel();
+	brightness->setValue((float) old_brightness_level);
+	s->addWithLabel(_("BRIGHTNESS"), brightness);
+	s->addSaveFunc([s, brightness, old_brightness_level]
 		{
-			go2_display_backlight_set(NULL, (int)Math::round(bright->getValue()));
-			if (Settings::getInstance()->getBool("FullScreenMode"))
-				s->setVariable("reloadGuiMenu", true);
+			if (old_brightness_level != (int)Math::round( brightness->getValue() ))
+			{
+				ApiSystem::setBrightnessLevel( (int)Math::round( brightness->getValue() ));
+				if (Settings::getInstance()->getBool("FullScreenMode"))
+					s->setVariable("reloadGuiMenu", true);
+			}
 		});
+
+		auto brightnessPopup = std::make_shared<SwitchComponent>(mWindow);
+		brightnessPopup->setState(Settings::getInstance()->getBool("BrightnessPopup"));
+		s->addWithLabel(_("SHOW OVERLAY WHEN BRIGHTNESS CHANGES"), brightnessPopup);
+		s->addSaveFunc([brightnessPopup]
+			{
+				bool old_value = Settings::getInstance()->getBool("BrightnessPopup");
+				if (old_value != brightnessPopup->getState())
+					Settings::getInstance()->setBool("BrightnessPopup", brightnessPopup->getState());
+			}
+		);
 
 	// Select Full Screen Mode
 	auto fullScreenMode = std::make_shared<SwitchComponent>(mWindow);
@@ -362,6 +375,7 @@ void GuiMenu::openSoundSettings()
 		transitions.push_back("Master");
 		transitions.push_back("Digital");
 		transitions.push_back("Analogue");
+		transitions.push_back("Playback");
 		if (Settings::getInstance()->getString("AudioDevice") != "") {
 			if(std::find(transitions.begin(), transitions.end(), Settings::getInstance()->getString("AudioDevice")) == transitions.end()) {
 				transitions.push_back(Settings::getInstance()->getString("AudioDevice"));
@@ -375,6 +389,17 @@ void GuiMenu::openSoundSettings()
 			VolumeControl::getInstance()->deinit();
 			VolumeControl::getInstance()->init();
 		});
+
+		auto volumePopup = std::make_shared<SwitchComponent>(mWindow);
+		volumePopup->setState(Settings::getInstance()->getBool("VolumePopup"));
+		s->addWithLabel(_("SHOW OVERLAY WHEN VOLUME CHANGES"), volumePopup);
+		s->addSaveFunc([volumePopup]
+			{
+				bool old_value = Settings::getInstance()->getBool("VolumePopup");
+				if (old_value != volumePopup->getState())
+					Settings::getInstance()->setBool("VolumePopup", volumePopup->getState());
+			}
+		);
 
 		// disable sounds
 		auto music_enabled = std::make_shared<SwitchComponent>(mWindow);
@@ -1127,6 +1152,35 @@ void GuiMenu::openUISettings()
 			s->setVariable("reloadAll", true);
 	});
 
+	// Battery indicator
+	if (ApiSystem::getBatteryInformation().hasBattery)
+	{
+		auto batteryStatus = std::make_shared<OptionListComponent<std::string> >(mWindow, _("SHOW BATTERY STATUS"), false);
+		batteryStatus->addRange({ { _("NO"), "" },{ _("ICON"), "icon" },{ _("ICON AND TEXT"), "text" } }, Settings::getInstance()->getString("ShowBattery"));
+		s->addWithLabel(_("SHOW BATTERY STATUS"), batteryStatus);
+		s->addSaveFunc([batteryStatus]
+		{
+			std::string old_value = Settings::getInstance()->getString("ShowBattery");
+			if (old_value != batteryStatus->getSelected())
+				Settings::getInstance()->setString("ShowBattery", batteryStatus->getSelected());
+		});
+	}
+
+	// Auto adjust menu with by font size
+	auto menu_auto_width = std::make_shared<SwitchComponent>(mWindow);
+	menu_auto_width->setState(Settings::getInstance()->getBool("AutoMenuWidth"));
+	s->addWithLabel(_("AUTO SIZED MENUS"), menu_auto_width);
+	s->addSaveFunc([menu_auto_width, s]
+	{
+		bool old_value = Settings::getInstance()->getBool("AutoMenuWidth");
+		if (old_value != menu_auto_width->getState())
+		{
+			Settings::getInstance()->setBool("AutoMenuWidth", menu_auto_width->getState());
+			//Settings::getInstance()->saveFile();
+			s->setVariable("reloadGuiMenu", true);
+		}
+	});
+
 	// filenames
 	auto hidden_files = std::make_shared<SwitchComponent>(mWindow);
 	hidden_files->setState(Settings::getInstance()->getBool("ShowFilenames"));
@@ -1148,7 +1202,7 @@ void GuiMenu::openUISettings()
 	s->addSaveFunc([enable_filter, s] { 
 		bool filter_is_enabled = !Settings::getInstance()->getBool("ForceDisableFilters");
 		if (Settings::getInstance()->setBool("ForceDisableFilters", !enable_filter->getState()))
-			s->setVariable("reloadAll", true);		
+			s->setVariable("reloadAll", true);
 	});
 
 	s->onFinalize([s, pthis, window]
@@ -1359,18 +1413,6 @@ void GuiMenu::openAdvancedSettings()
 
 	auto theme = ThemeData::getMenuTheme();
 
-	/*
-	// Emulator settings 
-	for (auto system : SystemData::sSystemVector)
-	{
-		if (system->isCollection() || system->getSystemEnvData()->mEmulators.size() == 0 || (system->getSystemEnvData()->mEmulators.size() == 1 && system->getSystemEnvData()->mEmulators[0].mCores.size() <= 1))
-			continue;
-
-		s->addEntry(_("EMULATOR SETTINGS"), true, [this] { openEmulatorSettings(); }, "iconGames");
-		break;
-	}
-	*/
-
 	//Timezone - Adapted from emuelec
 
 	auto es_timezones = std::make_shared<OptionListComponent<std::string> >(mWindow, _("TIMEZONE"), false);
@@ -1566,6 +1608,42 @@ void GuiMenu::openAdvancedSettings()
 			Settings::getInstance()->setBool("ShowDetailedSystemInfo", detailedSystemInfo->getState());
 			s->setVariable("reloadGuiMenu", true);
 		}
+	});
+
+	// CONTROLLER ACTIVITY
+/*
+	auto activity = std::make_shared<SwitchComponent>(mWindow);
+	activity->setState(Settings::getInstance()->getBool("ShowControllerActivity"));
+	s->addWithLabel(_("SHOW CONTROLLER ACTIVITY"), activity);
+	s->addSaveFunc([activity]
+	{
+		bool old_value = Settings::getInstance()->getBool("ShowControllerActivity");
+		if (old_value != activity->getState())
+		{
+			Settings::getInstance()->setBool("ShowControllerActivity", activity->getState());
+		}
+	});
+*/
+		// Battery Indicator
+	auto battery = std::make_shared<SwitchComponent>(mWindow);
+	battery->setState(Settings::getInstance()->getBool("ShowBatteryIndicator"));
+	s->addWithLabel(_("SHOW BATTERY LEVEL"), battery);
+	s->addSaveFunc([battery]
+	{
+		bool old_value = Settings::getInstance()->getBool("ShowBatteryIndicator");
+		if (old_value != battery->getState())
+			Settings::getInstance()->setBool("ShowBatteryIndicator", battery->getState());
+	});
+
+	// Network Indicator
+	auto networkIndicator = std::make_shared<SwitchComponent>(mWindow);
+	networkIndicator->setState(Settings::getInstance()->getBool("ShowNetworkIndicator"));
+	s->addWithLabel(_("SHOW NETWORK INDICATOR"), networkIndicator);
+	s->addSaveFunc([networkIndicator]
+	{
+		bool old_value = Settings::getInstance()->getBool("ShowNetworkIndicator");
+		if (old_value != networkIndicator->getState())
+			Settings::getInstance()->setBool("ShowNetworkIndicator", networkIndicator->getState());
 	});
 
 	// full exit

@@ -16,6 +16,7 @@
 #include <fstream>
 #include "Gamelist.h"
 #include "FileSorts.h"
+#include "utils/ThreadPool.h"
 
 std::string myCollectionsName = "collections";
 
@@ -35,6 +36,7 @@ std::vector<CollectionSystemDecl> CollectionSystemManager::getSystemDecls()
 		{ AUTO_AT2PLAYERS,      "2players",	    "2 players",         "filename, ascending",      "auto-at2players",         false,       true },
 		{ AUTO_AT4PLAYERS,      "4players",     "4 players",         "filename, ascending",      "auto-at4players",         false,       true },
 		{ AUTO_NEVER_PLAYED,    "neverplayed",  "never played",      "filename, ascending",      "auto-neverplayed",        false,       true },
+		{ AUTO_VERTICALARCADE,  "vertical",     "vertical arcade",   "filename, ascending",      "auto-verticalarcade",     false,       true }, // batocera
 
 		// Arcade meta 
 		{ AUTO_ARCADE,          "arcade",       "arcade",            "filename, ascending",      "arcade",                  false,       true },
@@ -162,7 +164,7 @@ void CollectionSystemManager::saveCustomCollection(SystemData* sys)
 	}
 	else
 	{
-		LOG(LogError) << "Couldn't find collection to save! " << name;
+		LOG(LogError) << "CollectionSystemManager::saveCustomCollection() - Couldn't find collection to save! " << name;
 	}
 }
 
@@ -393,7 +395,7 @@ void CollectionSystemManager::deleteCollectionFiles(FileData* file)
 			FileData* collectionEntry = (sysDataIt->second.system)->getRootFolder()->FindByPath(key);
 			if (collectionEntry != nullptr)
 			{
-				sysDataIt->second.needsSave = true;				
+				sysDataIt->second.needsSave = true;
 				SystemData* systemViewToUpdate = getSystemToView(sysDataIt->second.system);
 				ViewController::get()->getGameListView(systemViewToUpdate).get()->remove(collectionEntry, false);
 			}
@@ -499,7 +501,7 @@ void CollectionSystemManager::setEditMode(std::string collectionName)
 {
 	if (mCustomCollectionSystemsData.find(collectionName) == mCustomCollectionSystemsData.cend())
 	{
-		LOG(LogError) << "Tried to edit a non-existing collection: " << collectionName;
+		LOG(LogError) << "CollectionSystemManager::setEditMode() - Tried to edit a non-existing collection: " << collectionName;
 		return;
 	}
 	mIsEditingCustom = true;
@@ -835,6 +837,9 @@ void CollectionSystemManager::populateAutoCollection(CollectionSystemData* sysDa
 						// we may still want to add files we don't want in auto collections in "favorites"
 						include = (*gameIt)->getMetadata().get("favorite") == "true";
 						break;
+					case AUTO_VERTICALARCADE: // batocera
+						include = (*gameIt)->isVerticalArcadeGame();
+						break;
 					case AUTO_ARCADE:
 						include = include && isArcade;
 						break;
@@ -986,7 +991,7 @@ void CollectionSystemManager::populateCustomCollection(CollectionSystemData* sys
 	std::unordered_map<std::string, FileData*> map;
 
 	if (pMap == nullptr)
-	{		
+	{
 		folder->createChildrenByFilenameMap(map);
 		pMap = &map;
 	}
@@ -994,7 +999,7 @@ void CollectionSystemManager::populateCustomCollection(CollectionSystemData* sys
 	// iterate list of files in config file
 	for(std::string gameKey; getline(input, gameKey); )
 	{
-		gameKey = Utils::FileSystem::resolveRelativePath(gameKey, "portnawak", true);
+		gameKey = Utils::FileSystem::resolveRelativePath(Utils::String::trim(gameKey), "portnawak", true);
 
 		std::unordered_map<std::string, FileData*>::const_iterator it = pMap->find(gameKey);
 		if (it != pMap->cend())
@@ -1005,7 +1010,7 @@ void CollectionSystemManager::populateCustomCollection(CollectionSystemData* sys
 		}
 		else
 		{
-			LOG(LogInfo) << "Couldn't find game referenced at '" << gameKey << "' for system config '" << path << "'";
+			LOG(LogInfo) << "CollectionSystemManager::populateCustomCollection() - Couldn't find game referenced at '" << gameKey << "' for system config '" << path << "'";
 		}
 	}
 	updateCollectionFolderMetadata(newSys);
@@ -1043,40 +1048,65 @@ void CollectionSystemManager::removeCollectionsFromDisplayedSystems()
 
 void CollectionSystemManager::addEnabledCollectionsToDisplayedSystems(std::map<std::string, CollectionSystemData>* colSystemData, std::unordered_map<std::string, FileData*>* pMap)
 {
+	if (Settings::getInstance()->getBool("ThreadedLoading"))
+	{
+		LOG(LogDebug) << "CollectionSystemManager::addEnabledCollectionsToDisplayedSystems() - Collection threaded loading";
+		std::vector<CollectionSystemData*> collectionsToPopulate;
+		for (auto it = colSystemData->begin(); it != colSystemData->end(); it++)
+			if (it->second.isEnabled && !it->second.isPopulated)
+				collectionsToPopulate.push_back(&(it->second));
+
+		if (collectionsToPopulate.size() > 1)
+		{
+			getAllGamesCollection();
+
+			Utils::ThreadPool pool;
+
+			for (auto collection : collectionsToPopulate)
+			{
+				if (collection->decl.isCustom)
+					pool.queueWorkItem([this, collection, pMap] { populateCustomCollection(collection, pMap); });
+				else
+					pool.queueWorkItem([this, collection, pMap] { populateAutoCollection(collection); });
+			}
+
+			pool.wait();
+		}
+	}
 	// add auto enabled ones
 	for(std::map<std::string, CollectionSystemData>::iterator it = colSystemData->begin() ; it != colSystemData->end() ; it++ )
 	{
-		if(it->second.isEnabled)
+		if(!it->second.isEnabled)
+			continue;
+
+		// check if populated, otherwise populate
+		if (!it->second.isPopulated)
 		{
-			// check if populated, otherwise populate
-			if (!it->second.isPopulated)
+			if(it->second.decl.isCustom)
 			{
-				if(it->second.decl.isCustom)
-				{
-					populateCustomCollection(&(it->second), pMap);
-				}
-				else
-				{
-					populateAutoCollection(&(it->second));
-				}
-			}
-			// check if it has its own view
-			if(!it->second.decl.isCustom || themeFolderExists(it->first) || !Settings::getInstance()->getBool("UseCustomCollectionsSystem"))
-			{
-				if (it->second.decl.displayIfEmpty || it->second.system->getRootFolder()->getChildren().size() > 0)
-				{
-					// exists theme folder, or we chose not to bundle it under the custom-collections system
-					// so we need to create a view
-					if (it->second.isEnabled)
-						SystemData::sSystemVector.push_back(it->second.system);
-				}
+				populateCustomCollection(&(it->second), pMap);
 			}
 			else
 			{
-				FileData* newSysRootFolder = it->second.system->getRootFolder();
-				mCustomCollectionsBundle->getRootFolder()->addChild(newSysRootFolder);
-				mCustomCollectionsBundle->getIndex(true)->importIndex(it->second.system->getIndex(true));
+				populateAutoCollection(&(it->second));
 			}
+		}
+		// check if it has its own view
+		if(!it->second.decl.isCustom || themeFolderExists(it->first) || !Settings::getInstance()->getBool("UseCustomCollectionsSystem"))
+		{
+			if (it->second.decl.displayIfEmpty || it->second.system->getRootFolder()->getChildren().size() > 0)
+			{
+				// exists theme folder, or we chose not to bundle it under the custom-collections system
+				// so we need to create a view
+				if (it->second.isEnabled)
+					SystemData::sSystemVector.push_back(it->second.system);
+			}
+		}
+		else
+		{
+			FileData* newSysRootFolder = it->second.system->getRootFolder();
+			mCustomCollectionsBundle->getRootFolder()->addChild(newSysRootFolder);
+			mCustomCollectionsBundle->getIndex(true)->importIndex(it->second.system->getIndex(true));
 		}
 	}
 }
@@ -1219,7 +1249,7 @@ std::vector<std::string> CollectionSystemManager::getCollectionsFromConfigFolder
 				}
 				else
 				{
-					LOG(LogInfo) << "Found non-collection config file in collections folder: " << filename;
+					LOG(LogInfo) << "CollectionSystemManager::getCollectionsFromConfigFolder() - Found non-collection config file in collections folder: " << filename;
 				}
 			}
 		}

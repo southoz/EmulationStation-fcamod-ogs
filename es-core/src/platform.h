@@ -60,29 +60,31 @@ struct BatteryInformation
 };
 
 BatteryInformation queryBatteryInformation(bool summary);
-
+int queryBatteryLevel();
+bool queryBatteryCharging();
+float queryBatteryVoltage();
 
 struct NetworkInformation
 {
 	NetworkInformation()
 	{
 		isConnected = false;
-		iface = "lo";
+		iface = "";
 		isEthernet = false;
-		isWifi = false;
+		isWifi = false; // wifi
 		isIPv6 = false;
-		netmask = "255.255.0.0";
-		ip_address = "127.0.0.1";
-		mac = "00:00:00:00:00:00";
-		dns1 = "--";
-		dns2 = "--";
-		gateway = "--";
-		ssid = "--"; // wifi
-		signal = 0; // wifi
-		channel = 0; // wifi
-		security = "N/A"; // wifi
+		netmask = "";
+		ip_address = "";
+		mac = "";
+		dns1 = "";
+		dns2 = "";
+		gateway = "";
+		ssid = ""; // wifi
+		signal = -1; // wifi
+		channel = -1; // wifi
+		security = ""; // wifi
 		rate = 0;
-		rate_unit = "N/A";
+		rate_unit = "";
 	}
 
 	bool isConnected;
@@ -195,6 +197,9 @@ struct DisplayAndGpuInformation
 DisplayAndGpuInformation queryDisplayAndGpuInformation(bool summary);
 float queryTemperatureGpu();
 int queryFrequencyGpu();
+int queryBrightness();
+int queryBrightnessLevel();
+void saveBrightnessLevel(int brightness_level);
 
 struct SoftwareInformation
 {
@@ -235,6 +240,8 @@ struct DeviceInformation
 };
 
 DeviceInformation queryDeviceInformation(bool summary);
+
+bool isUsbDriveMounted(std::string device = "/dev/sda1");
 
 std::string getShOutput(const std::string& mStr);
 

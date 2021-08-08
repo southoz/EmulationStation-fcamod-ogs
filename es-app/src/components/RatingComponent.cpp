@@ -3,6 +3,7 @@
 #include "resources/TextureResource.h"
 #include "ThemeData.h"
 #include "EsLocale.h"
+#include "Settings.h"
 
 RatingComponent::RatingComponent(Window* window) : GuiComponent(window), mColorShift(0xFFFFFFFF), mUnfilledColor(0xFFFFFFFF)
 {
@@ -16,17 +17,11 @@ RatingComponent::RatingComponent(Window* window) : GuiComponent(window), mColorS
 
 void RatingComponent::setValue(const std::string& value)
 {
-	if(value.empty())
-	{
-		mValue = 0.0f;
-	}else{
-		mValue = stof(value);
-		if(mValue > 1.0f)
-			mValue = 1.0f;
-		else if(mValue < 0.0f)
-			mValue = 0.0f;
-	}
+	float newValue = Math::clamp(0.0f, 1.0f, Utils::String::toFloat(value));
+	if (mValue == newValue)
+		return;
 
+	mValue = newValue;
 	updateVertices();
 }
 
@@ -107,7 +102,16 @@ void RatingComponent::updateColors()
 
 void RatingComponent::render(const Transform4x4f& parentTrans)
 {
-	if (!isVisible() || mFilledTexture == nullptr || mUnfilledTexture == nullptr)
+	if (!isVisible())
+		return;
+
+	if (mFilledTexture == nullptr)
+		mFilledTexture = TextureResource::get(":/star_filled.svg", true, true);
+
+	if (mUnfilledTexture == nullptr)
+		mUnfilledTexture = TextureResource::get(":/star_unfilled.svg", true, true);
+
+	if (mFilledTexture == nullptr || mUnfilledTexture == nullptr)
 		return;
 
 	Transform4x4f trans = parentTrans * getTransform();
@@ -118,6 +122,9 @@ void RatingComponent::render(const Transform4x4f& parentTrans)
 		return;
 
 	Renderer::setMatrix(trans);
+
+	if (Settings::getInstance()->getBool("DebugImage"))
+		Renderer::drawRect(0.0f, 0.0f, mSize.x(), mSize.y(), 0xFFFF0033, 0xFFFF0033);
 
 	if (mUnfilledTexture->bind())
 	{

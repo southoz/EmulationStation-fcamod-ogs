@@ -208,11 +208,11 @@ msgstr "CAMBIAR VÍDEO CADA (SEGS)"
 
 #:
 msgid "SHOW GAME INFO"
-msgstr "VER INFORMACIÓN DEL JUEGO"
+msgstr "MOSTRAR INFORMACIÓN DEL JUEGO"
 
 #:
 msgid "SHOW GAME INFO ON SCREENSAVER"
-msgstr "VER INFORMACIÓN DEL JUEGO"
+msgstr "MOSTRAR INFORMACIÓN DEL JUEGO"
 
 #:
 msgid "USE MARQUEE AS GAME INFO"
@@ -488,7 +488,16 @@ msgstr "MENÚS EN LA PARTE SUPERIOR"
 
 #:
 msgid "SHOW DETAILED SYSTEM INFO"
-msgstr "VER INFO. SISTEMA DETALLADA"
+msgstr "MOSTRAR INFO. SISTEMA DETALLADA"
+
+msgid "SHOW CONTROLLER ACTIVITY"
+msgstr "MOSTRAR ACTIVIDAD DEL MANDO EN PANTALLA"
+
+msgid "SHOW BATTERY LEVEL"
+msgstr "MOSTRAR EL NIVEL DE BATERÍA"
+
+msgid "SHOW NETWORK INDICATOR"
+msgstr "MOSTRAR INDICADOR DE RED"
 
 #:
 msgid "THREADED LOADING"
@@ -780,6 +789,10 @@ msgid "BRIGHTNESS"
 msgstr "BRILLO"
 
 #:
+msgid "SHOW OVERLAY WHEN BRIGHTNESS CHANGES"
+msgstr "MOSTRAR BARRA BRILLO AL CAMBIAR"
+
+#:
 msgid "SYSTEM BRIGHTNESS"
 msgstr "BRILLO DEL SISTEMA"
 
@@ -848,6 +861,20 @@ msgid "ON-SCREEN HELP"
 msgstr "AYUDA EN PANTALLA"
 
 #:
+msgid "SHOW BATTERY STATUS"
+msgstr "MOSTRAR ESTADO DE BATERÍA"
+
+#:
+msgid "AUTO SIZED MENUS"
+msgstr "MENÚS DE TAMAÑO AUTOMÁTICO"
+
+msgid "ICON"
+msgstr "ICONO"
+
+msgid "ICON AND TEXT"
+msgstr "ICONO Y TEXTO"
+
+#:
 msgid "HIDE WHEN RUNNING GAME"
 msgstr "OCULTAR AL LANZAR JUEGO"
 
@@ -900,8 +927,16 @@ msgid "Analogue"
 msgstr "Analógico"
 
 #:
+msgid "Playback"
+msgstr "Reproductor"
+
+#:
 msgid "FRONTEND MUSIC"
 msgstr "MÚSICA DE FONDO"
+
+#:
+msgid "SHOW OVERLAY WHEN VOLUME CHANGES"
+msgstr "MOSTRAR BARRA VOLUMEN AL CAMBIAR"
 
 #:
 msgid "ONLY PLAY SYSTEM-SPECIFIC MUSIC FOLDER"
@@ -1086,8 +1121,8 @@ msgid "UNABLE TO PAIR CONTROLLER"
 msgstr "NO SE PUEDE EMPAREJAR EL MANDO"
 
 #:
-msgid "AN ERROR OCCURED"
-msgstr "OCURRIÓ UN ERROR"
+msgid "AN ERROR HAS OCCURED"
+msgstr "HA OCURRIDO UN ERROR"
 
 #:
 msgid "NO CONTROLLERS FOUND"
@@ -1450,6 +1485,18 @@ msgstr "introducir la última vez que jugó"
 msgid "enter arcade system name"
 msgstr "introducir nombre del sistema arcade"
 
+#:
+msgid "game time"
+msgstr "tiempo jugado"
+
+#:
+msgid "Game time"
+msgstr "Tiempo jugado"
+
+#:
+msgid "how long the game has been played in total (seconds)"
+msgstr "tiempo total jugado (segundos)"
+
 #, c-format
 msgid "%i GAME AVAILABLE"
 msgid_plural "%i GAMES AVAILABLE"
@@ -1569,6 +1616,38 @@ msgstr "SISTEMA, ASCENDENTE"
 #:
 msgid "SYSTEM, DESCENDING"
 msgstr "SISTEMA, DESCENDENTE"
+
+#:
+msgid "FILE CREATION DATE, ASCENDING"
+msgstr "FECHA DE CREACIÓN, ASCENDENTE"
+
+#:
+msgid "FILE CREATION DATE, DESCENDING"
+msgstr "FECHA DE CREACIÓN, DESCENDENTE"
+
+#:
+msgid "GAME TIME, ASCENDING"
+msgstr "TIEMPO JUGADO, ASCENDENTE"
+
+#:
+msgid "GAME TIME, DESCENDING"
+msgstr "TIEMPO JUGADO, DESCENDENTE"
+
+#:
+msgid "SYSTEM, RELEASE YEAR, ASCENDING"
+msgstr "SISTEMA, AÑO DE LANZAMIENTO, ASCENDENTE"
+
+#:
+msgid "SYSTEM, RELEASE YEAR, DESCENDING"
+msgstr "SISTEMA, AÑO DE LANZAMIENTO, DESCENDENTE"
+
+#:
+msgid "RELEASE YEAR, SYSTEM, ASCENDING"
+msgstr "AÑO DE LANZAMIENTO, SISTEMA, ASCENDENTE"
+
+#:
+msgid "RELEASE YEAR, SYSTEM, DESCENDING"
+msgstr "AÑO DE LANZAMIENTO, SISTEMA, DESCENDENTE"
 
 #:
 msgid "WORKING..."
@@ -1946,6 +2025,10 @@ msgstr "USO DISCO SISTEMA"
 #:
 msgid "ROMS DISK USAGE"
 msgstr "USO DISCO ROMS"
+
+#:
+msgid "USB DISK USAGE"
+msgstr "USO DISCO USB"
 
 #:
 msgid "NETWORK"

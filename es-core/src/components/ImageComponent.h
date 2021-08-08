@@ -89,7 +89,6 @@ public:
 
 	void render(const Transform4x4f& parentTrans) override;
 
-	void setAllowAsync(bool async) { mAllowAsync = async; };
 	void setAllowFading(bool fade) { mAllowFading = fade; };
 	void setMirroring(Vector2f mirror) { mMirror = mirror; };
 
@@ -158,7 +157,6 @@ private:
 	bool					mRotateByTargetSize;
 	bool					mVisible;
 	bool					mAllowFading;
-	bool					mAllowAsync;
 	float					mRoundCorners;
 
 	Vector2f mTopLeftCrop;

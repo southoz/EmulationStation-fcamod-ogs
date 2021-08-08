@@ -257,6 +257,17 @@ const bool FileData::isArcadeAsset()
 	return false;
 }
 
+const bool FileData::isVerticalArcadeGame()
+{
+	if (mSystem && mSystem->hasPlatformId(PlatformIds::ARCADE))
+	{
+		const std::string stem = Utils::FileSystem::getStem(getPath());
+		return MameNames::getInstance()->isVertical(stem);
+	}
+
+	return false;
+}
+
 FileData* FileData::getSourceFileData()
 {
 	return this;
@@ -303,6 +314,8 @@ void FileData::launchGame(Window* window)
 
 	Scripting::fireEvent("game-start", rom, basename);
 
+	time_t tstart = time(NULL);
+
 	LOG(LogInfo) << "	" << command;
 
 	int exitCode = runSystemCommand(command, getDisplayName(), hideWindow ? NULL : window);
@@ -327,10 +340,16 @@ void FileData::launchGame(Window* window)
 		int timesPlayed = gameToUpdate->getMetadata().getInt("playcount") + 1;
 		gameToUpdate->getMetadata().set("playcount", std::to_string(static_cast<long long>(timesPlayed)));
 
+		//update game time played
+		time_t tend = time(NULL);
+		long elapsedSeconds = difftime(tend, tstart);
+		long gameTime = gameToUpdate->getMetadata().getInt("gametime") + elapsedSeconds;
+		if (elapsedSeconds >= 10)
+			gameToUpdate->setMetadata("gametime", std::to_string(static_cast<long>(gameTime)));
+
 		//update last played time
 		gameToUpdate->getMetadata().set("lastplayed", Utils::Time::DateTime(Utils::Time::now()));
 		CollectionSystemManager::get()->refreshCollectionSystems(gameToUpdate);
-
 		saveToGamelistRecovery(gameToUpdate);
 	}
 

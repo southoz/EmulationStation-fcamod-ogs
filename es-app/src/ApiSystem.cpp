@@ -10,6 +10,7 @@
 #include "Log.h"
 #include "Window.h"
 #include "components/AsyncNotificationComponent.h"
+#include "VolumeControl.h"
 
 UpdateState::State ApiSystem::state = UpdateState::State::NO_UPDATE;
 
@@ -236,6 +237,13 @@ std::string ApiSystem::getFreeSpaceUserInfo() {
 	return getFreeSpaceInfo("/roms");
 }
 
+std::string ApiSystem::getFreeSpaceUsbDriveInfo() {
+	if ( isUsbDriveMounted() )
+		return getFreeSpaceInfo("/mnt/usbdrive");
+
+	return "";
+}
+
 std::string ApiSystem::getFreeSpaceInfo(const std::string mountpoint)
 {
 	LOG(LogDebug) << "ApiSystem::getFreeSpaceInfo";
@@ -272,6 +280,13 @@ bool ApiSystem::isFreeSpaceBootLimit() {
 
 bool ApiSystem::isFreeSpaceUserLimit() {
 	return isFreeSpaceLimit("/roms", 2);
+}
+
+bool ApiSystem::isFreeSpaceUsbDriveLimit() {
+	if ( isUsbDriveMounted() )
+		return isFreeSpaceLimit("/mnt/usbdrive", 2);
+
+	return false;
 }
 
 bool ApiSystem::isFreeSpaceLimit(const std::string mountpoint, int limit)
@@ -414,4 +429,60 @@ DeviceInformation ApiSystem::getDeviceInformation(bool summary)
 	LOG(LogDebug) << "ApiSystem::getDeviceInformation()";
 
 	return queryDeviceInformation(summary); // platform.h
+}
+
+int ApiSystem::getBrightnessLevel()
+{
+	LOG(LogDebug) << "ApiSystem::getBrightnessLevel()";
+
+	return queryBrightnessLevel();
+}
+
+void ApiSystem::setBrightnessLevel(int brightnessLevel)
+{
+	LOG(LogDebug) << "ApiSystem::setBrightnessLevel()";
+
+	saveBrightnessLevel(brightnessLevel);
+}
+
+int ApiSystem::getBrightness()
+{
+	LOG(LogDebug) << "ApiSystem::getBrightness()";
+
+	return queryBrightness();
+}
+
+int ApiSystem::getVolume()
+{
+	LOG(LogDebug) << "ApiSystem::getVolume()";
+
+	return VolumeControl::getInstance()->getVolume();
+}
+
+void ApiSystem::setVolume(int volumeLevel)
+{
+	LOG(LogDebug) << "ApiSystem::setVolume()";
+
+	VolumeControl::getInstance()->setVolume(volumeLevel);
+}
+
+int ApiSystem::getBatteryLevel()
+{
+	LOG(LogDebug) << "ApiSystem::getBatteryLevel()";
+
+	return queryBatteryLevel();
+}
+
+bool ApiSystem::isBatteryCharging()
+{
+	LOG(LogDebug) << "ApiSystem::isBatteryCharging()";
+
+	return queryBatteryCharging();
+}
+
+float ApiSystem::getBatteryVoltage()
+{
+	LOG(LogDebug) << "ApiSystem::getBatteryVoltage()";
+
+	return queryBatteryVoltage();
 }

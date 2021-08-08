@@ -34,11 +34,13 @@ public:
 	static std::string getFreeSpaceBootInfo();
 	static std::string getFreeSpaceSystemInfo();
 	static std::string getFreeSpaceUserInfo();
+	static std::string getFreeSpaceUsbDriveInfo();
 	static std::string getFreeSpaceInfo(const std::string mountpoint);
 
 	static bool isFreeSpaceBootLimit();
 	static bool isFreeSpaceSystemLimit();
 	static bool isFreeSpaceUserLimit();
+	static bool isFreeSpaceUsbDriveLimit();
 
 	static bool isFreeSpaceLimit(const std::string mountpoint, int limit = 1); // GB
 	static bool isTemperatureLimit(float temperature, float limit = 70.0f); // ° C
@@ -56,6 +58,9 @@ public:
 	static float getTemperatureGpu();
 	static int getFrequencyGpu();
 	static bool isNetworkConnected();
+	static int getBatteryLevel();
+	static bool isBatteryCharging();
+	static float getBatteryVoltage();
 
 	static NetworkInformation getNetworkInformation(bool summary = true);
 	static BatteryInformation getBatteryInformation(bool summary = true);
@@ -64,6 +69,13 @@ public:
 	static DisplayAndGpuInformation getDisplayAndGpuInformation(bool summary = true);
 	static SoftwareInformation getSoftwareInformation(bool summary = true);
 	static DeviceInformation getDeviceInformation(bool summary = true);
+
+	static int getBrightness();
+	static int getBrightnessLevel();
+	static void setBrightnessLevel(int brightnessLevel);
+
+	static int getVolume();
+	static void setVolume(int volumeLevel);
 
 	static UpdateState::State state;
 

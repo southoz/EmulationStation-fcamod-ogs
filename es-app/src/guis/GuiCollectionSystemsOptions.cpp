@@ -95,7 +95,7 @@ void GuiCollectionSystemsOptions::initializeMenu()
 			mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, _("New Collection Name"), "", createCustomCollection, false));
 		}
 		else {
-			mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, _("New Collection Name"), "", createCustomCollection, false));
+			mWindow->pushGui(new GuiTextEditPopup(mWindow, _("New Collection Name"), "", createCustomCollection, false));
 		}
 	});
 
@@ -133,7 +133,7 @@ void GuiCollectionSystemsOptions::initializeMenu()
 	{
 		if (Settings::getInstance()->setBool("FavoritesFirst", favoritesFirstSwitch->getState()))
 			setVariable("reloadAll", true);
-        });
+	});
 
 
 	if (CollectionSystemManager::get()->isEditing())

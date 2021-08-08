@@ -40,22 +40,33 @@ private:
 	void initMDValues();
 	std::string getMetadata(FileData* file, std::string name);
 
-	ImageComponent* mImage;
-	ImageComponent* mThumbnail;
-	ImageComponent* mMarquee;
-	VideoComponent* mVideo;
+	ImageComponent *mImage,
+									*mThumbnail,
+									*mMarquee;
+	VideoComponent *mVideo;
 
-	TextComponent mLblRating, mLblReleaseDate, mLblDeveloper, mLblPublisher, mLblGenre, mLblPlayers, mLblLastPlayed, mLblPlayCount;
+	TextComponent mLblRating,
+								mLblReleaseDate,
+								mLblDeveloper,
+								mLblPublisher,
+								mLblGenre,
+								mLblPlayers,
+								mLblLastPlayed,
+								mLblPlayCount,
+								mLblGameTime,
+
+								mDeveloper,
+								mPublisher,
+								mGenre,
+								mPlayers,
+								mPlayCount,
+								mGameTime,
+								mName;
 
 	RatingComponent mRating;
-	DateTimeComponent mReleaseDate;
-	TextComponent mDeveloper;
-	TextComponent mPublisher;
-	TextComponent mGenre;
-	TextComponent mPlayers;
-	DateTimeComponent mLastPlayed;
-	TextComponent mPlayCount;
-	TextComponent mName;
+	DateTimeComponent mReleaseDate,
+										mLastPlayed;
+
 	
 	std::vector<TextComponent*> getMDLabels();
 	std::vector<GuiComponent*> getMDValues();

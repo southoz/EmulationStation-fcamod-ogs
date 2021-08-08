@@ -2,6 +2,7 @@
 
 #include "utils/FileSystemUtil.h"
 #include "utils/StringUtil.h"
+#include "utils/TimeUtil.h"
 
 #include "Settings.h"
 #include <sys/stat.h>
@@ -540,9 +541,13 @@ namespace Utils
 			if (_path.length() == 1 && _path[0] == '.')
 				return getGenericPath(_relativeTo);
 
-			// replace '.' with relativeTo
-			if((_path[0] == '.') && (_path[1] == '/' || _path[1] == '\\'))
+			if ((_path[0] == '.') && (_path[1] == '/' || _path[1] == '\\'))
+			{
+				if (_path[2] == '.' && (_path[3] == '.' || _path[3] == '/' || _path[3] == '\\')) // ./.. or ././ ?
+					return getCanonicalPath(_relativeTo + &(_path[1]));
+
 				return getGenericPath(_relativeTo + &(_path[1]));
+			}
 
 			// replace '~' with homePath
 			if(_allowHome && (_path[0] == '~') && (_path[1] == '/' || _path[1] == '\\'))
@@ -725,6 +730,30 @@ namespace Utils
 				return (size_t) info.st_size;
 
 			return 0;
+		}
+
+		Utils::Time::DateTime getFileCreationDate(const std::string& _path)
+		{
+			std::string path = getGenericPath(_path);
+			struct stat64 info;
+
+			// check if stat64 succeeded
+			if ((stat64(path.c_str(), &info) == 0))
+				return Utils::Time::DateTime(info.st_ctime);
+
+			return Utils::Time::DateTime();
+		}
+
+		Utils::Time::DateTime getFileModificationDate(const std::string& _path)
+		{
+			std::string path = getGenericPath(_path);
+			struct stat64 info;
+
+			// check if stat64 succeeded
+			if ((stat64(path.c_str(), &info) == 0))
+				return Utils::Time::DateTime(info.st_mtime);
+
+			return Utils::Time::DateTime();
 		}
 
 		bool isAbsolute(const std::string& _path)

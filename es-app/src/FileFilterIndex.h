@@ -16,7 +16,8 @@ enum FilterIndexType
 	RATINGS_FILTER,
 	FAVORITES_FILTER,
 	HIDDEN_FILTER,
-	KIDGAME_FILTER
+	KIDGAME_FILTER,
+	VERTICAL_FILTER
 };
 
 struct FilterDataDecl
@@ -42,7 +43,7 @@ public:
 	void clearAllFilters();
 	void debugPrintIndexes();
 	bool showFile(FileData* game);
-	bool isFiltered() { return (!mTextFilter.empty() || filterByGenre || filterByPlayers || filterByPubDev || filterByRatings || filterByFavorites || filterByHidden || filterByKidGame); };
+	bool isFiltered() { return (!mTextFilter.empty() || filterByGenre || filterByPlayers || filterByPubDev || filterByRatings || filterByFavorites || filterByHidden || filterByKidGame || filterByVertical); };
 	bool isKeyBeingFilteredBy(std::string key, FilterIndexType type);
 	std::vector<FilterDataDecl>& getFilterDataDecls();
 
@@ -65,6 +66,7 @@ private:
 	void manageFavoritesEntryInIndex(FileData* game, bool remove = false);
 	//void manageHiddenEntryInIndex(FileData* game, bool remove = false);
 	void manageKidGameEntryInIndex(FileData* game, bool remove = false);
+	void manageVerticalEntryInIndex(FileData* game, bool remove = false);
 
 	void manageIndexEntry(std::map<std::string, int>* index, std::string key, bool remove);
 
@@ -77,6 +79,7 @@ private:
 	bool filterByFavorites;
 	bool filterByHidden;
 	bool filterByKidGame;
+	bool filterByVertical;
 
 	std::map<std::string, int> genreIndexAllKeys;
 	std::map<std::string, int> playersIndexAllKeys;
@@ -85,6 +88,7 @@ private:
 	std::map<std::string, int> favoritesIndexAllKeys;
 	//std::map<std::string, int> hiddenIndexAllKeys;
 	std::map<std::string, int> kidGameIndexAllKeys;
+	std::map<std::string, int> verticalIndexAllKeys;
 
 	std::vector<std::string> genreIndexFilteredKeys;
 	std::vector<std::string> playersIndexFilteredKeys;
@@ -93,6 +97,7 @@ private:
 	std::vector<std::string> favoritesIndexFilteredKeys;
 	//std::vector<std::string> hiddenIndexFilteredKeys;
 	std::vector<std::string> kidGameIndexFilteredKeys;
+	std::vector<std::string> verticalIndexFilteredKeys;
 
 	FileData* mRootFolder;
 	std::string mTextFilter;

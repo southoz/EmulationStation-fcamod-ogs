@@ -21,10 +21,11 @@ public:
 	static Vector2f adjustExternPictureSizef(Vector2f imageSize, Vector2f maxSize);
 	static Vector2f adjustPictureSizef(Vector2f imageSize, Vector2f maxSize);
 
+	static void removeImageCache(const std::string fn);
+	static void updateImageCache(const std::string fn, int sz, int x, int y);
 	static void loadImageCache();
 	static void saveImageCache();
-
-	static void updateImageCache(const std::string fn, int sz, int x, int y);
+	static void clearImageCache();
 };
 
 #endif // ES_CORE_IMAGE_IO

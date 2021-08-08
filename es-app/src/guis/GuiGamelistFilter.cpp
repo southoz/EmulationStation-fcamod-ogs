@@ -88,6 +88,7 @@ void GuiGamelistFilter::addFiltersToMenu()
 				case FAVORITES_FILTER:
 				case HIDDEN_FILTER:
 				case KIDGAME_FILTER:
+				case VERTICAL_FILTER:
 				{
 					optionLabel = _(it.first);
 					break;
