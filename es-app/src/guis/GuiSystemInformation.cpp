@@ -13,14 +13,14 @@
 #include "ApiSystem.h"
 
 
-GuiSystemInformation::GuiSystemInformation(Window* window) : GuiSettings(window, _("SYSTEM INFORMATION").c_str())
+GuiSystemInformation::GuiSystemInformation(Window* window) : UpdatableGuiSettings(window, _("SYSTEM INFORMATION").c_str())
 {
 	initializeMenu();
 }
 
 GuiSystemInformation::~GuiSystemInformation()
 {
-	mUpdatables.clear();
+
 }
 
 void GuiSystemInformation::initializeMenu()
@@ -56,7 +56,7 @@ void GuiSystemInformation::showSummarySystemInfo()
 			loadCpu->setText(formatLoadCpu( load_cpu_value ));
 			loadCpu->setColor(warning ? 0xFF0000FF : color);
 		}, 2000);
-	mUpdatables.push_back(loadCpu.get());
+	addUpdatableComponent(loadCpu.get());
 	addWithLabel(_("CPU LOAD"), loadCpu);
 
 	// temperature
@@ -70,7 +70,7 @@ void GuiSystemInformation::showSummarySystemInfo()
 			temperatureCpu->setText(formatTemperature( temp_cpu_value ));
 			temperatureCpu->setColor(warning ? 0xFF0000FF : color);
 		}, 5000);
-	mUpdatables.push_back(temperatureCpu.get());
+	addUpdatableComponent(temperatureCpu.get());
 	addWithLabel(_("TEMPERATURE"), temperatureCpu);
 
 	addGroup(_("OTHER INFORMATION"));
@@ -85,7 +85,7 @@ void GuiSystemInformation::showSummarySystemInfo()
 			temperature_gpu->setText(formatTemperature( temp_gpu_value ));
 			temperature_gpu->setColor(warning ? 0xFF0000FF : color);
 		}, 5000);
-	mUpdatables.push_back(temperature_gpu.get());
+	addUpdatableComponent(temperature_gpu.get());
 	addWithLabel(_("GPU") + " - " + _("TEMPERATURE"), temperature_gpu);
 
 	// roms
@@ -98,7 +98,7 @@ void GuiSystemInformation::showSummarySystemInfo()
 			userSpace->setText(ApiSystem::getFreeSpaceUserInfo());
 			userSpace->setColor(warning ? 0xFF0000FF : color);
 		}, 30000);
-	mUpdatables.push_back(userSpace.get());
+	addUpdatableComponent(userSpace.get());
 	addWithLabel(_("ROMS DISK USAGE"), userSpace);
 
 	// usbdrive
@@ -118,7 +118,7 @@ void GuiSystemInformation::showSummarySystemInfo()
 				usbdrive->setColor(warning ? 0xFF0000FF : color);
 			}
 		}, 30000);
-	mUpdatables.push_back(usbdrive.get());
+	addUpdatableComponent(usbdrive.get());
 	if (usbdrive->isVisible())
 		addWithLabel(_("USB DISK USAGE"), usbdrive);
 
@@ -133,7 +133,7 @@ void GuiSystemInformation::showSummarySystemInfo()
 			memoryFree->setText(formatMemory( memory.free, memory.total, true ));
 			memoryFree->setColor(warning ? 0xFF0000FF : color);
 		}, 10000);
-	mUpdatables.push_back(memoryFree.get());
+	addUpdatableComponent(memoryFree.get());
 	addWithLabel(_("FREE RAM MEMORY"), memoryFree);
 
 	addGroup(_("NETWORK"));
@@ -160,7 +160,7 @@ void GuiSystemInformation::showSummarySystemInfo()
 				ipAddress->setText("");
 			}
 		}, 5000);
-	mUpdatables.push_back(networkStatus.get());
+	addUpdatableComponent(networkStatus.get());
 	addWithLabel(_("STATUS"), networkStatus);
 	addWithLabel(_("WIFI SSID"), wifiSsid);
 	addWithLabel(_("IP ADDRESS"), ipAddress);
@@ -709,10 +709,4 @@ std::string GuiSystemInformation::formatNetworkStatus(bool isConnected)
 std::string GuiSystemInformation::formatNetworkRate(int rate, std::string units)
 {
 	return std::to_string(rate) + " " + units;
-}
-
-void GuiSystemInformation::update(int deltaTime)
-{
-	for (GuiComponent *updatable : mUpdatables)
-		updatable->update(deltaTime);
 }
