@@ -70,7 +70,7 @@ GuiMenu::GuiMenu(Window* window, bool animate) : GuiComponent(window), mMenu(win
 
 	}
 
-	addEntry(_("QUIT"), !Settings::getInstance()->getBool("ShowOnlyExit"), [this] {openQuitMenu(); }, "iconQuit");
+	addEntry(_("QUIT"), !Settings::getInstance()->getBool("ShowOnlyExit"), [this] { openQuitMenu(); }, "iconQuit");
 
 	if (Settings::getInstance()->getBool("FullScreenMode"))
 	{
@@ -1708,10 +1708,16 @@ void GuiMenu::openConfigInput()
 
 void GuiMenu::openQuitMenu()
 {
+// TODO añadir opcion de configuracion para confirmacion al salir
 	if (Settings::getInstance()->getBool("ShowOnlyExit"))
 	{
-		Scripting::fireEvent("quit");
-		quitES();
+		window->pushGui(new GuiMsgBox(window, _("REALLY SHUTDOWN?"), _("YES"),
+			[] {
+			Scripting::fireEvent("quit", "shutdown");
+			Scripting::fireEvent("shutdown");
+			if (quitES(QuitMode::SHUTDOWN) != 0)
+				LOG(LogWarning) << "GuiMenu::openQuitMenu() - Shutdown terminated with non-zero result!";
+		}, _("NO"), nullptr));
 		return;
 	}
 
