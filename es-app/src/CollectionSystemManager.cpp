@@ -124,7 +124,7 @@ CollectionSystemManager* CollectionSystemManager::get()
 
 void CollectionSystemManager::init(Window* window)
 {
-	assert(!sInstance);
+	deinit();
 	sInstance = new CollectionSystemManager(window);
 }
 
@@ -133,6 +133,7 @@ void CollectionSystemManager::deinit()
 	if (sInstance)
 	{
 		delete sInstance;
+		sInstance = nullptr;
 	}
 }
 

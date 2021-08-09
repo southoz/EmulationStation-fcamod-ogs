@@ -198,7 +198,7 @@ bool parseArgs(int argc, char* argv[])
 		}
 		else if (strcmp(argv[i], "--fullscreen") == 0)
 		{
-   Settings::getInstance()->setBool("FullScreenMode", true);
+			Settings::getInstance()->setBool("FullScreenMode", true);
 		}
 		else if (strcmp(argv[i], "--vsync") == 0 || strcmp(argv[i], "-vsync") == 0)
 		{			
@@ -439,12 +439,7 @@ int main(int argc, char* argv[])
 
 	// preload what we can right away instead of waiting for the user to select it
 	// this makes for no delays when accessing content, but a longer startup time
-
-	if (Settings::getInstance()->getBool("PreloadUI"))
-		ViewController::get()->preload();
-	
-	if (splashScreen && splashScreenProgress)	
-		window.renderLoadingScreen(_("Starting UI"));
+	ViewController::get()->preload();
 
 	//choose which GUI to open depending on if an input configuration already exists
 	if (errorMsg == NULL)

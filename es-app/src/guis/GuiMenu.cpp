@@ -927,53 +927,6 @@ void GuiMenu::openUISettings()
 		}
 	});
 
-	// LANGUAGE
-	/*
-	std::vector<std::string> langues;
-	langues.push_back("en");
-
-	std::string xmlpath = ResourceManager::getInstance()->getResourcePath(":/splash.svg");
-	if (xmlpath.length() > 0)
-	{
-		xmlpath = Utils::FileSystem::getParent(xmlpath) + "/locale/";
-
-		Utils::FileSystem::stringList dirContent = Utils::FileSystem::getDirContent(xmlpath, true);
-		for (Utils::FileSystem::stringList::const_iterator it = dirContent.cbegin(); it != dirContent.cend(); ++it)
-		{
-			if (Utils::FileSystem::isDirectory(*it))
-				continue;
-
-			std::string name = *it;
-
-			if (name.rfind("emulationstation2.po") == std::string::npos)
-				continue;
-
-			name = Utils::FileSystem::getParent(name);
-			name = Utils::FileSystem::getFileName(name);
-
-			if (name != "en")
-				langues.push_back(name);
-		}
-
-		if (langues.size() > 1)
-		{
-			auto language = std::make_shared< OptionListComponent<std::string> >(mWindow, _("LANGUAGE"), false);
-
-			for (auto it = langues.cbegin(); it != langues.cend(); it++)
-				language->add(*it, *it, Settings::getInstance()->getString("Language") == *it);
-
-			s->addWithLabel(_("LANGUAGE"), language);
-			s->addSaveFunc([language, window, pthis, s] {
-				
-				if (language->getSelected() != Settings::getInstance()->getString("Language"))
-				{
-					if (Settings::getInstance()->setString("Language", language->getSelected()))
-						s->setVariable("reloadGuiMenu", true);
-				}
-			});
-		}
-	}
-	*/
 	// transition style
 	auto transition_style = std::make_shared< OptionListComponent<std::string> >(mWindow, _("TRANSITION STYLE"), false);
 	std::vector<std::string> transitions;
@@ -1344,6 +1297,30 @@ void GuiMenu::openEmulatorSettings()
 	}
 
 	window->pushGui(configuration);
+}
+
+void GuiMenu::updateGameLists(Window* window, bool confirm)
+{
+	if (ThreadedScraper::isRunning())
+	{
+		window->pushGui(new GuiMsgBox(window, _("SCRAPING IS RUNNING. DO YOU WANT TO STOP IT ?"),
+			_("YES"), [] { ThreadedScraper::stop(); },
+			_("NO"), nullptr));
+
+		return;
+	}
+
+	if (!confirm)
+	{
+		ViewController::reloadAllGames(window, true);
+		return;
+	}
+
+	window->pushGui(new GuiMsgBox(window, _("REALLY UPDATE GAMES LISTS ?"), _("YES"), [window]
+		{
+			ViewController::reloadAllGames(window, true);
+		},
+		_("NO"), nullptr));
 }
 
 void GuiMenu::openUpdateSettings()

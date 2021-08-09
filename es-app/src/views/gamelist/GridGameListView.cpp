@@ -769,6 +769,7 @@ std::vector<HelpPrompt> GridGameListView::getHelpPrompts()
 
 	if (Settings::getInstance()->getBool("QuickSystemSelect"))
 		prompts.push_back(HelpPrompt("lr", _("SYSTEM")));
+
 	prompts.push_back(HelpPrompt("up/down/left/right", _("CHOOSE")));
 	prompts.push_back(HelpPrompt("a", _("LAUNCH")));
 

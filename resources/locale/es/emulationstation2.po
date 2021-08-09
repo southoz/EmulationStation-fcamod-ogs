@@ -773,6 +773,10 @@ msgid "REALLY UPDATE GAMES LISTS ?"
 msgstr "¿SEGURO QUE QUIERE ACTUALIZAR LAS LISTAS DE JUEGOS?"
 
 #:
+msgid "REALLY UPDATE GAMES LISTS ?"
+msgstr "¿DESEAS ACTUALIZAR LAS LISTAS DE JUEGOS?"
+
+#:
 msgid "UPDATE GAMES LISTS"
 msgstr "ACTUALIZAR LISTAS DE JUEGOS"
 
@@ -945,6 +949,10 @@ msgstr "SOLO REPRODUCIR MÚSICA DEL PROPIO SISTEMA"
 #:
 msgid "FILTER GAMES BY TEXT"
 msgstr "FILTRAR JUEGOS POR TEXTO"
+
+#:
+msgid "Games similar to"
+msgstr "Juegos similares a"
 
 #:
 msgid "THIS FUNCTION IS DISABLED WHEN SCRAPING IS RUNNING"
@@ -1167,6 +1175,10 @@ msgstr "ORDENAR JUEGOS POR:"
 #:
 msgid "EDIT THIS GAME'S METADATA"
 msgstr "EDITAR METADATOS DEL JUEGO"
+
+#:
+msgid "UPDATE GAMES LISTS"
+msgstr "ACTUALIZAR LISTAS DE JUEGOS"
 
 #:
 msgid "SCRAPE THESE GAMES"
@@ -1995,6 +2007,30 @@ msgid "SIMPLE ONDEMAND"
 msgstr "SIMPLE BAJO DEMANDA"
 
 #:
+msgid "ONDEMAND"
+msgstr "BAJO DEMANDA"
+
+#:
+msgid "PERFORMANCE"
+msgstr "RENDIMIENTO"
+
+#:
+msgid "POWERSAVE"
+msgstr "AHORRO DE ENERGÍA"
+
+#:
+msgid "USERSPACE"
+msgstr "ESPACIO DE USUARIO"
+
+#:
+msgid "SCHEDUTIL"
+msgstr "PROGRAMADO"
+
+#:
+msgid "CONSERVATIVE"
+msgstr "CONSERVADOR"
+
+#:
 msgid "TEMPERATURE"
 msgstr "TEMPERATURA"
 
@@ -2300,6 +2336,10 @@ msgstr "ERROR: TODOS LOS SISTEMAS ESTÁN OCULTOS, MOSTRANDO TODOS NUEVAMENTE"
 #:
 msgid "Loading theme..."
 msgstr "Cargando tema..."
+
+#:
+msgid "Loading gamelists"
+msgstr "Cargando listas de juegos..."
 
 #:
 msgid "TEXT FOR SIZE CALCULATION"

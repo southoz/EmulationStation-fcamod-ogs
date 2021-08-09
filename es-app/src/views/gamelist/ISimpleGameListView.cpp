@@ -142,9 +142,15 @@ bool ISimpleGameListView::input(InputConfig* config, Input input)
 					return true;
 
 				populateList(folder->getChildrenListToDisplay());
-				setCursor(top);				
+				setCursor(top);
 				Sound::getFromTheme(getTheme(), getName(), "back")->play();
-			} 
+			}
+			else if (mPopupSelfReference)
+			{
+				ViewController::get()->setActiveView(mPopupParentView);
+				closePopupContext();
+				return true;
+			}
 			else if (!hideSystemView)
 			{
 				onFocusLost();
@@ -160,23 +166,25 @@ bool ISimpleGameListView::input(InputConfig* config, Input input)
 
 			return true;
 		}
-		else if (config->isMappedLike(getQuickSystemSelectRightButton(), input) || config->isMappedLike("rightshoulder", input))
+		else if (Settings::getInstance()->getBool("QuickSystemSelect") && ( config->isMappedLike(getQuickSystemSelectRightButton(), input) || config->isMappedLike("rightshoulder", input) ))
 		{
-			if(Settings::getInstance()->getBool("QuickSystemSelect"))
+			if (!mPopupSelfReference)
 			{
 				onFocusLost();
 				ViewController::get()->goToNextGameList();
-				return true;
 			}
+
+			return true;
 		}
-		else if (config->isMappedLike(getQuickSystemSelectLeftButton(), input) || config->isMappedLike("leftshoulder", input))
+		else if (Settings::getInstance()->getBool("QuickSystemSelect") && ( config->isMappedLike(getQuickSystemSelectLeftButton(), input) || config->isMappedLike("leftshoulder", input) ))
 		{
-			if(Settings::getInstance()->getBool("QuickSystemSelect"))
+			if (!mPopupSelfReference)
 			{
 				onFocusLost();
 				ViewController::get()->goToPrevGameList();
-				return true;
 			}
+
+			return true;
 		}
 		else if (config->isMappedTo("x", input))
 		{
@@ -219,13 +227,32 @@ std::vector<std::string> ISimpleGameListView::getEntriesLetters()
 	return letters;
 }
 
+void ISimpleGameListView::setPopupContext(std::shared_ptr<IGameListView> pThis, std::shared_ptr<GuiComponent> parentView, const std::string label, const std::function<void()>& onExitTemporary)
+{
+	mPopupSelfReference = pThis;
+	mPopupParentView = parentView;
+	mOnExitPopup = onExitTemporary;
 
+	if (mHeaderImage.hasImage())
+	{
+		mHeaderText.setText(_("Games similar to") + " : " + label); //
 
+		mHeaderImage.setImage("");
+		addChild(&mHeaderText);
+		removeChild(&mHeaderImage);
+	}
+}
 
+void ISimpleGameListView::closePopupContext()
+{
+	if (!mPopupSelfReference)
+		return;
 
+	auto exitPopup = mOnExitPopup;
 
+	mPopupParentView.reset();
+	mPopupSelfReference.reset();
 
-
-
-
-
+	if (exitPopup != nullptr)
+		exitPopup();
+}

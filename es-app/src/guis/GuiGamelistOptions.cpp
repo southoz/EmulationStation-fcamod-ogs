@@ -25,7 +25,7 @@ std::vector<std::string> GuiGamelistOptions::gridSizes {
 
 	"2x1",
 	"2x2",
-	"2x3",	
+	"2x3",
 	"2x4",
 	"2x5",
 	"2x6",
@@ -291,6 +291,12 @@ GuiGamelistOptions::GuiGamelistOptions(Window* window, SystemData* system, bool 
 		row.addElement(makeArrow(mWindow), false);
 		row.makeAcceptInputHandler(std::bind(&GuiGamelistOptions::openMetaDataEd, this));
 		mMenu.addRow(row);
+	}
+
+	// update game lists
+	if (UIModeController::getInstance()->isUIModeFull())
+	{
+		mMenu.addEntry(_("UPDATE GAMES LISTS"), false, [this] { GuiMenu::updateGameLists(mWindow); }); // Game List Update
 	}
 
 	// center the menu

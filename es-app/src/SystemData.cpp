@@ -907,3 +907,21 @@ SystemData* SystemData::getParentGroupSystem()
 
 	return this;
 }
+
+SystemData* SystemData::getSystem(const std::string name)
+{
+	for (auto sys : SystemData::sSystemVector)
+		if (sys->getName() == name)
+			return sys;
+
+	return nullptr;
+}
+
+SystemData* SystemData::getFirstVisibleSystem()
+{
+	for (auto sys : SystemData::sSystemVector)
+		if (sys->mTheme != nullptr && sys->isVisible())
+			return sys;
+
+	return nullptr;
+}
