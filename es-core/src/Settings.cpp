@@ -60,7 +60,7 @@ void Settings::setDefaults()
 	mBoolMap["ShowExit"] = true;
 
 	mBoolMap["ShowOnlyExit"] = false;
-	mBoolMap["ConfirmToExit"] = false;
+	mBoolMap["ConfirmToExit"] = true;
 
 	mBoolMap["SplashScreen"] = true;
 	mBoolMap["SplashScreenProgress"] = true;

@@ -1631,9 +1631,14 @@ void GuiMenu::openAdvancedSettings()
 
 	// confirm to exit
 	auto confirmToExit = std::make_shared<SwitchComponent>(mWindow);
-	confirmToExit->setState(!Settings::getInstance()->getBool("ConfirmToExit"));
+	confirmToExit->setState(Settings::getInstance()->getBool("ConfirmToExit"));
 	s->addWithLabel(_("CONFIRM TO QUIT"), confirmToExit);
-	s->addSaveFunc([confirmToExit] { Settings::getInstance()->setBool("ConfirmToExit", !confirmToExit->getState()); });
+	s->addSaveFunc([confirmToExit]
+		{
+			bool old_value = Settings::getInstance()->getBool("ConfirmToExit");
+			if ( old_value != confirmToExit->getState() )
+				Settings::getInstance()->setBool("ConfirmToExit", confirmToExit->getState());
+		});
 
 
 	// log level
@@ -1716,21 +1721,56 @@ void GuiMenu::openQuitMenu()
 {
 	Window* window = mWindow;
 
-	std::function<void()> shutdownFunction = []
-	{
-		Scripting::fireEvent("quit", "shutdown");
-		Scripting::fireEvent("shutdown");
-		if (quitES(QuitMode::SHUTDOWN) != 0)
-			LOG(LogWarning) << "GuiMenu::openQuitMenu() - Shutdown terminated with non-zero result!";
-	};
+	LOG(LogDebug) << "GuiMenu::openQuitMenu()";
+
+	static std::function<void()> restartEsFunction = []
+		{
+			LOG(LogWarning) << "GuiMenu::openQuitMenu() - restartEsFunction!";
+			Scripting::fireEvent("quit");
+			if(quitES(QuitMode::RESTART) != 0)
+				LOG(LogWarning) << "GuiMenu::openQuitMenu() - Restart terminated with non-zero result!";
+		};
+
+	static std::function<void()> quitEsFunction = []
+		{
+			LOG(LogWarning) << "GuiMenu::openQuitMenu() - quitEsFunction!";
+			Scripting::fireEvent("quit");
+			quitES();
+		};
+
+	static std::function<void()> restartDeviceFunction = []
+		{
+			LOG(LogWarning) << "GuiMenu::openQuitMenu() - restartDeviceFunction!";
+			Scripting::fireEvent("quit", "reboot");
+			Scripting::fireEvent("reboot");
+			if (quitES(QuitMode::REBOOT) != 0)
+				LOG(LogWarning) << "GuiMenu::openQuitMenu() - Restart terminated with non-zero result!";
+		};
+
+	static std::function<void()> shutdowntDeviceFunction = []
+		{
+			LOG(LogWarning) << "GuiMenu::openQuitMenu() - shutdowntDeviceFunction!";
+			Scripting::fireEvent("quit", "shutdown");
+			Scripting::fireEvent("shutdown");
+			if (quitES(QuitMode::SHUTDOWN) != 0)
+				LOG(LogWarning) << "GuiMenu::openQuitMenu() - Shutdown terminated with non-zero result!";
+		};
 
 // TODO añadir opcion de configuracion para confirmacion al salir
 	if (Settings::getInstance()->getBool("ShowOnlyExit"))
 	{
-		if (Settings::getInstance()->getBool("ConfirmToExit")
+		LOG(LogDebug) << "GuiMenu::openQuitMenu() - ShowOnlyExit";
+		if (Settings::getInstance()->getBool("ConfirmToExit"))
 		{
-			window->pushGui(new GuiMsgBox(window, _("REALLY SHUTDOWN?"), _("YES"), shutdownFunction(), _("NO"), nullptr));
+			LOG(LogDebug) << "GuiMenu::openQuitMenu() - ShowOnlyExit - ConfirmToExit shutdown device";
+			window->pushGui(new GuiMsgBox(window, _("REALLY SHUTDOWN?"), _("YES"), shutdowntDeviceFunction, _("NO"), nullptr));
 		}
+		 else
+		{
+			LOG(LogDebug) << "GuiMenu::openQuitMenu() - ShowOnlyExit - direct shutdown device";
+			shutdowntDeviceFunction();
+		}
+		LOG(LogDebug) << "GuiMenu::openQuitMenu() - ShowOnlyExit - return application";
 		return;
 	}
 
@@ -1740,54 +1780,73 @@ void GuiMenu::openQuitMenu()
 	if (UIModeController::getInstance()->isUIModeFull())
 	{
 		// Restart does not work on Windows
-		row.makeAcceptInputHandler([window] {
-			window->pushGui(new GuiMsgBox(window, _("REALLY RESTART?"), _("YES"),
-				[] {
-				Scripting::fireEvent("quit");
-				if(quitES(QuitMode::RESTART) != 0)
-					LOG(LogWarning) << "GuiMenu::openQuitMenu() - Restart terminated with non-zero result!";
-			}, _("NO"), nullptr));
-		});
+		row.makeAcceptInputHandler([window]
+			{
+				if (Settings::getInstance()->getBool("ConfirmToExit"))
+				{
+					LOG(LogDebug) << "GuiMenu::openQuitMenu() - menu restart - ConfirmToExit - resart ES";
+					window->pushGui(new GuiMsgBox(window, _("REALLY RESTART?"), _("YES"), restartEsFunction, _("NO"), nullptr));
+				}
+				else
+				{
+					LOG(LogDebug) << "GuiMenu::openQuitMenu() - menu restart - direct resart ES";
+					restartEsFunction();
+				}
+			});
 		row.addElement(std::make_shared<TextComponent>(window, _("RESTART EMULATIONSTATION"), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color), true);
 		s->addRow(row);
 
 		if(Settings::getInstance()->getBool("ShowExit"))
 		{
 			row.elements.clear();
-			row.makeAcceptInputHandler([window] {
-				window->pushGui(new GuiMsgBox(window, _("REALLY QUIT?"), _("YES"),
-					[] {
-					Scripting::fireEvent("quit");
-					quitES();
-				}, _("NO"), nullptr));
+			row.makeAcceptInputHandler([window]
+			{
+				if (Settings::getInstance()->getBool("ConfirmToExit"))
+				{
+					LOG(LogDebug) << "GuiMenu::openQuitMenu() - menu restart - ConfirmToExit - quit Es";
+					window->pushGui(new GuiMsgBox(window, _("REALLY QUIT?"), _("YES"), quitEsFunction, _("NO"), nullptr));
+				}
+				else
+				{
+					LOG(LogDebug) << "GuiMenu::openQuitMenu() - menu restart - direct quit Es";
+					quitEsFunction();
+				}
 			});
 			row.addElement(std::make_shared<TextComponent>(window, _("QUIT EMULATIONSTATION"), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color), true);
 			s->addRow(row);
 		}
 	}
 	row.elements.clear();
-	row.makeAcceptInputHandler([window] {
-		window->pushGui(new GuiMsgBox(window, _("REALLY RESTART?"), _("YES"),
-			[] {
-			Scripting::fireEvent("quit", "reboot");
-			Scripting::fireEvent("reboot");
-			if (quitES(QuitMode::REBOOT) != 0)
-				LOG(LogWarning) << "GuiMenu::openQuitMenu() - Restart terminated with non-zero result!";
-		}, _("NO"), nullptr));
-	});
+	row.makeAcceptInputHandler([window]
+		{
+			if (Settings::getInstance()->getBool("ConfirmToExit"))
+			{
+				LOG(LogDebug) << "GuiMenu::openQuitMenu() - ShowOnlyExit - ConfirmToExit restart device";
+				window->pushGui(new GuiMsgBox(window, _("REALLY RESTART?"), _("YES"), restartDeviceFunction, _("NO"), nullptr));
+			}
+			else
+			{
+				LOG(LogDebug) << "GuiMenu::openQuitMenu() - menu restart - direct restart device";
+				restartDeviceFunction();
+			}
+		});
 	row.addElement(std::make_shared<TextComponent>(window, _("RESTART SYSTEM"), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color), true);
 	s->addRow(row);
 
 	row.elements.clear();
-	row.makeAcceptInputHandler([window] {
-		window->pushGui(new GuiMsgBox(window, _("REALLY SHUTDOWN?"), _("YES"),
-			[] {
-			Scripting::fireEvent("quit", "shutdown");
-			Scripting::fireEvent("shutdown");
-			if (quitES(QuitMode::SHUTDOWN) != 0)
-				LOG(LogWarning) << "GuiMenu::openQuitMenu() - Shutdown terminated with non-zero result!";
-		}, _("NO"), nullptr));
-	});
+	row.makeAcceptInputHandler([window]
+		{
+			if (Settings::getInstance()->getBool("ConfirmToExit"))
+			{
+				LOG(LogDebug) << "GuiMenu::openQuitMenu() - ShowOnlyExit - ConfirmToExit shutdown device";
+				window->pushGui(new GuiMsgBox(window, _("REALLY SHUTDOWN?"), _("YES"), shutdowntDeviceFunction, _("NO"), nullptr));
+			}
+			else
+			{
+				LOG(LogDebug) << "GuiMenu::openQuitMenu() - ShowOnlyExit - direct shutdown device";
+				shutdowntDeviceFunction();
+			}
+		});
 	row.addElement(std::make_shared<TextComponent>(window, _("SHUTDOWN SYSTEM"), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color), true);
 	s->addRow(row);
 
