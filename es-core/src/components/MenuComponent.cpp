@@ -216,10 +216,12 @@ void MenuComponent::setSize(float w, float h)
 		float font_size = ThemeData::getMenuTheme()->Text.font->getSize(),
 					ratio = 1.0f;
 
-		if ((font_size >= FONT_SIZE_MEDIUM) && (font_size < FONT_SIZE_LARGE))
+		if ((font_size >= FONT_SIZE_SMALL) && (font_size < FONT_SIZE_MEDIUM))
 			ratio = 1.1f;
-		else if ((font_size >= FONT_SIZE_LARGE))
+		else if ((font_size >= FONT_SIZE_MEDIUM) && (font_size < FONT_SIZE_LARGE))
 			ratio = 1.2f;
+		else if ((font_size >= FONT_SIZE_LARGE))
+			ratio = 1.3f;
 
 		new_width = (float)Math::min((int)(new_width * ratio), Renderer::getScreenWidth());
 	}
