@@ -1629,6 +1629,12 @@ void GuiMenu::openAdvancedSettings()
 	s->addWithLabel(_("COMPLETE QUIT MENU"), fullExitMenu);
 	s->addSaveFunc([fullExitMenu] { Settings::getInstance()->setBool("ShowOnlyExit", !fullExitMenu->getState()); });
 
+	// confirm to exit
+	auto confirmToExit = std::make_shared<SwitchComponent>(mWindow);
+	confirmToExit->setState(!Settings::getInstance()->getBool("ConfirmToExit"));
+	s->addWithLabel(_("CONFIRM TO QUIT"), confirmToExit);
+	s->addSaveFunc([confirmToExit] { Settings::getInstance()->setBool("ConfirmToExit", !confirmToExit->getState()); });
+
 
 	// log level
 	auto logLevel = std::make_shared< OptionListComponent<std::string> >(mWindow, _("LOG LEVEL"), false);
@@ -1708,22 +1714,27 @@ void GuiMenu::openConfigInput()
 
 void GuiMenu::openQuitMenu()
 {
+	Window* window = mWindow;
+
+	std::function<void()> shutdownFunction = []
+	{
+		Scripting::fireEvent("quit", "shutdown");
+		Scripting::fireEvent("shutdown");
+		if (quitES(QuitMode::SHUTDOWN) != 0)
+			LOG(LogWarning) << "GuiMenu::openQuitMenu() - Shutdown terminated with non-zero result!";
+	};
+
 // TODO añadir opcion de configuracion para confirmacion al salir
 	if (Settings::getInstance()->getBool("ShowOnlyExit"))
 	{
-		window->pushGui(new GuiMsgBox(window, _("REALLY SHUTDOWN?"), _("YES"),
-			[] {
-			Scripting::fireEvent("quit", "shutdown");
-			Scripting::fireEvent("shutdown");
-			if (quitES(QuitMode::SHUTDOWN) != 0)
-				LOG(LogWarning) << "GuiMenu::openQuitMenu() - Shutdown terminated with non-zero result!";
-		}, _("NO"), nullptr));
+		if (Settings::getInstance()->getBool("ConfirmToExit")
+		{
+			window->pushGui(new GuiMsgBox(window, _("REALLY SHUTDOWN?"), _("YES"), shutdownFunction(), _("NO"), nullptr));
+		}
 		return;
 	}
 
-	auto s = new GuiSettings(mWindow, _("QUIT"));
-
-	Window* window = mWindow;
+	auto s = new GuiSettings(window, _("QUIT"));
 
 	ComponentListRow row;
 	if (UIModeController::getInstance()->isUIModeFull())

@@ -2322,8 +2322,11 @@ msgstr "SISTEMAS VISIBLES"
 
 #:
 msgid "COMPLETE QUIT MENU"
-msgstr "SALIR AL MENÚ"
+msgstr "VER MENÚ AL SALIR"
 
+#:
+msgid "CONFIRM TO QUIT"
+msgstr "CONFIRMAR PARA SALIR"
 
 #:
 msgid "The selected UI mode has nothing to show,\n returning to UI mode: FULL"

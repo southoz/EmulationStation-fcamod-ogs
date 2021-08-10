@@ -57,9 +57,10 @@ void Settings::setDefaults()
 	mBoolMap["ParseGamelistOnly"] = false;
 	mBoolMap["ShowHiddenFiles"] = false;
 	mBoolMap["DrawFramerate"] = false;
-	mBoolMap["ShowExit"] = true;		
+	mBoolMap["ShowExit"] = true;
 
 	mBoolMap["ShowOnlyExit"] = false;
+	mBoolMap["ConfirmToExit"] = false;
 
 	mBoolMap["SplashScreen"] = true;
 	mBoolMap["SplashScreenProgress"] = true;
