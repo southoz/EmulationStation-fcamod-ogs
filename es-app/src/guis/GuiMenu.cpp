@@ -43,8 +43,9 @@ GuiMenu::GuiMenu(Window* window, bool animate) : GuiComponent(window), mMenu(win
 	if (isFullUI)
 	{
 		addEntry(_("UI SETTINGS"), true, [this] { openUISettings(); }, "iconUI");
-		// addEntry(_("CONFIGURE INPUT"), true, [this] { openConfigInput(); }, "iconControllers");
+		//addEntry(_("CONFIGURE INPUT"), true, [this] { openConfigInput(); }, "iconControllers");
 	}
+	addEntry(_("CONTROLLERS SETTINGS").c_str(), true, [this] { openControllersSettings(); }, "iconControllers");
 
 	addEntry(_("SOUND SETTINGS"), true, [this] { openSoundSettings(); }, "iconSound");
 
@@ -186,6 +187,27 @@ void GuiMenu::openDisplaySettings()
 	}
 
  mWindow->pushGui(s);
+}
+
+void GuiMenu::openControllersSettings()
+{
+	GuiSettings* s = new GuiSettings(mWindow, _("CONTROLLERS SETTINGS"));
+
+	Window *window = mWindow;
+
+	auto invertJoy = std::make_shared<SwitchComponent>(mWindow);
+	invertJoy->setState(Settings::getInstance()->getBool("InvertButtonsAB"));
+	s->addWithLabel(_("SWITCH A/B BUTTONS IN EMULATIONSTATION"), invertJoy);
+	s->addSaveFunc([this, s, invertJoy]
+		{
+			if (Settings::getInstance()->setBool("InvertButtonsAB", invertJoy->getState()))
+			{
+				InputConfig::AssignActionButtons();
+				s->setVariable("reloadAll", true);
+			}
+		});
+
+	mWindow->pushGui(s);
 }
 
 void GuiMenu::openScraperSettings()
@@ -1721,11 +1743,9 @@ void GuiMenu::openQuitMenu()
 {
 	Window* window = mWindow;
 
-	LOG(LogDebug) << "GuiMenu::openQuitMenu()";
 
 	static std::function<void()> restartEsFunction = []
 		{
-			LOG(LogWarning) << "GuiMenu::openQuitMenu() - restartEsFunction!";
 			Scripting::fireEvent("quit");
 			if(quitES(QuitMode::RESTART) != 0)
 				LOG(LogWarning) << "GuiMenu::openQuitMenu() - Restart terminated with non-zero result!";
@@ -1733,14 +1753,12 @@ void GuiMenu::openQuitMenu()
 
 	static std::function<void()> quitEsFunction = []
 		{
-			LOG(LogWarning) << "GuiMenu::openQuitMenu() - quitEsFunction!";
 			Scripting::fireEvent("quit");
 			quitES();
 		};
 
 	static std::function<void()> restartDeviceFunction = []
 		{
-			LOG(LogWarning) << "GuiMenu::openQuitMenu() - restartDeviceFunction!";
 			Scripting::fireEvent("quit", "reboot");
 			Scripting::fireEvent("reboot");
 			if (quitES(QuitMode::REBOOT) != 0)
@@ -1749,7 +1767,6 @@ void GuiMenu::openQuitMenu()
 
 	static std::function<void()> shutdowntDeviceFunction = []
 		{
-			LOG(LogWarning) << "GuiMenu::openQuitMenu() - shutdowntDeviceFunction!";
 			Scripting::fireEvent("quit", "shutdown");
 			Scripting::fireEvent("shutdown");
 			if (quitES(QuitMode::SHUTDOWN) != 0)
@@ -1759,18 +1776,11 @@ void GuiMenu::openQuitMenu()
 // TODO añadir opcion de configuracion para confirmacion al salir
 	if (Settings::getInstance()->getBool("ShowOnlyExit"))
 	{
-		LOG(LogDebug) << "GuiMenu::openQuitMenu() - ShowOnlyExit";
 		if (Settings::getInstance()->getBool("ConfirmToExit"))
-		{
-			LOG(LogDebug) << "GuiMenu::openQuitMenu() - ShowOnlyExit - ConfirmToExit shutdown device";
 			window->pushGui(new GuiMsgBox(window, _("REALLY SHUTDOWN?"), _("YES"), shutdowntDeviceFunction, _("NO"), nullptr));
-		}
 		 else
-		{
-			LOG(LogDebug) << "GuiMenu::openQuitMenu() - ShowOnlyExit - direct shutdown device";
 			shutdowntDeviceFunction();
-		}
-		LOG(LogDebug) << "GuiMenu::openQuitMenu() - ShowOnlyExit - return application";
+
 		return;
 	}
 
@@ -1783,15 +1793,9 @@ void GuiMenu::openQuitMenu()
 		row.makeAcceptInputHandler([window]
 			{
 				if (Settings::getInstance()->getBool("ConfirmToExit"))
-				{
-					LOG(LogDebug) << "GuiMenu::openQuitMenu() - menu restart - ConfirmToExit - resart ES";
 					window->pushGui(new GuiMsgBox(window, _("REALLY RESTART?"), _("YES"), restartEsFunction, _("NO"), nullptr));
-				}
 				else
-				{
-					LOG(LogDebug) << "GuiMenu::openQuitMenu() - menu restart - direct resart ES";
 					restartEsFunction();
-				}
 			});
 		row.addElement(std::make_shared<TextComponent>(window, _("RESTART EMULATIONSTATION"), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color), true);
 		s->addRow(row);
@@ -1802,15 +1806,9 @@ void GuiMenu::openQuitMenu()
 			row.makeAcceptInputHandler([window]
 			{
 				if (Settings::getInstance()->getBool("ConfirmToExit"))
-				{
-					LOG(LogDebug) << "GuiMenu::openQuitMenu() - menu restart - ConfirmToExit - quit Es";
 					window->pushGui(new GuiMsgBox(window, _("REALLY QUIT?"), _("YES"), quitEsFunction, _("NO"), nullptr));
-				}
 				else
-				{
-					LOG(LogDebug) << "GuiMenu::openQuitMenu() - menu restart - direct quit Es";
 					quitEsFunction();
-				}
 			});
 			row.addElement(std::make_shared<TextComponent>(window, _("QUIT EMULATIONSTATION"), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color), true);
 			s->addRow(row);
@@ -1820,15 +1818,9 @@ void GuiMenu::openQuitMenu()
 	row.makeAcceptInputHandler([window]
 		{
 			if (Settings::getInstance()->getBool("ConfirmToExit"))
-			{
-				LOG(LogDebug) << "GuiMenu::openQuitMenu() - ShowOnlyExit - ConfirmToExit restart device";
 				window->pushGui(new GuiMsgBox(window, _("REALLY RESTART?"), _("YES"), restartDeviceFunction, _("NO"), nullptr));
-			}
 			else
-			{
-				LOG(LogDebug) << "GuiMenu::openQuitMenu() - menu restart - direct restart device";
 				restartDeviceFunction();
-			}
 		});
 	row.addElement(std::make_shared<TextComponent>(window, _("RESTART SYSTEM"), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color), true);
 	s->addRow(row);
@@ -1837,15 +1829,9 @@ void GuiMenu::openQuitMenu()
 	row.makeAcceptInputHandler([window]
 		{
 			if (Settings::getInstance()->getBool("ConfirmToExit"))
-			{
-				LOG(LogDebug) << "GuiMenu::openQuitMenu() - ShowOnlyExit - ConfirmToExit shutdown device";
 				window->pushGui(new GuiMsgBox(window, _("REALLY SHUTDOWN?"), _("YES"), shutdowntDeviceFunction, _("NO"), nullptr));
-			}
 			else
-			{
-				LOG(LogDebug) << "GuiMenu::openQuitMenu() - ShowOnlyExit - direct shutdown device";
 				shutdowntDeviceFunction();
-			}
 		});
 	row.addElement(std::make_shared<TextComponent>(window, _("SHUTDOWN SYSTEM"), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color), true);
 	s->addRow(row);
@@ -2100,7 +2086,7 @@ std::vector<HelpPrompt> GuiMenu::getHelpPrompts()
 {
 	std::vector<HelpPrompt> prompts;
 	prompts.push_back(HelpPrompt("up/down", _("CHOOSE")));
-	prompts.push_back(HelpPrompt("a", _("SELECT")));
+	prompts.push_back(HelpPrompt(BUTTON_OK, _("SELECT")));
 	prompts.push_back(HelpPrompt("start", _("CLOSE")));
 	return prompts;
 }

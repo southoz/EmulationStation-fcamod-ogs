@@ -28,7 +28,7 @@ bool DateTimeEditComponent::input(InputConfig* config, Input input)
 	if(input.value == 0)
 		return false;
 
-	if(config->isMappedTo("a", input))
+	if(config->isMappedTo(BUTTON_OK, input))
 	{
 		if(mDisplayMode != DISP_RELATIVE_TO_NOW) //don't allow editing for relative times
 			mEditing = !mEditing;
@@ -52,7 +52,7 @@ bool DateTimeEditComponent::input(InputConfig* config, Input input)
 
 	if(mEditing)
 	{
-		if(config->isMappedTo("b", input))
+		if(config->isMappedTo(BUTTON_BACK, input))
 		{
 			mEditing = false;
 			mTime = mTimeBeforeEdit;
@@ -351,11 +351,11 @@ std::vector<HelpPrompt> DateTimeEditComponent::getHelpPrompts()
 	{
 		prompts.push_back(HelpPrompt("left/right", _("MOVE CURSOR"))); // batocera
 		prompts.push_back(HelpPrompt("up/down", _("CHANGE VALUE"))); // batocera
-		prompts.push_back(HelpPrompt("b", _("SKIP")));
-		prompts.push_back(HelpPrompt("a", _("ACCEPT RESULT")));
+		prompts.push_back(HelpPrompt(BUTTON_BACK, _("SKIP")));
+		prompts.push_back(HelpPrompt(BUTTON_OK, _("ACCEPT RESULT")));
 	}
 	else {
-		prompts.push_back(HelpPrompt("a", _("EDIT")));
+		prompts.push_back(HelpPrompt(BUTTON_OK, _("EDIT")));
 	}
 	return prompts;
 }

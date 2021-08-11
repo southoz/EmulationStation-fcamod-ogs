@@ -441,13 +441,16 @@ int main(int argc, char* argv[])
 	// this makes for no delays when accessing content, but a longer startup time
 	ViewController::get()->preload();
 
+	// Initialize input
+	InputConfig::AssignActionButtons();
+
 	//choose which GUI to open depending on if an input configuration already exists
 	if (errorMsg == NULL)
 	{
-		if (Utils::FileSystem::exists(InputManager::getConfigPath()) && InputManager::getInstance()->getNumConfiguredDevices() > 0)
+//		if (Utils::FileSystem::exists(InputManager::getConfigPath()) && InputManager::getInstance()->getNumConfiguredDevices() > 0)
 			ViewController::get()->goToStart(true);
-		else
-			window.pushGui(new GuiDetectDevice(&window, true, [] { ViewController::get()->goToStart(true); }));		
+//		else
+//			window.pushGui(new GuiDetectDevice(&window, true, [] { ViewController::get()->goToStart(true); }));
 	}
 
 	//generate joystick events since we're done loading

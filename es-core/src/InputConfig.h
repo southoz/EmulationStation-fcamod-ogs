@@ -16,6 +16,9 @@ namespace pugi { class xml_node; }
 // batocera
 #define MAX_PLAYERS 1
 
+extern char* BUTTON_OK;
+extern char* BUTTON_BACK;
+
 enum InputType
 {
 	TYPE_AXIS,
@@ -129,6 +132,9 @@ private:
 	const int mDeviceId;
 	const std::string mDeviceName;
 	const std::string mDeviceGUID;
+
+public:
+	static void AssignActionButtons();
 };
 
 #endif // ES_CORE_INPUT_CONFIG_H

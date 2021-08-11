@@ -1,6 +1,7 @@
 #include "InputConfig.h"
 
 #include "Log.h"
+#include "Settings.h"
 #include <pugixml/src/pugixml.hpp>
 
 //some util functions
@@ -222,4 +223,17 @@ void InputConfig::writeToXML(pugi::xml_node& parent)
 		input.append_attribute("id").set_value(iterator->second.id);
 		input.append_attribute("value").set_value(iterator->second.value);
 	}
+}
+
+static char ABUTTON[2] = "a";
+static char BBUTTON[2] = "b";
+
+char* BUTTON_OK = ABUTTON;
+char* BUTTON_BACK = BBUTTON;
+
+void InputConfig::AssignActionButtons()
+{
+	bool invertButtonsAB = Settings::getInstance()->getBool("InvertButtonsAB");
+	BUTTON_OK = invertButtonsAB ? BBUTTON : ABUTTON;
+	BUTTON_BACK = invertButtonsAB ? ABUTTON : BBUTTON;
 }

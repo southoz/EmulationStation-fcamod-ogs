@@ -221,7 +221,7 @@ bool GuiTextEditPopupKeyboard::input(InputConfig* config, Input input)
 		return true;
 
 	// pressing back when not text editing closes us
-	if (config->isMappedTo("b", input) && input.value)
+	if (config->isMappedTo(BUTTON_BACK, input) && input.value)
 	{
 		delete this;
 		return true;
@@ -289,7 +289,7 @@ std::vector<HelpPrompt> GuiTextEditPopupKeyboard::getHelpPrompts()
 		prompts.push_back(HelpPrompt("x", _("RESET")));
 
 	prompts.push_back(HelpPrompt("y", _("SHIFT")));
-	prompts.push_back(HelpPrompt("b", _("BACK")));
+	prompts.push_back(HelpPrompt(BUTTON_BACK, _("BACK")));
 	prompts.push_back(HelpPrompt("rt", _("SPACE")));
 	prompts.push_back(HelpPrompt("lt", _("DELETE")));
 	return prompts;

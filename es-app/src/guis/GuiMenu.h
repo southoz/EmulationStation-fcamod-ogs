@@ -31,6 +31,7 @@ private:
 	void openConfigInput();
 	void openAdvancedSettings();
 	void openQuitMenu();
+	void openControllersSettings();
 	void openScraperSettings();
 	void openScreensaverOptions();
 	void openSoundSettings();
