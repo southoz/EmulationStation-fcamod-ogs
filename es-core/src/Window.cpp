@@ -132,8 +132,8 @@ bool Window::init(bool initRenderer, bool forceFullScreen)
 		mClock->setColor(0x777777FF);
 	}
 
-	if (mControllerActivity == nullptr)
-		mControllerActivity = std::make_shared<ControllerActivityComponent>(this);
+	//if (mControllerActivity == nullptr)
+		//mControllerActivity = std::make_shared<ControllerActivityComponent>(this);
 
 	if (mBatteryIndicator == nullptr)
 		mBatteryIndicator = std::make_shared<BatteryIndicatorComponent>(this);
@@ -253,8 +253,8 @@ void Window::input(InputConfig* config, Input input)
 	}
 	else
 	{
-		if (Settings::getInstance()->getBool("ShowControllerActivity") && (mControllerActivity != nullptr))
-			mControllerActivity->input(config, input);
+		//if (Settings::getInstance()->getBool("ShowControllerActivity") && (mControllerActivity != nullptr))
+			//mControllerActivity->input(config, input);
 
 		if (peekGui())
 		{
@@ -275,10 +275,10 @@ void Window::update(int deltaTime)
 			deltaTime = mAverageDeltaTime;
 	}
 
-	if (Settings::getInstance()->getBool("VolumePopup") && mVolumeInfo)
+	if (Settings::getInstance()->getBool("VolumePopup") && (mVolumeInfo != nullptr))
 		mVolumeInfo->update(deltaTime);
 
-	if (Settings::getInstance()->getBool("BrightnessPopup") && mBrightnessInfo)
+	if (Settings::getInstance()->getBool("BrightnessPopup") && (mBrightnessInfo != nullptr))
 		mBrightnessInfo->update(deltaTime);
 
 	mFrameTimeElapsed += deltaTime;
@@ -346,10 +346,11 @@ void Window::update(int deltaTime)
 		mScreenSaver->update(deltaTime);
 
 	// update pads // batocera
-	if (Settings::getInstance()->getBool("ShowControllerActivity") && mControllerActivity)
-		mControllerActivity->update(deltaTime);
+	//if (Settings::getInstance()->getBool("ShowControllerActivity") && mControllerActivity)
+	//if (mControllerActivity)
+		//mControllerActivity->update(deltaTime);
 
-	if (Settings::getInstance()->getBool("ShowBatteryIndicator") && mBatteryIndicator)
+	if ((mBatteryIndicator != nullptr) && (Settings::getInstance()->getBool("ShowBatteryIndicator") || Settings::getInstance()->getBool("ShowNetworkIndicator")))
 		mBatteryIndicator->update(deltaTime);
 
 	AudioManager::update(deltaTime);
@@ -399,10 +400,11 @@ void Window::render()
 	if (Settings::getInstance()->getBool("DrawClock") && (mClock != nullptr) && (mGuiStack.size() < 2 || !Renderer::isSmallScreen()))
 		mClock->render(transform);
 
-	if (Settings::getInstance()->getBool("ShowControllerActivity") && (mControllerActivity != nullptr) && (mGuiStack.size() < 2 || !Renderer::isSmallScreen()))
-		mControllerActivity->render(transform);
+	//if (Settings::getInstance()->getBool("ShowControllerActivity") && (mControllerActivity != nullptr) && (mGuiStack.size() < 2 || !Renderer::isSmallScreen()))ShowNetworkIndicator
+	//if ((mControllerActivity != nullptr) && (mGuiStack.size() < 2 || !Renderer::isSmallScreen()))
+		//mControllerActivity->render(transform);
 
-	if (Settings::getInstance()->getBool("ShowBatteryIndicator") && (mBatteryIndicator != nullptr) && (mGuiStack.size() < 2 || !Renderer::isSmallScreen()))
+	if ((mBatteryIndicator != nullptr) && (Settings::getInstance()->getBool("ShowBatteryIndicator") || Settings::getInstance()->getBool("ShowNetworkIndicator")) && (mGuiStack.size() < 2 || !Renderer::isSmallScreen()))
 		mBatteryIndicator->render(transform);
 
 	// pads // batocera
@@ -853,16 +855,17 @@ void Window::onThemeChanged(const std::shared_ptr<ThemeData>& theme)
 		mClock->applyTheme(theme, "screen", "clock", ThemeFlags::ALL ^ (ThemeFlags::TEXT));
 	}
 
-	if (Settings::getInstance()->getBool("ShowControllerActivity") && mControllerActivity)
-		mControllerActivity->applyTheme(theme, "screen", "controllerActivity", ThemeFlags::ALL ^ (ThemeFlags::TEXT));
+//	if (Settings::getInstance()->getBool("ShowControllerActivity") && mControllerActivity)
+	//if (mControllerActivity)
+		//mControllerActivity->applyTheme(theme, "screen", "controllerActivity", ThemeFlags::ALL ^ (ThemeFlags::TEXT));
 
-	if (Settings::getInstance()->getBool("ShowBatteryIndicator") && mBatteryIndicator)
+	if (mBatteryIndicator != nullptr)
 		mBatteryIndicator->applyTheme(theme, "screen", "batteryIndicator", ThemeFlags::ALL);
 
-	if (Settings::getInstance()->getBool("VolumePopup"))
+	if (Settings::getInstance()->getBool("VolumePopup") && (mVolumeInfo != nullptr))
 		mVolumeInfo = std::make_shared<VolumeInfoComponent>(this);
 
-	if (Settings::getInstance()->getBool("BrightnessPopup"))
+	if (Settings::getInstance()->getBool("BrightnessPopup") && (mBrightnessInfo != nullptr))
 		mBrightnessInfo = std::make_shared<BrightnessInfoComponent>(this);
 
 }

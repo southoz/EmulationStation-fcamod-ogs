@@ -78,7 +78,7 @@ void Settings::setDefaults()
 	mStringMap["FolderViewMode"] = "never";
 
 	mBoolMap["UseOSK"] = true;
-	mBoolMap["ShowControllerActivity"] = false;
+	//mBoolMap["ShowControllerActivity"] = false;
 	mBoolMap["ShowBatteryIndicator"] = false;
 	mBoolMap["ShowNetworkIndicator"] = false;
 

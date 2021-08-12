@@ -11,7 +11,6 @@
 ISimpleGameListView::ISimpleGameListView(Window* window, FolderData* root) : IGameListView(window, root),
 	mHeaderText(window), mHeaderImage(window), mBackground(window)
 {
-LOG(LogDebug) << "ISimpleGameListView::ISimpleGameListView()";
 	mHeaderText.setText(_("Logo Text"));
 	mHeaderText.setSize(mSize.x(), 0);
 	mHeaderText.setPosition(0, 0);

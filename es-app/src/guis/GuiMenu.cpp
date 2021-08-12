@@ -1651,22 +1651,20 @@ void GuiMenu::openAdvancedSettings()
 	auto battery = std::make_shared<SwitchComponent>(mWindow);
 	battery->setState(Settings::getInstance()->getBool("ShowBatteryIndicator"));
 	s->addWithLabel(_("SHOW BATTERY LEVEL"), battery);
-	s->addSaveFunc([battery]
+	s->addSaveFunc([s, battery]
 	{
-		bool old_value = Settings::getInstance()->getBool("ShowBatteryIndicator");
-		if (old_value != battery->getState())
-			Settings::getInstance()->setBool("ShowBatteryIndicator", battery->getState());
+		Settings::getInstance()->setBool("ShowBatteryIndicator", battery->getState());
+		//s->setVariable("reloadAll", true);
 	});
 
 	// Network Indicator
 	auto networkIndicator = std::make_shared<SwitchComponent>(mWindow);
 	networkIndicator->setState(Settings::getInstance()->getBool("ShowNetworkIndicator"));
 	s->addWithLabel(_("SHOW NETWORK INDICATOR"), networkIndicator);
-	s->addSaveFunc([networkIndicator]
+	s->addSaveFunc([s, networkIndicator]
 	{
-		bool old_value = Settings::getInstance()->getBool("ShowNetworkIndicator");
-		if (old_value != networkIndicator->getState())
-			Settings::getInstance()->setBool("ShowNetworkIndicator", networkIndicator->getState());
+		Settings::getInstance()->setBool("ShowNetworkIndicator", networkIndicator->getState());
+		//s->setVariable("reloadAll", true);
 	});
 
 	// full exit

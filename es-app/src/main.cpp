@@ -114,6 +114,7 @@ void playVideo()
 
 		Renderer::swapBuffers();
 	}
+	Log::flush();
 	window.deinit(true);
 }
 
@@ -149,6 +150,7 @@ bool parseArgs(int argc, char* argv[])
 		else if (strcmp(argv[i], "--video") == 0)
 		{
 			gPlayVideo = argv[i + 1];
+			LOG(LogInfo) << "MAIN::parseArgs() - argument video: " << gPlayVideo;
 			i++; // skip the argument value
 		}
 		else if (strcmp(argv[i], "--screenrotate") == 0)
@@ -352,6 +354,7 @@ int main(int argc, char* argv[])
 	Log::setupReportingLevel();
 	Log::init();
 	LOG(LogInfo) << "MAIN::main() - EmulationStation - v" << PROGRAM_VERSION_STRING << ", built " << PROGRAM_BUILT_STRING;
+	Log::flush();
 
 	if(!parseArgs(argc, argv))
 		return 0;
@@ -367,9 +370,11 @@ int main(int argc, char* argv[])
 	FreeImage_Initialise();
 #endif
 
+	Log::flush();
 	if (!gPlayVideo.empty())
 	{
 		playVideo();
+		Log::flush();
 		return 0;
 	}
 

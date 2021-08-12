@@ -398,16 +398,17 @@ bool queryNetworkConnected()
 	try
 	{
 		if ( Utils::FileSystem::exists("/usr/bin/nmcli")
-				&& (getShOutput(R"(nmcli -t -f RUNNING general)").find("running") != std::string::npos)
-				&& (getShOutput(R"(nmcli -t -f STATE general)").find("connected") != std::string::npos ) ) // NetworkManager running
+				&& (Utils::String::replace(getShOutput(R"(nmcli -t -f RUNNING general)"), "\n", "") == "running" )
+				&& (Utils::String::replace(getShOutput(R"(nmcli -t -f STATE general)"), "\n", "") == "connected" ) )
 		{
+			LOG(LogDebug) << "PLATFORM::queryNetworkConnected() - result: true";
 			return true;
 		}
 	} catch (...) {
-		LOG(LogError) << "Platform::queryNetworkConnected() - Error reading network data!!!";
+		LOG(LogError) << "PLATFORM::queryNetworkConnected() - Error reading network data!!!";
 	}
+	LOG(LogDebug) << "PLATFORM::queryNetworkConnected() - result: false";
 	return false;
-
 }
 
 CpuAndSocketInformation queryCpuAndChipsetInformation(bool summary)
