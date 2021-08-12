@@ -94,9 +94,9 @@ void InputManager::addJoystickByDeviceIndex(int id)
 	mInputConfigs[joyId] = new InputConfig(joyId, SDL_JoystickName(joy), guid);
 	if(!loadInputConfig(mInputConfigs[joyId]))
 	{
-		LOG(LogInfo) << "Added unconfigured joystick " << SDL_JoystickName(joy) << " (GUID: " << guid << ", instance ID: " << joyId << ", device index: " << id << ").";
+		LOG(LogInfo) << "InputManager::addJoystickByDeviceIndex() - Added unconfigured joystick " << SDL_JoystickName(joy) << " (GUID: " << guid << ", instance ID: " << joyId << ", device index: " << id << ").";
 	}else{
-		LOG(LogInfo) << "Added known joystick " << SDL_JoystickName(joy) << " (instance ID: " << joyId << ", device index: " << id << ")";
+		LOG(LogInfo) << "InputManager::addJoystickByDeviceIndex() - Added known joystick " << SDL_JoystickName(joy) << " (instance ID: " << joyId << ", device index: " << id << ")";
 	}
 
 	// set up the prevAxisValues
@@ -126,7 +126,7 @@ void InputManager::removeJoystickByJoystickID(SDL_JoystickID joyId)
 		SDL_JoystickClose(joyIt->second);
 		mJoysticks.erase(joyIt);
 	}else{
-		LOG(LogError) << "Could not find joystick to close (instance ID: " << joyId << ")";
+		LOG(LogError) << "InputManager::removeJoystickByJoystickID() - Could not find joystick to close (instance ID: " << joyId << ")";
 	}
 }
 
@@ -293,7 +293,7 @@ bool InputManager::loadInputConfig(InputConfig* config)
 
 	if(!res)
 	{
-		LOG(LogError) << "Error parsing input config: " << res.description();
+		LOG(LogError) << "InputManager::loadInputConfig() - Error parsing input config: " << res.description();
 		return false;
 	}
 
@@ -323,8 +323,8 @@ void InputManager::loadDefaultKBConfig()
 	cfg->mapInput("left", Input(DEVICE_KEYBOARD, TYPE_KEY, SDLK_LEFT, 1, true));
 	cfg->mapInput("right", Input(DEVICE_KEYBOARD, TYPE_KEY, SDLK_RIGHT, 1, true));
 
-	cfg->mapInput("a", Input(DEVICE_KEYBOARD, TYPE_KEY, SDLK_RETURN, 1, true));
-	cfg->mapInput("b", Input(DEVICE_KEYBOARD, TYPE_KEY, SDLK_ESCAPE, 1, true));
+	cfg->mapInput(BUTTON_OK, Input(DEVICE_KEYBOARD, TYPE_KEY, SDLK_RETURN, 1, true));
+	cfg->mapInput(BUTTON_BACK, Input(DEVICE_KEYBOARD, TYPE_KEY, SDLK_ESCAPE, 1, true));
 	cfg->mapInput("start", Input(DEVICE_KEYBOARD, TYPE_KEY, SDLK_F1, 1, true));
 	cfg->mapInput("select", Input(DEVICE_KEYBOARD, TYPE_KEY, SDLK_F2, 1, true));
 
@@ -346,7 +346,7 @@ void InputManager::writeDeviceConfig(InputConfig* config)
 		pugi::xml_parse_result result = doc.load_file(path.c_str());
 		if(!result)
 		{
-			LOG(LogError) << "Error parsing input config: " << result.description();
+			LOG(LogError) << "InputManager::writeDeviceConfig() - Error parsing input config: " << result.description();
 		}
 		else
 		{
@@ -409,7 +409,7 @@ void InputManager::doOnFinish()
 		pugi::xml_parse_result result = doc.load_file(path.c_str());
 		if(!result)
 		{
-			LOG(LogError) << "Error parsing input config: " << result.description();
+			LOG(LogError) << "InputManager::doOnFinish() - Error parsing input config: " << result.description();
 		}
 		else
 		{
@@ -431,7 +431,7 @@ void InputManager::doOnFinish()
 
 						if(exitCode != 0)
 						{
-							LOG(LogWarning) << "...launch terminated with nonzero exit code " << exitCode << "!";
+							LOG(LogWarning) << "InputManager::doOnFinish() - ...launch terminated with nonzero exit code " << exitCode << "!";
 						}
 					}
 				}
@@ -489,7 +489,7 @@ std::string InputManager::getDeviceGUIDString(int deviceId)
 	auto it = mJoysticks.find(deviceId);
 	if(it == mJoysticks.cend())
 	{
-		LOG(LogError) << "getDeviceGUIDString - deviceId " << deviceId << " not found!";
+		LOG(LogError) << "InputManager::getDeviceGUIDString() - deviceId " << deviceId << " not found!";
 		return "something went horribly wrong";
 	}
 

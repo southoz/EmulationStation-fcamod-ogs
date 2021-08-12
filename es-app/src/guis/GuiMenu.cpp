@@ -195,12 +195,36 @@ void GuiMenu::openControllersSettings()
 
 	Window *window = mWindow;
 
-	auto invertJoy = std::make_shared<SwitchComponent>(mWindow);
-	invertJoy->setState(Settings::getInstance()->getBool("InvertButtonsAB"));
-	s->addWithLabel(_("SWITCH A/B BUTTONS IN EMULATIONSTATION"), invertJoy);
-	s->addSaveFunc([this, s, invertJoy]
+	auto invert_AB_buttons = std::make_shared<SwitchComponent>(mWindow);
+	invert_AB_buttons->setState(Settings::getInstance()->getBool("InvertButtonsAB"));
+	s->addWithLabel(_("SWITCH A/B BUTTONS IN EMULATIONSTATION"), invert_AB_buttons);
+	s->addSaveFunc([this, s, invert_AB_buttons]
 		{
-			if (Settings::getInstance()->setBool("InvertButtonsAB", invertJoy->getState()))
+			if (Settings::getInstance()->setBool("InvertButtonsAB", invert_AB_buttons->getState()))
+			{
+				InputConfig::AssignActionButtons();
+				s->setVariable("reloadAll", true);
+			}
+		});
+
+	auto invert_pu_buttons = std::make_shared<SwitchComponent>(mWindow);
+	invert_pu_buttons->setState(Settings::getInstance()->getBool("InvertButtonsPU"));
+	s->addWithLabel(_("SWITCH \"PAGE UP\" TO L1 IN EMULATIONSTATION"), invert_pu_buttons);
+	s->addSaveFunc([this, s, invert_pu_buttons]
+		{
+			if (Settings::getInstance()->setBool("InvertButtonsPU", invert_pu_buttons->getState()))
+			{
+				InputConfig::AssignActionButtons();
+				s->setVariable("reloadAll", true);
+			}
+		});
+
+	auto invert_pd_buttons = std::make_shared<SwitchComponent>(mWindow);
+	invert_pd_buttons->setState(Settings::getInstance()->getBool("InvertButtonsPD"));
+	s->addWithLabel(_("SWITCH \"PAGE DOWN\" TO R1 IN EMULATIONSTATION"), invert_pd_buttons);
+	s->addSaveFunc([this, s, invert_pd_buttons]
+		{
+			if (Settings::getInstance()->setBool("InvertButtonsPD", invert_pd_buttons->getState()))
 			{
 				InputConfig::AssignActionButtons();
 				s->setVariable("reloadAll", true);

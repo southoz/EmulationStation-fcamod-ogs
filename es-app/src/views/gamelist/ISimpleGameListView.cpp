@@ -6,11 +6,13 @@
 #include "Settings.h"
 #include "Sound.h"
 #include "SystemData.h"
+#include "Log.h"
 
 ISimpleGameListView::ISimpleGameListView(Window* window, FolderData* root) : IGameListView(window, root),
 	mHeaderText(window), mHeaderImage(window), mBackground(window)
 {
-	mHeaderText.setText("Logo Text");
+LOG(LogDebug) << "ISimpleGameListView::ISimpleGameListView()";
+	mHeaderText.setText(_("Logo Text"));
 	mHeaderText.setSize(mSize.x(), 0);
 	mHeaderText.setPosition(0, 0);
 	mHeaderText.setHorizontalAlignment(ALIGN_CENTER);
@@ -166,7 +168,7 @@ bool ISimpleGameListView::input(InputConfig* config, Input input)
 
 			return true;
 		}
-		else if (Settings::getInstance()->getBool("QuickSystemSelect") && ( config->isMappedLike(getQuickSystemSelectRightButton(), input) || config->isMappedLike("rightshoulder", input) ))
+		else if (Settings::getInstance()->getBool("QuickSystemSelect") && ( config->isMappedLike(getQuickSystemSelectRightButton(), input) || config->isMappedLike(getDefaultQuickSystemSelectRightButton(), input) ))
 		{
 			if (!mPopupSelfReference)
 			{
@@ -176,7 +178,7 @@ bool ISimpleGameListView::input(InputConfig* config, Input input)
 
 			return true;
 		}
-		else if (Settings::getInstance()->getBool("QuickSystemSelect") && ( config->isMappedLike(getQuickSystemSelectLeftButton(), input) || config->isMappedLike("leftshoulder", input) ))
+		else if (Settings::getInstance()->getBool("QuickSystemSelect") && ( config->isMappedLike(getQuickSystemSelectLeftButton(), input) || config->isMappedLike(getDefaultQuickSystemSelectLeftButton(), input) ))
 		{
 			if (!mPopupSelfReference)
 			{
@@ -255,4 +257,20 @@ void ISimpleGameListView::closePopupContext()
 
 	if (exitPopup != nullptr)
 		exitPopup();
+}
+
+std::string ISimpleGameListView::getDefaultQuickSystemSelectRightButton()
+{
+	if (Settings::getInstance()->getBool("InvertButtonsPD"))
+		return BUTTON_R2;
+
+	return BUTTON_R1;
+}
+
+std::string ISimpleGameListView::getDefaultQuickSystemSelectLeftButton()
+{
+	if (Settings::getInstance()->getBool("InvertButtonsPU"))
+		return BUTTON_L2;
+
+	return BUTTON_L1;
 }

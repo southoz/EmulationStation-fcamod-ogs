@@ -38,6 +38,9 @@ protected:
 	virtual std::string getQuickSystemSelectLeftButton() = 0;
 	virtual void populateList(const std::vector<FileData*>& files) = 0;
 
+	std::string getDefaultQuickSystemSelectRightButton();
+	std::string getDefaultQuickSystemSelectLeftButton();
+
 	TextComponent mHeaderText;
 	ImageComponent mHeaderImage;
 	ImageComponent mBackground;

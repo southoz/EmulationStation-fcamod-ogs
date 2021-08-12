@@ -18,6 +18,12 @@ namespace pugi { class xml_node; }
 
 extern char* BUTTON_OK;
 extern char* BUTTON_BACK;
+extern char* BUTTON_L1;
+extern char* BUTTON_L2;
+extern char* BUTTON_R1;
+extern char* BUTTON_R2;
+extern char* BUTTON_PU;
+extern char* BUTTON_PD;
 
 enum InputType
 {

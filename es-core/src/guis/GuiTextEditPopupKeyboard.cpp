@@ -60,7 +60,7 @@ GuiTextEditPopupKeyboard::GuiTextEditPopupKeyboard(Window* window, const std::st
 	// Accept/Cancel/Delete/Space buttons
 	std::vector<std::shared_ptr<ButtonComponent> > buttons;
 
-	buttons.push_back(std::make_shared<ButtonComponent>(mWindow, acceptBtnText, acceptBtnText, [this, okCallback] { okCallback(mText->getValue()); delete this; }));
+	buttons.push_back(std::make_shared<ButtonComponent>(mWindow, _(acceptBtnText), _(acceptBtnText), [this, okCallback] { okCallback(mText->getValue()); delete this; }));
 	auto space = std::make_shared<ButtonComponent>(mWindow, _("SPACE"), _("SPACE"), [this] {
 		mText->startEditing();
 		mText->textInput(" ");
@@ -228,14 +228,14 @@ bool GuiTextEditPopupKeyboard::input(InputConfig* config, Input input)
 	}
 
 	// For deleting a char (Left Top Button)
-	if (config->isMappedTo("pageup", input) && input.value) {
+	if (config->isMappedLike(BUTTON_PU, input) && input.value) {
 		mText->startEditing();
 		mText->textInput("\b");
 		mText->stopEditing();
 	}
 
 	// For Adding a space (Right Top Button)
-	if (config->isMappedTo("pagedown", input) && input.value) {
+	if (config->isMappedLike(BUTTON_PD, input) && input.value) {
 		mText->startEditing();
 		mText->textInput(" ");
 	}
@@ -290,8 +290,8 @@ std::vector<HelpPrompt> GuiTextEditPopupKeyboard::getHelpPrompts()
 
 	prompts.push_back(HelpPrompt("y", _("SHIFT")));
 	prompts.push_back(HelpPrompt(BUTTON_BACK, _("BACK")));
-	prompts.push_back(HelpPrompt("rt", _("SPACE")));
-	prompts.push_back(HelpPrompt("lt", _("DELETE")));
+	prompts.push_back(HelpPrompt(BUTTON_R2, _("SPACE")));
+	prompts.push_back(HelpPrompt(BUTTON_L2, _("DELETE")));
 	return prompts;
 }
 

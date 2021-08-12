@@ -55,6 +55,8 @@ void Settings::setDefaults()
 
 	mBoolMap["BackgroundJoystickInput"] = false;
 	mBoolMap["InvertButtonsAB"] = false;
+	mBoolMap["InvertButtonsPU"] = false;
+	mBoolMap["InvertButtonsPD"] = false;
 	mBoolMap["ParseGamelistOnly"] = false;
 	mBoolMap["ShowHiddenFiles"] = false;
 	mBoolMap["DrawFramerate"] = false;
