@@ -14,6 +14,7 @@
 #include <fcntl.h>
 #include <arpa/inet.h>
 #include <go2/display.h>
+#include <vector>
 
 int runShutdownCommand()
 {
@@ -93,6 +94,28 @@ void touch(const std::string& filename)
 	int fd = open(filename.c_str(), O_CREAT|O_WRONLY, 0644);
 	if (fd >= 0)
 		close(fd);
+}
+
+std::vector<std::string> executeSystemEnumerationScript(const std::string command)
+{
+	LOG(LogDebug) << "Platform::executeSystemEnumerationScript -> " << command;
+
+	std::vector<std::string> res;
+
+	FILE *pipe = popen(command.c_str(), "r");
+
+	if (pipe == NULL)
+		return res;
+
+	char line[1024];
+	while (fgets(line, 1024, pipe))
+	{
+		strtok(line, "\n");
+		res.push_back(std::string(line));
+	}
+
+	pclose(pipe);
+	return res;
 }
 
 void processQuitMode()
@@ -707,8 +730,31 @@ std::string getShOutput(const std::string& mStr)
 
 bool isUsbDriveMounted(std::string device)
 {
-	return ( Utils::FileSystem::exists(device) && Utils::FileSystem::exists("/bin/lsblk")
-		&& !getShOutput("lsblk -no MOUNTPOINT " + device).empty() );
+	return ( Utils::FileSystem::exists(device) && Utils::FileSystem::exists("/bin/findmnt")
+		&& !getShOutput("findmnt -rno SOURCE,TARGET \"" + device + '"').empty() );
+}
+
+std::string queryUsbDriveMountPoint(std::string device)
+{
+	std::string dev = "/dev/" + device;
+	if ( Utils::FileSystem::exists(dev) && Utils::FileSystem::exists("/bin/lsblk") )
+		return getShOutput("lsblk -no MOUNTPOINT " + dev);
+
+	return "";
+}
+
+std::vector<std::string> queryUsbDriveMountPoints()
+{
+	std::vector<std::string> partitions = executeSystemEnumerationScript(R"(cat /proc/partitions | egrep sda. | awk '{print $4}')"),
+													 mount_points;
+	for (auto partition = begin (partitions); partition != end (partitions); ++partition)
+	{
+		std::string mp = queryUsbDriveMountPoint(*partition);
+		if (!mp.empty())
+			mount_points.push_back(mp);
+	}
+
+	return mount_points;
 }
 
 std::string queryTimezones()

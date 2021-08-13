@@ -3,6 +3,7 @@
 #define ES_CORE_PLATFORM_H
 
 #include <string>
+#include <vector>
 
 class Window;
 
@@ -16,6 +17,7 @@ enum QuitMode
 
 int runSystemCommand(const std::string& cmd_utf8, const std::string& name, Window* window); // run a utf-8 encoded in the shell (requires wstring conversion on Windows)
 bool executeSystemScript(const std::string command);
+std::vector<std::string> executeSystemEnumerationScript(const std::string command);
 int quitES(QuitMode mode = QuitMode::QUIT);
 void processQuitMode();
 
@@ -242,7 +244,9 @@ struct DeviceInformation
 
 DeviceInformation queryDeviceInformation(bool summary);
 
-bool isUsbDriveMounted(std::string device = "/dev/sda1");
+bool isUsbDriveMounted(std::string device);
+std::string queryUsbDriveMountPoint(std::string device);
+std::vector<std::string> queryUsbDriveMountPoints();
 
 std::string queryTimezones();
 std::string queryCurrentTimezone();

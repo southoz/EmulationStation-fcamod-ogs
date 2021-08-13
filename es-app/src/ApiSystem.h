@@ -72,13 +72,15 @@ public:
 	std::string getFreeSpaceBootInfo();
 	std::string getFreeSpaceSystemInfo();
 	std::string getFreeSpaceUserInfo();
-	std::string getFreeSpaceUsbDriveInfo();
+	std::string getFreeSpaceUsbDriveInfo(const std::string mountpoint);
 	std::string getFreeSpaceInfo(const std::string mountpoint);
+
+	std::vector<std::string> getUsbDriveMountPoints();
 
 	bool isFreeSpaceBootLimit();
 	bool isFreeSpaceSystemLimit();
 	bool isFreeSpaceUserLimit();
-	bool isFreeSpaceUsbDriveLimit();
+	bool isFreeSpaceUsbDriveLimit(const std::string mountpoint);
 
 	bool isFreeSpaceLimit(const std::string mountpoint, int limit = 1); // GB
 	bool isTemperatureLimit(float temperature, float limit = 70.0f); // ° C

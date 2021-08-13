@@ -103,24 +103,7 @@ ApiSystem *ApiSystem::getInstance()
 
 std::vector<std::string> ApiSystem::executeEnumerationScript(const std::string command)
 {
-	LOG(LogDebug) << "ApiSystem::executeEnumerationScript -> " << command;
-
-	std::vector<std::string> res;
-
-	FILE *pipe = popen(command.c_str(), "r");
-
-	if (pipe == NULL)
-		return res;
-
-	char line[1024];
-	while (fgets(line, 1024, pipe))
-	{
-		strtok(line, "\n");
-		res.push_back(std::string(line));
-	}
-
-	pclose(pipe);
-	return res;
+	return executeSystemEnumerationScript(command);
 }
 
 std::pair<std::string, int> ApiSystem::executeScript(const std::string command, const std::function<void(const std::string)>& func)
@@ -379,16 +362,18 @@ std::string ApiSystem::getFreeSpaceUserInfo() {
 	return getFreeSpaceInfo("/roms");
 }
 
-std::string ApiSystem::getFreeSpaceUsbDriveInfo() {
-	if ( isUsbDriveMounted() )
-		return getFreeSpaceInfo("/mnt/usbdrive");
+std::string ApiSystem::getFreeSpaceUsbDriveInfo(const std::string mountpoint)
+{
+	LOG(LogDebug) << "ApiSystem::getFreeSpaceUsbDriveInfo() - mount point: " << mountpoint;
+	if ( isUsbDriveMounted(mountpoint) )
+		return getFreeSpaceInfo(mountpoint);
 
 	return "";
 }
 
 std::string ApiSystem::getFreeSpaceInfo(const std::string mountpoint)
 {
-	LOG(LogDebug) << "ApiSystem::getFreeSpaceInfo";
+	LOG(LogDebug) << "ApiSystem::getFreeSpaceInfo() - mount point: " << mountpoint;
 
 	std::ostringstream oss;
 
@@ -412,6 +397,12 @@ std::string ApiSystem::getFreeSpaceInfo(const std::string mountpoint)
 	return oss.str();
 }
 
+
+std::vector<std::string> ApiSystem::getUsbDriveMountPoints()
+{
+	return queryUsbDriveMountPoints();
+}
+
 bool ApiSystem::isFreeSpaceSystemLimit() {
 	return isFreeSpaceLimit("/");
 }
@@ -424,9 +415,9 @@ bool ApiSystem::isFreeSpaceUserLimit() {
 	return isFreeSpaceLimit("/roms", 2);
 }
 
-bool ApiSystem::isFreeSpaceUsbDriveLimit() {
-	if ( isUsbDriveMounted() )
-		return isFreeSpaceLimit("/mnt/usbdrive", 2);
+bool ApiSystem::isFreeSpaceUsbDriveLimit(const std::string mountpoint) {
+	if ( isUsbDriveMounted(mountpoint) )
+		return isFreeSpaceLimit(mountpoint, 2);
 
 	return false;
 }
@@ -450,7 +441,6 @@ bool ApiSystem::isMemoryLimit(float total_memory, float free_memory, int limit) 
 {
 	int percent = ( (int) ( (free_memory * 100) / total_memory ) );
 	return percent < limit;
-	//return ( (int) ( (free_memory * 100) / total_memory ) ) < limit;
 }
 
 bool ApiSystem::isBatteryLimit(float battery_level, int limit) // %

@@ -27,6 +27,8 @@ private:
 	void openSoftware();
 	void openDevice();
 
+	void configUsbDriveDevices(UpdatableGuiSettings *parent, const std::shared_ptr<Font>& font, unsigned int color);
+
 	static std::string formatTemperature  (float temp_raw);
 	static std::string formatFrequency    (int freq_raw);
 	static std::string formatBattery      (int bat_level);
