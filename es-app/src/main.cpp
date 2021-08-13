@@ -356,8 +356,8 @@ int main(int argc, char* argv[])
 	if(!parseArgs(argc, argv))
 		return 0;
 /*
-	ApiSystem::checkUpdateVersion();
-	ApiSystem::updateSystem(nullptr);
+	ApiSystem::getInstance()->checkUpdateVersion();
+	ApiSystem::getInstance()->updateSystem(nullptr);
 	return 0;
 	*/
 	// only show the console on Windows if HideConsole is false

@@ -40,7 +40,7 @@ void NetworkThread::run()
 		{
 			LOG(LogDebug) << "NetworkThread : Checking for updates";
 
-			std::string version = ApiSystem::checkUpdateVersion();
+			std::string version = ApiSystem::getInstance()->checkUpdateVersion();
 			if (!version.empty()) 
 			{
 				mWindow->displayNotificationMessage(_U("\uF019  ") + _("UPDATE AVAILABLE") + std::string(": ") + version);

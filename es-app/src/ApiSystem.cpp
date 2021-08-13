@@ -11,6 +11,7 @@
 #include "Window.h"
 #include "components/AsyncNotificationComponent.h"
 #include "VolumeControl.h"
+#include <algorithm>
 
 UpdateState::State ApiSystem::state = UpdateState::State::NO_UPDATE;
 
@@ -36,7 +37,7 @@ public:
 
 	void threadUpdate()
 	{
-		std::pair<std::string, int> updateStatus = ApiSystem::updateSystem([this](const std::string info)
+		std::pair<std::string, int> updateStatus = ApiSystem::getInstance()->updateSystem([this](const std::string info)
 		{
 			auto pos = info.find(">>>");
 			if (pos != std::string::npos)
@@ -87,6 +88,147 @@ private:
 	AsyncNotificationComponent* mWndNotification;
 	Window*						mWindow;
 };
+
+ApiSystem::ApiSystem() { }
+
+ApiSystem* ApiSystem::instance = nullptr;
+
+ApiSystem *ApiSystem::getInstance()
+{
+	if (ApiSystem::instance == nullptr)
+		ApiSystem::instance = new ApiSystem();
+
+	return ApiSystem::instance;
+}
+
+std::vector<std::string> ApiSystem::executeEnumerationScript(const std::string command)
+{
+	LOG(LogDebug) << "ApiSystem::executeEnumerationScript -> " << command;
+
+	std::vector<std::string> res;
+
+	FILE *pipe = popen(command.c_str(), "r");
+
+	if (pipe == NULL)
+		return res;
+
+	char line[1024];
+	while (fgets(line, 1024, pipe))
+	{
+		strtok(line, "\n");
+		res.push_back(std::string(line));
+	}
+
+	pclose(pipe);
+	return res;
+}
+
+std::pair<std::string, int> ApiSystem::executeScript(const std::string command, const std::function<void(const std::string)>& func)
+{
+	LOG(LogInfo) << "ApiSystem::executeScript() - Running -> " << command;
+
+	FILE *pipe = popen(command.c_str(), "r");
+	if (pipe == NULL)
+	{
+		LOG(LogError) << "Error executing " << command;
+		return std::pair<std::string, int>("Error starting command : " + command, -1);
+	}
+
+	char line[1024];
+	while (fgets(line, 1024, pipe))
+	{
+		strtok(line, "\n");
+
+		// Long theme names/URL can crash the GUI MsgBox
+		// "48" found by trials and errors. Ideally should be fixed
+		// in es-core MsgBox -- FIXME
+		if (strlen(line) > 48)
+			line[47] = '\0';
+
+		if (func != nullptr)
+			func(std::string(line));
+	}
+
+	int exitCode = WEXITSTATUS(pclose(pipe));
+	return std::pair<std::string, int>(line, exitCode);
+}
+
+bool ApiSystem::executeScript(const std::string command)
+{
+	return executeSystemScript(command);
+}
+
+bool ApiSystem::isScriptingSupported(ScriptId script)
+{
+	std::vector<std::string> executables;
+
+	switch (script)
+	{
+		case TIMEZONE:
+				executables.push_back("timezones");
+				break;
+
+/*
+	case ApiSystem::RETROACHIVEMENTS:
+#ifdef CHEEVOS_DEV_LOGIN
+		return true;
+#endif
+		break;
+	case ApiSystem::KODI:
+		executables.push_back("kodi");
+		break;
+	case ApiSystem::WIFI:
+		executables.push_back("batocera-wifi");
+		break;
+	case ApiSystem::BLUETOOTH:
+		executables.push_back("batocera-bluetooth");
+		break;
+	case ApiSystem::RESOLUTION:
+		executables.push_back("batocera-resolution");
+		break;
+	case ApiSystem::BIOSINFORMATION:
+		executables.push_back("batocera-systems");
+		break;
+	case ApiSystem::DISKFORMAT:
+		executables.push_back("batocera-format");
+		break;
+	case ApiSystem::OVERCLOCK:
+		executables.push_back("batocera-overclock");
+		break;
+	case ApiSystem::THEMESDOWNLOADER:
+		executables.push_back("batocera-es-theme");
+		break;
+	case ApiSystem::NETPLAY:
+		executables.push_back("7zr");
+		break;
+	case ApiSystem::PDFEXTRACTION:
+		executables.push_back("pdftoppm");
+		executables.push_back("pdfinfo");
+		break;
+	case ApiSystem::BATOCERASTORE:
+		executables.push_back("batocera-store");
+		break;
+	case ApiSystem::THEBEZELPROJECT:
+		executables.push_back("batocera-es-thebezelproject");
+		break;
+	case ApiSystem::PADSINFO:
+		executables.push_back("batocera-padsinfo");
+		break;
+	case ApiSystem::EVMAPY:
+		executables.push_back("evmapy");
+		break;
+*/
+	}
+
+	if (executables.size() == 0)
+		return true;
+
+	for (auto executable : executables)
+		if (!Utils::FileSystem::exists("/usr/bin/" + executable) && !Utils::FileSystem::exists("/usr/local/bin/" + executable))
+			return false;
+
+	return true;
+}
 
 void ApiSystem::startUpdate(Window* c)
 {
@@ -485,4 +627,25 @@ float ApiSystem::getBatteryVoltage()
 	LOG(LogDebug) << "ApiSystem::getBatteryVoltage()";
 
 	return queryBatteryVoltage();
+}
+
+std::string ApiSystem::getTimezones()
+{
+	LOG(LogDebug) << "ApiSystem::getTimezones()";
+
+	return queryTimezones();
+}
+
+std::string ApiSystem::getCurrentTimezone()
+{
+	LOG(LogInfo) << "ApiSystem::getCurrentTimezone()";
+
+	return queryCurrentTimezone();
+}
+
+bool ApiSystem::setTimezone(std::string timezone)
+{
+	LOG(LogInfo) << "ApiSystem::setTimezone() - TZ: " << timezone;
+
+	return setCurrentTimezone(timezone);
 }

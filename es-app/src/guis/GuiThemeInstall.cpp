@@ -17,7 +17,7 @@ GuiThemeInstall::GuiThemeInstall(Window* window)
 
 	addChild(&mMenu);
 	
-	auto themes = ApiSystem::getThemesList();
+	auto themes = ApiSystem::getInstance()->getThemesList();
 	for(auto utheme : themes)
 	{
 		std::string themeName = utheme.name;

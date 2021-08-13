@@ -77,6 +77,17 @@ int quitES(QuitMode mode)
 	return 0;
 }
 
+bool executeSystemScript(const std::string command)
+{
+	LOG(LogInfo) << "Platform::executeSystemScript() - Running -> " << command;
+
+	if (system(command.c_str()) == 0)
+		return true;
+
+	LOG(LogError) << "Platform::executeSystemScript() - Error executing " << command;
+	return false;
+}
+
 void touch(const std::string& filename)
 {
 	int fd = open(filename.c_str(), O_CREAT|O_WRONLY, 0644);
@@ -698,4 +709,41 @@ bool isUsbDriveMounted(std::string device)
 {
 	return ( Utils::FileSystem::exists(device) && Utils::FileSystem::exists("/bin/lsblk")
 		&& !getShOutput("lsblk -no MOUNTPOINT " + device).empty() );
+}
+
+std::string queryTimezones()
+{
+	if (Utils::FileSystem::exists("/usr/local/bin/timezones"))
+		return getShOutput(R"(/usr/local/bin/timezones available)");
+	else if (Utils::FileSystem::exists("/usr/bin/timedatectl"))
+		return getShOutput(R"(/usr/bin/timedatectl list-timezones | sort -u | tr '\n' ',')");
+	else if (Utils::FileSystem::exists("/usr/share/zoneinfo/zone1970.tab"))
+		return getShOutput(R"(cat /usr/share/zoneinfo/zone1970.tab | grep -v "^#" | awk '{ print $3 }' | sort -u | tr '\n' ',')");
+
+	return "Europe/Paris";
+}
+
+std::string queryCurrentTimezone()
+{
+	if (Utils::FileSystem::exists("/usr/local/bin/timezones"))
+		return getShOutput(R"(/usr/local/bin/timezones current)");
+	else if (Utils::FileSystem::exists("/usr/bin/timedatectl"))
+		return getShOutput(R"(/usr/bin/timedatectl | grep -iw \"Time zone\" | awk '{print $3}')");
+	else  if (Utils::FileSystem::exists("/bin/readlink"))
+		return getShOutput(R"(readlink -f /etc/localtime | sed 's;/usr/share/zoneinfo/;;')");
+
+	return "Europe/Paris";
+}
+
+bool setCurrentTimezone(std::string timezone)
+{
+	if (timezone.empty())
+		return false;
+
+	if (Utils::FileSystem::exists("/usr/local/bin/timezones"))
+		return executeSystemScript("/usr/local/bin/timezones set \"" + timezone + '"');
+	else if (Utils::FileSystem::exists("/usr/bin/timedatectl"))
+		return executeSystemScript("/usr/bin/sudo timedatectl set-timezone \"" + timezone + '"');
+
+	return executeSystemScript("sudo ln -sf \"/usr/share/zoneinfo/"+ timezone +"\" /etc/localtime");
 }

@@ -1,6 +1,7 @@
 #include "guis/GuiMenu.h"
 
 #include "components/OptionListComponent.h"
+#include "components/FlagOptionListComponent.h"
 #include "components/SliderComponent.h"
 #include "components/SwitchComponent.h"
 #include "guis/GuiCollectionSystemsOptions.h"
@@ -75,10 +76,10 @@ GuiMenu::GuiMenu(Window* window, bool animate) : GuiComponent(window), mMenu(win
 
 	if (Settings::getInstance()->getBool("FullScreenMode"))
 	{
-		BatteryInformation battery = ApiSystem::getBatteryInformation();
-		SoftwareInformation software = ApiSystem::getSoftwareInformation();
+		BatteryInformation battery = ApiSystem::getInstance()->getBatteryInformation();
+		SoftwareInformation software = ApiSystem::getInstance()->getSoftwareInformation();
 
-		addEntry("BAT: " + std::to_string( battery.level ) + "%" + " | SND: " + std::to_string(ApiSystem::getVolume()) + " | BRT: " + std::to_string( ApiSystem::getBrightnessLevel() ) + "% |" + _("NETWORK")+ ": " + _( (ApiSystem::isNetworkConnected() ? "CONNECTED" : "NOT CONNECTED") ), false, [this] {  });
+		addEntry("BAT: " + std::to_string( battery.level ) + "%" + " | SND: " + std::to_string(ApiSystem::getInstance()->getVolume()) + " | BRT: " + std::to_string( ApiSystem::getInstance()->getBrightnessLevel() ) + "% |" + _("NETWORK")+ ": " + _( (ApiSystem::getInstance()->isNetworkConnected() ? "CONNECTED" : "NOT CONNECTED") ), false, [this] {  });
 
 		addEntry("Distro Version: " + software.application_name + " " + software.version, false, [this] {  });
 	}
@@ -126,14 +127,14 @@ void GuiMenu::openDisplaySettings()
 
 	// Brightness
 	auto brightness = std::make_shared<SliderComponent>(mWindow, 1.0f, 100.f, 2.0f, "%");
-	int old_brightness_level = ApiSystem::getBrightnessLevel();
+	int old_brightness_level = ApiSystem::getInstance()->getBrightnessLevel();
 	brightness->setValue((float) old_brightness_level);
 	s->addWithLabel(_("BRIGHTNESS"), brightness);
 	s->addSaveFunc([s, brightness, old_brightness_level]
 		{
 			if (old_brightness_level != (int)Math::round( brightness->getValue() ))
 			{
-				ApiSystem::setBrightnessLevel( (int)Math::round( brightness->getValue() ));
+				ApiSystem::getInstance()->setBrightnessLevel( (int)Math::round( brightness->getValue() ));
 				if (Settings::getInstance()->getBool("FullScreenMode"))
 					s->setVariable("reloadGuiMenu", true);
 			}
@@ -1152,7 +1153,7 @@ void GuiMenu::openUISettings()
 	});
 
 	// Battery indicator
-	if (ApiSystem::getBatteryInformation().hasBattery)
+	if (ApiSystem::getInstance()->getBatteryInformation().hasBattery)
 	{
 		auto batteryStatus = std::make_shared<OptionListComponent<std::string> >(mWindow, _("SHOW BATTERY STATUS"), false);
 		batteryStatus->addRange({ { _("NO"), "" },{ _("ICON"), "icon" },{ _("ICON AND TEXT"), "text" } }, Settings::getInstance()->getString("ShowBattery"));
@@ -1390,24 +1391,24 @@ void GuiMenu::openUpdateSettings()
 	});
 
 	// Start update
-	s->addEntry(ApiSystem::state == UpdateState::State::UPDATE_READY ? _("APPLY UPDATE") : _("START UPDATE"), true, [this, s]
+	s->addEntry(ApiSystem::getInstance()->state == UpdateState::State::UPDATE_READY ? _("APPLY UPDATE") : _("START UPDATE"), true, [this, s]
 	{
-		if (ApiSystem::checkUpdateVersion().empty())
+		if (ApiSystem::getInstance()->checkUpdateVersion().empty())
 		{
 			mWindow->pushGui(new GuiMsgBox(mWindow, _("NO UPDATE AVAILABLE")));
 			return;
 		}
 
-		if (ApiSystem::state == UpdateState::State::UPDATE_READY)
+		if (ApiSystem::getInstance()->state == UpdateState::State::UPDATE_READY)
 		{
 			if (quitES(QuitMode::QUIT))
 				LOG(LogWarning) << "GuiMenu::openUpdateSettings() - Reboot terminated with non-zero result!";
 		}
-		else if (ApiSystem::state == UpdateState::State::UPDATER_RUNNING)
+		else if (ApiSystem::getInstance()->state == UpdateState::State::UPDATER_RUNNING)
 			mWindow->pushGui(new GuiMsgBox(mWindow, _("UPDATE IS ALREADY RUNNING")));
 		else
 		{
-			ApiSystem::startUpdate(mWindow);
+			ApiSystem::getInstance()->startUpdate(mWindow);
 
 			s->setVariable("closeGuiMenu", true);
 			s->close();			
@@ -1437,54 +1438,34 @@ void GuiMenu::openAdvancedSettings()
 	auto theme = ThemeData::getMenuTheme();
 
 	//Timezone - Adapted from emuelec
-
-	auto es_timezones = std::make_shared<OptionListComponent<std::string> >(mWindow, _("TIMEZONE"), false);
+	auto es_timezones = std::make_shared<OptionListComponent<std::string> >(mWindow, _("SELECT YOUR TIMEZONE"), false);
 
 	std::string currentTimezone = SystemConf::getInstance()->get("system.timezone");
 	if (currentTimezone.empty())
-		currentTimezone = std::string(getShOutput(R"(/usr/local/bin/timezones current)"));
+		currentTimezone = ApiSystem::getInstance()->getCurrentTimezone();
+
 	std::string a;
-	for(std::stringstream ss(getShOutput(R"(/usr/local/bin/timezones available)")); getline(ss, a, ','); ) {
+	bool valid_tz = false;
+	for(std::stringstream ss(ApiSystem::getInstance()->getTimezones()); getline(ss, a, ','); ) {
 		es_timezones->add(a, a, currentTimezone == a);
+		if (currentTimezone == a)
+			valid_tz = true;
 	}
+	if (!valid_tz)
+		currentTimezone = "Europe/Paris";
+
 	s->addWithLabel(_("TIMEZONE"), es_timezones);
 	s->addSaveFunc([es_timezones] {
 		if (es_timezones->changed()) {
 			std::string selectedTimezone = es_timezones->getSelected();
-			runSystemCommand("sudo ln -sf /usr/share/zoneinfo/" + selectedTimezone + " /etc/localtime", "", nullptr);
+			ApiSystem::getInstance()->setTimezone(selectedTimezone);
+			SystemConf::getInstance()->set("system.timezone", selectedTimezone);
 		}
-		SystemConf::getInstance()->set("system.timezone", es_timezones->getSelected());
-	});
-
-	// power saver
-	auto power_saver = std::make_shared< OptionListComponent<std::string> >(mWindow, _("POWER SAVER MODES"), false);
-	std::vector<std::string> modes;
-	modes.push_back("disabled");
-	modes.push_back("default");
-	modes.push_back("enhanced");
-	modes.push_back("instant");
-	for (auto it = modes.cbegin(); it != modes.cend(); it++)
-		power_saver->add(_(it->c_str()), *it, Settings::getInstance()->getString("PowerSaverMode") == *it);
-
-	s->addWithLabel(_("POWER SAVER MODES"), power_saver);
-	s->addSaveFunc([this, power_saver] {
-		if (Settings::getInstance()->getString("PowerSaverMode") != "instant" && power_saver->getSelected() == "instant") {
-			Settings::getInstance()->setString("TransitionStyle", "instant");
-			Settings::getInstance()->setString("GameTransitionStyle", "instant");
-			Settings::getInstance()->setBool("MoveCarousel", false);
-			Settings::getInstance()->setBool("EnableSounds", false);
-		}
-
-		GuiComponent::ALLOWANIMATIONS = Settings::getInstance()->getString("TransitionStyle") != "instant";
-
-		Settings::getInstance()->setString("PowerSaverMode", power_saver->getSelected());
-		PowerSaver::init();
 	});
 
 	// LANGUAGE
-
-	std::vector<std::string> langues;
-	langues.push_back("en");
+	std::vector<std::string> languages;
+	languages.push_back("en");
 
 	std::string xmlpath = ResourceManager::getInstance()->getResourcePath(":/splash.svg");
 	if (xmlpath.length() > 0)
@@ -1516,14 +1497,14 @@ void GuiMenu::openAdvancedSettings()
 			name = Utils::FileSystem::getFileName(name);
 
 			if (name != "en")
-				langues.push_back(name);
+				languages.push_back(name);
 		}
 
-		if (langues.size() > 1)
+		if (languages.size() > 1)
 		{
-			auto language = std::make_shared< OptionListComponent<std::string> >(mWindow, _("LANGUAGE"), false);
+			auto language = std::make_shared< FlagOptionListComponent<std::string> >(mWindow, _("LANGUAGE"));
 
-			for (auto it = langues.cbegin(); it != langues.cend(); it++)
+			for (auto it = languages.cbegin(); it != languages.cend(); it++)
 			{
 				std::string language_label;
 				if (*it == "br")
@@ -1545,7 +1526,7 @@ void GuiMenu::openAdvancedSettings()
 				else
 					language_label = *it;
 
-				language->add(_(language_label), *it, Settings::getInstance()->getString("Language") == *it);
+				language->add(_(language_label), *it, Settings::getInstance()->getString("Language") == *it, ":/flags/" + *it + ".png");
 			}
 
 			s->addWithLabel(_("LANGUAGE"), language);
@@ -1559,6 +1540,32 @@ void GuiMenu::openAdvancedSettings()
 			});
 		}
 	}
+
+
+	// power saver
+	auto power_saver = std::make_shared< OptionListComponent<std::string> >(mWindow, _("POWER SAVER MODES"), false);
+	std::vector<std::string> modes;
+	modes.push_back("disabled");
+	modes.push_back("default");
+	modes.push_back("enhanced");
+	modes.push_back("instant");
+	for (auto it = modes.cbegin(); it != modes.cend(); it++)
+		power_saver->add(_(it->c_str()), *it, Settings::getInstance()->getString("PowerSaverMode") == *it);
+
+	s->addWithLabel(_("POWER SAVER MODES"), power_saver);
+	s->addSaveFunc([this, power_saver] {
+		if (Settings::getInstance()->getString("PowerSaverMode") != "instant" && power_saver->getSelected() == "instant") {
+			Settings::getInstance()->setString("TransitionStyle", "instant");
+			Settings::getInstance()->setString("GameTransitionStyle", "instant");
+			Settings::getInstance()->setBool("MoveCarousel", false);
+			Settings::getInstance()->setBool("EnableSounds", false);
+		}
+
+		GuiComponent::ALLOWANIMATIONS = Settings::getInstance()->getString("TransitionStyle") != "instant";
+
+		Settings::getInstance()->setString("PowerSaverMode", power_saver->getSelected());
+		PowerSaver::init();
+	});
 
 
 	// maximum vram

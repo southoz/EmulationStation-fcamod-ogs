@@ -676,6 +676,14 @@ msgid "LANGUAGE"
 msgstr "IDIOMA"
 
 #:
+msgid "TIMEZONE"
+msgstr "ZONA HORARIA"
+
+#:
+msgid "SELECT YOUR TIMEZONE"
+msgstr "SELECCIONA TU ZONA HORARIA"
+
+#:
 msgid "NONE"
 msgstr "NINGUNO"
 
@@ -2417,10 +2425,6 @@ msgid "%i STAR"
 msgid_plural "%i STARS"
 msgstr[0] "%i ESTRELLA"
 msgstr[1] "%i ESTRELLAS"
-
-#:
-msgid "TIMEZONE"
-msgstr "ZONA HORARIA"
 
 #, c-format
 msgid "Editing the '%s' Collection. Add/remove games with 'Y'."

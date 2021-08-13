@@ -15,6 +15,7 @@ enum QuitMode
 };
 
 int runSystemCommand(const std::string& cmd_utf8, const std::string& name, Window* window); // run a utf-8 encoded in the shell (requires wstring conversion on Windows)
+bool executeSystemScript(const std::string command);
 int quitES(QuitMode mode = QuitMode::QUIT);
 void processQuitMode();
 
@@ -242,6 +243,11 @@ struct DeviceInformation
 DeviceInformation queryDeviceInformation(bool summary);
 
 bool isUsbDriveMounted(std::string device = "/dev/sda1");
+
+std::string queryTimezones();
+std::string queryCurrentTimezone();
+bool setCurrentTimezone(std::string timezone);
+
 
 std::string getShOutput(const std::string& mStr);
 
