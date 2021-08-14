@@ -10,11 +10,12 @@
 #include "Window.h"
 #include "EsLocale.h"
 #include "ThemeData.h"
+#include "utils/FileSystemUtil.h"
 
 //Used to display a list of options.
 //Can select one options.
 
-// * <- curEntry -> Flag
+// * <- curEntry Flag ->
 
 // always
 // * press a -> open full list
@@ -157,7 +158,11 @@ public:
 		mRightArrow.setColorShift(theme->Text.color);
 		addChild(&mRightArrow);
 
-		mFlag.setImage(":/flags/" + Settings::getInstance()->getString("Language") + ".png"); // ":/flags/xx.png");
+		std::string flagPath = ":/flags/" + Settings::getInstance()->getString("Language") + ".png";
+		if (!ResourceManager::getInstance()->fileExists(flagPath))
+			flagPath = ":/flags/no_flag.png";
+
+		mFlag.setImage(flagPath); // ":/flags/xx.png");
 		addChild(&mFlag);
 
 		setSize(mLeftArrow.getSize().x() + mRightArrow.getSize().x() + mFlag.getSize().x() + (space * 2), theme->Text.font->getHeight());
@@ -261,6 +266,9 @@ public:
 		e.object = obj;
 		e.selected = selected;
 		e.flag = flag;
+		if (!ResourceManager::getInstance()->fileExists(flag))
+			e.flag = ":/flags/no_flag.png";
+
 		e.group = mGroup;
 		mGroup = "";
 
@@ -394,6 +402,7 @@ private:
 			{
 				mText.setText(Utils::String::toUpper(it->name));
 				mText.setSize(0, mText.getSize().y());
+
 				mFlag.setImage( it->flag );
 
 				setSize(mText.getSize().x() + mLeftArrow.getSize().x() + mRightArrow.getSize().x() + mFlag.getSize().x() + (space * 2 ) + 24, mText.getSize().y());
