@@ -171,8 +171,8 @@ void AudioManager::playRandomMusic(bool continueIfPlaying)
 
 	// check in .emulationstation/music directory
 	if (musics.empty())
-		findMusic(Utils::FileSystem::getHomePath() + "/.emulationstation/music", musics);
-			
+		findMusic(Utils::FileSystem::getEsConfigPath() + "/music", musics);
+
 	if (musics.empty()) 
 		return;
 	

@@ -42,9 +42,14 @@ static bool sizeCacheDirty = false;
 #include <sstream>
 #include <fstream>
 
+std::string getImageCacheDir()
+{
+	return Utils::FileSystem::getEsConfigPath();
+}
+
 std::string getImageCacheFilename()
 {
-	return Utils::FileSystem::getHomePath() + "/.emulationstation/imagecache.db";	
+	return getImageCacheDir() + "/imagecache.db";
 }
 
 void ImageIO::clearImageCache()
@@ -62,7 +67,7 @@ void ImageIO::loadImageCache()
 	if (f.fail())
 		return;
 
-	std::string relativeTo = Utils::FileSystem::getParent(Utils::FileSystem::getHomePath());
+	std::string relativeTo = getImageCacheDir();
 
 	std::string line;
 	while (std::getline(f, line))
@@ -95,7 +100,8 @@ void ImageIO::saveImageCache()
 	if (f.fail()) 
 		return;
 
-	std::string relativeTo = Utils::FileSystem::getParent(Utils::FileSystem::getHomePath());
+	std::string relativeTo = getImageCacheDir();
+
 	for (auto it : sizeCache)
 	{
 		if (it.second.size < 0)

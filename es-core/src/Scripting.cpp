@@ -17,8 +17,8 @@ namespace Scripting
         if(Utils::FileSystem::exists(test))
             scriptDirList.push_back(test);
 
-        // check in homepath
-        test = Utils::FileSystem::getHomePath() + "/.emulationstation/scripts/" + eventName;
+        // check in Es config path
+        test = Utils::FileSystem::getEsConfigPath() + "/scripts/" + eventName;
         if(Utils::FileSystem::exists(test))
             scriptDirList.push_back(test);
 

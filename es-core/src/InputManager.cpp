@@ -285,6 +285,9 @@ bool InputManager::parseEvent(const SDL_Event& ev, Window* window)
 bool InputManager::loadInputConfig(InputConfig* config)
 {
 	std::string path = getConfigPath();
+
+	LOG(LogInfo) << "InputManager::loadInputConfig() - Loading input config file '" << path << "'...";
+
 	if(!Utils::FileSystem::exists(path))
 		return false;
 
@@ -337,6 +340,8 @@ void InputManager::writeDeviceConfig(InputConfig* config)
 	assert(initialized());
 
 	std::string path = getConfigPath();
+
+	LOG(LogInfo) << "InputManager::writeDeviceConfig() - Saving input config file '" << path << "'...";
 
 	pugi::xml_document doc;
 
@@ -402,6 +407,9 @@ void InputManager::doOnFinish()
 {
 	assert(initialized());
 	std::string path = getConfigPath();
+
+	LOG(LogInfo) << "InputManager::doOnFinish() - Do on finish of config file '" << path << "'...";
+
 	pugi::xml_document doc;
 
 	if(Utils::FileSystem::exists(path))
@@ -442,17 +450,21 @@ void InputManager::doOnFinish()
 
 std::string InputManager::getConfigPath()
 {
-	std::string path; // = Utils::FileSystem::getHomePath();
-	//path += "/.emulationstation/es_input.cfg";
-	path += "/etc/emulationstation/es_input.cfg";
+	static std::string path;
+	if (!path.empty())
+		return path;
+
+	path = Utils::FileSystem::getEsConfigPath() + "/es_input.cfg";
+
+	if(!Utils::FileSystem::exists(path))
+		path = "/etc/emulationstation/es_input.cfg";
+
 	return path;
 }
 
 std::string InputManager::getTemporaryConfigPath()
 {
-	std::string path = Utils::FileSystem::getHomePath();
-	path += "/.emulationstation/es_temporaryinput.cfg";
-	return path;
+	return Utils::FileSystem::getEsConfigPath() + "/es_temporaryinput.cfg";
 }
 
 bool InputManager::initialized() const

@@ -1305,7 +1305,7 @@ std::string getCustomCollectionConfigPath(std::string collectionName)
 
 std::string getCollectionsFolder()
 {
-	return Utils::FileSystem::getGenericPath(Utils::FileSystem::getHomePath() + "/.emulationstation/collections");
+	return Utils::FileSystem::getGenericPath(Utils::FileSystem::getEsConfigPath() + "/collections");
 }
 
 bool systemSort(SystemData* sys1, SystemData* sys2)

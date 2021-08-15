@@ -316,7 +316,7 @@ SystemData* SystemData::loadSystem(pugi::xml_node system)
 		if (platformId != PlatformIds::PLATFORM_UNKNOWN)
 			platformIds.push_back(platformId);
 		else if (str != NULL && str[0] != '\0' && platformId == PlatformIds::PLATFORM_UNKNOWN)
-			LOG(LogWarning) << "  Unknown platform for system \"" << name << "\" (platform \"" << str << "\" from list \"" << platformList << "\")";
+			LOG(LogWarning) << "SystemData::loadSystem() - Unknown platform for system \"" << name << "\" (platform \"" << str << "\" from list \"" << platformList << "\")";
 	}
 
 	// theme folder
@@ -325,7 +325,7 @@ SystemData* SystemData::loadSystem(pugi::xml_node system)
 	//validate
 	if (name.empty() || path.empty() || extensions.empty() || cmd.empty())
 	{
-		LOG(LogError) << "System \"" << name << "\" is missing name, path, extension, or command!";
+		LOG(LogError) << "SystemData::loadSystem() - System \"" << name << "\" is missing name, path, extension, or command!";
 		return nullptr;
 	}
 
@@ -353,7 +353,7 @@ SystemData* SystemData::loadSystem(pugi::xml_node system)
 	SystemData* newSys = new SystemData(name, fullname, envData, themeFolder);
 	if (newSys->getRootFolder()->getChildren().size() == 0)
 	{
-		LOG(LogWarning) << "System \"" << name << "\" has no games! Ignoring it.";
+		LOG(LogWarning) << "SystemData::loadSystem() - System \"" << name << "\" has no games! Ignoring it.";
 		delete newSys;
 
 		return nullptr;
@@ -433,11 +433,11 @@ bool SystemData::loadConfig(Window* window)
 
 	std::string path = getConfigPath(false);
 
-	LOG(LogInfo) << "Loading system config file " << path << "...";
+	LOG(LogInfo) << "SystemData::loadConfig() - Loading system config file '" << path << "'...";
 
 	if(!Utils::FileSystem::exists(path))
 	{
-		LOG(LogError) << "es_systems.cfg file does not exist!";
+		LOG(LogError) << "SystemData::loadConfig() - 'es_systems.cfg' file does not exist!";
 		writeExampleConfig(getConfigPath(true));
 		return false;
 	}
@@ -447,8 +447,8 @@ bool SystemData::loadConfig(Window* window)
 
 	if(!res)
 	{
-		LOG(LogError) << "Could not parse es_systems.cfg file!";
-		LOG(LogError) << res.description();
+		LOG(LogError) << "SystemData::loadConfig() - Could not parse es_systems.cfg file!";
+		LOG(LogError) << "SystemData::loadConfig() - " << res.description();
 		return false;
 	}
 
@@ -457,7 +457,7 @@ bool SystemData::loadConfig(Window* window)
 
 	if(!systemList)
 	{
-		LOG(LogError) << "es_systems.cfg is missing the <systemList> tag!";
+		LOG(LogError) << "SystemData::loadConfig() - 'es_systems.cfg' is missing the <systemList> tag!";
 		return false;
 	}
 
@@ -611,7 +611,7 @@ void SystemData::writeExampleConfig(const std::string& path)
 
 	file.close();
 
-	LOG(LogError) << "Example config written!  Go read it at \"" << path << "\"!";
+	LOG(LogError) << "SystemData::writeExampleConfig() - Example config written!  Go read it at \"" << path << "\"!";
 }
 
 bool SystemData::hasDirtySystems()
@@ -653,7 +653,12 @@ void SystemData::deleteSystems()
 
 std::string SystemData::getConfigPath(bool forWrite)
 {
-	std::string path = Utils::FileSystem::getHomePath() + "/.emulationstation/es_systems.cfg";
+	static std::string path;
+	if (!path.empty())
+		return path;
+
+	path = Utils::FileSystem::getEsConfigPath() + "/es_systems.cfg";
+
 	if(forWrite || Utils::FileSystem::exists(path))
 		return path;
 
@@ -715,7 +720,7 @@ std::string SystemData::getGamelistPath(bool forWrite) const
 	if(Utils::FileSystem::exists(fileRomPath))
 		return fileRomPath;
 
-	std::string filePath = Utils::FileSystem::getHomePath() + "/.emulationstation/gamelists/" + mName + "/gamelist.xml";
+	std::string filePath = Utils::FileSystem::getEsConfigPath() + "/gamelists/" + mName + "/gamelist.xml";
 
 	// Default to system rom folder
 	if (forWrite && !Utils::FileSystem::exists(filePath) && Utils::FileSystem::isDirectory(mRootFolder->getPath()))

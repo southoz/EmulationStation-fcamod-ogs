@@ -17,6 +17,11 @@ namespace Utils
 		void        setHomePath        (const std::string& _path);
 		std::string getHomePath        ();
 		std::string getCWDPath         ();
+		void        setEsConfigPath    (const std::string& _path);
+		std::string getEsConfigPath    ();
+		std::string getSharedConfigPath();
+		void        setUserDataPath    (const std::string& _path);
+		std::string getUserDataPath    ();
 		void        setExePath         (const std::string& _path);
 		std::string getExePath         ();
 		std::string getPreferredPath   (const std::string& _path);

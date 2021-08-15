@@ -1121,7 +1121,7 @@ void ThemeData::parseElement(const pugi::xml_node& root, const std::map<std::str
 			{
 				path = Utils::String::replace(path,
 					"/recalbox/share_init/system/.emulationstation/themes",
-					"/userdata/themes");
+					Utils::FileSystem::getUserDataPath() + "/themes");
 			}
 
 			if(!ResourceManager::getInstance()->fileExists(path))
@@ -1235,7 +1235,10 @@ const std::shared_ptr<ThemeData>& ThemeData::getDefault()
 	{
 		theme = std::shared_ptr<ThemeData>(new ThemeData());
 
-		const std::string path = Utils::FileSystem::getHomePath() + "/.emulationstation/es_theme_default.xml";
+		const std::string path = Utils::FileSystem::getEsConfigPath() + "/es_theme_default.xml";
+
+		LOG(LogError) << "ThemeData::getDefault() - Loading default theme '" << path << "'...";
+
 		if(Utils::FileSystem::exists(path))
 		{
 			try
@@ -1296,17 +1299,22 @@ std::map<std::string, ThemeSet> ThemeData::getThemeSets()
 {
 	std::map<std::string, ThemeSet> sets;
 
-	static const size_t pathCount = 2;
+	static const size_t pathCount = 3;
 	std::string paths[pathCount] =
-	{ 
+	{
 		"/etc/emulationstation/themes",
-		Utils::FileSystem::getHomePath() + "/.emulationstation/themes"
+		Utils::FileSystem::getEsConfigPath() + "/themes",
+		Utils::FileSystem::getUserDataPath() + "/themes"
 	};
 
 	for(size_t i = 0; i < pathCount; i++)
 	{
+		//LOG(LogInfo) << "ThemeData::getThemeSets() - Test get themes directory path '" << paths[i] << "'...";
+
 		if(!Utils::FileSystem::isDirectory(paths[i]))
 			continue;
+
+		//LOG(LogInfo) << "ThemeData::getThemeSets() - Get themes directory path '" << paths[i] << "'...";
 
 		Utils::FileSystem::stringList dirContent = Utils::FileSystem::getDirContent(paths[i]);
 

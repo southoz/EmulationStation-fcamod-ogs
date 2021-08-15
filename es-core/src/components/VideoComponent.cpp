@@ -15,7 +15,7 @@ std::string getTitlePath() {
 }
 
 std::string getTitleFolder() {
-	return Utils::FileSystem::getGenericPath(Utils::FileSystem::getHomePath()) + "/.emulationstation/tmp/";	
+	return Utils::FileSystem::getGenericPath( Utils::FileSystem::getEsConfigPath() + "/tmp/");
 }
 
 void writeSubtitle(const char* gameName, const char* systemName, bool always)

@@ -250,9 +250,9 @@ std::vector<ThemeDownloadInfo> ApiSystem::getThemesList()
 				bool themeExists = false;
 
 				std::vector<std::string> paths{
-					Utils::FileSystem::getHomePath() + "/.emulationstation/themes",
 					"/etc/emulationstation/themes",
-					"/userdata/themes"
+					Utils::FileSystem::getEsConfigPath() + "/themes",
+					Utils::FileSystem::getUserDataPath() + "/themes"
 				};
 
 				for (auto path : paths)
@@ -262,7 +262,10 @@ std::vector<ThemeDownloadInfo> ApiSystem::getThemesList()
 						Utils::FileSystem::isDirectory(path + "/" + themeFolder + "-master");
 					
 					if (themeExists)
+					{
+						LOG(LogInfo) << "ApiSystem::getThemesList() - Get themes directory path '" << path << "'...";
 						break;
+					}
 				}
 
 				ThemeDownloadInfo info;
