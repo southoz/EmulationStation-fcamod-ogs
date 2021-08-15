@@ -434,14 +434,10 @@ bool queryNetworkConnected()
 		if ( Utils::FileSystem::exists("/usr/bin/nmcli")
 				&& (Utils::String::replace(getShOutput(R"(nmcli -t -f RUNNING general)"), "\n", "") == "running" )
 				&& (Utils::String::replace(getShOutput(R"(nmcli -t -f STATE general)"), "\n", "") == "connected" ) )
-		{
-			LOG(LogDebug) << "PLATFORM::queryNetworkConnected() - result: true";
 			return true;
-		}
 	} catch (...) {
 		LOG(LogError) << "PLATFORM::queryNetworkConnected() - Error reading network data!!!";
 	}
-	LOG(LogDebug) << "PLATFORM::queryNetworkConnected() - result: false";
 	return false;
 }
 
