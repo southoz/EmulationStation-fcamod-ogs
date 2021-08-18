@@ -437,7 +437,7 @@ bool SystemData::loadConfig(Window* window)
 
 	if(!Utils::FileSystem::exists(path))
 	{
-		LOG(LogError) << "SystemData::loadConfig() - 'es_systems.cfg' file does not exist!";
+		LOG(LogError) << "SystemData::loadConfig() - '" << path << "' file does not exist!";
 		writeExampleConfig(getConfigPath(true));
 		return false;
 	}
@@ -447,7 +447,7 @@ bool SystemData::loadConfig(Window* window)
 
 	if(!res)
 	{
-		LOG(LogError) << "SystemData::loadConfig() - Could not parse es_systems.cfg file!";
+		LOG(LogError) << "SystemData::loadConfig() - Could not parse '" << path << "' file!";
 		LOG(LogError) << "SystemData::loadConfig() - " << res.description();
 		return false;
 	}
@@ -457,7 +457,7 @@ bool SystemData::loadConfig(Window* window)
 
 	if(!systemList)
 	{
-		LOG(LogError) << "SystemData::loadConfig() - 'es_systems.cfg' is missing the <systemList> tag!";
+		LOG(LogError) << "SystemData::loadConfig() - '" << path << "' is missing the <systemList> tag!";
 		return false;
 	}
 
@@ -653,11 +653,7 @@ void SystemData::deleteSystems()
 
 std::string SystemData::getConfigPath(bool forWrite)
 {
-	static std::string path;
-	if (!path.empty())
-		return path;
-
-	path = Utils::FileSystem::getEsConfigPath() + "/es_systems.cfg";
+	std::string path = Utils::FileSystem::getEsConfigPath() + "/es_systems.cfg";
 
 	if(forWrite || Utils::FileSystem::exists(path))
 		return path;

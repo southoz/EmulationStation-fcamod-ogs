@@ -277,14 +277,17 @@ void Settings::loadFile()
 	const std::string path = Utils::FileSystem::getEsConfigPath() + "/es_settings.cfg";
 
 	if(!Utils::FileSystem::exists(path))
+	{
+		std::cerr << "Could not finde Settings file '" << path << "'!\n   ";
 		return;
+	}
 
 	pugi::xml_document doc;
 	pugi::xml_parse_result result = doc.load_file(path.c_str());
 	if(!result)
 	{
 		//LOG(LogError) << "Could not parse Settings file!\n   " << result.description();
-		std::cerr << "Could not parse Settings file!\n   " << result.description();
+		std::cerr << "Could not parse Settings file '" << path << "'!\n   " << result.description();
 		return;
 	}
 

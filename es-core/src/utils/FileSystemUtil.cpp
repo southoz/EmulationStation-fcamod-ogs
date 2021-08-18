@@ -15,6 +15,7 @@
 
 #include <fstream>
 #include <sstream>
+#include "Log.h"
 
 namespace Utils
 {
@@ -28,6 +29,7 @@ namespace Utils
 
 		void setUserDataPath(const std::string& _path)
 		{
+			LOG(LogInfo) << "Utils::FileSystem::setUserDataPath() - Setting path '" << _path << "'...";
 			if (_path.empty())
 				return;
 
@@ -36,26 +38,29 @@ namespace Utils
 			if (isRegularFile(userDataPath)) {
 				userDataPath = getParent(userDataPath);
 			}
+			LOG(LogInfo) << "Utils::FileSystem::setUserDataPath() - final path '" << userDataPath << "'...";
 		} // setUserDataPath
 
 		std::string getUserDataPath()
 		{
-			if (userDataPath.empty()) {
+			if (userDataPath.empty())
 				userDataPath = "/userdata";
-			}
+
 			return userDataPath;
 		}
 
 		void setEsConfigPath(const std::string& _path)
 		{
+			LOG(LogInfo) << "Utils::FileSystem::setEsConfigPath() - Setting path '" << _path << "'...";
 			if (_path.empty())
 				return;
 
 			configPath = Utils::FileSystem::getGenericPath(_path);
 
-			if (isRegularFile(configPath)) {
+			if (isRegularFile(configPath))
 				configPath = getParent(configPath);
-			}
+
+			LOG(LogInfo) << "Utils::FileSystem::setEsConfigPath() - final path '" << configPath << "'...";
 		} // setEsConfigPath
 
 		std::string getEsConfigPath()
@@ -355,6 +360,7 @@ namespace Utils
 
 		void setExePath(const std::string& _path)
 		{
+			LOG(LogInfo) << "Utils::FileSystem::setExePath() - Setting path '" << _path << "'...";
 			constexpr int path_max = 32767;
 			std::string result(path_max, 0);
 			if (readlink("/proc/self/exe", &result[0], path_max) != -1) {
@@ -365,9 +371,10 @@ namespace Utils
 			if (exePath.empty()) {
 				exePath = getCanonicalPath(_path);
 			}
-			if (isRegularFile(exePath)) {
+			if (isRegularFile(exePath))
 				exePath = getParent(exePath);
-			}
+
+			LOG(LogInfo) << "Utils::FileSystem::setExePath() - final path '" << exePath << "'...";
 		} // setExePath
 
 		std::string getExePath()

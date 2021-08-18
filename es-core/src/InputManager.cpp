@@ -450,16 +450,12 @@ void InputManager::doOnFinish()
 
 std::string InputManager::getConfigPath()
 {
-	static std::string path;
-	if (!path.empty())
+	std::string path = Utils::FileSystem::getEsConfigPath() + "/es_input.cfg";
+
+	if(Utils::FileSystem::exists(path))
 		return path;
 
-	path = Utils::FileSystem::getEsConfigPath() + "/es_input.cfg";
-
-	if(!Utils::FileSystem::exists(path))
-		path = "/etc/emulationstation/es_input.cfg";
-
-	return path;
+	return "/etc/emulationstation/es_input.cfg";
 }
 
 std::string InputManager::getTemporaryConfigPath()

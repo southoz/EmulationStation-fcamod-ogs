@@ -1232,6 +1232,8 @@ std::vector<std::string> CollectionSystemManager::getCollectionsFromConfigFolder
 	std::vector<std::string> systems;
 	std::string configPath = getCollectionsFolder();
 
+	LOG(LogInfo) << "CollectionSystemManager::getCollectionsFromConfigFolder() - Loading collections folder '" << configPath << "'...";
+
 	if (Utils::FileSystem::exists(configPath))
 	{
 		Utils::FileSystem::stringList dirContent = Utils::FileSystem::getDirContent(configPath);

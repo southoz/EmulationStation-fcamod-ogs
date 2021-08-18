@@ -907,7 +907,6 @@ void ViewController::reloadAllGames(Window* window, bool deleteCurrentGui)
 	ViewController::init(window);
 	CollectionSystemManager::init(window);
 	SystemData::loadConfig(window);
-
 	ViewController::get()->goToSystemView(systemName, true, viewMode);
 	ViewController::get()->reloadAll(nullptr, false); // Avoid reloading themes a second time
 
