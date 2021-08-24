@@ -79,7 +79,7 @@ GuiMenu::GuiMenu(Window* window, bool animate) : GuiComponent(window), mMenu(win
 		BatteryInformation battery = ApiSystem::getInstance()->getBatteryInformation();
 		SoftwareInformation software = ApiSystem::getInstance()->getSoftwareInformation();
 
-		addEntry("BAT: " + std::to_string( battery.level ) + "%" + " | SND: " + std::to_string(ApiSystem::getInstance()->getVolume()) + " | BRT: " + std::to_string( ApiSystem::getInstance()->getBrightnessLevel() ) + "% |" + _("NETWORK")+ ": " + _( (ApiSystem::getInstance()->isNetworkConnected() ? "CONNECTED" : "NOT CONNECTED") ), false, [this] {  });
+		addEntry("BAT: " + std::to_string( battery.level ) + "%" + " | SND: " + std::to_string(ApiSystem::getInstance()->getVolume()) + "%" + " | BRT: " + std::to_string( ApiSystem::getInstance()->getBrightnessLevel() ) + "% |" + _("NETWORK")+ ": " + _( (ApiSystem::getInstance()->isNetworkConnected() ? "CONNECTED" : "NOT CONNECTED") ), false, [this] {  });
 
 		addEntry("Distro Version: " + software.application_name + " " + software.version, false, [this] {  });
 	}
