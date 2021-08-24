@@ -201,6 +201,7 @@ DisplayAndGpuInformation queryDisplayAndGpuInformation(bool summary);
 float queryTemperatureGpu();
 int queryFrequencyGpu();
 int queryBrightness();
+int queryMaxBrightness();
 int queryBrightnessLevel();
 void saveBrightnessLevel(int brightness_level);
 

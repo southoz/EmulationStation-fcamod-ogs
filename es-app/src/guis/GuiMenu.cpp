@@ -126,7 +126,7 @@ void GuiMenu::openDisplaySettings()
 	auto s = new GuiSettings(mWindow, _("DISPLAY"));
 
 	// Brightness
-	auto brightness = std::make_shared<SliderComponent>(mWindow, 1.0f, 100.f, 2.0f, "%");
+	auto brightness = std::make_shared<SliderComponent>(mWindow, 1.0f, 100.f, 1.0f, "%");
 	int old_brightness_level = ApiSystem::getInstance()->getBrightnessLevel();
 	brightness->setValue((float) old_brightness_level);
 	s->addWithLabel(_("BRIGHTNESS"), brightness);
