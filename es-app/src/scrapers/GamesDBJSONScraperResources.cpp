@@ -50,7 +50,7 @@ void ensureScrapersResourcesDir()
 std::string getScrapersResouceDir()
 {
 	return Utils::FileSystem::getGenericPath(
-		Utils::FileSystem::getHomePath() + "/.emulationstation/" + SCRAPER_RESOURCES_DIR);
+		Utils::FileSystem::getEsConfigPath() + "/" + SCRAPER_RESOURCES_DIR);
 }
 
    std::string TheGamesDBJSONRequestResources::getApiKey() const { return GAMESDB_APIKEY; }

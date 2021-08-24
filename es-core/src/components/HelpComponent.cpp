@@ -23,10 +23,14 @@ static const std::map<std::string, const char*> ICON_PATH_MAP {
 	{ "x",                  ":/help/button_x_gt.svg" },
 	{ "y",                  ":/help/button_y_gt.svg" },
 	{ "l",                  ":/help/button_l_gt.svg" },
+	{ "l1",                  ":/help/button_l_gt.svg" },
 	{ "r",                  ":/help/button_r_gt.svg" },
+	{ "r1",                  ":/help/button_r_gt.svg" },
 	{ "lr",                 ":/help/button_lr_gt.svg" },
 	{ "lt",                 ":/help/button_lt_gt.svg" },
+	{ "l2",                 ":/help/button_lt_gt.svg" },
 	{ "rt",                 ":/help/button_rt_gt.svg" },
+	{ "r2",                 ":/help/button_rt_gt.svg" },
 	{ "start",              ":/help/button_start_gt.svg" },
 	{ "select",             ":/help/button_select_gt.svg" }
 };

@@ -27,7 +27,7 @@ GuiTextEditPopup::GuiTextEditPopup(Window* window, const std::string& title, con
 		mText->setCursor(initValue.size());
 
 	std::vector< std::shared_ptr<ButtonComponent> > buttons;
-	buttons.push_back(std::make_shared<ButtonComponent>(mWindow, acceptBtnText, acceptBtnText, [this, okCallback] { okCallback(mText->getValue()); delete this; }));
+	buttons.push_back(std::make_shared<ButtonComponent>(mWindow, _(acceptBtnText), _(acceptBtnText), [this, okCallback] { okCallback(mText->getValue()); delete this; }));
 	buttons.push_back(std::make_shared<ButtonComponent>(mWindow, _("CANCEL"), _("DISCARD CHANGES"), [this] { delete this; }));
 
 	mButtonGrid = makeButtonGrid(mWindow, buttons);
@@ -67,7 +67,7 @@ bool GuiTextEditPopup::input(InputConfig* config, Input input)
 		return true;
 
 	// pressing back when not text editing closes us
-	if(config->isMappedTo("b", input) && input.value)
+	if(config->isMappedTo(BUTTON_BACK, input) && input.value)
 	{
 		delete this;
 		return true;
@@ -79,6 +79,6 @@ bool GuiTextEditPopup::input(InputConfig* config, Input input)
 std::vector<HelpPrompt> GuiTextEditPopup::getHelpPrompts()
 {
 	std::vector<HelpPrompt> prompts = mGrid.getHelpPrompts();
-	prompts.push_back(HelpPrompt("b", _("BACK")));
+	prompts.push_back(HelpPrompt(BUTTON_BACK, _("BACK")));
 	return prompts;
 }

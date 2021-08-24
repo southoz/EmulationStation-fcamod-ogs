@@ -2,19 +2,17 @@
 #ifndef ES_APP_GUIS_GUI_SYSTEM_INFORMATION_H
 #define ES_APP_GUIS_GUI_SYSTEM_INFORMATION_H
 
-#include "GuiSettings.h"
+#include "UpdatableGuiSettings.h"
 #include "platform.h"
 #include "Settings.h"
 
-class GuiComponent;
+class UpdatableGuiSettings;
 
-class GuiSystemInformation : public GuiSettings
+class GuiSystemInformation : public UpdatableGuiSettings
 {
 public:
 	GuiSystemInformation(Window* window);
 	~GuiSystemInformation();
-
-	void update(int deltaTime);
 
 private:
 	void initializeMenu();
@@ -29,6 +27,8 @@ private:
 	void openSoftware();
 	void openDevice();
 
+	void configUsbDriveDevices(UpdatableGuiSettings *parent, const std::shared_ptr<Font>& font, unsigned int color);
+
 	static std::string formatTemperature  (float temp_raw);
 	static std::string formatFrequency    (int freq_raw);
 	static std::string formatBattery      (int bat_level);
@@ -39,7 +39,6 @@ private:
 	static std::string formatNetworkStatus(bool isConnected);
 	static std::string formatNetworkRate  (int rate, std::string units);
 
-	std::vector<GuiComponent *> mUpdatables;
 };
 
 #endif // ES_APP_GUIS_GUI_SYSTEM_INFORMATION_H

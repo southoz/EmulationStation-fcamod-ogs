@@ -29,7 +29,7 @@ std::string ResourceManager::getResourcePath(const std::string& path) const
 		std::string test;
 
 		// check in homepath
-		test = Utils::FileSystem::getHomePath() + "/.emulationstation/resources/" + &path[2];
+		test = Utils::FileSystem::getEsConfigPath() + "/resources/" + &path[2];
 		if(Utils::FileSystem::exists(test))
 			return test;
 

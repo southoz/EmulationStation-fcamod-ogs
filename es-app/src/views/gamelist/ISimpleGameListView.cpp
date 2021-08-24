@@ -6,11 +6,12 @@
 #include "Settings.h"
 #include "Sound.h"
 #include "SystemData.h"
+#include "Log.h"
 
 ISimpleGameListView::ISimpleGameListView(Window* window, FolderData* root) : IGameListView(window, root),
 	mHeaderText(window), mHeaderImage(window), mBackground(window)
 {
-	mHeaderText.setText("Logo Text");
+	mHeaderText.setText(_("Logo Text"));
 	mHeaderText.setSize(mSize.x(), 0);
 	mHeaderText.setPosition(0, 0);
 	mHeaderText.setHorizontalAlignment(ALIGN_CENTER);
@@ -82,7 +83,7 @@ bool ISimpleGameListView::input(InputConfig* config, Input input)
 
 	if (input.value != 0)
 	{
-		if (config->isMappedTo("a", input))
+		if (config->isMappedTo(BUTTON_OK, input))
 		{
 			// Don't launch game if transition is still running
 			if (ViewController::get()->isAnimationPlaying(0))
@@ -127,7 +128,7 @@ bool ISimpleGameListView::input(InputConfig* config, Input input)
 			}
 			return true;
 		}
-		else if(config->isMappedTo("b", input))
+		else if(config->isMappedTo(BUTTON_BACK, input))
 		{
 			if (mCursorStack.size())
 			{
@@ -142,9 +143,15 @@ bool ISimpleGameListView::input(InputConfig* config, Input input)
 					return true;
 
 				populateList(folder->getChildrenListToDisplay());
-				setCursor(top);				
+				setCursor(top);
 				Sound::getFromTheme(getTheme(), getName(), "back")->play();
-			} 
+			}
+			else if (mPopupSelfReference)
+			{
+				ViewController::get()->setActiveView(mPopupParentView);
+				closePopupContext();
+				return true;
+			}
 			else if (!hideSystemView)
 			{
 				onFocusLost();
@@ -160,23 +167,25 @@ bool ISimpleGameListView::input(InputConfig* config, Input input)
 
 			return true;
 		}
-		else if (config->isMappedLike(getQuickSystemSelectRightButton(), input) || config->isMappedLike("rightshoulder", input))
+		else if (Settings::getInstance()->getBool("QuickSystemSelect") && ( config->isMappedLike(getQuickSystemSelectRightButton(), input) || config->isMappedLike(getDefaultQuickSystemSelectRightButton(), input) ))
 		{
-			if(Settings::getInstance()->getBool("QuickSystemSelect"))
+			if (!mPopupSelfReference)
 			{
 				onFocusLost();
 				ViewController::get()->goToNextGameList();
-				return true;
 			}
+
+			return true;
 		}
-		else if (config->isMappedLike(getQuickSystemSelectLeftButton(), input) || config->isMappedLike("leftshoulder", input))
+		else if (Settings::getInstance()->getBool("QuickSystemSelect") && ( config->isMappedLike(getQuickSystemSelectLeftButton(), input) || config->isMappedLike(getDefaultQuickSystemSelectLeftButton(), input) ))
 		{
-			if(Settings::getInstance()->getBool("QuickSystemSelect"))
+			if (!mPopupSelfReference)
 			{
 				onFocusLost();
 				ViewController::get()->goToPrevGameList();
-				return true;
 			}
+
+			return true;
 		}
 		else if (config->isMappedTo("x", input))
 		{
@@ -219,13 +228,48 @@ std::vector<std::string> ISimpleGameListView::getEntriesLetters()
 	return letters;
 }
 
+void ISimpleGameListView::setPopupContext(std::shared_ptr<IGameListView> pThis, std::shared_ptr<GuiComponent> parentView, const std::string label, const std::function<void()>& onExitTemporary)
+{
+	mPopupSelfReference = pThis;
+	mPopupParentView = parentView;
+	mOnExitPopup = onExitTemporary;
 
+	if (mHeaderImage.hasImage())
+	{
+		mHeaderText.setText(_("Games similar to") + " : " + label); //
 
+		mHeaderImage.setImage("");
+		addChild(&mHeaderText);
+		removeChild(&mHeaderImage);
+	}
+}
 
+void ISimpleGameListView::closePopupContext()
+{
+	if (!mPopupSelfReference)
+		return;
 
+	auto exitPopup = mOnExitPopup;
 
+	mPopupParentView.reset();
+	mPopupSelfReference.reset();
 
+	if (exitPopup != nullptr)
+		exitPopup();
+}
 
+std::string ISimpleGameListView::getDefaultQuickSystemSelectRightButton()
+{
+	if (Settings::getInstance()->getBool("InvertButtonsPD"))
+		return BUTTON_R2;
 
+	return BUTTON_R1;
+}
 
+std::string ISimpleGameListView::getDefaultQuickSystemSelectLeftButton()
+{
+	if (Settings::getInstance()->getBool("InvertButtonsPU"))
+		return BUTTON_L2;
 
+	return BUTTON_L1;
+}

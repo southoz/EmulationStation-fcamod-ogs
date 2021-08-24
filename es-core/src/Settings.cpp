@@ -1,13 +1,14 @@
 #include "Settings.h"
 
 #include "utils/FileSystemUtil.h"
-#include "Log.h"
+//#include "Log.h"
 #include "Scripting.h"
 #include "platform.h"
 #include <pugixml/src/pugixml.hpp>
 #include <algorithm>
 #include <vector>
 #include "resources/ResourceManager.h"
+#include <iostream>
 
 Settings* Settings::sInstance = NULL;
 static std::string mEmptyString = "";
@@ -54,12 +55,16 @@ void Settings::setDefaults()
 	mIntMap.clear();
 
 	mBoolMap["BackgroundJoystickInput"] = false;
+	mBoolMap["InvertButtonsAB"] = false;
+	mBoolMap["InvertButtonsPU"] = false;
+	mBoolMap["InvertButtonsPD"] = false;
 	mBoolMap["ParseGamelistOnly"] = false;
 	mBoolMap["ShowHiddenFiles"] = false;
 	mBoolMap["DrawFramerate"] = false;
-	mBoolMap["ShowExit"] = true;		
+	mBoolMap["ShowExit"] = true;
 
 	mBoolMap["ShowOnlyExit"] = false;
+	mBoolMap["ConfirmToExit"] = true;
 
 	mBoolMap["SplashScreen"] = true;
 	mBoolMap["SplashScreenProgress"] = true;
@@ -74,7 +79,7 @@ void Settings::setDefaults()
 	mStringMap["FolderViewMode"] = "never";
 
 	mBoolMap["UseOSK"] = true;
-	mBoolMap["ShowControllerActivity"] = false;
+	//mBoolMap["ShowControllerActivity"] = false;
 	mBoolMap["ShowBatteryIndicator"] = false;
 	mBoolMap["ShowNetworkIndicator"] = false;
 
@@ -132,7 +137,7 @@ void Settings::setDefaults()
 	mIntMap["ScreenSaverSwapImageTimeout"] = 10000;
 	mBoolMap["SlideshowScreenSaverStretch"] = false;
 	mBoolMap["SlideshowScreenSaverCustomImageSource"] = false;
-	mStringMap["SlideshowScreenSaverImageDir"] = Utils::FileSystem::getHomePath() + "/.emulationstation/slideshow/image";
+	mStringMap["SlideshowScreenSaverImageDir"] = Utils::FileSystem::getEsConfigPath() + "/slideshow/image";
 	mStringMap["SlideshowScreenSaverImageFilter"] = ".png,.jpg";
 	mBoolMap["SlideshowScreenSaverRecurse"] = false;
 	mBoolMap["SlideshowScreenSaverGameName"] = true;
@@ -193,7 +198,6 @@ void Settings::setDefaults()
 
 	mBoolMap["ShowDetailedSystemInfo"] = false;
 
-
 	mDefaultBoolMap = mBoolMap;
 	mDefaultIntMap = mIntMap;
 	mDefaultFloatMap = mFloatMap;
@@ -226,8 +230,10 @@ bool Settings::saveFile()
 
 	mWasChanged = false;
 
-	LOG(LogDebug) << "Settings::saveFile() : Saving Settings to file.";
-	const std::string path = Utils::FileSystem::getHomePath() + "/.emulationstation/es_settings.cfg";
+	//LOG(LogDebug) << "Settings::saveFile() : Saving Settings to file.";
+	const std::string path = Utils::FileSystem::getEsConfigPath() + "/es_settings.cfg";
+
+	std::cout << "Loading settings file path '" << path << "'...";
 
 	pugi::xml_document doc;
 	pugi::xml_node root = doc;
@@ -268,16 +274,20 @@ bool Settings::saveFile()
 
 void Settings::loadFile()
 {
-	const std::string path = Utils::FileSystem::getHomePath() + "/.emulationstation/es_settings.cfg";
+	const std::string path = Utils::FileSystem::getEsConfigPath() + "/es_settings.cfg";
 
 	if(!Utils::FileSystem::exists(path))
+	{
+		std::cerr << "Could not finde Settings file '" << path << "'!\n   ";
 		return;
+	}
 
 	pugi::xml_document doc;
 	pugi::xml_parse_result result = doc.load_file(path.c_str());
 	if(!result)
 	{
-		LOG(LogError) << "Could not parse Settings file!\n   " << result.description();
+		//LOG(LogError) << "Could not parse Settings file!\n   " << result.description();
+		std::cerr << "Could not parse Settings file '" << path << "'!\n   " << result.description();
 		return;
 	}
 
@@ -308,7 +318,7 @@ void Settings::loadFile()
 { \
 	if(mapName.find(name) == mapName.cend()) \
 	{ \
-		/*LOG(LogError) << "Tried to use unset setting " << name << "!";*/ \
+		/*std::cerr << "Tried to use unset setting " << name << "!";*/ \
 		return defaultValue; \
 	} \
 	return mapName[name]; \

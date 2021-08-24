@@ -15,7 +15,7 @@ std::string getTitlePath() {
 }
 
 std::string getTitleFolder() {
-	return Utils::FileSystem::getGenericPath(Utils::FileSystem::getHomePath()) + "/.emulationstation/tmp/";	
+	return Utils::FileSystem::getGenericPath( Utils::FileSystem::getEsConfigPath() + "/tmp/");
 }
 
 void writeSubtitle(const char* gameName, const char* systemName, bool always)
@@ -292,7 +292,7 @@ void VideoComponent::applyTheme(const std::shared_ptr<ThemeData>& theme, const s
 std::vector<HelpPrompt> VideoComponent::getHelpPrompts()
 {
 	std::vector<HelpPrompt> ret;
-	ret.push_back(HelpPrompt("a", _("SELECT")));
+	ret.push_back(HelpPrompt(BUTTON_OK, _("SELECT")));
 	return ret;
 }
 

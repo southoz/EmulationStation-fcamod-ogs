@@ -42,3 +42,6 @@ CPackConfig.cmake
 CPackSourceConfig.cmake
 *.cbp
 /.vs
+
+copy_files.sh
+copy_locale_es.sh

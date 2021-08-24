@@ -32,6 +32,8 @@
 #include "ImageIO.h"
 
 const std::string INVALID_HOME_PATH = "Invalid home path supplied.";
+const std::string INVALID_CONFIG_PATH = "Invalid config path supplied.";
+const std::string INVALID_USERDATA_PATH = "Invalid userdata path supplied.";
 const std::string INVALID_SCREEN_ROTATE = "Invalid screenrotate supplied.";
 const std::string ERROR_CONFIG_DIRECTORY = "Config directory could not be created!";
 const std::string WINDOW_FAILED_INITIALIZE = "Window failed to initialize!";
@@ -119,7 +121,7 @@ void playVideo()
 
 bool parseArgs(int argc, char* argv[])
 {
-	LOG(LogInfo) << "MAIN::parseArgs() - parsing arguments, number: " << std::to_string(argc);
+	//LOG(LogInfo) << "MAIN::parseArgs() - parsing arguments, number: " << std::to_string(argc);
 	Utils::FileSystem::setExePath(argv[0]);
 	// We need to process --home before any call to Settings::getInstance(), because settings are loaded from homepath
 	for (int i = 1; i < argc; i++)
@@ -129,18 +131,39 @@ bool parseArgs(int argc, char* argv[])
 			if (i >= argc - 1)
 			{
 				std::cerr << INVALID_HOME_PATH;
-				LOG(LogError) << "MAIN::parseArgs()" << INVALID_HOME_PATH;
+				//LOG(LogError) << "MAIN::parseArgs()" << INVALID_HOME_PATH;
 				return false;
 			}
-
 			Utils::FileSystem::setHomePath(argv[i + 1]);
 			break;
+		}
+		else if (strcmp(argv[i], "--config-path") == 0)
+		{
+			if (i >= argc - 1)
+			{
+				std::cerr << INVALID_CONFIG_PATH;
+				//LOG(LogError) << "MAIN::parseArgs()" << INVALID_CONFIG_PATH;
+				return false;
+			}
+			Utils::FileSystem::setEsConfigPath(argv[i + 1]);
+			i++; // skip the argument value
+		}
+		else if (strcmp(argv[i], "--userdata-path") == 0)
+		{
+			if (i >= argc - 1)
+			{
+				std::cerr << INVALID_USERDATA_PATH;
+				//LOG(LogError) << "MAIN::parseArgs()" << INVALID_USERDATA_PATH;
+				return false;
+			}
+			Utils::FileSystem::setUserDataPath(argv[i + 1]);
+			i++; // skip the argument value
 		}
 	}
 
 	for(int i = 1; i < argc; i++)
 	{
-		LOG(LogInfo) << "MAIN::parseArgs() - execution argument: " << argv[i];
+		//LOG(LogInfo) << "MAIN::parseArgs() - execution argument: " << argv[i];
 		if (strcmp(argv[i], "--videoduration") == 0)
 		{
 			gPlayVideoDuration = atoi(argv[i + 1]);
@@ -156,7 +179,7 @@ bool parseArgs(int argc, char* argv[])
 			if (i >= argc - 1)
 			{
 				std::cerr << INVALID_SCREEN_ROTATE;
-				LOG(LogError) << "MAIN::parseArgs() - " << INVALID_SCREEN_ROTATE;
+				//LOG(LogError) << "MAIN::parseArgs() - " << INVALID_SCREEN_ROTATE;
 				return false;
 			}
 
@@ -198,7 +221,7 @@ bool parseArgs(int argc, char* argv[])
 		}
 		else if (strcmp(argv[i], "--fullscreen") == 0)
 		{
-   Settings::getInstance()->setBool("FullScreenMode", true);
+			Settings::getInstance()->setBool("FullScreenMode", true);
 		}
 		else if (strcmp(argv[i], "--vsync") == 0 || strcmp(argv[i], "-vsync") == 0)
 		{			
@@ -216,9 +239,7 @@ bool parseArgs(int argc, char* argv[])
 					i++; // skip vsync value
 				}
 			}
-
 			Settings::getInstance()->setBool("VSync", vsync);
-			
 		}
 		else if (strcmp(argv[i], "--scrape") == 0)
 		{
@@ -263,6 +284,8 @@ bool parseArgs(int argc, char* argv[])
 				"--video		path to the video spalsh\n"
 				"--videoduration		the video spalsh durarion in milliseconds\n"
 				"--fullscreen		use fullscreen  mode\n"
+				"--config-path		set config directory path\n"
+				"--userdata-path		set userdata directory path, default '/roms'\n"
 				"--help, -h			summon a sentient, angry tuba\n\n"
 				"More information available in README.md.\n";
 			return false; //exit after printing help
@@ -275,16 +298,17 @@ bool parseArgs(int argc, char* argv[])
 bool verifyHomeFolderExists()
 {
 	//make sure the config directory exists
-	std::string home = Utils::FileSystem::getHomePath();
-	std::string configDir = home + "/.emulationstation";
+	std::string configDir = Utils::FileSystem::getEsConfigPath();
 	if(!Utils::FileSystem::exists(configDir))
 	{
 		LOG(LogInfo) << "MAIN::verifyHomeFolderExists() - Creating config directory \"" << configDir << '"';
+		Log::flush();
 		Utils::FileSystem::createDirectory(configDir);
 		if(!Utils::FileSystem::exists(configDir))
 		{
 			std::cerr << ERROR_CONFIG_DIRECTORY << '\n';
 			LOG(LogError) << "MAIN::verifyHomeFolderExists() - " << ERROR_CONFIG_DIRECTORY;
+			Log::flush();
 			return false;
 		}
 	}
@@ -348,16 +372,17 @@ int main(int argc, char* argv[])
 
 	std::locale::global(std::locale("C"));
 
+	if(!parseArgs(argc, argv))
+		return 0;
+
 	//start the logger
 	Log::setupReportingLevel();
 	Log::init();
 	LOG(LogInfo) << "MAIN::main() - EmulationStation - v" << PROGRAM_VERSION_STRING << ", built " << PROGRAM_BUILT_STRING;
 
-	if(!parseArgs(argc, argv))
-		return 0;
 /*
-	ApiSystem::checkUpdateVersion();
-	ApiSystem::updateSystem(nullptr);
+	ApiSystem::getInstance()->checkUpdateVersion();
+	ApiSystem::getInstance()->updateSystem(nullptr);
 	return 0;
 	*/
 	// only show the console on Windows if HideConsole is false
@@ -375,7 +400,10 @@ int main(int argc, char* argv[])
 
 	//if ~/.emulationstation doesn't exist and cannot be created, bail
 	if(!verifyHomeFolderExists())
+	{
+Log::flush();
 		return 1;
+}
 
 	//always close the log on exit
 	atexit(&onExit);
@@ -439,20 +467,18 @@ int main(int argc, char* argv[])
 
 	// preload what we can right away instead of waiting for the user to select it
 	// this makes for no delays when accessing content, but a longer startup time
+	ViewController::get()->preload();
 
-	if (Settings::getInstance()->getBool("PreloadUI"))
-		ViewController::get()->preload();
-	
-	if (splashScreen && splashScreenProgress)	
-		window.renderLoadingScreen(_("Starting UI"));
+	// Initialize input
+	InputConfig::AssignActionButtons();
 
 	//choose which GUI to open depending on if an input configuration already exists
 	if (errorMsg == NULL)
 	{
-		if (Utils::FileSystem::exists(InputManager::getConfigPath()) && InputManager::getInstance()->getNumConfiguredDevices() > 0)
+//		if (Utils::FileSystem::exists(InputManager::getConfigPath()) && InputManager::getInstance()->getNumConfiguredDevices() > 0)
 			ViewController::get()->goToStart(true);
-		else
-			window.pushGui(new GuiDetectDevice(&window, true, [] { ViewController::get()->goToStart(true); }));		
+//		else
+//			window.pushGui(new GuiDetectDevice(&window, true, [] { ViewController::get()->goToStart(true); }));
 	}
 
 	//generate joystick events since we're done loading

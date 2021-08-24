@@ -13,14 +13,14 @@
 #include "ApiSystem.h"
 
 
-GuiSystemInformation::GuiSystemInformation(Window* window) : GuiSettings(window, _("SYSTEM INFORMATION").c_str())
+GuiSystemInformation::GuiSystemInformation(Window* window) : UpdatableGuiSettings(window, _("SYSTEM INFORMATION").c_str())
 {
 	initializeMenu();
 }
 
 GuiSystemInformation::~GuiSystemInformation()
 {
-	mUpdatables.clear();
+
 }
 
 void GuiSystemInformation::initializeMenu()
@@ -39,102 +39,87 @@ void GuiSystemInformation::showSummarySystemInfo()
 	std::shared_ptr<Font> font = theme->Text.font;
 	unsigned int color = theme->Text.color;
 
-	CpuAndSocketInformation csi = ApiSystem::getCpuAndChipsetInformation();
-	DisplayAndGpuInformation di = ApiSystem::getDisplayAndGpuInformation();
-	RamMemoryInformation memory = ApiSystem::getRamMemoryInformation();
-	NetworkInformation ni = ApiSystem::getNetworkInformation();
+	UpdatableGuiSettings *pthis = this;
+
+	CpuAndSocketInformation csi = ApiSystem::getInstance()->getCpuAndChipsetInformation();
+	DisplayAndGpuInformation di = ApiSystem::getInstance()->getDisplayAndGpuInformation();
+	RamMemoryInformation memory = ApiSystem::getInstance()->getRamMemoryInformation();
+	NetworkInformation ni = ApiSystem::getInstance()->getNetworkInformation();
 
 	addGroup(_("CPU"));
 	// CPU load
-	bool warning = ApiSystem::isLoadCpuLimit( csi.cpu_load );
+	bool warning = ApiSystem::getInstance()->isLoadCpuLimit( csi.cpu_load );
 	auto loadCpu = std::make_shared<UpdatableTextComponent>(mWindow, formatLoadCpu( csi.cpu_load ), font, warning ? 0xFF0000FF : color);
 	loadCpu->setUpdatableFunction([loadCpu, color]
 		{
 			LOG(LogDebug) << "GuiSystemInformation::showSummarySystemInfo() - update load CPU";
-			float load_cpu_value = ApiSystem::getLoadCpu();
-			bool warning = ApiSystem::isLoadCpuLimit( load_cpu_value );
+			float load_cpu_value = ApiSystem::getInstance()->getLoadCpu();
+			bool warning = ApiSystem::getInstance()->isLoadCpuLimit( load_cpu_value );
 			loadCpu->setText(formatLoadCpu( load_cpu_value ));
 			loadCpu->setColor(warning ? 0xFF0000FF : color);
-		}, 2000);
-	mUpdatables.push_back(loadCpu.get());
+		}, 4000);
+	addUpdatableComponent(loadCpu.get());
 	addWithLabel(_("CPU LOAD"), loadCpu);
 
 	// temperature
-	warning = ApiSystem::isTemperatureLimit( csi.temperature );
+	warning = ApiSystem::getInstance()->isTemperatureLimit( csi.temperature );
 	auto temperatureCpu = std::make_shared<UpdatableTextComponent>(mWindow, formatTemperature( csi.temperature ), font, warning ? 0xFF0000FF : color);
 	temperatureCpu->setUpdatableFunction([temperatureCpu, color]
 		{
 			LOG(LogDebug) << "GuiSystemInformation::showSummarySystemInfo() - update temperture CPU";
-			float temp_cpu_value = ApiSystem::getTemperatureCpu();
-			bool warning = ApiSystem::isLoadCpuLimit( temp_cpu_value );
+			float temp_cpu_value = ApiSystem::getInstance()->getTemperatureCpu();
+			bool warning = ApiSystem::getInstance()->isLoadCpuLimit( temp_cpu_value );
 			temperatureCpu->setText(formatTemperature( temp_cpu_value ));
 			temperatureCpu->setColor(warning ? 0xFF0000FF : color);
 		}, 5000);
-	mUpdatables.push_back(temperatureCpu.get());
+	addUpdatableComponent(temperatureCpu.get());
 	addWithLabel(_("TEMPERATURE"), temperatureCpu);
 
 	addGroup(_("OTHER INFORMATION"));
 	// temperature
-	warning = ApiSystem::isTemperatureLimit( di.temperature );
+	warning = ApiSystem::getInstance()->isTemperatureLimit( di.temperature );
 	auto temperature_gpu = std::make_shared<UpdatableTextComponent>(mWindow, formatTemperature( di.temperature ), font, warning ? 0xFF0000FF : color);
 	temperature_gpu->setUpdatableFunction([temperature_gpu, color]
 		{
 			LOG(LogDebug) << "GuiSystemInformation::showSummarySystemInfo() - update temperture GPU";
-			float temp_gpu_value = ApiSystem::getTemperatureGpu();
-			bool warning = ApiSystem::isLoadCpuLimit( temp_gpu_value );
+			float temp_gpu_value = ApiSystem::getInstance()->getTemperatureGpu();
+			bool warning = ApiSystem::getInstance()->isLoadCpuLimit( temp_gpu_value );
 			temperature_gpu->setText(formatTemperature( temp_gpu_value ));
 			temperature_gpu->setColor(warning ? 0xFF0000FF : color);
 		}, 5000);
-	mUpdatables.push_back(temperature_gpu.get());
+	addUpdatableComponent(temperature_gpu.get());
 	addWithLabel(_("GPU") + " - " + _("TEMPERATURE"), temperature_gpu);
 
-	// roms
-	warning = ApiSystem::isFreeSpaceUserLimit();
-	auto userSpace = std::make_shared<UpdatableTextComponent>(mWindow, ApiSystem::getFreeSpaceUserInfo(), font, warning ? 0xFF0000FF : color);
-	userSpace->setUpdatableFunction([userSpace, color]
-		{
-			LOG(LogDebug) << "GuiSystemInformation::showSummarySystemInfo() - update user space";
-			bool warning = ApiSystem::isFreeSpaceUserLimit();
-			userSpace->setText(ApiSystem::getFreeSpaceUserInfo());
-			userSpace->setColor(warning ? 0xFF0000FF : color);
-		}, 30000);
-	mUpdatables.push_back(userSpace.get());
-	addWithLabel(_("ROMS DISK USAGE"), userSpace);
-
-	// usbdrive
-	std::string value = ApiSystem::getFreeSpaceUsbDriveInfo();
-	warning = ApiSystem::isFreeSpaceUsbDriveLimit();
-	auto usbdrive = std::make_shared<UpdatableTextComponent>(mWindow, value, font, warning ? 0xFF0000FF : color);
-	usbdrive->setVisible(!value.empty());
-	usbdrive->setUpdatableFunction([usbdrive, color]
-		{
-			LOG(LogDebug) << "GuiSystemInformation::showSummarySystemInfo() - update usbdrive";
-			if (usbdrive->isVisible())
-			{
-				std::string value = ApiSystem::getFreeSpaceUsbDriveInfo();
-				bool warning = ApiSystem::isFreeSpaceUsbDriveLimit();
-				usbdrive->setVisible(!value.empty());
-				usbdrive->setText(value);
-				usbdrive->setColor(warning ? 0xFF0000FF : color);
-			}
-		}, 30000);
-	mUpdatables.push_back(usbdrive.get());
-	if (usbdrive->isVisible())
-		addWithLabel(_("USB DISK USAGE"), usbdrive);
-
 	// free ram
-	warning = ApiSystem::isMemoryLimit( memory.total, memory.free );
+	warning = ApiSystem::getInstance()->isMemoryLimit( memory.total, memory.free );
 	auto memoryFree = std::make_shared<UpdatableTextComponent>(mWindow, formatMemory( memory.free, memory.total, true ), font, warning ? 0xFF0000FF : color);
 	memoryFree->setUpdatableFunction([memoryFree, color]
 		{
 			LOG(LogDebug) << "GuiSystemInformation::showSummarySystemInfo() - update memory free";
-			RamMemoryInformation memory = ApiSystem::getRamMemoryInformation();
-			bool warning = ApiSystem::isMemoryLimit( memory.total, memory.free );
+			RamMemoryInformation memory = ApiSystem::getInstance()->getRamMemoryInformation();
+			bool warning = ApiSystem::getInstance()->isMemoryLimit( memory.total, memory.free );
 			memoryFree->setText(formatMemory( memory.free, memory.total, true ));
 			memoryFree->setColor(warning ? 0xFF0000FF : color);
 		}, 10000);
-	mUpdatables.push_back(memoryFree.get());
+	addUpdatableComponent(memoryFree.get());
 	addWithLabel(_("FREE RAM MEMORY"), memoryFree);
+
+	addGroup(_("STORAGE"));
+	// roms
+	warning = ApiSystem::getInstance()->isFreeSpaceUserLimit();
+	auto userSpace = std::make_shared<UpdatableTextComponent>(mWindow, ApiSystem::getInstance()->getFreeSpaceUserInfo(), font, warning ? 0xFF0000FF : color);
+	userSpace->setUpdatableFunction([userSpace, color]
+		{
+			LOG(LogDebug) << "GuiSystemInformation::showSummarySystemInfo() - update user space";
+			bool warning = ApiSystem::getInstance()->isFreeSpaceUserLimit();
+			userSpace->setText(ApiSystem::getInstance()->getFreeSpaceUserInfo());
+			userSpace->setColor(warning ? 0xFF0000FF : color);
+		}, 30000);
+	addUpdatableComponent(userSpace.get());
+	addWithLabel(_("ROMS DISK USAGE"), userSpace);
+
+	// usbdrive
+	configUsbDriveDevices(pthis, font, color);
 
 	addGroup(_("NETWORK"));
 
@@ -147,7 +132,7 @@ void GuiSystemInformation::showSummarySystemInfo()
 	networkStatus->setUpdatableFunction([networkStatus, wifiSsid, ipAddress, color]
 		{
 			LOG(LogDebug) << "GuiSystemInformation::showSummarySystemInfo() - update network status";
-			NetworkInformation ni = ApiSystem::getNetworkInformation();
+			NetworkInformation ni = ApiSystem::getInstance()->getNetworkInformation();
 			networkStatus->setText(formatNetworkStatus( ni.isConnected ));
 			if (ni.isConnected)
 			{
@@ -160,10 +145,45 @@ void GuiSystemInformation::showSummarySystemInfo()
 				ipAddress->setText("");
 			}
 		}, 5000);
-	mUpdatables.push_back(networkStatus.get());
+	addUpdatableComponent(networkStatus.get());
 	addWithLabel(_("STATUS"), networkStatus);
 	addWithLabel(_("WIFI SSID"), wifiSsid);
 	addWithLabel(_("IP ADDRESS"), ipAddress);
+}
+
+void GuiSystemInformation::configUsbDriveDevices(UpdatableGuiSettings *parent, const std::shared_ptr<Font>& font, unsigned int color)
+{
+	std::vector<std::string> usbmps = ApiSystem::getInstance()->getUsbDriveMountPoints();
+	LOG(LogDebug) << "GuiSystemInformation::showSummarySystemInfo() - USB partition size: " << std::to_string(usbmps.size());
+	if (!usbmps.empty())
+	{
+		for (auto mount_point = begin (usbmps); mount_point != end (usbmps); ++mount_point)
+		{
+			if (mount_point->empty())
+				continue;
+			std::string value = ApiSystem::getInstance()->getFreeSpaceUsbDriveInfo(*mount_point);
+			bool warning = ApiSystem::getInstance()->isFreeSpaceUsbDriveLimit(*mount_point);
+			auto usbdrive = std::make_shared<UpdatableTextComponent>(mWindow, value, font, warning ? 0xFF0000FF : color);
+			usbdrive->setVisible(!value.empty());
+			if (usbdrive->isVisible())
+			{
+				usbdrive->setUpdatableFunction([usbdrive, color, mount_point]
+					{
+						LOG(LogDebug) << "GuiSystemInformation::showSummarySystemInfo() - update usbdrive: \"" << *mount_point << '"';
+						if (usbdrive->isVisible())
+						{
+							std::string value = ApiSystem::getInstance()->getFreeSpaceUsbDriveInfo(*mount_point);
+							bool warning = ApiSystem::getInstance()->isFreeSpaceUsbDriveLimit(*mount_point);
+							usbdrive->setVisible(!value.empty());
+							usbdrive->setText(value);
+							usbdrive->setColor(warning ? 0xFF0000FF : color);
+						}
+					}, 30000);
+				parent->addUpdatableComponent(usbdrive.get());
+				parent->addWithLabel(_("USB DISK USAGE") + " " + *mount_point, usbdrive);
+			}
+		}
+	}
 }
 
 void GuiSystemInformation::showDetailedSystemInfo()
@@ -176,7 +196,7 @@ void GuiSystemInformation::showDetailedSystemInfo()
 	addSubMenu(_("STORAGE"), [this]() { openStorage(); });
 	addSubMenu(_("NETWORK"), [this]() { openNetwork(); });
 
-	BatteryInformation bi = ApiSystem::getBatteryInformation(false);
+	BatteryInformation bi = ApiSystem::getInstance()->getBatteryInformation(false);
 	LOG(LogDebug) << "GuiSystemInformation::showDetailedSystemInfo() - has battery: " << Utils::String::boolToString(bi.hasBattery);
 	if (bi.hasBattery)
 		addSubMenu(_("BATTERY"), [this, bi]() { openBattery(&bi); });
@@ -196,7 +216,7 @@ void GuiSystemInformation::openCpuAndSocket()
 
 	auto s = new UpdatableGuiSettings(window, _("CPU AND SOCKET"));
 
-	CpuAndSocketInformation csi = ApiSystem::getCpuAndChipsetInformation(false);
+	CpuAndSocketInformation csi = ApiSystem::getInstance()->getCpuAndChipsetInformation(false);
 
 	// vendor ID
 	s->addWithLabel(_("VENDOR ID"), std::make_shared<TextComponent>(window, csi.vendor_id,font, color));
@@ -214,13 +234,13 @@ void GuiSystemInformation::openCpuAndSocket()
 	s->addWithLabel(_("THREAD(S) PER CORE"), std::make_shared<TextComponent>(window, std::to_string( csi.nthreads_core ), font, color));
 
 	// CPU load
-	bool warning = ApiSystem::isLoadCpuLimit( csi.cpu_load );
+	bool warning = ApiSystem::getInstance()->isLoadCpuLimit( csi.cpu_load );
 	auto load = std::make_shared<UpdatableTextComponent>(window, formatLoadCpu( csi.cpu_load ), font, warning ? 0xFF0000FF : color);
 	load->setUpdatableFunction([load, color]
 		{
 			LOG(LogDebug) << "GuiSystemInformation::showSummarySystemInfo() - update load CPU";
-			float load_cpu_value = ApiSystem::getLoadCpu();
-			bool warning = ApiSystem::isLoadCpuLimit( load_cpu_value );
+			float load_cpu_value = ApiSystem::getInstance()->getLoadCpu();
+			bool warning = ApiSystem::getInstance()->isLoadCpuLimit( load_cpu_value );
 			load->setText(formatLoadCpu( load_cpu_value ));
 			load->setColor(warning ? 0xFF0000FF : color);
 		}, 2000);
@@ -228,13 +248,13 @@ void GuiSystemInformation::openCpuAndSocket()
 	s->addUpdatableComponent(load.get());
 
 	// temperature
-	warning = ApiSystem::isTemperatureLimit( csi.temperature );
+	warning = ApiSystem::getInstance()->isTemperatureLimit( csi.temperature );
 	auto temperature = std::make_shared<UpdatableTextComponent>(window, formatTemperature( csi.temperature ), font, warning ? 0xFF0000FF : color);
 	temperature->setUpdatableFunction([temperature, color]
 		{
 			LOG(LogDebug) << "GuiSystemInformation::showSummarySystemInfo() - update temperture CPU";
-			float temp_cpu_value = ApiSystem::getTemperatureCpu();
-			bool warning = ApiSystem::isTemperatureLimit( temp_cpu_value );
+			float temp_cpu_value = ApiSystem::getInstance()->getTemperatureCpu();
+			bool warning = ApiSystem::getInstance()->isTemperatureLimit( temp_cpu_value );
 			temperature->setText(formatTemperature( temp_cpu_value ));
 			temperature->setColor(warning ? 0xFF0000FF : color);
 		}, 5000);
@@ -249,7 +269,7 @@ void GuiSystemInformation::openCpuAndSocket()
 	frequency->setUpdatableFunction([frequency]
 		{
 			LOG(LogDebug) << "GuiSystemInformation::showSummarySystemInfo() - update frequency CPU";
-			frequency->setText(formatFrequency( ApiSystem::getFrequencyCpu() ));
+			frequency->setText(formatFrequency( ApiSystem::getInstance()->getFrequencyCpu() ));
 		}, 5000);
 	s->addWithLabel(_("FREQUENCY"), frequency);
 	s->addUpdatableComponent(frequency.get());
@@ -275,13 +295,13 @@ void GuiSystemInformation::openRamMemory()
 
 	auto s = new UpdatableGuiSettings(window, _("RAM MEMORY"));
 
-	RamMemoryInformation memory = ApiSystem::getRamMemoryInformation(false);
+	RamMemoryInformation memory = ApiSystem::getInstance()->getRamMemoryInformation(false);
 
 	// total ram
 	s->addWithLabel(_("TOTAL"), std::make_shared<TextComponent>(window, formatMemory( memory.total ), font, color));
 
 	// free ram
-	bool warning = ApiSystem::isMemoryLimit( memory.total, memory.free );
+	bool warning = ApiSystem::getInstance()->isMemoryLimit( memory.total, memory.free );
 	auto memoryFree = std::make_shared<UpdatableTextComponent>(window, formatMemory( memory.free, memory.total, true ), font, warning ? 0xFF0000FF : color);
 	auto memoryUsed = std::make_shared<TextComponent>(window, formatMemory( memory.used, memory.total, true ), font, warning ? 0xFF0000FF : color);
 	auto memoryCached = std::make_shared<TextComponent>(window, formatMemory( memory.cached, memory.total, true ), font, warning ? 0xFF0000FF : color);
@@ -289,8 +309,8 @@ void GuiSystemInformation::openRamMemory()
 	memoryFree->setUpdatableFunction([memoryFree, memoryUsed, memoryCached, color]
 		{
 			LOG(LogDebug) << "GuiSystemInformation::showSummarySystemInfo() - update memory free";
-			RamMemoryInformation memory = ApiSystem::getRamMemoryInformation(false);
-			bool warning = ApiSystem::isMemoryLimit( memory.total, memory.free );
+			RamMemoryInformation memory = ApiSystem::getInstance()->getRamMemoryInformation(false);
+			bool warning = ApiSystem::getInstance()->isMemoryLimit( memory.total, memory.free );
 			memoryFree->setText(formatMemory( memory.free, memory.total, true ));
 			memoryFree->setColor(warning ? 0xFF0000FF : color);
 			memoryUsed->setText(formatMemory( memory.used, memory.total, true ));
@@ -315,7 +335,7 @@ void GuiSystemInformation::openDisplayAndGpu()
 
 	auto s = new UpdatableGuiSettings(window, _("DISPLAY AND GPU"));
 
-	DisplayAndGpuInformation di = ApiSystem::getDisplayAndGpuInformation(false);
+	DisplayAndGpuInformation di = ApiSystem::getInstance()->getDisplayAndGpuInformation(false);
 
 	// GPU model
 	s->addWithLabel(_("GPU"), std::make_shared<TextComponent>(window, di.gpu_model, font, color));
@@ -327,13 +347,13 @@ void GuiSystemInformation::openDisplayAndGpu()
 	s->addWithLabel(_("BITS PER PIXEL"), std::make_shared<TextComponent>(window, std::to_string( di.bits_per_pixel ), font, color));
 
 	// temperature
-	bool warning = ApiSystem::isTemperatureLimit( di.temperature );
+	bool warning = ApiSystem::getInstance()->isTemperatureLimit( di.temperature );
 	auto temperature = std::make_shared<UpdatableTextComponent>(window, formatTemperature( di.temperature ), font, warning ? 0xFF0000FF : color);
 	temperature->setUpdatableFunction([temperature, color]
 		{
 			LOG(LogDebug) << "GuiSystemInformation::showSummarySystemInfo() - update temperture GPU";
-			float temp_gpu_value = ApiSystem::getTemperatureGpu();
-			bool warning = ApiSystem::isTemperatureLimit( temp_gpu_value );
+			float temp_gpu_value = ApiSystem::getInstance()->getTemperatureGpu();
+			bool warning = ApiSystem::getInstance()->isTemperatureLimit( temp_gpu_value );
 			temperature->setText(formatTemperature( temp_gpu_value ));
 			temperature->setColor(warning ? 0xFF0000FF : color);
 		}, 5000);
@@ -348,7 +368,7 @@ void GuiSystemInformation::openDisplayAndGpu()
 	frequency->setUpdatableFunction([frequency]
 		{
 			LOG(LogDebug) << "GuiSystemInformation::showSummarySystemInfo() - update temperture GPU";
-			frequency->setText(formatFrequency( ApiSystem::getFrequencyGpu() ));
+			frequency->setText(formatFrequency( ApiSystem::getInstance()->getFrequencyGpu() ));
 		}, 5000);
 	s->addUpdatableComponent(frequency.get());
 	s->addWithLabel(_("FREQUENCY"), frequency);
@@ -367,8 +387,8 @@ void GuiSystemInformation::openDisplayAndGpu()
 	brightness->setUpdatableFunction([brightness, brightness_system]
 		{
 			LOG(LogDebug) << "GuiSystemInformation::showSummarySystemInfo() - update brightness display";
-			brightness->setText(formatBattery( ApiSystem::getBrightnessLevel() ));
-			brightness_system->setText( std::to_string( ApiSystem::getBrightness() ) );
+			brightness->setText(formatBattery( ApiSystem::getInstance()->getBrightnessLevel() ));
+			brightness_system->setText( std::to_string( ApiSystem::getInstance()->getBrightness() ) );
 		}, 5000);
 	s->addUpdatableComponent(brightness.get());
 
@@ -393,53 +413,38 @@ void GuiSystemInformation::openStorage()
 	auto s = new UpdatableGuiSettings(window, _("STORAGE"));
 
 	// boot
-	bool warning = ApiSystem::isFreeSpaceBootLimit();
-	auto bootSpace = std::make_shared<TextComponent>(window, ApiSystem::getFreeSpaceBootInfo(), font, warning ? 0xFF0000FF : color);
+	bool warning = ApiSystem::getInstance()->isFreeSpaceBootLimit();
+	auto bootSpace = std::make_shared<TextComponent>(window, ApiSystem::getInstance()->getFreeSpaceBootInfo(), font, warning ? 0xFF0000FF : color);
 
 	// system
-	warning = ApiSystem::isFreeSpaceSystemLimit();
-	auto systemSpace = std::make_shared<TextComponent>(window, ApiSystem::getFreeSpaceSystemInfo(), font, warning ? 0xFF0000FF : color);
+	warning = ApiSystem::getInstance()->isFreeSpaceSystemLimit();
+	auto systemSpace = std::make_shared<TextComponent>(window, ApiSystem::getInstance()->getFreeSpaceSystemInfo(), font, warning ? 0xFF0000FF : color);
 
 	// roms
-	warning = ApiSystem::isFreeSpaceUserLimit();
-	auto userSpace = std::make_shared<UpdatableTextComponent>(window, ApiSystem::getFreeSpaceUserInfo(), font, warning ? 0xFF0000FF : color);
-
-	// usbdrive
-	std::string value = ApiSystem::getFreeSpaceUsbDriveInfo();
-	auto usbdrive = std::make_shared<TextComponent>(mWindow, value, font, warning ? 0xFF0000FF : color);
-	usbdrive->setVisible(!value.empty());
-	warning = ApiSystem::isFreeSpaceUsbDriveLimit();
-
-	userSpace->setUpdatableFunction([bootSpace, systemSpace, userSpace, usbdrive, color]
+	warning = ApiSystem::getInstance()->isFreeSpaceUserLimit();
+	auto userSpace = std::make_shared<UpdatableTextComponent>(window, ApiSystem::getInstance()->getFreeSpaceUserInfo(), font, warning ? 0xFF0000FF : color);
+	userSpace->setUpdatableFunction([bootSpace, systemSpace, userSpace, color]//usbdrive, color]
 		{
 			LOG(LogDebug) << "GuiSystemInformation::showSummarySystemInfo() - update storage";
-			bool warning = ApiSystem::isFreeSpaceBootLimit();
-			bootSpace->setText(ApiSystem::getFreeSpaceBootInfo());
+			bool warning = ApiSystem::getInstance()->isFreeSpaceBootLimit();
+			bootSpace->setText(ApiSystem::getInstance()->getFreeSpaceBootInfo());
 			bootSpace->setColor(warning ? 0xFF0000FF : color);
 
-			warning = ApiSystem::isFreeSpaceSystemLimit();
-			systemSpace->setText(ApiSystem::getFreeSpaceSystemInfo());
+			warning = ApiSystem::getInstance()->isFreeSpaceSystemLimit();
+			systemSpace->setText(ApiSystem::getInstance()->getFreeSpaceSystemInfo());
 			systemSpace->setColor(warning ? 0xFF0000FF : color);
 
-			warning = ApiSystem::isFreeSpaceUserLimit();
-			userSpace->setText(ApiSystem::getFreeSpaceUserInfo());
+			warning = ApiSystem::getInstance()->isFreeSpaceUserLimit();
+			userSpace->setText(ApiSystem::getInstance()->getFreeSpaceUserInfo());
 			userSpace->setColor(warning ? 0xFF0000FF : color);
-
-			if (usbdrive->isVisible())
-			{
-				std::string value = ApiSystem::getFreeSpaceUsbDriveInfo();
-				usbdrive->setVisible(!value.empty());
-				warning = ApiSystem::isFreeSpaceUsbDriveLimit();
-				usbdrive->setText(value);
-				usbdrive->setColor(warning ? 0xFF0000FF : color);
-			}
 		}, 30000);
 	s->addUpdatableComponent(userSpace.get());
 	s->addWithLabel(_("BOOT DISK USAGE"), bootSpace);
 	s->addWithLabel(_("SYSTEM DISK USAGE"), systemSpace);
 	s->addWithLabel(_("ROMS DISK USAGE"), userSpace);
-	if (usbdrive->isVisible())
-		s->addWithLabel(_("USB DISK USAGE"), usbdrive);
+
+	// usbdrive
+	configUsbDriveDevices(s, font, color);
 
 	window->pushGui(s);
 }
@@ -455,7 +460,7 @@ void GuiSystemInformation::openNetwork()
 
 	auto s = new UpdatableGuiSettings(window, _("NETWORK"));
 
-	NetworkInformation ni = ApiSystem::getNetworkInformation(false);
+	NetworkInformation ni = ApiSystem::getInstance()->getNetworkInformation(false);
 
 // connected to network
 	auto status = std::make_shared<UpdatableTextComponent>(window, ni.isConnected ? "    " + _("CONNECTED") : _("NOT CONNECTED"), font, color);
@@ -475,7 +480,7 @@ void GuiSystemInformation::openNetwork()
 	status->setUpdatableFunction([status, isWifi, ssid, address, netmask, gateway, mac, dns1, dns2, signal, channel, security, rate]
 		{
 			LOG(LogDebug) << "GuiSystemInformation::showSummarySystemInfo() - update network";
-			NetworkInformation ni = ApiSystem::getNetworkInformation(false);
+			NetworkInformation ni = ApiSystem::getInstance()->getNetworkInformation(false);
 			status->setText( ni.isConnected ? "    " + _("CONNECTED") : _("NOT CONNECTED") );
 			isWifi->setText( "" );
 			address->setText( "" );
@@ -540,13 +545,13 @@ void GuiSystemInformation::openBattery(const BatteryInformation *bi)
 	auto s = new UpdatableGuiSettings(window, _("BATTERY"));
 
 	// level
-	bool warning = ApiSystem::isBatteryLimit(bi->level);
+	bool warning = ApiSystem::getInstance()->isBatteryLimit(bi->level);
 	auto level = std::make_shared<UpdatableTextComponent>(window, formatBattery( bi->level ), font, warning ? 0xFF0000FF : color);
 	level->setUpdatableFunction([level, color]
 		{
 			LOG(LogDebug) << "GuiSystemInformation::showSummarySystemInfo() - update battery level";
-			int battery_level_value = ApiSystem::getBatteryLevel();
-			bool warning = ApiSystem::isBatteryLimit( battery_level_value );
+			int battery_level_value = ApiSystem::getInstance()->getBatteryLevel();
+			bool warning = ApiSystem::getInstance()->isBatteryLimit( battery_level_value );
 			level->setText(formatBattery( battery_level_value ));
 			level->setColor(warning ? 0xFF0000FF : color);
 		}, 30000);
@@ -558,7 +563,7 @@ void GuiSystemInformation::openBattery(const BatteryInformation *bi)
 	charging->setUpdatableFunction([charging, color]
 		{
 			LOG(LogDebug) << "GuiSystemInformation::showSummarySystemInfo() - update battery charging";
-			charging->setText(_(Utils::String::boolToString(ApiSystem::isBatteryCharging(), true) ));
+			charging->setText(_(Utils::String::boolToString(ApiSystem::getInstance()->isBatteryCharging(), true) ));
 		}, 10000);
 	s->addUpdatableComponent(charging.get());
 	s->addWithLabel(_("CHARGING"), charging);
@@ -574,7 +579,7 @@ void GuiSystemInformation::openBattery(const BatteryInformation *bi)
 	voltage->setUpdatableFunction([voltage, color]
 		{
 			LOG(LogDebug) << "GuiSystemInformation::showSummarySystemInfo() - update battery voltage";
-			voltage->setText(formatVoltage(ApiSystem::getBatteryVoltage()));
+			voltage->setText(formatVoltage(ApiSystem::getInstance()->getBatteryVoltage()));
 		}, 5000);
 	s->addUpdatableComponent(voltage.get());
 	s->addWithLabel(_("VOLTAGE"), voltage);
@@ -593,7 +598,7 @@ void GuiSystemInformation::openSoftware()
 
 	auto s = new GuiSettings(window, _("SOFTWARE"));
 
-	SoftwareInformation si = ApiSystem::getSoftwareInformation(false);
+	SoftwareInformation si = ApiSystem::getInstance()->getSoftwareInformation(false);
 
 	// kernel
 	s->addWithLabel(_("HOSTNAME"), std::make_shared<TextComponent>(window, si.hostname, font, color));
@@ -623,7 +628,7 @@ void GuiSystemInformation::openDevice()
 
 	auto s = new GuiSettings(window, _("DEVICE"));
 
-	DeviceInformation di = ApiSystem::getDeviceInformation(false);
+	DeviceInformation di = ApiSystem::getInstance()->getDeviceInformation(false);
 
 	// device info
 	s->addWithLabel(_("HARDWARE"), std::make_shared<TextComponent>(window, di.hardware, font, color));
@@ -709,10 +714,4 @@ std::string GuiSystemInformation::formatNetworkStatus(bool isConnected)
 std::string GuiSystemInformation::formatNetworkRate(int rate, std::string units)
 {
 	return std::to_string(rate) + " " + units;
-}
-
-void GuiSystemInformation::update(int deltaTime)
-{
-	for (GuiComponent *updatable : mUpdatables)
-		updatable->update(deltaTime);
 }

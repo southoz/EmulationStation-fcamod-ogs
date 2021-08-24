@@ -185,7 +185,7 @@ void loadGamelistFile (const std::string xmlpath, SystemData* system, std::unord
 
 std::string getTemporaryGamelistRecovery(SystemData* system)
 {
-	return Utils::FileSystem::getHomePath() + "/.emulationstation/recovery/" + system->getName();
+	return Utils::FileSystem::getEsConfigPath() + "/recovery/" + system->getName();
 }
 
 void clearTemporaryGamelistRecovery(SystemData* system)

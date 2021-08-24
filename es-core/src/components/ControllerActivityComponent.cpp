@@ -6,12 +6,13 @@
 #include "InputManager.h"
 #include "Settings.h"
 #include "platform.h"
+#include "Log.h"
 
 // #define DEVTEST
 
-#define PLAYER_PAD_TIME_MS		 150
-#define UPDATE_NETWORK_DELAY	10000
-#define UPDATE_BATTERY_DELAY	30000
+//#define PLAYER_PAD_TIME_MS		 150
+#define UPDATE_NETWORK_DELAY	 5000
+#define UPDATE_BATTERY_DELAY	10000
 
 ControllerActivityComponent::ControllerActivityComponent(Window* window) : GuiComponent(window)
 {
@@ -44,10 +45,10 @@ void ControllerActivityComponent::init()
 
 	float margin = (int)(Renderer::getScreenHeight() / 280.0f);
 	mPosition = Vector3f(margin, Renderer::getScreenHeight() - mSize.y() - margin, 0.0f);
-
+/*
 	for (int i = 0; i < MAX_PLAYERS; i++)
 		mPads[i].reset();
-
+*/
 	updateNetworkInfo();
 	updateBatteryInfo();
 }
@@ -127,7 +128,7 @@ void ControllerActivityComponent::update(int deltaTime)
 			mNetworkCheckTime = 0;
 		}
 	}
-
+/*
 	if (mView & CONTROLLERS)
 	{
 		for (int i = 0; i < MAX_PLAYERS; i++)
@@ -144,12 +145,15 @@ void ControllerActivityComponent::update(int deltaTime)
 			}
 		}
 	}
+*/
 }
 
 void ControllerActivityComponent::render(const Transform4x4f& parentTrans)
 {
 	if (!isVisible())
+	{
 		return;
+	}
 
 	Transform4x4f trans = parentTrans * getTransform();
 	if (!Renderer::isVisibleOnScreen(trans.translation().x(), trans.translation().y(), mSize.x(), mSize.y()))
@@ -167,8 +171,13 @@ void ControllerActivityComponent::render(const Transform4x4f& parentTrans)
 	int itemsWidth = 0;
 	float batteryTextOffset = 0;
 
-	bool showControllerActivity = Settings::getInstance()->getBool("ShowControllerActivity");
-	bool showControllerBattery = showControllerActivity && Settings::getInstance()->getBool("ShowBatteryIndicator");
+	//bool showBatteryController = Settings::getInstance()->getBool("ShowBatteryIndicator");
+	//bool showNetworkController = Settings::getInstance()->getBool("ShowNetworkIndicator");
+
+/*
+	//bool showControllerActivity = Settings::getInstance()->getBool("ShowControllerActivity");
+	//bool showControllerBattery = showControllerActivity && Settings::getInstance()->getBool("ShowBatteryIndicator");
+
 /*
 	if ((mView & CONTROLLERS) && showControllerActivity)
 	{	
@@ -218,12 +227,15 @@ void ControllerActivityComponent::render(const Transform4x4f& parentTrans)
 		}
 	}
 */
+
 	if ((mView & NETWORK) && mNetworkConnected && (mNetworkImage != nullptr))
+	{
 		itemsWidth += szW + mSpacing; // getTextureSize(mNetworkImage).x()
+	}
 
 	auto batteryText = std::to_string(mBatteryInfo.level) + "%";
 	
-	if ((mView & BATTERY) && mBatteryInfo.hasBattery && mBatteryImage != nullptr)
+	if ((mView & BATTERY) && mBatteryInfo.hasBattery && (mBatteryImage != nullptr))
 	{
 		itemsWidth += szW + mSpacing;
 		//itemsWidth += getTextureSize(mBatteryImage).x() + mSpacing;
@@ -243,7 +255,7 @@ void ControllerActivityComponent::render(const Transform4x4f& parentTrans)
 		x = mSize.x() / 2.0f - itemsWidth / 2.0f;	
 	else if (mHorizontalAlignment == ALIGN_RIGHT)
 		x = mSize.x() - itemsWidth;
-
+/*
 	if ((mView & CONTROLLERS) && showControllerActivity)
 	{
 		for (int idx = 0; idx < MAX_PLAYERS; idx++)
@@ -279,11 +291,11 @@ void ControllerActivityComponent::render(const Transform4x4f& parentTrans)
 				mPads[idx].batteryText = nullptr;
 		}
 	}
-	
+*/
 	if ((mView & NETWORK) && mNetworkConnected && (mNetworkImage != nullptr))
 		x += renderTexture(x, szW, mNetworkImage, mColorShift);
 
-	if ((mView & BATTERY) && mBatteryInfo.hasBattery && mBatteryImage != nullptr)
+	if ((mView & BATTERY) && mBatteryInfo.hasBattery && (mBatteryImage != nullptr))
 	{
 		x += renderTexture(x, szW, mBatteryImage, mColorShift);
 
@@ -389,12 +401,12 @@ void ControllerActivityComponent::applyTheme(const std::shared_ptr<ThemeData>& t
 
 void ControllerActivityComponent::updateNetworkInfo()
 {
-	mNetworkConnected = Settings::getInstance()->getBool("ShowNetworkIndicator") && !queryIPAddress().empty();
+	mNetworkConnected = Settings::getInstance()->getBool("ShowNetworkIndicator") && queryNetworkConnected();
 }
 
 void ControllerActivityComponent::updateBatteryInfo()
 {
-	if (Settings::getInstance()->getString("ShowBattery").empty() || (mView & BATTERY) == 0)
+	if (!Settings::getInstance()->getBool("ShowBatteryIndicator") || Settings::getInstance()->getString("ShowBattery").empty() || (mView & BATTERY) == 0)
 	{
 		mBatteryInfo.hasBattery = false;
 		return;

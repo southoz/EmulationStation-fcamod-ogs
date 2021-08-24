@@ -1,6 +1,7 @@
 #include "guis/GuiMenu.h"
 
 #include "components/OptionListComponent.h"
+#include "components/FlagOptionListComponent.h"
 #include "components/SliderComponent.h"
 #include "components/SwitchComponent.h"
 #include "guis/GuiCollectionSystemsOptions.h"
@@ -43,8 +44,9 @@ GuiMenu::GuiMenu(Window* window, bool animate) : GuiComponent(window), mMenu(win
 	if (isFullUI)
 	{
 		addEntry(_("UI SETTINGS"), true, [this] { openUISettings(); }, "iconUI");
-		// addEntry(_("CONFIGURE INPUT"), true, [this] { openConfigInput(); }, "iconControllers");
+		//addEntry(_("CONFIGURE INPUT"), true, [this] { openConfigInput(); }, "iconControllers");
 	}
+	addEntry(_("CONTROLLERS SETTINGS").c_str(), true, [this] { openControllersSettings(); }, "iconControllers");
 
 	addEntry(_("SOUND SETTINGS"), true, [this] { openSoundSettings(); }, "iconSound");
 
@@ -70,14 +72,14 @@ GuiMenu::GuiMenu(Window* window, bool animate) : GuiComponent(window), mMenu(win
 
 	}
 
-	addEntry(_("QUIT"), !Settings::getInstance()->getBool("ShowOnlyExit"), [this] {openQuitMenu(); }, "iconQuit");
+	addEntry(_("QUIT"), !Settings::getInstance()->getBool("ShowOnlyExit"), [this] { openQuitMenu(); }, "iconQuit");
 
 	if (Settings::getInstance()->getBool("FullScreenMode"))
 	{
-		BatteryInformation battery = ApiSystem::getBatteryInformation();
-		SoftwareInformation software = ApiSystem::getSoftwareInformation();
+		BatteryInformation battery = ApiSystem::getInstance()->getBatteryInformation();
+		SoftwareInformation software = ApiSystem::getInstance()->getSoftwareInformation();
 
-		addEntry("BAT: " + std::to_string( battery.level ) + "%" + " | SND: " + std::to_string(ApiSystem::getVolume()) + " | BRT: " + std::to_string( ApiSystem::getBrightnessLevel() ) + "% |" + _("NETWORK")+ ": " + _( (ApiSystem::isNetworkConnected() ? "CONNECTED" : "NOT CONNECTED") ), false, [this] {  });
+		addEntry("BAT: " + std::to_string( battery.level ) + "%" + " | SND: " + std::to_string(ApiSystem::getInstance()->getVolume()) + " | BRT: " + std::to_string( ApiSystem::getInstance()->getBrightnessLevel() ) + "% |" + _("NETWORK")+ ": " + _( (ApiSystem::getInstance()->isNetworkConnected() ? "CONNECTED" : "NOT CONNECTED") ), false, [this] {  });
 
 		addEntry("Distro Version: " + software.application_name + " " + software.version, false, [this] {  });
 	}
@@ -125,14 +127,14 @@ void GuiMenu::openDisplaySettings()
 
 	// Brightness
 	auto brightness = std::make_shared<SliderComponent>(mWindow, 1.0f, 100.f, 2.0f, "%");
-	int old_brightness_level = ApiSystem::getBrightnessLevel();
+	int old_brightness_level = ApiSystem::getInstance()->getBrightnessLevel();
 	brightness->setValue((float) old_brightness_level);
 	s->addWithLabel(_("BRIGHTNESS"), brightness);
 	s->addSaveFunc([s, brightness, old_brightness_level]
 		{
 			if (old_brightness_level != (int)Math::round( brightness->getValue() ))
 			{
-				ApiSystem::setBrightnessLevel( (int)Math::round( brightness->getValue() ));
+				ApiSystem::getInstance()->setBrightnessLevel( (int)Math::round( brightness->getValue() ));
 				if (Settings::getInstance()->getBool("FullScreenMode"))
 					s->setVariable("reloadGuiMenu", true);
 			}
@@ -186,6 +188,51 @@ void GuiMenu::openDisplaySettings()
 	}
 
  mWindow->pushGui(s);
+}
+
+void GuiMenu::openControllersSettings()
+{
+	GuiSettings* s = new GuiSettings(mWindow, _("CONTROLLERS SETTINGS"));
+
+	Window *window = mWindow;
+
+	auto invert_AB_buttons = std::make_shared<SwitchComponent>(mWindow);
+	invert_AB_buttons->setState(Settings::getInstance()->getBool("InvertButtonsAB"));
+	s->addWithLabel(_("SWITCH A/B BUTTONS IN EMULATIONSTATION"), invert_AB_buttons);
+	s->addSaveFunc([this, s, invert_AB_buttons]
+		{
+			if (Settings::getInstance()->setBool("InvertButtonsAB", invert_AB_buttons->getState()))
+			{
+				InputConfig::AssignActionButtons();
+				s->setVariable("reloadAll", true);
+			}
+		});
+
+	auto invert_pu_buttons = std::make_shared<SwitchComponent>(mWindow);
+	invert_pu_buttons->setState(Settings::getInstance()->getBool("InvertButtonsPU"));
+	s->addWithLabel(_("SWITCH \"PAGE UP\" TO L1 IN EMULATIONSTATION"), invert_pu_buttons);
+	s->addSaveFunc([this, s, invert_pu_buttons]
+		{
+			if (Settings::getInstance()->setBool("InvertButtonsPU", invert_pu_buttons->getState()))
+			{
+				InputConfig::AssignActionButtons();
+				s->setVariable("reloadAll", true);
+			}
+		});
+
+	auto invert_pd_buttons = std::make_shared<SwitchComponent>(mWindow);
+	invert_pd_buttons->setState(Settings::getInstance()->getBool("InvertButtonsPD"));
+	s->addWithLabel(_("SWITCH \"PAGE DOWN\" TO R1 IN EMULATIONSTATION"), invert_pd_buttons);
+	s->addSaveFunc([this, s, invert_pd_buttons]
+		{
+			if (Settings::getInstance()->setBool("InvertButtonsPD", invert_pd_buttons->getState()))
+			{
+				InputConfig::AssignActionButtons();
+				s->setVariable("reloadAll", true);
+			}
+		});
+
+	mWindow->pushGui(s);
 }
 
 void GuiMenu::openScraperSettings()
@@ -927,53 +974,6 @@ void GuiMenu::openUISettings()
 		}
 	});
 
-	// LANGUAGE
-	/*
-	std::vector<std::string> langues;
-	langues.push_back("en");
-
-	std::string xmlpath = ResourceManager::getInstance()->getResourcePath(":/splash.svg");
-	if (xmlpath.length() > 0)
-	{
-		xmlpath = Utils::FileSystem::getParent(xmlpath) + "/locale/";
-
-		Utils::FileSystem::stringList dirContent = Utils::FileSystem::getDirContent(xmlpath, true);
-		for (Utils::FileSystem::stringList::const_iterator it = dirContent.cbegin(); it != dirContent.cend(); ++it)
-		{
-			if (Utils::FileSystem::isDirectory(*it))
-				continue;
-
-			std::string name = *it;
-
-			if (name.rfind("emulationstation2.po") == std::string::npos)
-				continue;
-
-			name = Utils::FileSystem::getParent(name);
-			name = Utils::FileSystem::getFileName(name);
-
-			if (name != "en")
-				langues.push_back(name);
-		}
-
-		if (langues.size() > 1)
-		{
-			auto language = std::make_shared< OptionListComponent<std::string> >(mWindow, _("LANGUAGE"), false);
-
-			for (auto it = langues.cbegin(); it != langues.cend(); it++)
-				language->add(*it, *it, Settings::getInstance()->getString("Language") == *it);
-
-			s->addWithLabel(_("LANGUAGE"), language);
-			s->addSaveFunc([language, window, pthis, s] {
-				
-				if (language->getSelected() != Settings::getInstance()->getString("Language"))
-				{
-					if (Settings::getInstance()->setString("Language", language->getSelected()))
-						s->setVariable("reloadGuiMenu", true);
-				}
-			});
-		}
-	}
-	*/
 	// transition style
 	auto transition_style = std::make_shared< OptionListComponent<std::string> >(mWindow, _("TRANSITION STYLE"), false);
 	std::vector<std::string> transitions;
@@ -1153,7 +1153,7 @@ void GuiMenu::openUISettings()
 	});
 
 	// Battery indicator
-	if (ApiSystem::getBatteryInformation().hasBattery)
+	if (ApiSystem::getInstance()->getBatteryInformation().hasBattery)
 	{
 		auto batteryStatus = std::make_shared<OptionListComponent<std::string> >(mWindow, _("SHOW BATTERY STATUS"), false);
 		batteryStatus->addRange({ { _("NO"), "" },{ _("ICON"), "icon" },{ _("ICON AND TEXT"), "text" } }, Settings::getInstance()->getString("ShowBattery"));
@@ -1346,6 +1346,30 @@ void GuiMenu::openEmulatorSettings()
 	window->pushGui(configuration);
 }
 
+void GuiMenu::updateGameLists(Window* window, bool confirm)
+{
+	if (ThreadedScraper::isRunning())
+	{
+		window->pushGui(new GuiMsgBox(window, _("SCRAPING IS RUNNING. DO YOU WANT TO STOP IT ?"),
+			_("YES"), [] { ThreadedScraper::stop(); },
+			_("NO"), nullptr));
+
+		return;
+	}
+
+	if (!confirm)
+	{
+		ViewController::reloadAllGames(window, true);
+		return;
+	}
+
+	window->pushGui(new GuiMsgBox(window, _("REALLY UPDATE GAMES LISTS ?"), _("YES"), [window]
+		{
+			ViewController::reloadAllGames(window, true);
+		},
+		_("NO"), nullptr));
+}
+
 void GuiMenu::openUpdateSettings()
 {
 	Window* window = mWindow;
@@ -1367,24 +1391,24 @@ void GuiMenu::openUpdateSettings()
 	});
 
 	// Start update
-	s->addEntry(ApiSystem::state == UpdateState::State::UPDATE_READY ? _("APPLY UPDATE") : _("START UPDATE"), true, [this, s]
+	s->addEntry(ApiSystem::getInstance()->state == UpdateState::State::UPDATE_READY ? _("APPLY UPDATE") : _("START UPDATE"), true, [this, s]
 	{
-		if (ApiSystem::checkUpdateVersion().empty())
+		if (ApiSystem::getInstance()->checkUpdateVersion().empty())
 		{
 			mWindow->pushGui(new GuiMsgBox(mWindow, _("NO UPDATE AVAILABLE")));
 			return;
 		}
 
-		if (ApiSystem::state == UpdateState::State::UPDATE_READY)
+		if (ApiSystem::getInstance()->state == UpdateState::State::UPDATE_READY)
 		{
 			if (quitES(QuitMode::QUIT))
 				LOG(LogWarning) << "GuiMenu::openUpdateSettings() - Reboot terminated with non-zero result!";
 		}
-		else if (ApiSystem::state == UpdateState::State::UPDATER_RUNNING)
+		else if (ApiSystem::getInstance()->state == UpdateState::State::UPDATER_RUNNING)
 			mWindow->pushGui(new GuiMsgBox(mWindow, _("UPDATE IS ALREADY RUNNING")));
 		else
 		{
-			ApiSystem::startUpdate(mWindow);
+			ApiSystem::getInstance()->startUpdate(mWindow);
 
 			s->setVariable("closeGuiMenu", true);
 			s->close();			
@@ -1414,54 +1438,34 @@ void GuiMenu::openAdvancedSettings()
 	auto theme = ThemeData::getMenuTheme();
 
 	//Timezone - Adapted from emuelec
-
-	auto es_timezones = std::make_shared<OptionListComponent<std::string> >(mWindow, _("TIMEZONE"), false);
+	auto es_timezones = std::make_shared<OptionListComponent<std::string> >(mWindow, _("SELECT YOUR TIMEZONE"), false);
 
 	std::string currentTimezone = SystemConf::getInstance()->get("system.timezone");
 	if (currentTimezone.empty())
-		currentTimezone = std::string(getShOutput(R"(/usr/local/bin/timezones current)"));
+		currentTimezone = ApiSystem::getInstance()->getCurrentTimezone();
+
 	std::string a;
-	for(std::stringstream ss(getShOutput(R"(/usr/local/bin/timezones available)")); getline(ss, a, ','); ) {
+	bool valid_tz = false;
+	for(std::stringstream ss(ApiSystem::getInstance()->getTimezones()); getline(ss, a, ','); ) {
 		es_timezones->add(a, a, currentTimezone == a);
+		if (currentTimezone == a)
+			valid_tz = true;
 	}
+	if (!valid_tz)
+		currentTimezone = "Europe/Paris";
+
 	s->addWithLabel(_("TIMEZONE"), es_timezones);
 	s->addSaveFunc([es_timezones] {
 		if (es_timezones->changed()) {
 			std::string selectedTimezone = es_timezones->getSelected();
-			runSystemCommand("sudo ln -sf /usr/share/zoneinfo/" + selectedTimezone + " /etc/localtime", "", nullptr);
+			ApiSystem::getInstance()->setTimezone(selectedTimezone);
+			SystemConf::getInstance()->set("system.timezone", selectedTimezone);
 		}
-		SystemConf::getInstance()->set("system.timezone", es_timezones->getSelected());
-	});
-
-	// power saver
-	auto power_saver = std::make_shared< OptionListComponent<std::string> >(mWindow, _("POWER SAVER MODES"), false);
-	std::vector<std::string> modes;
-	modes.push_back("disabled");
-	modes.push_back("default");
-	modes.push_back("enhanced");
-	modes.push_back("instant");
-	for (auto it = modes.cbegin(); it != modes.cend(); it++)
-		power_saver->add(_(it->c_str()), *it, Settings::getInstance()->getString("PowerSaverMode") == *it);
-
-	s->addWithLabel(_("POWER SAVER MODES"), power_saver);
-	s->addSaveFunc([this, power_saver] {
-		if (Settings::getInstance()->getString("PowerSaverMode") != "instant" && power_saver->getSelected() == "instant") {
-			Settings::getInstance()->setString("TransitionStyle", "instant");
-			Settings::getInstance()->setString("GameTransitionStyle", "instant");
-			Settings::getInstance()->setBool("MoveCarousel", false);
-			Settings::getInstance()->setBool("EnableSounds", false);
-		}
-
-		GuiComponent::ALLOWANIMATIONS = Settings::getInstance()->getString("TransitionStyle") != "instant";
-
-		Settings::getInstance()->setString("PowerSaverMode", power_saver->getSelected());
-		PowerSaver::init();
 	});
 
 	// LANGUAGE
-
-	std::vector<std::string> langues;
-	langues.push_back("en");
+	std::vector<std::string> languages;
+	languages.push_back("en");
 
 	std::string xmlpath = ResourceManager::getInstance()->getResourcePath(":/splash.svg");
 	if (xmlpath.length() > 0)
@@ -1493,14 +1497,14 @@ void GuiMenu::openAdvancedSettings()
 			name = Utils::FileSystem::getFileName(name);
 
 			if (name != "en")
-				langues.push_back(name);
+				languages.push_back(name);
 		}
 
-		if (langues.size() > 1)
+		if (languages.size() > 1)
 		{
-			auto language = std::make_shared< OptionListComponent<std::string> >(mWindow, _("LANGUAGE"), false);
+			auto language = std::make_shared< FlagOptionListComponent<std::string> >(mWindow, _("LANGUAGE"));
 
-			for (auto it = langues.cbegin(); it != langues.cend(); it++)
+			for (auto it = languages.cbegin(); it != languages.cend(); it++)
 			{
 				std::string language_label;
 				if (*it == "br")
@@ -1522,7 +1526,7 @@ void GuiMenu::openAdvancedSettings()
 				else
 					language_label = *it;
 
-				language->add(_(language_label), *it, Settings::getInstance()->getString("Language") == *it);
+				language->add(_(language_label), *it, Settings::getInstance()->getString("Language") == *it, ":/flags/" + *it + ".png");
 			}
 
 			s->addWithLabel(_("LANGUAGE"), language);
@@ -1536,6 +1540,32 @@ void GuiMenu::openAdvancedSettings()
 			});
 		}
 	}
+
+
+	// power saver
+	auto power_saver = std::make_shared< OptionListComponent<std::string> >(mWindow, _("POWER SAVER MODES"), false);
+	std::vector<std::string> modes;
+	modes.push_back("disabled");
+	modes.push_back("default");
+	modes.push_back("enhanced");
+	modes.push_back("instant");
+	for (auto it = modes.cbegin(); it != modes.cend(); it++)
+		power_saver->add(_(it->c_str()), *it, Settings::getInstance()->getString("PowerSaverMode") == *it);
+
+	s->addWithLabel(_("POWER SAVER MODES"), power_saver);
+	s->addSaveFunc([this, power_saver] {
+		if (Settings::getInstance()->getString("PowerSaverMode") != "instant" && power_saver->getSelected() == "instant") {
+			Settings::getInstance()->setString("TransitionStyle", "instant");
+			Settings::getInstance()->setString("GameTransitionStyle", "instant");
+			Settings::getInstance()->setBool("MoveCarousel", false);
+			Settings::getInstance()->setBool("EnableSounds", false);
+		}
+
+		GuiComponent::ALLOWANIMATIONS = Settings::getInstance()->getString("TransitionStyle") != "instant";
+
+		Settings::getInstance()->setString("PowerSaverMode", power_saver->getSelected());
+		PowerSaver::init();
+	});
 
 
 	// maximum vram
@@ -1628,22 +1658,20 @@ void GuiMenu::openAdvancedSettings()
 	auto battery = std::make_shared<SwitchComponent>(mWindow);
 	battery->setState(Settings::getInstance()->getBool("ShowBatteryIndicator"));
 	s->addWithLabel(_("SHOW BATTERY LEVEL"), battery);
-	s->addSaveFunc([battery]
+	s->addSaveFunc([s, battery]
 	{
-		bool old_value = Settings::getInstance()->getBool("ShowBatteryIndicator");
-		if (old_value != battery->getState())
-			Settings::getInstance()->setBool("ShowBatteryIndicator", battery->getState());
+		Settings::getInstance()->setBool("ShowBatteryIndicator", battery->getState());
+		//s->setVariable("reloadAll", true);
 	});
 
 	// Network Indicator
 	auto networkIndicator = std::make_shared<SwitchComponent>(mWindow);
 	networkIndicator->setState(Settings::getInstance()->getBool("ShowNetworkIndicator"));
 	s->addWithLabel(_("SHOW NETWORK INDICATOR"), networkIndicator);
-	s->addSaveFunc([networkIndicator]
+	s->addSaveFunc([s, networkIndicator]
 	{
-		bool old_value = Settings::getInstance()->getBool("ShowNetworkIndicator");
-		if (old_value != networkIndicator->getState())
-			Settings::getInstance()->setBool("ShowNetworkIndicator", networkIndicator->getState());
+		Settings::getInstance()->setBool("ShowNetworkIndicator", networkIndicator->getState());
+		//s->setVariable("reloadAll", true);
 	});
 
 	// full exit
@@ -1651,6 +1679,17 @@ void GuiMenu::openAdvancedSettings()
 	fullExitMenu->setState(!Settings::getInstance()->getBool("ShowOnlyExit"));
 	s->addWithLabel(_("COMPLETE QUIT MENU"), fullExitMenu);
 	s->addSaveFunc([fullExitMenu] { Settings::getInstance()->setBool("ShowOnlyExit", !fullExitMenu->getState()); });
+
+	// confirm to exit
+	auto confirmToExit = std::make_shared<SwitchComponent>(mWindow);
+	confirmToExit->setState(Settings::getInstance()->getBool("ConfirmToExit"));
+	s->addWithLabel(_("CONFIRM TO QUIT"), confirmToExit);
+	s->addSaveFunc([confirmToExit]
+		{
+			bool old_value = Settings::getInstance()->getBool("ConfirmToExit");
+			if ( old_value != confirmToExit->getState() )
+				Settings::getInstance()->setBool("ConfirmToExit", confirmToExit->getState());
+		});
 
 
 	// log level
@@ -1731,69 +1770,98 @@ void GuiMenu::openConfigInput()
 
 void GuiMenu::openQuitMenu()
 {
+	Window* window = mWindow;
+
+
+	static std::function<void()> restartEsFunction = []
+		{
+			Scripting::fireEvent("quit");
+			if(quitES(QuitMode::RESTART) != 0)
+				LOG(LogWarning) << "GuiMenu::openQuitMenu() - Restart terminated with non-zero result!";
+		};
+
+	static std::function<void()> quitEsFunction = []
+		{
+			Scripting::fireEvent("quit");
+			quitES();
+		};
+
+	static std::function<void()> restartDeviceFunction = []
+		{
+			Scripting::fireEvent("quit", "reboot");
+			Scripting::fireEvent("reboot");
+			if (quitES(QuitMode::REBOOT) != 0)
+				LOG(LogWarning) << "GuiMenu::openQuitMenu() - Restart terminated with non-zero result!";
+		};
+
+	static std::function<void()> shutdowntDeviceFunction = []
+		{
+			Scripting::fireEvent("quit", "shutdown");
+			Scripting::fireEvent("shutdown");
+			if (quitES(QuitMode::SHUTDOWN) != 0)
+				LOG(LogWarning) << "GuiMenu::openQuitMenu() - Shutdown terminated with non-zero result!";
+		};
+
+// TODO añadir opcion de configuracion para confirmacion al salir
 	if (Settings::getInstance()->getBool("ShowOnlyExit"))
 	{
-		Scripting::fireEvent("quit");
-		quitES();
+		if (Settings::getInstance()->getBool("ConfirmToExit"))
+			window->pushGui(new GuiMsgBox(window, _("REALLY SHUTDOWN?"), _("YES"), shutdowntDeviceFunction, _("NO"), nullptr));
+		 else
+			shutdowntDeviceFunction();
+
 		return;
 	}
 
-	auto s = new GuiSettings(mWindow, _("QUIT"));
-
-	Window* window = mWindow;
+	auto s = new GuiSettings(window, _("QUIT"));
 
 	ComponentListRow row;
 	if (UIModeController::getInstance()->isUIModeFull())
 	{
 		// Restart does not work on Windows
-		row.makeAcceptInputHandler([window] {
-			window->pushGui(new GuiMsgBox(window, _("REALLY RESTART?"), _("YES"),
-				[] {
-				Scripting::fireEvent("quit");
-				if(quitES(QuitMode::RESTART) != 0)
-					LOG(LogWarning) << "GuiMenu::openQuitMenu() - Restart terminated with non-zero result!";
-			}, _("NO"), nullptr));
-		});
+		row.makeAcceptInputHandler([window]
+			{
+				if (Settings::getInstance()->getBool("ConfirmToExit"))
+					window->pushGui(new GuiMsgBox(window, _("REALLY RESTART?"), _("YES"), restartEsFunction, _("NO"), nullptr));
+				else
+					restartEsFunction();
+			});
 		row.addElement(std::make_shared<TextComponent>(window, _("RESTART EMULATIONSTATION"), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color), true);
 		s->addRow(row);
 
 		if(Settings::getInstance()->getBool("ShowExit"))
 		{
 			row.elements.clear();
-			row.makeAcceptInputHandler([window] {
-				window->pushGui(new GuiMsgBox(window, _("REALLY QUIT?"), _("YES"),
-					[] {
-					Scripting::fireEvent("quit");
-					quitES();
-				}, _("NO"), nullptr));
+			row.makeAcceptInputHandler([window]
+			{
+				if (Settings::getInstance()->getBool("ConfirmToExit"))
+					window->pushGui(new GuiMsgBox(window, _("REALLY QUIT?"), _("YES"), quitEsFunction, _("NO"), nullptr));
+				else
+					quitEsFunction();
 			});
 			row.addElement(std::make_shared<TextComponent>(window, _("QUIT EMULATIONSTATION"), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color), true);
 			s->addRow(row);
 		}
 	}
 	row.elements.clear();
-	row.makeAcceptInputHandler([window] {
-		window->pushGui(new GuiMsgBox(window, _("REALLY RESTART?"), _("YES"),
-			[] {
-			Scripting::fireEvent("quit", "reboot");
-			Scripting::fireEvent("reboot");
-			if (quitES(QuitMode::REBOOT) != 0)
-				LOG(LogWarning) << "GuiMenu::openQuitMenu() - Restart terminated with non-zero result!";
-		}, _("NO"), nullptr));
-	});
+	row.makeAcceptInputHandler([window]
+		{
+			if (Settings::getInstance()->getBool("ConfirmToExit"))
+				window->pushGui(new GuiMsgBox(window, _("REALLY RESTART?"), _("YES"), restartDeviceFunction, _("NO"), nullptr));
+			else
+				restartDeviceFunction();
+		});
 	row.addElement(std::make_shared<TextComponent>(window, _("RESTART SYSTEM"), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color), true);
 	s->addRow(row);
 
 	row.elements.clear();
-	row.makeAcceptInputHandler([window] {
-		window->pushGui(new GuiMsgBox(window, _("REALLY SHUTDOWN?"), _("YES"),
-			[] {
-			Scripting::fireEvent("quit", "shutdown");
-			Scripting::fireEvent("shutdown");
-			if (quitES(QuitMode::SHUTDOWN) != 0)
-				LOG(LogWarning) << "GuiMenu::openQuitMenu() - Shutdown terminated with non-zero result!";
-		}, _("NO"), nullptr));
-	});
+	row.makeAcceptInputHandler([window]
+		{
+			if (Settings::getInstance()->getBool("ConfirmToExit"))
+				window->pushGui(new GuiMsgBox(window, _("REALLY SHUTDOWN?"), _("YES"), shutdowntDeviceFunction, _("NO"), nullptr));
+			else
+				shutdowntDeviceFunction();
+		});
 	row.addElement(std::make_shared<TextComponent>(window, _("SHUTDOWN SYSTEM"), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color), true);
 	s->addRow(row);
 
@@ -2047,7 +2115,7 @@ std::vector<HelpPrompt> GuiMenu::getHelpPrompts()
 {
 	std::vector<HelpPrompt> prompts;
 	prompts.push_back(HelpPrompt("up/down", _("CHOOSE")));
-	prompts.push_back(HelpPrompt("a", _("SELECT")));
+	prompts.push_back(HelpPrompt(BUTTON_OK, _("SELECT")));
 	prompts.push_back(HelpPrompt("start", _("CLOSE")));
 	return prompts;
 }

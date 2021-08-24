@@ -28,18 +28,26 @@ public:
 	virtual void launch(FileData* game) = 0;
 
 	virtual std::vector<std::string> getEntriesLetters() override;
-
-protected:
 	virtual std::vector<FileData*> getFileDataEntries() = 0;
 
+	void setPopupContext(std::shared_ptr<IGameListView> pThis, std::shared_ptr<GuiComponent> parentView, const std::string label, const std::function<void()>& onExitTemporary);
+	void closePopupContext();
+
+protected:
 	virtual std::string getQuickSystemSelectRightButton() = 0;
 	virtual std::string getQuickSystemSelectLeftButton() = 0;
 	virtual void populateList(const std::vector<FileData*>& files) = 0;
+
+	std::string getDefaultQuickSystemSelectRightButton();
+	std::string getDefaultQuickSystemSelectLeftButton();
 
 	TextComponent mHeaderText;
 	ImageComponent mHeaderImage;
 	ImageComponent mBackground;
 
+	std::shared_ptr<IGameListView> mPopupSelfReference;
+	std::shared_ptr<GuiComponent>  mPopupParentView;
+	std::function<void()> mOnExitPopup;
 
 	std::vector<GuiComponent*> mThemeExtras;
 

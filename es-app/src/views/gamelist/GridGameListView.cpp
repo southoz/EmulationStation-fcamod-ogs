@@ -188,12 +188,12 @@ void GridGameListView::setCursor(FileData* file)
 
 std::string GridGameListView::getQuickSystemSelectRightButton()
 {
-	return "pagedown"; //rightshoulder
+	return BUTTON_PD; // default r2
 }
 
 std::string GridGameListView::getQuickSystemSelectLeftButton()
 {
-	return "pageup"; //leftshoulder
+	return BUTTON_PU; // default l2
 }
 
 bool GridGameListView::input(InputConfig* config, Input input)
@@ -769,11 +769,12 @@ std::vector<HelpPrompt> GridGameListView::getHelpPrompts()
 
 	if (Settings::getInstance()->getBool("QuickSystemSelect"))
 		prompts.push_back(HelpPrompt("lr", _("SYSTEM")));
+
 	prompts.push_back(HelpPrompt("up/down/left/right", _("CHOOSE")));
-	prompts.push_back(HelpPrompt("a", _("LAUNCH")));
+	prompts.push_back(HelpPrompt(BUTTON_OK, _("LAUNCH")));
 
 	if (!Settings::getInstance()->getBool("HideSystemView"))
-		prompts.push_back(HelpPrompt("b", _("BACK")));
+		prompts.push_back(HelpPrompt(BUTTON_BACK, _("BACK")));
 
 	if (!UIModeController::getInstance()->isUIModeKid())
 		prompts.push_back(HelpPrompt("select", _("OPTIONS")));

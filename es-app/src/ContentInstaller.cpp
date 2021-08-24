@@ -113,7 +113,7 @@ void ContentInstaller::threadUpdate()
 
 		if (data.first == ContentType::CONTENT_THEME)
 		{
-			updateStatus = ApiSystem::installTheme(data.second, [this](const std::string info)
+			updateStatus = ApiSystem::getInstance()->installTheme(data.second, [this](const std::string info)
 			{
 				updateNotificationComponentContent(info);
 			});

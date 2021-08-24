@@ -28,13 +28,13 @@ sudo dpkg -i --force-all /var/cache/apt/archives/libwayland-dev_1.18.0-1_arm64.d
 Note this Repository uses a git submodule - to checkout the source and all submodules, use
 
 ```bash
-git clone --recursive https://github.com/southoz/EmulationStation-fcamod-ogs.git
+git clone --recursive https://github.com/JuanMiguelBG/EmulationStation-fcamod-ogs.git
 ```
 
 or 
 
 ```bash
-git clone https://github.com/southoz/EmulationStation-fcamod-ogs.git
+git clone https://github.com/JuanMiguelBG/EmulationStation-fcamod-ogs.git
 cd EmulationStation-fcamod-ogs
 git submodule update --init
 ```
@@ -369,3 +369,8 @@ If you're using RetroPie, you should already have a nice set of themes automatic
 -Alec "Aloshi" Lofquist
 http://www.aloshi.com
 http://www.emulationstation.org
+
+Thanks
+======
+
+Special thanks to both [Batocera](https://github.com/batocera-linux/batocera-emulationstation) and [Emuelec](https://github.com/EmuELEC/emuelec-emulationstation) teams . Sometimes I used their code.

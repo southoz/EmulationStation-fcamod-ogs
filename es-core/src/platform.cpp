@@ -14,6 +14,7 @@
 #include <fcntl.h>
 #include <arpa/inet.h>
 #include <go2/display.h>
+#include <vector>
 
 int runShutdownCommand()
 {
@@ -77,11 +78,44 @@ int quitES(QuitMode mode)
 	return 0;
 }
 
+bool executeSystemScript(const std::string command)
+{
+	LOG(LogInfo) << "Platform::executeSystemScript() - Running -> " << command;
+
+	if (system(command.c_str()) == 0)
+		return true;
+
+	LOG(LogError) << "Platform::executeSystemScript() - Error executing " << command;
+	return false;
+}
+
 void touch(const std::string& filename)
 {
 	int fd = open(filename.c_str(), O_CREAT|O_WRONLY, 0644);
 	if (fd >= 0)
 		close(fd);
+}
+
+std::vector<std::string> executeSystemEnumerationScript(const std::string command)
+{
+	LOG(LogDebug) << "Platform::executeSystemEnumerationScript -> " << command;
+
+	std::vector<std::string> res;
+
+	FILE *pipe = popen(command.c_str(), "r");
+
+	if (pipe == NULL)
+		return res;
+
+	char line[1024];
+	while (fgets(line, 1024, pipe))
+	{
+		strtok(line, "\n");
+		res.push_back(std::string(line));
+	}
+
+	pclose(pipe);
+	return res;
 }
 
 void processQuitMode()
@@ -398,16 +432,13 @@ bool queryNetworkConnected()
 	try
 	{
 		if ( Utils::FileSystem::exists("/usr/bin/nmcli")
-				&& (getShOutput(R"(nmcli -t -f RUNNING general)").find("running") != std::string::npos)
-				&& (getShOutput(R"(nmcli -t -f STATE general)").find("connected") != std::string::npos ) ) // NetworkManager running
-		{
+				&& (Utils::String::replace(getShOutput(R"(nmcli -t -f RUNNING general)"), "\n", "") == "running" )
+				&& (Utils::String::replace(getShOutput(R"(nmcli -t -f STATE general)"), "\n", "") == "connected" ) )
 			return true;
-		}
 	} catch (...) {
-		LOG(LogError) << "Platform::queryNetworkConnected() - Error reading network data!!!";
+		LOG(LogError) << "PLATFORM::queryNetworkConnected() - Error reading network data!!!";
 	}
 	return false;
-
 }
 
 CpuAndSocketInformation queryCpuAndChipsetInformation(bool summary)
@@ -695,6 +726,66 @@ std::string getShOutput(const std::string& mStr)
 
 bool isUsbDriveMounted(std::string device)
 {
-	return ( Utils::FileSystem::exists(device) && Utils::FileSystem::exists("/bin/lsblk")
-		&& !getShOutput("lsblk -no MOUNTPOINT " + device).empty() );
+	return ( Utils::FileSystem::exists(device) && Utils::FileSystem::exists("/bin/findmnt")
+		&& !getShOutput("findmnt -rno SOURCE,TARGET \"" + device + '"').empty() );
+}
+
+std::string queryUsbDriveMountPoint(std::string device)
+{
+	std::string dev = "/dev/" + device;
+	if ( Utils::FileSystem::exists(dev) && Utils::FileSystem::exists("/bin/lsblk") )
+		return getShOutput("lsblk -no MOUNTPOINT " + dev);
+
+	return "";
+}
+
+std::vector<std::string> queryUsbDriveMountPoints()
+{
+	std::vector<std::string> partitions = executeSystemEnumerationScript(R"(cat /proc/partitions | egrep sda. | awk '{print $4}')"),
+													 mount_points;
+	for (auto partition = begin (partitions); partition != end (partitions); ++partition)
+	{
+		std::string mp = queryUsbDriveMountPoint(*partition);
+		if (!mp.empty())
+			mount_points.push_back(mp);
+	}
+
+	return mount_points;
+}
+
+std::string queryTimezones()
+{
+	if (Utils::FileSystem::exists("/usr/local/bin/timezones"))
+		return getShOutput(R"(/usr/local/bin/timezones available)");
+	else if (Utils::FileSystem::exists("/usr/bin/timedatectl"))
+		return getShOutput(R"(/usr/bin/timedatectl list-timezones | sort -u | tr '\n' ',')");
+	else if (Utils::FileSystem::exists("/usr/share/zoneinfo/zone1970.tab"))
+		return getShOutput(R"(cat /usr/share/zoneinfo/zone1970.tab | grep -v "^#" | awk '{ print $3 }' | sort -u | tr '\n' ',')");
+
+	return "Europe/Paris";
+}
+
+std::string queryCurrentTimezone()
+{
+	if (Utils::FileSystem::exists("/usr/local/bin/timezones"))
+		return getShOutput(R"(/usr/local/bin/timezones current)");
+	else if (Utils::FileSystem::exists("/usr/bin/timedatectl"))
+		return getShOutput(R"(/usr/bin/timedatectl | grep -iw \"Time zone\" | awk '{print $3}')");
+	else  if (Utils::FileSystem::exists("/bin/readlink"))
+		return getShOutput(R"(readlink -f /etc/localtime | sed 's;/usr/share/zoneinfo/;;')");
+
+	return "Europe/Paris";
+}
+
+bool setCurrentTimezone(std::string timezone)
+{
+	if (timezone.empty())
+		return false;
+
+	if (Utils::FileSystem::exists("/usr/local/bin/timezones"))
+		return executeSystemScript("/usr/local/bin/timezones set \"" + timezone + '"');
+	else if (Utils::FileSystem::exists("/usr/bin/timedatectl"))
+		return executeSystemScript("/usr/bin/sudo timedatectl set-timezone \"" + timezone + '"');
+
+	return executeSystemScript("sudo ln -sf \"/usr/share/zoneinfo/"+ timezone +"\" /etc/localtime");
 }

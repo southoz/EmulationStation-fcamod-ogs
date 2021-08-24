@@ -676,6 +676,14 @@ msgid "LANGUAGE"
 msgstr "IDIOMA"
 
 #:
+msgid "TIMEZONE"
+msgstr "ZONA HORARIA"
+
+#:
+msgid "SELECT YOUR TIMEZONE"
+msgstr "SELECCIONA TU ZONA HORARIA"
+
+#:
 msgid "NONE"
 msgstr "NINGUNO"
 
@@ -773,12 +781,40 @@ msgid "REALLY UPDATE GAMES LISTS ?"
 msgstr "¿SEGURO QUE QUIERE ACTUALIZAR LAS LISTAS DE JUEGOS?"
 
 #:
+msgid "REALLY UPDATE GAMES LISTS ?"
+msgstr "¿DESEAS ACTUALIZAR LAS LISTAS DE JUEGOS?"
+
+#:
 msgid "UPDATE GAMES LISTS"
 msgstr "ACTUALIZAR LISTAS DE JUEGOS"
 
 #:
 msgid "CONTROLLERS SETTINGS"
 msgstr "CONFIGURACIÓN DE CONTROLES"
+
+#:
+msgid "SWITCH A/B BUTTONS IN EMULATIONSTATION"
+msgstr "INVERTIR BOTONES A/B EN EMULATIONSTATION"
+
+#:
+msgid "SWITCH L1/L2 BUTTONS IN EMULATIONSTATION"
+msgstr "INVERTIR BOTONES L1/L2 EN EMULATIONSTATION"
+
+#:
+msgid "SWITCH R1/R2 BUTTONS IN EMULATIONSTATION"
+msgstr "INVERTIR BOTONES R1/R2 EN EMULATIONSTATION"
+
+#:
+msgid "SWITCH \"PAGE DOWN\" TO R1 IN EMULATIONSTATION"
+msgstr "INVERTIR \"PÁGINA ABAJO\" A R1 EN EMULATIONSTATION"
+
+#:
+msgid "SWITCH \"PAGE UP\" TO L1 IN EMULATIONSTATION"
+msgstr "INVERTIR \"PÁGINA ARRIBA\" A L1 EN EMULATIONSTATION"
+
+#:
+msgid "SWITCH PAGE DOWN TO L1 IN EMULATIONSTATION"
+msgstr "INVERTIR BOTON PAGINA ABAJO A L1 EN EMULATIONSTATION"
 
 #:
 msgid "DISPLAY SETTINGS"
@@ -945,6 +981,10 @@ msgstr "SOLO REPRODUCIR MÚSICA DEL PROPIO SISTEMA"
 #:
 msgid "FILTER GAMES BY TEXT"
 msgstr "FILTRAR JUEGOS POR TEXTO"
+
+#:
+msgid "Games similar to"
+msgstr "Juegos similares a"
 
 #:
 msgid "THIS FUNCTION IS DISABLED WHEN SCRAPING IS RUNNING"
@@ -1167,6 +1207,10 @@ msgstr "ORDENAR JUEGOS POR:"
 #:
 msgid "EDIT THIS GAME'S METADATA"
 msgstr "EDITAR METADATOS DEL JUEGO"
+
+#:
+msgid "UPDATE GAMES LISTS"
+msgstr "ACTUALIZAR LISTAS DE JUEGOS"
 
 #:
 msgid "SCRAPE THESE GAMES"
@@ -1995,6 +2039,30 @@ msgid "SIMPLE ONDEMAND"
 msgstr "SIMPLE BAJO DEMANDA"
 
 #:
+msgid "ONDEMAND"
+msgstr "BAJO DEMANDA"
+
+#:
+msgid "PERFORMANCE"
+msgstr "RENDIMIENTO"
+
+#:
+msgid "POWERSAVE"
+msgstr "AHORRO DE ENERGÍA"
+
+#:
+msgid "USERSPACE"
+msgstr "ESPACIO DE USUARIO"
+
+#:
+msgid "SCHEDUTIL"
+msgstr "PROGRAMADO"
+
+#:
+msgid "CONSERVATIVE"
+msgstr "CONSERVADOR"
+
+#:
 msgid "TEMPERATURE"
 msgstr "TEMPERATURA"
 
@@ -2286,8 +2354,11 @@ msgstr "SISTEMAS VISIBLES"
 
 #:
 msgid "COMPLETE QUIT MENU"
-msgstr "SALIR AL MENÚ"
+msgstr "VER MENÚ AL SALIR"
 
+#:
+msgid "CONFIRM TO QUIT"
+msgstr "CONFIRMAR PARA SALIR"
 
 #:
 msgid "The selected UI mode has nothing to show,\n returning to UI mode: FULL"
@@ -2300,6 +2371,10 @@ msgstr "ERROR: TODOS LOS SISTEMAS ESTÁN OCULTOS, MOSTRANDO TODOS NUEVAMENTE"
 #:
 msgid "Loading theme..."
 msgstr "Cargando tema..."
+
+#:
+msgid "Loading gamelists"
+msgstr "Cargando listas de juegos..."
 
 #:
 msgid "TEXT FOR SIZE CALCULATION"
@@ -2350,10 +2425,6 @@ msgid "%i STAR"
 msgid_plural "%i STARS"
 msgstr[0] "%i ESTRELLA"
 msgstr[1] "%i ESTRELLAS"
-
-#:
-msgid "TIMEZONE"
-msgstr "ZONA HORARIA"
 
 #, c-format
 msgid "Editing the '%s' Collection. Add/remove games with 'Y'."
@@ -2541,3 +2612,7 @@ msgstr "ignorar"
 #:
 msgid "invalid"
 msgstr "invalida"
+
+#:
+msgid "Logo Text"
+msgstr "Texto del Logo"

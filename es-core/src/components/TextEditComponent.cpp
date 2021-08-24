@@ -114,7 +114,7 @@ bool TextEditComponent::input(InputConfig* config, Input input)
 		return false;
 	}
 
-	if ((config->isMappedTo("a", input) || (config->getDeviceId() == DEVICE_KEYBOARD && input.id == SDLK_RETURN)) && mFocused && !mEditing)
+	if ((config->isMappedTo(BUTTON_OK, input) || (config->getDeviceId() == DEVICE_KEYBOARD && input.id == SDLK_RETURN)) && mFocused && !mEditing)
 	{
 		startEditing();
 		return true;
@@ -135,7 +135,7 @@ bool TextEditComponent::input(InputConfig* config, Input input)
 			return true;
 		}
 
-		if ((config->getDeviceId() == DEVICE_KEYBOARD && input.id == SDLK_ESCAPE) || (config->getDeviceId() != DEVICE_KEYBOARD && config->isMappedTo("b", input)))
+		if ((config->getDeviceId() == DEVICE_KEYBOARD && input.id == SDLK_ESCAPE) || (config->getDeviceId() != DEVICE_KEYBOARD && config->isMappedTo(BUTTON_BACK, input)))
 		{
 			stopEditing();
 			return true;
@@ -338,10 +338,10 @@ std::vector<HelpPrompt> TextEditComponent::getHelpPrompts()
 	if (mEditing)
 	{
 		prompts.push_back(HelpPrompt("up/down/left/right", _("MOVE CURSOR"))); // batocera
-		prompts.push_back(HelpPrompt("b", _("STOP EDITING")));
+		prompts.push_back(HelpPrompt(BUTTON_BACK, _("STOP EDITING")));
 	}
 	else {
-		prompts.push_back(HelpPrompt("a", _("EDIT")));
+		prompts.push_back(HelpPrompt(BUTTON_OK, _("EDIT")));
 	}
 	return prompts;
 }

@@ -127,7 +127,7 @@ public:
 		if (mPaths.size() > 0)
 		{
 			int idx = mUniformDistribution(mMt19937);
-			if (idx >= 0 && idx < mPaths.size() && Utils::FileSystem::exists(mPaths[idx]))						
+			if (idx >= 0 && idx < mPaths.size() && Utils::FileSystem::exists(mPaths[idx]))
 				return mPaths[idx];
 
 			// File not found ? Try the next file...
@@ -190,10 +190,10 @@ void SystemView::populate()
 			
 			if ((!path.empty() && ResourceManager::getInstance()->fileExists(path))
 				|| (!defaultPath.empty() && ResourceManager::getInstance()->fileExists(defaultPath)))
-			{								
+			{
 				// Remove dynamic flags for png & jpg files : themes can contain oversized images that can't be unloaded by the TextureResource manager
 				ImageComponent* logo = new ImageComponent(mWindow, false, Utils::String::toLower(Utils::FileSystem::getExtension(path)) != ".svg");
-				logo->setMaxSize(mCarousel.logoSize * mCarousel.logoScale);						
+				logo->setMaxSize(mCarousel.logoSize * mCarousel.logoScale);
 				logo->applyTheme(theme, "system", "logo", ThemeFlags::COLOR | ThemeFlags::ALIGNMENT | ThemeFlags::VISIBLE); //  ThemeFlags::PATH | 
 
 				// Process here to be enable to set max picture size
@@ -334,7 +334,7 @@ bool SystemView::input(InputConfig* config, Input input)
 	{
 		if(config->getDeviceId() == DEVICE_KEYBOARD && input.value && input.id == SDLK_r && SDL_GetModState() & KMOD_LCTRL && Settings::getInstance()->getBool("Debug"))
 		{
-			LOG(LogInfo) << " Reloading all";
+			LOG(LogInfo) << "SystemView::input() - Reloading all";
 			ViewController::get()->reloadAll();
 			return true;
 		}
@@ -353,7 +353,7 @@ bool SystemView::input(InputConfig* config, Input input)
 				listInput(1);
 				return true;
 			}
-			if (config->isMappedTo("pagedown", input))
+			if (config->isMappedTo(BUTTON_PD, input))
 			{
 				int cursor = mCursor + 10;
 				if (cursor < 0)
@@ -367,7 +367,7 @@ bool SystemView::input(InputConfig* config, Input input)
 				//listInput(10);
 				return true;
 			}
-			if (config->isMappedTo("pageup", input))
+			if (config->isMappedTo(BUTTON_PU, input))
 			{
 				int cursor = mCursor - 10;
 				if (cursor < 0)
@@ -395,7 +395,7 @@ bool SystemView::input(InputConfig* config, Input input)
 				listInput(1);
 				return true;
 			}
-			if (config->isMappedTo("pagedown", input) && mEntries.size() > 10)
+			if (config->isMappedTo(BUTTON_PD, input) && mEntries.size() > 10)
 			{
 				int cursor = mCursor + 10;
 				if (cursor < 0)
@@ -409,7 +409,7 @@ bool SystemView::input(InputConfig* config, Input input)
 				//listInput(10);
 				return true;
 			}
-			if (config->isMappedTo("pageup", input) && mEntries.size() > 10)
+			if (config->isMappedTo(BUTTON_PU, input) && mEntries.size() > 10)
 			{
 				int cursor = mCursor - 10;
 				if (cursor < 0)
@@ -426,7 +426,7 @@ bool SystemView::input(InputConfig* config, Input input)
 			break;
 		}
 
-		if(config->isMappedTo("a", input))
+		if(config->isMappedTo(BUTTON_OK, input))
 		{
 			stopScrolling();
 			ViewController::get()->goToGameList(getSelected());
@@ -444,8 +444,8 @@ bool SystemView::input(InputConfig* config, Input input)
 			config->isMappedLike("right", input) ||
 			config->isMappedLike("up", input) ||
 			config->isMappedLike("down", input) ||
-			config->isMappedLike("pagedown", input) ||
-			config->isMappedLike("pageup", input))
+			config->isMappedTo(BUTTON_PD, input) ||
+			config->isMappedTo(BUTTON_PU, input))
 			listInput(0);
 		if(!UIModeController::getInstance()->isUIModeKid() && config->isMappedTo("select", input) && Settings::getInstance()->getBool("ScreenSaverControls"))
 		{
@@ -693,7 +693,7 @@ std::vector<HelpPrompt> SystemView::getHelpPrompts()
 	else
 		prompts.push_back(HelpPrompt("left/right", _("CHOOSE")));
 
-	prompts.push_back(HelpPrompt("a", _("SELECT")));
+	prompts.push_back(HelpPrompt(BUTTON_OK, _("SELECT")));
 	prompts.push_back(HelpPrompt("x", _("RANDOM")));
 
 	if (!UIModeController::getInstance()->isUIModeKid() && Settings::getInstance()->getBool("ScreenSaverControls"))

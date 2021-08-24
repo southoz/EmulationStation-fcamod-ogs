@@ -275,7 +275,7 @@ FileData* FileData::getSourceFileData()
 
 void FileData::launchGame(Window* window)
 {
-	LOG(LogInfo) << "Attempting to launch game...";
+	LOG(LogInfo) << "FileData::launchGame() - Attempting to launch game...";
 
 	AudioManager::getInstance()->deinit();
 	VolumeControl::getInstance()->deinit();
@@ -321,7 +321,7 @@ void FileData::launchGame(Window* window)
 	int exitCode = runSystemCommand(command, getDisplayName(), hideWindow ? NULL : window);
 	if (exitCode != 0)
 	{
-		LOG(LogWarning) << "...launch terminated with nonzero exit code " << exitCode << "!";
+		LOG(LogWarning) << "FileData::launchGame() - ...launch terminated with nonzero exit code " << exitCode << "!";
 	}
 
 	Scripting::fireEvent("game-end");

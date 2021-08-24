@@ -1,7 +1,18 @@
 #include "InputConfig.h"
 
 #include "Log.h"
+#include "Settings.h"
+#include "utils/StringUtil.h"
 #include <pugixml/src/pugixml.hpp>
+
+static char ABUTTON[2] = "a";
+static char BBUTTON[2] = "b";
+static char L1BUTTON[4] = "l1";
+static char L2BUTTON[4] = "l2";
+static char R1BUTTON[4] = "r1";
+static char R2BUTTON[4] = "r2";
+static char PUBUTTON[12] = "pageup";
+static char PDBUTTON[16] = "pagedown";
 
 //some util functions
 std::string inputTypeToString(InputType type)
@@ -91,7 +102,8 @@ bool InputConfig::getInputByName(const std::string& name, Input* result)
 bool InputConfig::isMappedTo(const std::string& name, Input input)
 {
 	Input comp;
-	if(!getInputByName(name, &comp))
+	bool result = getInputByName(name, &comp);
+	if(!result)
 		return false;
 
 	if(comp.configured && comp.type == input.type && comp.id == input.id)
@@ -100,7 +112,6 @@ bool InputConfig::isMappedTo(const std::string& name, Input input)
 		{
 			return (input.value == 0 || input.value & comp.value);
 		}
-
 		if(comp.type == TYPE_AXIS)
 		{
 			return input.value == 0 || comp.value == input.value;
@@ -171,10 +182,21 @@ void InputConfig::loadFromXML(pugi::xml_node& node)
 		std::string name = input.attribute("name").as_string();
 		std::string type = input.attribute("type").as_string();
 		InputType typeEnum = stringToInputType(type);
+		if (typeEnum == TYPE_BUTTON)
+		{
+			if(name == "leftshoulder")
+				name = L1BUTTON ;
+			else if(name == "rightshoulder")
+				name = R1BUTTON;
+			else if(name == "lefttrigger")
+				name = L2BUTTON;
+			else if(name == "righttrigger")
+				name = R2BUTTON;
+		}
 
 		if(typeEnum == TYPE_COUNT)
 		{
-			LOG(LogError) << "InputConfig load error - input of type \"" << type << "\" is invalid! Skipping input \"" << name << "\".\n";
+			LOG(LogError) << "InputConfig::loadFromXML() - load error - input of type \"" << type << "\" is invalid! Skipping input \"" << name << "\".\n";
 			continue;
 		}
 
@@ -182,7 +204,7 @@ void InputConfig::loadFromXML(pugi::xml_node& node)
 		int value = input.attribute("value").as_int();
 
 		if(value == 0)
-			LOG(LogWarning) << "WARNING: InputConfig value is 0 for " << type << " " << id << "!\n";
+			LOG(LogWarning) << "InputConfig::loadFromXML() - value is 0 for " << type << " " << id << "!\n";
 
 		mNameMap[toLower(name)] = Input(mDeviceId, typeEnum, id, value, true);
 	}
@@ -222,4 +244,27 @@ void InputConfig::writeToXML(pugi::xml_node& parent)
 		input.append_attribute("id").set_value(iterator->second.id);
 		input.append_attribute("value").set_value(iterator->second.value);
 	}
+}
+
+char* BUTTON_OK = ABUTTON;
+char* BUTTON_BACK = BBUTTON;
+char* BUTTON_L1 = L1BUTTON;
+char* BUTTON_L2 = L2BUTTON;
+char* BUTTON_R1 = R1BUTTON;
+char* BUTTON_R2 = R2BUTTON;
+char* BUTTON_PU = PUBUTTON;
+char* BUTTON_PD = PDBUTTON;
+
+void InputConfig::AssignActionButtons()
+{
+	bool invertButtonsAB = Settings::getInstance()->getBool("InvertButtonsAB");
+	BUTTON_OK = invertButtonsAB ? BBUTTON : ABUTTON;
+	BUTTON_BACK = invertButtonsAB ? ABUTTON : BBUTTON;
+
+	bool InvertButtonsPU = Settings::getInstance()->getBool("InvertButtonsPU");
+	BUTTON_PU = InvertButtonsPU ? L1BUTTON : PUBUTTON;
+
+	bool InvertButtonsPD = Settings::getInstance()->getBool("InvertButtonsPD");
+	BUTTON_PD = InvertButtonsPD ? R1BUTTON : PDBUTTON;
+
 }

@@ -15,13 +15,66 @@
 
 #include <fstream>
 #include <sstream>
+#include "Log.h"
 
 namespace Utils
 {
 	namespace FileSystem
 	{
-		static std::string homePath;
+
+		static std::string configPath;
+		static std::string userDataPath;
 		static std::string exePath;
+		static std::string homePath;
+
+		void setUserDataPath(const std::string& _path)
+		{
+			LOG(LogInfo) << "Utils::FileSystem::setUserDataPath() - Setting path '" << _path << "'...";
+			if (_path.empty())
+				return;
+
+			userDataPath = Utils::FileSystem::getGenericPath(_path);
+
+			if (isRegularFile(userDataPath)) {
+				userDataPath = getParent(userDataPath);
+			}
+			LOG(LogInfo) << "Utils::FileSystem::setUserDataPath() - final path '" << userDataPath << "'...";
+		} // setUserDataPath
+
+		std::string getUserDataPath()
+		{
+			if (userDataPath.empty())
+				userDataPath = "/userdata";
+
+			return userDataPath;
+		}
+
+		void setEsConfigPath(const std::string& _path)
+		{
+			LOG(LogInfo) << "Utils::FileSystem::setEsConfigPath() - Setting path '" << _path << "'...";
+			if (_path.empty())
+				return;
+
+			configPath = Utils::FileSystem::getGenericPath(_path);
+
+			if (isRegularFile(configPath))
+				configPath = getParent(configPath);
+
+			LOG(LogInfo) << "Utils::FileSystem::setEsConfigPath() - final path '" << configPath << "'...";
+		} // setEsConfigPath
+
+		std::string getEsConfigPath()
+		{
+			if (configPath.empty())
+				configPath = Utils::FileSystem::getCanonicalPath(Utils::FileSystem::getHomePath() + "/.emulationstation");
+
+			return configPath;
+		}
+
+		std::string getSharedConfigPath()
+		{
+			return "/usr/share/emulationstation"; // batocera
+		}
 		
 		struct FileCache
 		{
@@ -297,7 +350,6 @@ namespace Utils
 
 			// return constructed homepath
 			return homePath;
-
 		} // getHomePath
 
 		std::string getCWDPath()
@@ -308,6 +360,7 @@ namespace Utils
 
 		void setExePath(const std::string& _path)
 		{
+			LOG(LogInfo) << "Utils::FileSystem::setExePath() - Setting path '" << _path << "'...";
 			constexpr int path_max = 32767;
 			std::string result(path_max, 0);
 			if (readlink("/proc/self/exe", &result[0], path_max) != -1) {
@@ -318,16 +371,16 @@ namespace Utils
 			if (exePath.empty()) {
 				exePath = getCanonicalPath(_path);
 			}
-			if (isRegularFile(exePath)) {
+			if (isRegularFile(exePath))
 				exePath = getParent(exePath);
-			}
+
+			LOG(LogInfo) << "Utils::FileSystem::setExePath() - final path '" << exePath << "'...";
 		} // setExePath
 
 		std::string getExePath()
 		{
 			// return constructed exepath
 			return exePath;
-
 		} // getExePath
 
 		std::string getPreferredPath(const std::string& _path)
@@ -339,16 +392,19 @@ namespace Utils
 
 		std::string getGenericPath(const std::string& _path)
 		{
+			if (_path.empty())
+				return _path;
+
 			std::string path   = _path;
 			size_t      offset = std::string::npos;
 
 			// remove "\\\\?\\"
-			if((path.find("\\\\?\\")) == 0)
+			if(path[0] == '\\' && (path.find("\\\\?\\")) == 0)
 				path.erase(0, 4);
 
 			// convert '\\' to '/'
-			while((offset = path.find('\\')) != std::string::npos)
-				path.replace(offset, 1 ,"/");
+			while ((offset = path.find('\\')) != std::string::npos)
+				path[offset] = '/';// .replace(offset, 1, "/");
 
 			// remove double '/'
 			while((offset = path.find("//")) != std::string::npos)
@@ -360,7 +416,6 @@ namespace Utils
 
 			// return generic path
 			return path;
-
 		} // getGenericPath
 
 		std::string getEscapedPath(const std::string& _path)
@@ -702,7 +757,7 @@ namespace Utils
 		} // createDirectory
 
 		bool exists(const std::string& _path)
-		{				
+		{
 			if (_path.empty())
 				return false;
 

@@ -224,12 +224,12 @@ std::vector<HelpPrompt> BasicGameListView::getHelpPrompts()
 {
 	std::vector<HelpPrompt> prompts;
 
-	if(Settings::getInstance()->getBool("QuickSystemSelect"))
+	if(mPopupSelfReference == nullptr && Settings::getInstance()->getBool("QuickSystemSelect") && getQuickSystemSelectLeftButton() == "left")
 		prompts.push_back(HelpPrompt("left/right", _("SYSTEM")));
 
 	prompts.push_back(HelpPrompt("up/down", _("CHOOSE")));
-	prompts.push_back(HelpPrompt("a", _("LAUNCH")));
-	prompts.push_back(HelpPrompt("b", _("BACK")));
+	prompts.push_back(HelpPrompt(BUTTON_OK, _("LAUNCH")));
+	prompts.push_back(HelpPrompt(BUTTON_BACK, _("BACK")));
 
 	if(!UIModeController::getInstance()->isUIModeKid())
 		prompts.push_back(HelpPrompt("select", _("OPTIONS")));

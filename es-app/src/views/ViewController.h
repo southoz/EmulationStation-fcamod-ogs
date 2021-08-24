@@ -16,6 +16,14 @@ class Window;
 class ViewController : public GuiComponent
 {
 public:
+	enum ViewMode
+	{
+		NOTHING,
+		START_SCREEN,
+		SYSTEM_SELECT,
+		GAME_LIST
+	};
+
 	static void init(Window* window);
 	static ViewController* get();
 
@@ -29,13 +37,14 @@ public:
 	// the current gamelist view (as it may change to be detailed).
 	void reloadGameListView(IGameListView* gamelist, bool reloadTheme = false);
 	inline void reloadGameListView(SystemData* system, bool reloadTheme = false) { reloadGameListView(getGameListView(system).get(), reloadTheme); }
-	void reloadAll(Window* window = nullptr); // Reload everything with a theme.  Used when the "ThemeSet" setting changes.
+	void reloadAll(Window* window = nullptr, bool reloadTheme = true); // Reload everything with a theme.  Used when the "ThemeSet" setting changes.
 
 	// Navigation.
 	void goToNextGameList();
 	void goToPrevGameList();
 	void goToGameList(SystemData* system, bool forceImmediate = false);
 	void goToSystemView(SystemData* system, bool forceImmediate = false);
+	void goToSystemView(std::string& systemName, bool forceImmediate = false, ViewMode mode = SYSTEM_SELECT);
 	void goToStart(bool forceImmediate = false);
 	void ReloadAndGoToStart();
 
@@ -48,14 +57,6 @@ public:
 	bool input(InputConfig* config, Input input) override;
 	void update(int deltaTime) override;
 	void render(const Transform4x4f& parentTrans) override;
-
-	enum ViewMode
-	{
-		NOTHING,
-		START_SCREEN,
-		SYSTEM_SELECT,
-		GAME_LIST
-	};
 
 	enum GameListViewType
 	{
@@ -83,7 +84,7 @@ public:
 	virtual std::vector<HelpPrompt> getHelpPrompts() override;
 	virtual HelpStyle getHelpStyle() override;
 
-	std::shared_ptr<IGameListView> getGameListView(SystemData* system, bool loadIfnull = true);
+	std::shared_ptr<IGameListView> getGameListView(SystemData* system, bool loadIfnull = true, const std::function<void()>& createAsPopupAndSetExitFunction = nullptr);
 	std::shared_ptr<SystemView> getSystemListView();
 	void removeGameListView(SystemData* system);
 
@@ -92,6 +93,13 @@ public:
 	virtual void onShow() override;
 	virtual void onScreenSaverActivate();
 	virtual void onScreenSaverDeactivate();
+
+	SystemData* getSelectedSystem();
+	ViewMode getViewMode();
+
+	static void reloadAllGames(Window* window, bool deleteCurrentGui = false);
+
+	void setActiveView(std::shared_ptr<GuiComponent> view);
 
 private:
 	ViewController(Window* window);

@@ -17,7 +17,7 @@ Creating a new GuiComponent
 You probably want to override:
 
 	`bool input(InputConfig* config, Input input);`
-		Check if some input is mapped to some action with `config->isMappedTo("a", input);`.
+		Check if some input is mapped to some action with `config->isMappedTo(BUTTON_OK, input);`.
 		Check if an input is "pressed" with `input.value != 0` (input.value *can* be negative in the case of axes).
 
 	`void update(int deltaTime);`
