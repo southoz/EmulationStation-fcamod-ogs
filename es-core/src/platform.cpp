@@ -339,7 +339,7 @@ NetworkInformation queryNetworkInformation(bool summary)
 			{
 				field.clear();
 				field.append( "GENERAL.CONNECTION" ); // wifi network ssid
-				snprintf(result_buffer, 128, nmcli_command.c_str(), field.c_str(), network.iface.c_str(), "");
+				snprintf(result_buffer, 128, "nmcli -f %s device show %s | awk '{for (i=2; i<NF; i++) printf $i \" \"; print $NF}'", field.c_str(), network.iface.c_str());
 				network.ssid = getShOutput( result_buffer );
 			}
 
