@@ -13,7 +13,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <arpa/inet.h>
-#include <go2/display.h>
 #include <vector>
 
 int runShutdownCommand()
@@ -652,53 +651,50 @@ int queryBrightnessLevel()
 {
 	if (Utils::FileSystem::exists("/usr/bin/brightnessctl"))
 		return std::atoi( getShOutput(R"(brightnessctl -m | awk -F\",|%\" '{print $4}')").c_str() );
-	else
-	{
-		int value,
-				fd,
-				max = 255;
-		char buffer[BACKLIGHT_BUFFER_SIZE + 1];
-		ssize_t count;
 
-		fd = open(BACKLIGHT_BRIGHTNESS_MAX_NAME, O_RDONLY);
-		if (fd < 0)
-			return false;
+	int value,
+			fd,
+			max = 255;
+	char buffer[BACKLIGHT_BUFFER_SIZE + 1];
+	ssize_t count;
 
-		memset(buffer, 0, BACKLIGHT_BUFFER_SIZE + 1);
+	fd = open(BACKLIGHT_BRIGHTNESS_MAX_NAME, O_RDONLY);
+	if (fd < 0)
+		return false;
 
-		count = read(fd, buffer, BACKLIGHT_BUFFER_SIZE);
-		if (count > 0)
-			max = atoi(buffer);
+	memset(buffer, 0, BACKLIGHT_BUFFER_SIZE + 1);
 
-		close(fd);
+	count = read(fd, buffer, BACKLIGHT_BUFFER_SIZE);
+	if (count > 0)
+		max = atoi(buffer);
 
-		if (max == 0)
-			return 0;
+	close(fd);
 
-		fd = open(BACKLIGHT_BRIGHTNESS_NAME, O_RDONLY);
-		if (fd < 0)
-			return false;
+	if (max == 0)
+		return 0;
 
-		memset(buffer, 0, BACKLIGHT_BUFFER_SIZE + 1);
+	fd = open(BACKLIGHT_BRIGHTNESS_NAME, O_RDONLY);
+	if (fd < 0)
+		return false;
 
-		count = read(fd, buffer, BACKLIGHT_BUFFER_SIZE);
-		if (count > 0)
-			value = atoi(buffer);
+	memset(buffer, 0, BACKLIGHT_BUFFER_SIZE + 1);
 
-		close(fd);
+	count = read(fd, buffer, BACKLIGHT_BUFFER_SIZE);
+	if (count > 0)
+		value = atoi(buffer);
 
-		return (uint32_t) ((value / (float)max * 100.0f) + 0.5f);
-	}
-	return (int) go2_display_backlight_get(NULL);
+	close(fd);
+
+	return (uint32_t) ((value / (float)max * 100.0f) + 0.5f);
 }
 
 void saveBrightnessLevel(int brightness_level)
 {
 	bool setted = false;
-
 	if (Utils::FileSystem::exists("/usr/bin/brightnessctl"))
 		setted = executeSystemScript("/usr/bin/brightnessctl s " + std::to_string(brightness_level) + '%');
-	else
+
+	if (!setted)
 	{
 		if (brightness_level < 5)
 			brightness_level = 5;
@@ -741,9 +737,6 @@ void saveBrightnessLevel(int brightness_level)
 
 		close(fd);
 	}
-
-	if (!setted)
-		go2_display_backlight_set(NULL, brightness_level);
 }
 
 SoftwareInformation querySoftwareInformation(bool summary)
