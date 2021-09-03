@@ -37,6 +37,7 @@ private:
 	void openSoundSettings();
 	void openUISettings();
 	void openSystemInformation();
+	void openQuitSettings();
 
 	void openUpdateSettings();
 	void openEmulatorSettings();
@@ -44,7 +45,6 @@ private:
 
 	void createInputTextRow(GuiSettings *gui, std::string title, const char *settingsID, bool password);
 	void openDisplaySettings();
-	void openPreloadVlcSettings();
 
 	MenuComponent mMenu;
 	TextComponent mVersion;

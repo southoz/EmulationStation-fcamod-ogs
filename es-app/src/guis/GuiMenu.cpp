@@ -11,6 +11,7 @@
 #include "guis/GuiScraperStart.h"
 #include "guis/GuiSettings.h"
 #include "guis/GuiSystemInformation.h"
+#include "guis/GuiQuitOptions.h"
 #include "views/UIModeController.h"
 #include "views/ViewController.h"
 #include "CollectionSystemManager.h"
@@ -1428,7 +1429,7 @@ void GuiMenu::openUpdateSettings()
 	mWindow->pushGui(s);
 
 }
-	
+
 
 void GuiMenu::openAdvancedSettings()
 {
@@ -1619,14 +1620,6 @@ void GuiMenu::openAdvancedSettings()
 	s->addWithLabel(_("THREADED LOADING"), threadedLoading);
 	s->addSaveFunc([threadedLoading] { Settings::getInstance()->setBool("ThreadedLoading", threadedLoading->getState()); });
 
-	// preload VLCplayer
-	ComponentListRow preload_vlc_row;
-	preload_vlc_row.elements.clear();
-	preload_vlc_row.addElement(std::make_shared<TextComponent>(mWindow, _("PRELOAD VLC SETTINGS"), theme->Text.font, theme->Text.color), true);
-	preload_vlc_row.addElement(makeArrow(mWindow), false);
-	preload_vlc_row.makeAcceptInputHandler(std::bind(&GuiMenu::openPreloadVlcSettings, this));
-//	s->addRow(preload_vlc_row);
-
 	// show detailed system information
 	auto detailedSystemInfo = std::make_shared<SwitchComponent>(mWindow);
 	detailedSystemInfo->setState(Settings::getInstance()->getBool("ShowDetailedSystemInfo"));
@@ -1674,22 +1667,8 @@ void GuiMenu::openAdvancedSettings()
 		//s->setVariable("reloadAll", true);
 	});
 
-	// full exit
-	auto fullExitMenu = std::make_shared<SwitchComponent>(mWindow);
-	fullExitMenu->setState(!Settings::getInstance()->getBool("ShowOnlyExit"));
-	s->addWithLabel(_("COMPLETE QUIT MENU"), fullExitMenu);
-	s->addSaveFunc([fullExitMenu] { Settings::getInstance()->setBool("ShowOnlyExit", !fullExitMenu->getState()); });
 
-	// confirm to exit
-	auto confirmToExit = std::make_shared<SwitchComponent>(mWindow);
-	confirmToExit->setState(Settings::getInstance()->getBool("ConfirmToExit"));
-	s->addWithLabel(_("CONFIRM TO QUIT"), confirmToExit);
-	s->addSaveFunc([confirmToExit]
-		{
-			bool old_value = Settings::getInstance()->getBool("ConfirmToExit");
-			if ( old_value != confirmToExit->getState() )
-				Settings::getInstance()->setBool("ConfirmToExit", confirmToExit->getState());
-		});
+	s->addEntry(_("\"QUIT\" SETTINGS"), true, [this] { openQuitSettings(); });
 
 
 	// log level
@@ -1748,6 +1727,11 @@ void GuiMenu::openAdvancedSettings()
 
 	mWindow->pushGui(s);
 
+}
+
+void GuiMenu::openQuitSettings()
+{
+	mWindow->pushGui(new GuiQuitOptions(mWindow));
 }
 
 void GuiMenu::openSystemInformation()
@@ -1943,95 +1927,6 @@ void GuiMenu::openCollectionSystemSettings()
 	}
 
 	mWindow->pushGui(new GuiCollectionSystemsOptions(mWindow));
-}
-
-void GuiMenu::openPreloadVlcSettings()
-{
-	auto pthis = this;
-	Window* window = mWindow;
-
-	auto theme = ThemeData::getMenuTheme();
-
-	auto s = new GuiSettings(mWindow, _("PRELOAD VLC SETTINGS"));
-
-	// preload VLC player
-	auto preloadVlcPlayer = std::make_shared<SwitchComponent>(mWindow);
-	preloadVlcPlayer->setState(Settings::getInstance()->getBool("PreloadVlcPlayer"));
-	s->addWithLabel(_("ENABLED"), preloadVlcPlayer);
-	s->addSaveFunc([preloadVlcPlayer] { Settings::getInstance()->setBool("PreloadVlcPlayer", preloadVlcPlayer->getState()); });
-
-	// preload VLC video timeout
-	auto preloadVlcVideoTimeout = std::make_shared<SliderComponent>(mWindow, 5.f, 300.f, 1.f, "s");
-	preloadVlcVideoTimeout->setValue((float)(Settings::getInstance()->getInt("PreloadVlcVideoTimeout") / (1000)));
-	s->addWithLabel(_("CAN STOP VIDEO AFTER (SECS)"), preloadVlcVideoTimeout);
-	s->addSaveFunc([preloadVlcVideoTimeout] {
-		Settings::getInstance()->setInt("PreloadVlcVideoTimeout", (int)Math::round(preloadVlcVideoTimeout->getValue()) * (1000));
-	});
-
-	ComponentListRow rowImage;
-
-	auto lbl = std::make_shared<TextComponent>(mWindow, _("IMAGE"), theme->Text.font, theme->Text.color);
-	rowImage.addElement(lbl, true); // label
-
-	std::shared_ptr<GuiComponent> ed = std::make_shared<TextComponent>(window, "", theme->Text.font, theme->Text.color, ALIGN_RIGHT);
-	rowImage.addElement(ed, true); // image path
-
-	auto spacer = std::make_shared<GuiComponent>(mWindow);
-	spacer->setSize(Renderer::getScreenWidth() * 0.005f, 0);
-	rowImage.addElement(spacer, false); // image spacer
-
-	auto bracket = std::make_shared<ImageComponent>(mWindow);
-	bracket->setImage(ThemeData::getMenuTheme()->Icons.arrow);// ":/arrow.svg");
-	bracket->setResize(Vector2f(0, lbl->getFont()->getLetterHeight()));
-	rowImage.addElement(bracket, false); // image bracket
-
-	ed->setValue(Settings::getInstance()->getString("PreloadVlcImage"));
-
-	auto updateValImage = [ed](const std::string& newVal) {
-		ed->setValue(newVal);
-		Settings::getInstance()->setString("PreloadVlcImage", newVal);
-	}; // ok callback (apply new value to ed)
-	rowImage.makeAcceptInputHandler([this, ed, updateValImage]
-	{
-		mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, _("enter path to image"), ed->getValue(), updateValImage, false));
-	});
-
-	assert(ed);
-	s->addRow(rowImage);
-
-	ComponentListRow rowVideo;
-
-	lbl = std::make_shared<TextComponent>(mWindow, _("VIDEO"), theme->Text.font, theme->Text.color);
-	rowVideo.addElement(lbl, true); // label
-
-	ed = std::make_shared<TextComponent>(window, "", theme->Text.font, theme->Text.color, ALIGN_RIGHT);
-	rowVideo.addElement(ed, true); // image path
-
-	spacer = std::make_shared<GuiComponent>(mWindow);
-	spacer->setSize(Renderer::getScreenWidth() * 0.005f, 0);
-	rowVideo.addElement(spacer, false); // image spacer
-
-	bracket = std::make_shared<ImageComponent>(mWindow);
-	bracket->setImage(ThemeData::getMenuTheme()->Icons.arrow);// ":/arrow.svg");
-	bracket->setResize(Vector2f(0, lbl->getFont()->getLetterHeight()));
-	rowVideo.addElement(bracket, false); // image bracket
-
-	ed->setValue(Settings::getInstance()->getString("PreloadVlcVideo"));
-
-	auto updateValVideo = [ed](const std::string& newVal) {
-		ed->setValue(newVal);
-		Settings::getInstance()->setString("PreloadVlcVideo", newVal);
-	}; // ok callback (apply new value to ed)
-	rowVideo.makeAcceptInputHandler([this, ed, updateValVideo]
-	{
-		mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, _("enter path to video"), ed->getValue(), updateValVideo, false));
-	});
-
-	assert(ed);
-	s->addRow(rowVideo);
-
-//	s->updatePosition();
-	mWindow->pushGui(s);
 }
 
 void GuiMenu::onSizeChanged()

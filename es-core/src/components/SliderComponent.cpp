@@ -4,25 +4,29 @@
 #define MOVE_REPEAT_DELAY 500
 #define MOVE_REPEAT_RATE 40
 
-SliderComponent::SliderComponent(Window* window, float min, float max, float increment, const std::string& suffix) : GuiComponent(window),
-	mMin(min), mMax(max), mSingleIncrement(increment), mMoveRate(0), mKnob(window), mSuffix(suffix)
+SliderComponent::SliderComponent(Window* window, float min, float max, float increment, const std::string& suffix, bool specialCalculation) : GuiComponent(window),
+	mMin(min), mMax(max), mSingleIncrement(increment), mMoveRate(0), mKnob(window), mSuffix(suffix), mSpecialCalculation(specialCalculation)
 {
 	assert((min - max) != 0);
-
-	// some sane default value
-	mValue = (max + min) / 2;
 
 	auto menuTheme = ThemeData::getMenuTheme();
 	mColor = menuTheme->Text.color;
 
+	// some sane default value
+	mValue = (max + min) / 2;
+
 	mKnob.setOrigin(0.5f, 0.5f);
-	mKnob.setImage(ThemeData::getMenuTheme()->Icons.knob); // ":/slider_knob.svg");
+	mKnob.setImage(ThemeData::getMenuTheme()->Icons.knob);
 	mKnob.setColorShift(mColor);
 
-	setSize(Renderer::getScreenWidth() * 0.15f, menuTheme->Text.font->getLetterHeight());
+	if (Renderer::isSmallScreen())
+		setSize(Renderer::getScreenWidth() * 0.25f, menuTheme->Text.font->getLetterHeight());
+	else
+		setSize(Renderer::getScreenWidth() * 0.15f, menuTheme->Text.font->getLetterHeight());
 }
 
-void SliderComponent::setColor(unsigned int color) {
+void SliderComponent::setColor(unsigned int color)
+{
 	mColor = color;
 	mKnob.setColorShift(mColor);
 	onValueChanged();
@@ -63,13 +67,17 @@ void SliderComponent::update(int deltaTime)
 			mMoveAccumulator -= MOVE_REPEAT_RATE;
 		}
 	}
-	
+
 	GuiComponent::update(deltaTime);
 }
 
 void SliderComponent::render(const Transform4x4f& parentTrans)
 {
 	Transform4x4f trans = parentTrans * getTransform();
+
+	if (!Renderer::isVisibleOnScreen(trans.translation().x(), trans.translation().y(), mSize.x(), mSize.y()))
+		return;
+
 	Renderer::setMatrix(trans);
 
 	// render suffix
@@ -84,7 +92,7 @@ void SliderComponent::render(const Transform4x4f& parentTrans)
 
 	//render knob
 	mKnob.render(trans);
-	
+
 	GuiComponent::renderChildren(trans);
 }
 
@@ -114,14 +122,14 @@ void SliderComponent::onSizeChanged()
 {
 	if(!mSuffix.empty())
 		mFont = Font::get((int)(mSize.y()), FONT_PATH_LIGHT);
-	
+
 	onValueChanged();
 }
 
 void SliderComponent::onValueChanged()
 {
 	// update suffix textcache
-	if (mFont)
+	if(mFont)
 	{
 		std::stringstream ss;
 		ss << std::fixed;
@@ -146,8 +154,11 @@ void SliderComponent::onValueChanged()
 	// update knob position/size
 	mKnob.setResize(0, mSize.y() * 0.7f);
 	float lineLength = mSize.x() - mKnob.getSize().x() - (mValueCache ? mValueCache->metrics.size.x() + 4 : 0);
-	mKnob.setPosition(((mValue + mMin) / mMax) * lineLength + mKnob.getSize().x()/2, mSize.y() / 2);
 
+	if (!mSpecialCalculation)
+		mKnob.setPosition(((mValue + mMin) / mMax) * lineLength /*+ mKnob.getSize().x()/2*/, mSize.y() / 2);
+	else
+		mKnob.setPosition(mValue * (mMin / mMax) * lineLength, mSize.y() / 2);
 }
 
 std::vector<HelpPrompt> SliderComponent::getHelpPrompts()

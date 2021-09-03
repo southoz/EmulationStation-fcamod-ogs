@@ -150,6 +150,9 @@ bool ApiSystem::isScriptingSupported(ScriptId script)
 		case TIMEZONE:
 				executables.push_back("timezones");
 				break;
+		case POWER_KEY:
+				executables.push_back("es-powerkey");
+				break;
 
 /*
 	case ApiSystem::RETROACHIVEMENTS:
@@ -203,14 +206,14 @@ bool ApiSystem::isScriptingSupported(ScriptId script)
 */
 	}
 
-	if (executables.size() == 0)
-		return true;
+//	if (executables.size() == 0)
+//		return true;
 
 	for (auto executable : executables)
-		if (!Utils::FileSystem::exists("/usr/bin/" + executable) && !Utils::FileSystem::exists("/usr/local/bin/" + executable))
-			return false;
+		if (Utils::FileSystem::exists("/usr/bin/" + executable) || Utils::FileSystem::exists("/usr/local/bin/" + executable))
+			return true;
 
-	return true;
+	return false;
 }
 
 void ApiSystem::startUpdate(Window* c)
@@ -641,4 +644,32 @@ bool ApiSystem::setTimezone(std::string timezone)
 	LOG(LogInfo) << "ApiSystem::setTimezone() - TZ: " << timezone;
 
 	return setCurrentTimezone(timezone);
+}
+
+bool ApiSystem::setPowerkeyState(bool state)
+{
+	LOG(LogInfo) << "ApiSystem::setPowerkeyState() - state: " << Utils::String::boolToString(state);
+
+	return setCurrentPowerkeyState(state);
+}
+
+bool ApiSystem::getPowerkeyState()
+{
+	LOG(LogInfo) << "ApiSystem::getPowerkeyState()";
+
+	return queryCurrentPowerkeyState();
+}
+
+bool ApiSystem::setPowerkeyIntervalTime(int interval_time)
+{
+	LOG(LogInfo) << "ApiSystem::setPowerkeyIntervalTime() - interval_time: " << std::to_string(interval_time);
+
+	return setCurrentPowerkeyIntervalTime(interval_time);
+}
+
+int ApiSystem::getPowerkeyIntervalTime()
+{
+	LOG(LogInfo) << "ApiSystem::getPowerkeyIntervalTime()";
+
+	return queryCurrentPowerkeyIntervalTime();
 }

@@ -650,7 +650,7 @@ int queryMaxBrightness()
 int queryBrightnessLevel()
 {
 	if (Utils::FileSystem::exists("/usr/bin/brightnessctl"))
-		return std::atoi( getShOutput(R"(brightnessctl -m | awk -F\",|%\" '{print $4}')").c_str() );
+		return std::atoi( getShOutput(R"(brightnessctl -m | awk -F',|%' '{print $4}')").c_str() );
 
 	int value,
 			fd,
@@ -882,5 +882,28 @@ bool setCurrentTimezone(std::string timezone)
 	else if (Utils::FileSystem::exists("/usr/bin/timedatectl"))
 		return executeSystemScript("/usr/bin/sudo timedatectl set-timezone \"" + timezone + '"');
 
-	return executeSystemScript("sudo ln -sf \"/usr/share/zoneinfo/"+ timezone +"\" /etc/localtime");
+	return executeSystemScript("sudo ln -sf \"/usr/share/zoneinfo/" + timezone +"\" /etc/localtime");
+}
+
+bool setCurrentPowerkeyState(bool state)
+{
+	return executeSystemScript("es-powerkey set two_push_shutdown " + (state ? std::string("enabled") : std::string("disabled")));
+}
+
+bool queryCurrentPowerkeyState()
+{
+	if ( Utils::String::replace(getShOutput(R"(es-powerkey get two_push_shutdown)"), "\n", "") == "enabled" )
+		return true;
+
+	return false;
+}
+
+bool setCurrentPowerkeyIntervalTime(int interval_time)
+{
+	return executeSystemScript("es-powerkey set max_interval_time " + std::to_string(interval_time));
+}
+
+int queryCurrentPowerkeyIntervalTime()
+{
+	return std::atoi( Utils::String::replace(getShOutput(R"(es-powerkey get max_interval_time)"), "\n", "").c_str() );
 }

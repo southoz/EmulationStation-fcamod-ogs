@@ -253,6 +253,11 @@ std::string queryTimezones();
 std::string queryCurrentTimezone();
 bool setCurrentTimezone(std::string timezone);
 
+bool setCurrentPowerkeyState(bool state);
+bool queryCurrentPowerkeyState();
+bool setCurrentPowerkeyIntervalTime(int interval_time);
+int queryCurrentPowerkeyIntervalTime();
+
 
 std::string getShOutput(const std::string& mStr);
 

@@ -39,7 +39,8 @@ protected:
 public:
 	enum ScriptId : unsigned int
 	{
-		TIMEZONE = 0
+		TIMEZONE = 0,
+		POWER_KEY = 1
 /*
 		WIFI = 0,
 		RETROACHIVEMENTS = 1,
@@ -120,6 +121,11 @@ public:
 	std::string getTimezones();
 	std::string getCurrentTimezone();
 	bool setTimezone(std::string timezone);
+
+	bool setPowerkeyState(bool state);
+	bool getPowerkeyState();
+	bool setPowerkeyIntervalTime(int interval_time);
+	int getPowerkeyIntervalTime();
 
 	static UpdateState::State state;
 
