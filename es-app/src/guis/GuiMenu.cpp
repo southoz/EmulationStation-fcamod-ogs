@@ -1778,7 +1778,15 @@ void GuiMenu::openQuitMenu()
 				LOG(LogWarning) << "GuiMenu::openQuitMenu() - Restart terminated with non-zero result!";
 		};
 
-	static std::function<void()> shutdowntDeviceFunction = []
+	static std::function<void()> suspendDeviceFunction = []
+		{
+			Scripting::fireEvent("quit", "suspend");
+			Scripting::fireEvent("suspend");
+			if (quitES(QuitMode::SUSPEND) != 0)
+				LOG(LogWarning) << "GuiMenu::openQuitMenu() - Suspend terminated with non-zero result!";
+		};
+
+	static std::function<void()> shutdownDeviceFunction = []
 		{
 			Scripting::fireEvent("quit", "shutdown");
 			Scripting::fireEvent("shutdown");
@@ -1786,13 +1794,28 @@ void GuiMenu::openQuitMenu()
 				LOG(LogWarning) << "GuiMenu::openQuitMenu() - Shutdown terminated with non-zero result!";
 		};
 
-// TODO añadir opcion de configuracion para confirmacion al salir
 	if (Settings::getInstance()->getBool("ShowOnlyExit"))
 	{
+		std::string exit_action = Settings::getInstance()->getString("OnlyExitAction");
+		std::string exit_label = "REALLY SHUTDOWN?";
+		std::function<void()> exitFunction = shutdownDeviceFunction;
+
+		if (Utils::String::equalsIgnoreCase(exit_action, "suspend"))
+		{
+			exitFunction = suspendDeviceFunction;
+			exit_label = "REALLY SUSPEND?";
+		}
+		else if (Utils::String::equalsIgnoreCase(exit_action, "exit_es"))
+		{
+			exitFunction = suspendDeviceFunction;
+			exit_label = "REALLY QUIT?";
+		}
+		
+
 		if (Settings::getInstance()->getBool("ConfirmToExit"))
-			window->pushGui(new GuiMsgBox(window, _("REALLY SHUTDOWN?"), _("YES"), shutdowntDeviceFunction, _("NO"), nullptr));
+			window->pushGui(new GuiMsgBox(window, _(exit_label), _("YES"), exitFunction, _("NO"), nullptr));
 		 else
-			shutdowntDeviceFunction();
+			exitFunction();
 
 		return;
 	}
@@ -1842,9 +1865,20 @@ void GuiMenu::openQuitMenu()
 	row.makeAcceptInputHandler([window]
 		{
 			if (Settings::getInstance()->getBool("ConfirmToExit"))
-				window->pushGui(new GuiMsgBox(window, _("REALLY SHUTDOWN?"), _("YES"), shutdowntDeviceFunction, _("NO"), nullptr));
+				window->pushGui(new GuiMsgBox(window, _("REALLY SUSPEND?"), _("YES"), suspendDeviceFunction, _("NO"), nullptr));
 			else
-				shutdowntDeviceFunction();
+				suspendDeviceFunction();
+		});
+	row.addElement(std::make_shared<TextComponent>(window, _("SUSPEND SYSTEM"), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color), true);
+	s->addRow(row);
+
+	row.elements.clear();
+	row.makeAcceptInputHandler([window]
+		{
+			if (Settings::getInstance()->getBool("ConfirmToExit"))
+				window->pushGui(new GuiMsgBox(window, _("REALLY SHUTDOWN?"), _("YES"), shutdownDeviceFunction, _("NO"), nullptr));
+			else
+				shutdownDeviceFunction();
 		});
 	row.addElement(std::make_shared<TextComponent>(window, _("SHUTDOWN SYSTEM"), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color), true);
 	s->addRow(row);

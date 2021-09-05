@@ -1136,7 +1136,23 @@ msgstr "¿SEGURO DE REINICIAR?"
 
 #:
 msgid "RESTART SYSTEM"
-msgstr "REINICIAR SISTEMA"
+msgstr "REINICIAR EL SISTEMA"
+
+#:
+msgid "SUSPEND"
+msgstr "SUSPENDER"
+
+#:
+msgid "REALLY SUSPEND?"
+msgstr "¿SEGURO DE SUSPENDER?"
+
+#:
+msgid "SUSPEND SYSTEM"
+msgstr "SUSPENDER EL SISTEMA"
+
+#:
+msgid "SHUTDOWN"
+msgstr "APAGAR"
 
 #:
 msgid "REALLY SHUTDOWN?"
@@ -1147,8 +1163,12 @@ msgid "SHUTDOWN SYSTEM"
 msgstr "APAGAR EL SISTEMA"
 
 #:
-msgid "PUSH POWERKEY TWO TIMES TO SHUTDOWN"
-msgstr "PULSAR DOS VECES POWERKEY PARA APAGAR"
+msgid "POWERKEY BUTTON"
+msgstr "BOTÓN DE ENCENDIDO"
+
+#:
+msgid "PUSH TWO TIMES TO SHUTDOWN"
+msgstr "PULSAR DOS VECES PARA APAGAR"
 
 #:
 msgid "TIME INTERVAL"
@@ -2369,12 +2389,16 @@ msgid "VISIBLE SYSTEMS"
 msgstr "SISTEMAS VISIBLES"
 
 #:
-msgid "COMPLETE QUIT MENU"
-msgstr "VER MENÚ AL SALIR"
+msgid "VIEW MENU"
+msgstr "VER MENÚ"
 
 #:
-msgid "CONFIRM TO QUIT"
-msgstr "CONFIRMAR PARA SALIR"
+msgid "CONFIRM ACTION"
+msgstr "CONFIRMAR ACCIÓN"
+
+#:
+msgid "ACTION TO EXECUTE TO \"QUIT\" (NO MENU)"
+msgstr "\"SALIR\" (SIN MENÚ) ACCIÓN A EJECUTAR"
 
 #:
 msgid "The selected UI mode has nothing to show,\n returning to UI mode: FULL"

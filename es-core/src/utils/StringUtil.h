@@ -36,6 +36,7 @@ namespace Utils
 		int			compareIgnoreCase(const std::string& name1, const std::string& name2);
 		std::string proper(const std::string& _string);
 		std::string removeHtmlTags(const std::string& html);
+		bool		equalsIgnoreCase(const std::string & _string, const std::string & _what);
 		bool		containsIgnoreCase(const std::string & _string, const std::string & _what);
 		bool		startsWithIgnoreCase(const std::string& name1, const std::string& name2);
 

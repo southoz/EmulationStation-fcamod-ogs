@@ -709,6 +709,11 @@ namespace Utils
 			}
 		}
 
+		bool equalsIgnoreCase(const std::string & _string, const std::string & _what)
+		{
+			return compareIgnoreCase(_string, _what) == 0;
+		}
+
 		bool containsIgnoreCase(const std::string & _string, const std::string & _what)
 		{
 			auto it = std::search(

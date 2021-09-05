@@ -17,12 +17,23 @@
 
 int runShutdownCommand()
 {
+	LOG(LogInfo) << "Paltform::runShutdownCommand()";
+	Log::flush();
 	return system("sudo shutdown -h now");
 }
 
 int runRestartCommand()
 {
+	LOG(LogInfo) << "Paltform::runRestartCommand()";
+	Log::flush();
 	return system("sudo shutdown -r now");
+}
+
+int runSuspendCommand()
+{
+	LOG(LogInfo) << "Paltform::runSuspendCommand()";
+	Log::flush();
+	return system("sudo systemctl suspend");
 }
 
 void splitCommand(std::string cmd, std::string* executable, std::string* parameters)
@@ -134,6 +145,10 @@ void processQuitMode()
 		LOG(LogInfo) << "Platform::processQuitMode() - Shutting system down";
 		touch("/tmp/es-shutdown");
 		runShutdownCommand();
+		break;
+	case QuitMode::SUSPEND:
+		LOG(LogInfo) << "Platform::processQuitMode() - Suspend system";
+		runSuspendCommand();
 		break;
 	}
 }

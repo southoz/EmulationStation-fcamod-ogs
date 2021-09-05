@@ -15,6 +15,8 @@ public:
 private:
 	void initializeMenu(Window* window);
 
+
+	bool mPopupDisplayed;
 };
 
 #endif // ES_APP_GUIS_GUI_QUIT_OPTIONS_H
