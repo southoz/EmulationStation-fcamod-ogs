@@ -271,7 +271,9 @@ namespace Utils
 							else if (h > 12)
 								h -= 12;
 
-							*s++ = (char)(h / 10) + '0';
+							if (h >= 10)
+								*s++ = (char)(h / 10) + '0';
+
 							*s++ = (char)(h % 10) + '0';
 						}
 						break;
