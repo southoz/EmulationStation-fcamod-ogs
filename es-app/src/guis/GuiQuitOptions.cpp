@@ -52,7 +52,7 @@ void GuiQuitOptions::initializeMenu(Window* window)
 
 	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::ScriptId::POWER_KEY))
 	{
-		addGroup("POWERKEY BUTTON");
+		addGroup(_("POWERKEY BUTTON"));
 
 		// push powerkey double to shutdown
 		auto powerkey = std::make_shared<SwitchComponent>(mWindow);
