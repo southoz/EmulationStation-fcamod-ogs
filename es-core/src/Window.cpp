@@ -842,13 +842,8 @@ void Window::onThemeChanged(const std::shared_ptr<ThemeData>& theme)
 				mClock->setFont(Font::getFromTheme(elem, ThemeFlags::ALL, Font::get(FONT_SIZE_MEDIUM)));
 		}
 
-		float clockPosition = Renderer::getScreenWidth() * 0.90f;
-		float clockSize = mClock->getFont()->getLetterWidth() * 7.f;
-		if (Settings::getInstance()->getBool("FullScreenMode"))
-		{
-			clockPosition = Renderer::getScreenWidth() * 0.89f;
-			clockSize = mClock->getFont()->getLetterWidth() * 7.f;
-		}
+		float clockSize = mClock->getFont()->getLetterWidth() * 10.f;
+		float clockPosition = Renderer::getScreenWidth() - clockSize;
 		mClock->setPosition(clockPosition, Renderer::getScreenHeight() * 0.9965 - mClock->getFont()->getHeight());
 		mClock->setSize(clockSize, 0);
 
