@@ -2437,7 +2437,7 @@ msgid "Loading theme..."
 msgstr "Cargando tema..."
 
 #:
-msgid "Loading gamelists"
+msgid "Loading gamelists..."
 msgstr "Cargando listas de juegos..."
 
 #:

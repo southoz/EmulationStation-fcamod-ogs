@@ -727,7 +727,7 @@ void ViewController::reloadAll(Window* window, bool reloadTheme)
 			{
 				int px = processedSystem;
 				if (px >= 0 && px < systemCount)
-					window->renderLoadingScreen(_("Loading theme"), (float)px / (float)systemCount);
+					window->renderLoadingScreen(_("Loading theme..."), (float)px / (float)systemCount);
 			}, 5);
 		}
 		else
@@ -741,7 +741,7 @@ void ViewController::reloadAll(Window* window, bool reloadTheme)
 		int lastTime = SDL_GetTicks() - 50;
 
 		if (window)
-			window->renderLoadingScreen(_("Loading gamelists"), 0.0f);
+			window->renderLoadingScreen(_("Loading gamelists..."), 0.0f);
 
 		float idx = 0;
 		// load themes, create gamelistviews and reset filters
@@ -764,7 +764,7 @@ void ViewController::reloadAll(Window* window, bool reloadTheme)
 			if (window && time - lastTime >= 20)
 			{
 				lastTime = time;
-				window->renderLoadingScreen(_("Loading gamelists"), (float)idx / (float)gameListCount);
+				window->renderLoadingScreen(_("Loading gamelists..."), (float)idx / (float)gameListCount);
 			}
 		}
 	}

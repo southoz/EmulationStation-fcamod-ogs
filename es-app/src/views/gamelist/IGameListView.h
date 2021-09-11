@@ -47,6 +47,8 @@ public:
 	virtual std::vector<std::string> getEntriesLetters() = 0;
 
 protected:
+	virtual std::string getMetadata(FileData* file, std::string name);
+
 	std::string mCustomThemeName;
 
 	FolderData* mRoot;

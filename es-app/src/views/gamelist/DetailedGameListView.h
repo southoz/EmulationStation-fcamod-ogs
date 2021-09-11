@@ -38,7 +38,6 @@ private:
 
 	void initMDLabels();
 	void initMDValues();
-	std::string getMetadata(FileData* file, std::string name);
 
 	ImageComponent *mImage,
 									*mThumbnail,

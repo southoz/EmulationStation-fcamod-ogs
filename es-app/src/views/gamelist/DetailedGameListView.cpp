@@ -53,7 +53,7 @@ DetailedGameListView::DetailedGameListView(Window* window, FolderData* root) :
 	mLblPlayCount.setText(_("Times played"));
 	addChild(&mLblPlayCount);
 	addChild(&mPlayCount);
-	mLblGameTime.setText(_("Game time"));
+	mLblGameTime.setText(_("Game time") + ": ");
 	addChild(&mLblGameTime);
 	addChild(&mGameTime);
 	
@@ -320,14 +320,6 @@ void DetailedGameListView::initMDValues()
 	mDescContainer.setSize(mDescContainer.getSize().x(), mSize.y() - mDescContainer.getPosition().y());
 }
 
-std::string DetailedGameListView::getMetadata(FileData* file, std::string name)
-{
-	std::string ret = file->getMetadata().get(name);
-	if (ret == "unknown")
-		return _(ret);
-
-	return ret;
-}
 
 #include "platform.h"
 

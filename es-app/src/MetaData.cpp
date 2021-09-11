@@ -9,7 +9,7 @@
 #include "ImageIO.h"
 
 MetaDataDecl gameDecls[] = {
-	//    key,           type,                   default,            statistic,  name in GuiMetaDataEd,  prompt in GuiMetaDataEd
+	//    key,           type,                   defaultValue,      statistic,  name in GuiMetaDataEd,  prompt in GuiMetaDataEd
 	{ 0,  "name",        MD_STRING,              "",                 false,      "name",                 "enter game name"},
 //	{ 1,  "sortname",    MD_STRING,              "",                 false,      "sortname",             "enter game sort name"},
 	{ 2,  "desc",        MD_MULTILINE_STRING,    "",                 false,      "description",          "enter description"},

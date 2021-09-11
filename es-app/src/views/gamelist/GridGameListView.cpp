@@ -34,32 +34,32 @@ GridGameListView::GridGameListView(Window* window, FolderData* root, const std::
 	addChild(&mGrid);
 
 	// metadata labels + values
-	mLblRating.setText("Rating: ");
+	mLblRating.setText(_("Rating") + ": ");
 	addChild(&mLblRating);
 	addChild(&mRating);
-	mLblReleaseDate.setText("Released: ");
+	mLblReleaseDate.setText(_("Released") + ": ");
 	addChild(&mLblReleaseDate);
 	addChild(&mReleaseDate);
-	mLblDeveloper.setText("Developer: ");
+	mLblDeveloper.setText(_("Developer") + ": ");
 	addChild(&mLblDeveloper);
 	addChild(&mDeveloper);
-	mLblPublisher.setText("Publisher: ");
+	mLblPublisher.setText(_("Publisher") + ": ");
 	addChild(&mLblPublisher);
 	addChild(&mPublisher);
-	mLblGenre.setText("Genre: ");
+	mLblGenre.setText(_("Genre") + ": ");
 	addChild(&mLblGenre);
 	addChild(&mGenre);
-	mLblPlayers.setText("Players: ");
+	mLblPlayers.setText(_("Players") + ": ");
 	addChild(&mLblPlayers);
 	addChild(&mPlayers);
-	mLblLastPlayed.setText("Last played: ");
+	mLblLastPlayed.setText(_("Last played") + ": ");
 	addChild(&mLblLastPlayed);
 	mLastPlayed.setDisplayRelative(true);
 	addChild(&mLastPlayed);
-	mLblPlayCount.setText("Times played: ");
+	mLblPlayCount.setText(_("Times played") + ": ");
 	addChild(&mLblPlayCount);
 	addChild(&mPlayCount);
-	mLblGameTime.setText(_("Game time"));
+	mLblGameTime.setText(_("Game time") + ": ");
 	addChild(&mLblGameTime);
 	addChild(&mGameTime);
 
@@ -605,19 +605,19 @@ void GridGameListView::updateInfoPanel()
 		mDescription.setText(file->getMetadata().get("desc"));
 		mDescContainer.reset();
 
-		mRating.setValue(file->getMetadata().get("rating"));
-		mReleaseDate.setValue(file->getMetadata().get("releasedate"));
-		mDeveloper.setValue(file->getMetadata().get("developer"));
-		mPublisher.setValue(file->getMetadata().get("publisher"));
-		mGenre.setValue(file->getMetadata().get("genre"));
-		mPlayers.setValue(file->getMetadata().get("players"));
-		mName.setValue(file->getMetadata().get("name"));
+		mRating.setValue(getMetadata(file, "rating"));
+		mReleaseDate.setValue(getMetadata(file, "releasedate"));
+		mDeveloper.setValue(getMetadata(file, "developer"));
+		mPublisher.setValue(getMetadata(file, "publisher"));
+		mGenre.setValue(getMetadata(file, "genre"));
+		mPlayers.setValue(getMetadata(file, "players"));
+		mName.setValue(getMetadata(file, "name"));
 
 		if(file->getType() == GAME)
 		{
-			mLastPlayed.setValue(file->getMetadata().get("lastplayed"));
-			mPlayCount.setValue(file->getMetadata().get("playcount"));
-			mGameTime.setValue(file->getMetadata().get("gametime"));
+			mLastPlayed.setValue(getMetadata(file, "lastplayed"));
+			mPlayCount.setValue(getMetadata(file, "playcount"));
+			mGameTime.setValue(getMetadata(file, "gametime"));
 		}
 
 		fadingOut = false;

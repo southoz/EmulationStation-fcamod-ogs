@@ -63,3 +63,12 @@ void IGameListView::render(const Transform4x4f& parentTrans)
 	renderChildren(trans);
 	Renderer::popClipRect();
 }
+
+std::string IGameListView::getMetadata(FileData* file, std::string name)
+{
+	std::string ret = file->getMetadata().get(name);
+	if (ret == "unknown")
+		return _(ret);
+
+	return ret;
+}
