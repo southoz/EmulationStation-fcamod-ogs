@@ -12,6 +12,7 @@
 #include "guis/GuiSettings.h"
 #include "guis/GuiSystemInformation.h"
 #include "guis/GuiQuitOptions.h"
+#include "guis/GuiMenusOptions.h"
 #include "views/UIModeController.h"
 #include "views/ViewController.h"
 #include "CollectionSystemManager.h"
@@ -103,6 +104,16 @@ GuiMenu::GuiMenu(Window* window, bool animate) : GuiComponent(window), mMenu(win
 			y_start = 0.f;
 			y_end = 0.f;
 		}
+		if (Settings::getInstance()->getBool("MenusAllHeight"))
+		{
+			y_start = 0.f;
+			y_end = 0.f;
+		}
+		if (Settings::getInstance()->getBool("MenusAllWidth"))
+		{
+			x_start = 0.f;
+			x_end = 0.f;
+		}
 
 		animateTo(
 			Vector2f(x_start, y_start),
@@ -111,11 +122,16 @@ GuiMenu::GuiMenu(Window* window, bool animate) : GuiComponent(window), mMenu(win
 	}
 	else
 	{
-		float new_y = (Renderer::getScreenHeight() - mSize.y()) / 2;
-		if (Settings::getInstance()->getBool("MenusOnDisplayTop"))
+		float new_x = (Renderer::getScreenWidth() - mSize.x()) / 2,
+					new_y = (Renderer::getScreenHeight() - mSize.y()) / 2;
+
+		if (Settings::getInstance()->getBool("MenusAllWidth"))
+			new_x = 0.f;
+
+		if (Settings::getInstance()->getBool("MenusOnDisplayTop") || Settings::getInstance()->getBool("MenusAllHeight"))
 			new_y = 0.f;
 
-		setPosition((Renderer::getScreenWidth() - mSize.x()) / 2, new_y);
+		setPosition(new_x, new_y);
 	}
 }
 
@@ -689,7 +705,7 @@ void GuiMenu::openThemeConfiguration(Window* mWindow, GuiComponent* s, std::shar
 								if (prefix.empty())
 									prefix = pfx;
 								else
-									prefix = prefix + ", " + pfx;								
+									prefix = prefix + ", " + pfx;
 							}
 						}
 
@@ -1022,18 +1038,8 @@ void GuiMenu::openUISettings()
 		Settings::getInstance()->setString("GameTransitionStyle", transitionOfGames_style->getSelected());
 	});
 
-	// menus on top
-	auto menusOnTop = std::make_shared<SwitchComponent>(mWindow);
-	menusOnTop->setState(Settings::getInstance()->getBool("MenusOnDisplayTop"));
-	s->addWithLabel(_("MENUS ON DISPLAY TOP"), menusOnTop);
-	s->addSaveFunc([s, menusOnTop] {
-		bool old_value = Settings::getInstance()->getBool("MenusOnDisplayTop");
-		if (old_value != menusOnTop->getState())
-		{
-			Settings::getInstance()->setBool("MenusOnDisplayTop", menusOnTop->getState());
-			s->setVariable("reloadGuiMenu", true);
-		}
-	});
+	// menus configurations
+	s->addEntry(_("MENUS SETTINGS"), true, [this] { openMenusSettings(); });
 
 	// Optionally start in selected system
 	auto systemfocus_list = std::make_shared< OptionListComponent<std::string> >(mWindow, _("START ON SYSTEM"), false);
@@ -1166,21 +1172,6 @@ void GuiMenu::openUISettings()
 				Settings::getInstance()->setString("ShowBattery", batteryStatus->getSelected());
 		});
 	}
-
-	// Auto adjust menu with by font size
-	auto menu_auto_width = std::make_shared<SwitchComponent>(mWindow);
-	menu_auto_width->setState(Settings::getInstance()->getBool("AutoMenuWidth"));
-	s->addWithLabel(_("AUTO SIZED MENUS"), menu_auto_width);
-	s->addSaveFunc([menu_auto_width, s]
-	{
-		bool old_value = Settings::getInstance()->getBool("AutoMenuWidth");
-		if (old_value != menu_auto_width->getState())
-		{
-			Settings::getInstance()->setBool("AutoMenuWidth", menu_auto_width->getState());
-			//Settings::getInstance()->saveFile();
-			s->setVariable("reloadGuiMenu", true);
-		}
-	});
 
 	// filenames
 	auto hidden_files = std::make_shared<SwitchComponent>(mWindow);
@@ -1732,6 +1723,11 @@ void GuiMenu::openAdvancedSettings()
 void GuiMenu::openQuitSettings()
 {
 	mWindow->pushGui(new GuiQuitOptions(mWindow));
+}
+
+void GuiMenu::openMenusSettings()
+{
+	mWindow->pushGui(new GuiMenusOptions(mWindow));
 }
 
 void GuiMenu::openSystemInformation()

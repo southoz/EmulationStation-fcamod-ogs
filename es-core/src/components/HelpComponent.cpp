@@ -23,9 +23,9 @@ static const std::map<std::string, const char*> ICON_PATH_MAP {
 	{ "x",                  ":/help/button_x_gt.svg" },
 	{ "y",                  ":/help/button_y_gt.svg" },
 	{ "l",                  ":/help/button_l_gt.svg" },
-	{ "l1",                  ":/help/button_l_gt.svg" },
+	{ "l1",                 ":/help/button_l_gt.svg" },
 	{ "r",                  ":/help/button_r_gt.svg" },
-	{ "r1",                  ":/help/button_r_gt.svg" },
+	{ "r1",                 ":/help/button_r_gt.svg" },
 	{ "lr",                 ":/help/button_lr_gt.svg" },
 	{ "lt",                 ":/help/button_lt_gt.svg" },
 	{ "l2",                 ":/help/button_lt_gt.svg" },
@@ -62,8 +62,11 @@ void HelpComponent::updateGrid()
 	if(!Settings::getInstance()->getBool("ShowHelpPrompts") || mPrompts.empty())
 	{
 		mGrid.reset();
+		mVisible = false;
 		return;
 	}
+
+	mVisible = true;
 
 	std::shared_ptr<Font>& font = mStyle.font;
 

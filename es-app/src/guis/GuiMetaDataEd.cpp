@@ -285,7 +285,7 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 	if ( change_height_ratio )
 	{
 		height_ratio = 0.88f;
-		if ( Settings::getInstance()->getBool("MenusOnDisplayTop") )
+		if ( Settings::getInstance()->getBool("MenusOnDisplayTop") || Settings::getInstance()->getBool("MenusAllHeight") )
 			height_ratio = 0.93f;
 	}
 
@@ -293,10 +293,10 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 
 	// center
 	float new_y = (Renderer::getScreenHeight() - mSize.y()) / 2;
-	if (Settings::getInstance()->getBool("MenusOnDisplayTop"))
+	if ( Settings::getInstance()->getBool("MenusOnDisplayTop") || Settings::getInstance()->getBool("MenusAllHeight") )
 		new_y = 0.f;
 
-	setPosition((Renderer::getScreenWidth() - mSize.x()) / 2, new_y);
+	setPosition(0.f, new_y);
 }
 
 void GuiMetaDataEd::onSizeChanged()

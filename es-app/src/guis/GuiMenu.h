@@ -38,6 +38,7 @@ private:
 	void openUISettings();
 	void openSystemInformation();
 	void openQuitSettings();
+	void openMenusSettings();
 
 	void openUpdateSettings();
 	void openEmulatorSettings();

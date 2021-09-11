@@ -485,30 +485,7 @@ Log::flush();
 	SDL_JoystickEventState(SDL_ENABLE);
 
 	window.endRenderLoadingScreen();
-/*
-	LOG(LogInfo) << "MAIN::main() - PreloadVlcPlayer(): " << (Settings::getInstance()->getBool("PreloadVlcPlayer") ? "true" : "false");
-	if (Settings::getInstance()->getBool("PreloadVlcPlayer"))
-	{
-		//Settings::getInstance()->getBool("PreloadVlcPlayer")
-		std::string path = Settings::getInstance()->getString("PreloadVlcVideo");
-		LOG(LogDebug) << "MAIN::main() - start video ScreenSaver " << path.c_str();
-		if (!path.empty() && Utils::FileSystem::exists(path))
-		{
-			std::shared_ptr<VideoScreenSaver> mVideoScreensaver = std::make_shared<VideoScreenSaver>(&window);
-			//FileData* game = new FileData();
-			//mVideoScreensaver->setGame(game);
-			mVideoScreensaver->setVideo(path);
-			Transform4x4f transform = Transform4x4f::Identity();
-			// Render black background
-			Renderer::setMatrix(Transform4x4f::Identity());
-			Renderer::drawRect(0.0f, 0.0f, Renderer::getScreenWidth(), Renderer::getScreenHeight(), 0x000000FF, 0x000000FF);
-			mVideoScreensaver->render(transform);
 
-			//Settings::getInstance()->getString("ScreenSaverGameInfo")
-			//Settings::getInstance()->getBool("StretchVideoOnScreenSaver")
-		}
-	}
-*/
 	if (Settings::getInstance()->getBool("audio.bgmusic"))
 		AudioManager::getInstance()->playRandomMusic();
 

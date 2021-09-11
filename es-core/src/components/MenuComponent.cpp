@@ -200,33 +200,55 @@ float MenuComponent::getButtonGridHeight() const
 
 void MenuComponent::setPosition(float x, float y, float z)
 {
-	float new_y = y;
-	if (Settings::getInstance()->getBool("MenusOnDisplayTop"))
+	float new_x = x,
+				new_y = y;
+
+	if (Settings::getInstance()->getBool("MenusAllWidth"))
+		new_x = 0.f;
+
+	if (Settings::getInstance()->getBool("MenusOnDisplayTop") || Settings::getInstance()->getBool("MenusAllHeight"))
 		new_y = 0.f;
 
-	GuiComponent::setPosition(x, new_y, z);
+	GuiComponent::setPosition(new_x, new_y, z);
 }
 
 void MenuComponent::setSize(float w, float h)
 {
-	float new_width = w;
+	float new_width = w,
+				new_height = h;
 
 	if (Settings::getInstance()->getBool("AutoMenuWidth") && (((int) w) < Renderer::getScreenWidth()))
 	{
 		float font_size = ThemeData::getMenuTheme()->Text.font->getSize(),
-					ratio = 1.0f;
+					ratio = 1.2f;
 
 		if ((font_size >= FONT_SIZE_SMALL) && (font_size < FONT_SIZE_MEDIUM))
-			ratio = 1.1f;
+			ratio = 1.4f;
 		else if ((font_size >= FONT_SIZE_MEDIUM) && (font_size < FONT_SIZE_LARGE))
-			ratio = 1.2f;
+			ratio = 1.7f;
 		else if ((font_size >= FONT_SIZE_LARGE))
-			ratio = 1.3f;
+			ratio = 2.0f;
 
 		new_width = (float)Math::min((int)(new_width * ratio), Renderer::getScreenWidth());
 	}
 
-	GuiComponent::setSize(new_width, h);
+	if (Settings::getInstance()->getBool("MenusAllWidth"))
+		new_width = Renderer::getScreenWidth();
+
+	if (Settings::getInstance()->getBool("MenusAllHeight"))
+	{
+		bool change_height_ratio = Settings::getInstance()->getBool("ShowHelpPrompts") || Settings::getInstance()->getBool("DrawClock");
+		float height_ratio = 1.0f;
+		if ( change_height_ratio )
+		{
+			height_ratio = 0.88f;
+			if ( Settings::getInstance()->getBool("MenusOnDisplayTop") || Settings::getInstance()->getBool("MenusAllHeight") )
+				height_ratio = 0.93f;
+		}
+		new_height = Renderer::getScreenHeight() * height_ratio;
+	}
+
+	GuiComponent::setSize(new_width, new_height);
 }
 
 void MenuComponent::updateSize()

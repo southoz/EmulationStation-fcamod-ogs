@@ -189,13 +189,9 @@ void Settings::setDefaults()
 	mStringMap["LogLevel"] = "default";
 	mBoolMap["LogWithMilliseconds"] = false;
 
-	// Preload VLC player
-	mBoolMap["PreloadVlcPlayer"] = false;
-	mIntMap["PreloadVlcVideoTimeout"] = 10000; // milliseconds
-	mStringMap["PreloadVlcImage"] = ResourceManager::getInstance()->getResourcePath(":/resources/es_preload_vlc.png");
-	mStringMap["PreloadVlcVideo"] = ResourceManager::getInstance()->getResourcePath(":/resources/es_preload_vlc.mp4");
-
 	mBoolMap["MenusOnDisplayTop"] = false;
+	mBoolMap["MenusAllWidth"] = false;
+	mBoolMap["MenusAllHeight"] = false;
 
 	mBoolMap["ShowDetailedSystemInfo"] = false;
 
