@@ -13,7 +13,7 @@ public:
 	~GuiQuitOptions();
 
 private:
-	void initializeMenu(Window* window);
+	void initializeMenu();
 
 
 	bool mPopupDisplayed;

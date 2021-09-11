@@ -920,5 +920,23 @@ bool setCurrentPowerkeyIntervalTime(int interval_time)
 
 int queryCurrentPowerkeyIntervalTime()
 {
-	return std::atoi( Utils::String::replace(getShOutput(R"(es-powerkey get max_interval_time)"), "\n", "").c_str() );
+	std::string time_interval = Utils::String::replace(getShOutput(R"(es-powerkey get max_interval_time)"), "\n", "");
+	if (time_interval.empty())
+		return 5;
+
+	return std::atoi( time_interval.c_str() );
+}
+
+bool setCurrentPowerkeyAction(const std::string action)
+{
+	return executeSystemScript("es-powerkey set action " + action);
+}
+
+std::string queryCurrentPowerkeyAction()
+{
+	std::string action = Utils::String::replace(getShOutput(R"(es-powerkey get action)"), "\n", "");
+	if (action.empty())
+		return "shutdown";
+
+	return action;
 }

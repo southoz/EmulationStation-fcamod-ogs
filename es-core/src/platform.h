@@ -258,6 +258,8 @@ bool setCurrentPowerkeyState(bool state);
 bool queryCurrentPowerkeyState();
 bool setCurrentPowerkeyIntervalTime(int interval_time);
 int queryCurrentPowerkeyIntervalTime();
+bool setCurrentPowerkeyAction(const std::string action);
+std::string queryCurrentPowerkeyAction();
 
 
 std::string getShOutput(const std::string& mStr);

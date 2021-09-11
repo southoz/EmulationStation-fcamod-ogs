@@ -673,3 +673,17 @@ int ApiSystem::getPowerkeyIntervalTime()
 
 	return queryCurrentPowerkeyIntervalTime();
 }
+
+bool ApiSystem::setPowerkeyAction(const std::string action)
+{
+	LOG(LogInfo) << "ApiSystem::setPowerkeyAction()";
+
+	return setCurrentPowerkeyAction(action);
+}
+
+std::string ApiSystem::getPowerkeyAction()
+{
+	LOG(LogInfo) << "ApiSystem::getPowerkeyAction()";
+
+	return queryCurrentPowerkeyAction();
+}

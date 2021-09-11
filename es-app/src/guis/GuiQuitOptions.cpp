@@ -11,7 +11,7 @@
 
 GuiQuitOptions::GuiQuitOptions(Window* window) : GuiSettings(window, _("\"QUIT\" SETTINGS").c_str()), mPopupDisplayed(false)
 {
-	initializeMenu(window);
+	initializeMenu();
 }
 
 GuiQuitOptions::~GuiQuitOptions()
@@ -19,7 +19,7 @@ GuiQuitOptions::~GuiQuitOptions()
 	mPopupDisplayed = false;
 }
 
-void GuiQuitOptions::initializeMenu(Window* window)
+void GuiQuitOptions::initializeMenu()
 {
 	// full exit
 	auto fullExitMenu = std::make_shared<SwitchComponent>(mWindow);
@@ -53,7 +53,7 @@ void GuiQuitOptions::initializeMenu(Window* window)
 
 	// only exit action
 	std::string only_exit_action = Settings::getInstance()->getString("OnlyExitAction");
-	auto only_exit_action_list = std::make_shared< OptionListComponent< std::string > >(mWindow, _("SCRAPE FROM"), false);
+	auto only_exit_action_list = std::make_shared< OptionListComponent< std::string > >(mWindow, _("ACTION TO EXECUTE"), false);
 
 	only_exit_action_list->add(_("SHUTDOWN"), "shutdown", only_exit_action == "shutdown");
 	only_exit_action_list->add(_("SUSPEND"), "suspend", only_exit_action == "suspend");
@@ -100,7 +100,7 @@ void GuiQuitOptions::initializeMenu(Window* window)
 		LOG(LogDebug) << "GuiQuitOptions::initializeMenu() - powerkey_value: " << Utils::String::boolToString(powerkey_value);
 		powerkey->setState( powerkey_value );
 		addWithLabel(_("PUSH TWO TIMES TO SHUTDOWN"), powerkey);
-		addSaveFunc([this, window, powerkey, powerkey_value]
+		addSaveFunc([this, powerkey, powerkey_value]
 			{
 				bool new_powerkey_value = powerkey->getState();
 				if (powerkey_value != new_powerkey_value)
@@ -108,7 +108,7 @@ void GuiQuitOptions::initializeMenu(Window* window)
 					if (!mPopupDisplayed)
 					{
 						mPopupDisplayed = true;
-						window->pushGui(new GuiMsgBox(window,
+						mWindow->pushGui(new GuiMsgBox(mWindow,
 							_("THE PROCESS MAY DURE SOME SECONDS.\nPLEASE WAIT."),
 							_("OK"), [new_powerkey_value] { ApiSystem::getInstance()->setPowerkeyState( new_powerkey_value ); },
 							_("CANCEL"), [] { return; } ));
@@ -128,7 +128,7 @@ void GuiQuitOptions::initializeMenu(Window* window)
 		LOG(LogDebug) << "GuiQuitOptions::initializeMenu() - interval_time_value: " << std::to_string(interval_time_value);
 		interval_time->setValue( interval_time_value );
 		addWithLabel(_("TIME INTERVAL"), interval_time);
-		addSaveFunc([this, window, interval_time, interval_time_value]
+		addSaveFunc([this, interval_time, interval_time_value]
 			{
 				float new_interval_time_value = Math::round( interval_time->getValue() );
 				if (interval_time_value != new_interval_time_value)
@@ -136,7 +136,7 @@ void GuiQuitOptions::initializeMenu(Window* window)
 					if (!mPopupDisplayed)
 					{
 						mPopupDisplayed = true;
-						window->pushGui(new GuiMsgBox(window,
+						mWindow->pushGui(new GuiMsgBox(mWindow,
 							_("THE PROCESS MAY DURE SOME SECONDS.\nPLEASE WAIT."),
 							_("OK"), [new_interval_time_value] { ApiSystem::getInstance()->setPowerkeyIntervalTime( (int) new_interval_time_value ); },
 							_("CANCEL"), [] { return; } ));
@@ -148,5 +148,40 @@ void GuiQuitOptions::initializeMenu(Window* window)
 					}
 				}
 			});
+
+		// powerkey action
+		std::string powerkey_action = ApiSystem::getInstance()->getPowerkeyAction();
+		auto powerkey_list = std::make_shared< OptionListComponent< std::string > >(mWindow, _("ACTION TO EXECUTE"), false);
+
+		powerkey_list->add(_("SHUTDOWN"), "shutdown", powerkey_action == "shutdown");
+		powerkey_list->add(_("SUSPEND"), "suspend", powerkey_action == "suspend");
+
+		addWithLabel(_("ACTION TO EXECUTE"), powerkey_list);
+		addSaveFunc([this, powerkey_list, powerkey_action]
+			{
+				std::string new_powerkey_action = powerkey_list->getSelected();
+				if (powerkey_action != new_powerkey_action)
+				{
+					if (!mPopupDisplayed)
+					{
+						mPopupDisplayed = true;
+						mWindow->pushGui(new GuiMsgBox(mWindow,
+							_("THE PROCESS MAY DURE SOME SECONDS.\nPLEASE WAIT."),
+							_("OK"), [new_powerkey_action] { ApiSystem::getInstance()->setPowerkeyAction( new_powerkey_action ); },
+							_("CANCEL"), [] { return; } ));
+					}
+					else
+					{
+						mPopupDisplayed = false;
+						ApiSystem::getInstance()->setPowerkeyAction( new_powerkey_action );
+					}
+				}
+			});
+
+		if (!powerkey_list->hasSelection())
+		{
+			powerkey_list->selectFirstItem();
+			powerkey_action = powerkey_list->getSelected();
+		}
 	}
 }

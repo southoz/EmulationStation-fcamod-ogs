@@ -126,6 +126,8 @@ public:
 	bool getPowerkeyState();
 	bool setPowerkeyIntervalTime(int interval_time);
 	int getPowerkeyIntervalTime();
+	bool setPowerkeyAction(const std::string action);
+	std::string getPowerkeyAction();
 
 	static UpdateState::State state;
 
