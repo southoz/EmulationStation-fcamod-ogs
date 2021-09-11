@@ -25,13 +25,31 @@ void GuiQuitOptions::initializeMenu(Window* window)
 	auto fullExitMenu = std::make_shared<SwitchComponent>(mWindow);
 	fullExitMenu->setState(!Settings::getInstance()->getBool("ShowOnlyExit"));
 	addWithLabel(_("VIEW MENU"), fullExitMenu);
-	addSaveFunc([fullExitMenu] { Settings::getInstance()->setBool("ShowOnlyExit", !fullExitMenu->getState()); });
+	addSaveFunc([this, fullExitMenu]
+		{
+			bool old_value = !Settings::getInstance()->getBool("ShowOnlyExit");
+			if (old_value != fullExitMenu->getState())
+			{
+				Settings::getInstance()->setBool("ShowOnlyExit", !fullExitMenu->getState());
+				setVariable("reloadGuiMenu", true);
+			}
+		});
 
 	// confirm to exit
 	auto confirmToExit = std::make_shared<SwitchComponent>(mWindow);
 	confirmToExit->setState(Settings::getInstance()->getBool("ConfirmToExit"));
-	addWithLabel(_("CONFIRM ACTION"), confirmToExit);
-	addSaveFunc([confirmToExit] { Settings::getInstance()->setBool("ConfirmToExit", confirmToExit->getState()); });
+	addWithLabel(_("CONFIRM TO \"QUIT\""), confirmToExit);
+	addSaveFunc([this, confirmToExit]
+		{
+			bool old_value = Settings::getInstance()->getBool("ConfirmToExit");
+			if (old_value != confirmToExit->getState())
+			{
+				Settings::getInstance()->setBool("ConfirmToExit", confirmToExit->getState());
+				setVariable("reloadGuiMenu", true);
+			}
+		});
+
+	addGroup(_("NO MENU"));
 
 	// only exit action
 	std::string only_exit_action = Settings::getInstance()->getString("OnlyExitAction");
@@ -41,14 +59,36 @@ void GuiQuitOptions::initializeMenu(Window* window)
 	only_exit_action_list->add(_("SUSPEND"), "suspend", only_exit_action == "suspend");
 	only_exit_action_list->add(_("QUIT EMULATIONSTATION"), "exit_es", only_exit_action == "exit_es");
 
-	addWithLabel(_("ACTION TO EXECUTE TO \"QUIT\" (NO MENU)"), only_exit_action_list);
-	addSaveFunc([only_exit_action_list] { Settings::getInstance()->setString("OnlyExitAction", only_exit_action_list->getSelected()); });
+	addWithLabel(_("ACTION TO EXECUTE"), only_exit_action_list);
+	addSaveFunc([this, only_exit_action_list]
+		{
+			std::string old_value = Settings::getInstance()->getString("OnlyExitAction");
+			if (old_value != only_exit_action_list->getSelected())
+			{
+				Settings::getInstance()->setString("OnlyExitAction", only_exit_action_list->getSelected());
+				setVariable("reloadGuiMenu", true);
+			}
+		});
 
 	if (!only_exit_action_list->hasSelection())
 	{
 		only_exit_action_list->selectFirstItem();
 		only_exit_action = only_exit_action_list->getSelected();
 	}
+
+	// confirm to exit
+	auto show_action_menu = std::make_shared<SwitchComponent>(mWindow);
+	show_action_menu->setState(Settings::getInstance()->getBool("ShowOnlyExitActionAsMenu"));
+	addWithLabel(_("SHOW ACTION NAME AS MENU OPTION"), show_action_menu);
+	addSaveFunc([this, show_action_menu]
+		{
+			bool old_value = Settings::getInstance()->getBool("ShowOnlyExitActionAsMenu");
+			if (old_value != show_action_menu->getState())
+			{
+				Settings::getInstance()->setBool("ShowOnlyExitActionAsMenu", show_action_menu->getState());
+				setVariable("reloadGuiMenu", true);
+			}
+		});
 
 	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::ScriptId::POWER_KEY))
 	{

@@ -74,7 +74,17 @@ GuiMenu::GuiMenu(Window* window, bool animate) : GuiComponent(window), mMenu(win
 
 	}
 
-	addEntry(_("QUIT"), !Settings::getInstance()->getBool("ShowOnlyExit"), [this] { openQuitMenu(); }, "iconQuit");
+	std::string quit_menu_label = "QUIT";
+	if ( Settings::getInstance()->getBool("ShowOnlyExit") && Settings::getInstance()->getBool("ShowOnlyExitActionAsMenu") )
+	{
+		std::string exit_action = Settings::getInstance()->getString("OnlyExitAction");
+		if ( exit_action == "exit_es" )
+			quit_menu_label = "QUIT EMULATIONSTATION";
+		else
+			quit_menu_label = Utils::String::toUpper(exit_action);
+	}
+
+	addEntry(_(quit_menu_label), !Settings::getInstance()->getBool("ShowOnlyExit"), [this] { openQuitMenu(); }, "iconQuit");
 
 	if (Settings::getInstance()->getBool("FullScreenMode"))
 	{
@@ -1722,7 +1732,21 @@ void GuiMenu::openAdvancedSettings()
 
 void GuiMenu::openQuitSettings()
 {
-	mWindow->pushGui(new GuiQuitOptions(mWindow));
+	Window* window = mWindow;
+	auto pthis = this;
+
+	auto s = new GuiQuitOptions(window);
+
+	s->onFinalize([s, pthis, window]
+	{
+		if (s->getVariable("reloadGuiMenu"))
+		{
+			delete pthis;
+			window->pushGui(new GuiMenu(window, false));
+		}
+	});
+
+	mWindow->pushGui(s);
 }
 
 void GuiMenu::openMenusSettings()
@@ -1803,7 +1827,7 @@ void GuiMenu::openQuitMenu()
 		}
 		else if (Utils::String::equalsIgnoreCase(exit_action, "exit_es"))
 		{
-			exitFunction = suspendDeviceFunction;
+			exitFunction = quitEsFunction;
 			exit_label = "REALLY QUIT?";
 		}
 		

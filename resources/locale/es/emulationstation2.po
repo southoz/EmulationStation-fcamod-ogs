@@ -830,11 +830,11 @@ msgstr "INVERTIR BOTONES A/B EN EMULATIONSTATION"
 
 #:
 msgid "SWITCH \"PAGE UP\" TO L1 IN EMULATIONSTATION"
-msgstr "INVERTIR \"RE. PÁGINA\" A L1 EN ES"
+msgstr "INVERTIR \"RE. PÁGINA\" A L1 EN EMULATIONSTATION"
 
 #:
 msgid "SWITCH \"PAGE DOWN\" TO R1 IN EMULATIONSTATION"
-msgstr "INVERTIR \"AV. PÁGINA\" A R1 EN ES"
+msgstr "INVERTIR \"AV. PÁGINA\" A R1 EN EMULATIONSTATION"
 
 #:
 msgid "DISPLAY SETTINGS"
@@ -2409,12 +2409,20 @@ msgid "VIEW MENU"
 msgstr "VER MENÚ"
 
 #:
-msgid "CONFIRM ACTION"
-msgstr "CONFIRMAR ACCIÓN"
+msgid "CONFIRM TO \"QUIT\""
+msgstr "CONFIRMAR PARA \"SALIR\""
 
 #:
-msgid "ACTION TO EXECUTE TO \"QUIT\" (NO MENU)"
-msgstr "\"SALIR\" (SIN MENÚ) ACCIÓN A EJECUTAR"
+msgid "NO MENU"
+msgstr "SIN MENÚ"
+
+#:
+msgid "ACTION TO EXECUTE"
+msgstr "ACCIÓN A EJECUTAR"
+
+#:
+msgid "SHOW ACTION NAME AS MENU OPTION"
+msgstr "ACCIÓN COMO OPCIÓN DE MENÚ"
 
 #:
 msgid "The selected UI mode has nothing to show,\n returning to UI mode: FULL"

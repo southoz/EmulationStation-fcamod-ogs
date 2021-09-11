@@ -65,6 +65,7 @@ void Settings::setDefaults()
 
 	mBoolMap["ShowOnlyExit"] = false;
 	mStringMap["OnlyExitAction"] = "shutdown";
+	mBoolMap["ShowOnlyExitActionAsMenu"] = false;
 	mBoolMap["ConfirmToExit"] = true;
 
 	mBoolMap["SplashScreen"] = true;
