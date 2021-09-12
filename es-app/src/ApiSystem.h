@@ -40,7 +40,8 @@ public:
 	enum ScriptId : unsigned int
 	{
 		TIMEZONE = 0,
-		POWER_KEY = 1
+		POWER_KEY = 1,
+		DISPLAY = 2
 /*
 		WIFI = 0,
 		RETROACHIVEMENTS = 1,
@@ -124,10 +125,11 @@ public:
 
 	bool setPowerkeyState(bool state);
 	bool getPowerkeyState();
-	bool setPowerkeyIntervalTime(int interval_time);
-	int getPowerkeyIntervalTime();
+	bool setPowerkeyTimeInterval(int time_interval);
+	int getPowerkeyTimeInterval();
 	bool setPowerkeyAction(const std::string action);
 	std::string getPowerkeyAction();
+	bool setDisplayBlinkLowBattery(bool blink);
 
 	static UpdateState::State state;
 

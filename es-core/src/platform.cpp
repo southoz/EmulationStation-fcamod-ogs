@@ -913,12 +913,12 @@ bool queryCurrentPowerkeyState()
 	return false;
 }
 
-bool setCurrentPowerkeyIntervalTime(int interval_time)
+bool setCurrentPowerkeyTimeInterval(int time_interval)
 {
-	return executeSystemScript("es-powerkey set max_interval_time " + std::to_string(interval_time));
+	return executeSystemScript("es-powerkey set max_interval_time " + std::to_string(time_interval));
 }
 
-int queryCurrentPowerkeyIntervalTime()
+int queryCurrentPowerkeyTimeInterval()
 {
 	std::string time_interval = Utils::String::replace(getShOutput(R"(es-powerkey get max_interval_time)"), "\n", "");
 	if (time_interval.empty())
@@ -939,4 +939,9 @@ std::string queryCurrentPowerkeyAction()
 		return "shutdown";
 
 	return action;
+}
+
+bool setCurrentDisplayBlinkLowBattery(bool blink)
+{
+	return executeSystemScript("es-display blink_low_battery " + (blink ? std::string("enabled") : std::string("disabled")));
 }

@@ -6,7 +6,6 @@
 #include "guis/GuiMsgBox.h"
 #include "Window.h"
 #include "ApiSystem.h"
-#include "Log.h"
 
 
 GuiQuitOptions::GuiQuitOptions(Window* window) : GuiSettings(window, _("\"QUIT\" SETTINGS").c_str()), mPopupDisplayed(false)
@@ -97,9 +96,8 @@ void GuiQuitOptions::initializeMenu()
 		// push powerkey double to shutdown
 		auto powerkey = std::make_shared<SwitchComponent>(mWindow);
 		bool powerkey_value = ApiSystem::getInstance()->getPowerkeyState();
-		LOG(LogDebug) << "GuiQuitOptions::initializeMenu() - powerkey_value: " << Utils::String::boolToString(powerkey_value);
 		powerkey->setState( powerkey_value );
-		addWithLabel(_("PUSH TWO TIMES TO SHUTDOWN"), powerkey);
+		addWithLabel(_("PUSH TWO TIMES TO EXECUTE ACTION"), powerkey);
 		addSaveFunc([this, powerkey, powerkey_value]
 			{
 				bool new_powerkey_value = powerkey->getState();
@@ -120,33 +118,6 @@ void GuiQuitOptions::initializeMenu()
 					}
 				}
 
-			});
-
-		// max interval time
-		auto interval_time = std::make_shared<SliderComponent>(mWindow, 1.f, 10.f, 1.f, "s", true);
-		float interval_time_value = (float) ApiSystem::getInstance()->getPowerkeyIntervalTime();
-		LOG(LogDebug) << "GuiQuitOptions::initializeMenu() - interval_time_value: " << std::to_string(interval_time_value);
-		interval_time->setValue( interval_time_value );
-		addWithLabel(_("TIME INTERVAL"), interval_time);
-		addSaveFunc([this, interval_time, interval_time_value]
-			{
-				float new_interval_time_value = Math::round( interval_time->getValue() );
-				if (interval_time_value != new_interval_time_value)
-				{
-					if (!mPopupDisplayed)
-					{
-						mPopupDisplayed = true;
-						mWindow->pushGui(new GuiMsgBox(mWindow,
-							_("THE PROCESS MAY DURE SOME SECONDS.\nPLEASE WAIT."),
-							_("OK"), [new_interval_time_value] { ApiSystem::getInstance()->setPowerkeyIntervalTime( (int) new_interval_time_value ); },
-							_("CANCEL"), [] { return; } ));
-					}
-					else
-					{
-						mPopupDisplayed = false;
-						ApiSystem::getInstance()->setPowerkeyIntervalTime( (int) new_interval_time_value );
-					}
-				}
 			});
 
 		// powerkey action
@@ -183,5 +154,31 @@ void GuiQuitOptions::initializeMenu()
 			powerkey_list->selectFirstItem();
 			powerkey_action = powerkey_list->getSelected();
 		}
+
+		// max interval time
+		auto time_interval = std::make_shared<SliderComponent>(mWindow, 1.f, 10.f, 1.f, "s", true);
+		float time_interval_value = (float) ApiSystem::getInstance()->getPowerkeyTimeInterval();
+		time_interval->setValue( time_interval_value );
+		addWithLabel(_("TIME INTERVAL"), time_interval);
+		addSaveFunc([this, time_interval, time_interval_value]
+			{
+				float new_time_interval_value = Math::round( time_interval->getValue() );
+				if (time_interval_value != new_time_interval_value)
+				{
+					if (!mPopupDisplayed)
+					{
+						mPopupDisplayed = true;
+						mWindow->pushGui(new GuiMsgBox(mWindow,
+							_("THE PROCESS MAY DURE SOME SECONDS.\nPLEASE WAIT."),
+							_("OK"), [new_time_interval_value] { ApiSystem::getInstance()->setPowerkeyTimeInterval( (int) new_time_interval_value ); },
+							_("CANCEL"), [] { return; } ));
+					}
+					else
+					{
+						mPopupDisplayed = false;
+						ApiSystem::getInstance()->setPowerkeyTimeInterval( (int) new_time_interval_value );
+					}
+				}
+			});
 	}
 }

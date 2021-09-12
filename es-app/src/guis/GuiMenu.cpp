@@ -167,6 +167,7 @@ void GuiMenu::openDisplaySettings()
 			}
 		});
 
+		// brightness
 		auto brightnessPopup = std::make_shared<SwitchComponent>(mWindow);
 		brightnessPopup->setState(Settings::getInstance()->getBool("BrightnessPopup"));
 		s->addWithLabel(_("SHOW OVERLAY WHEN BRIGHTNESS CHANGES"), brightnessPopup);
@@ -182,23 +183,47 @@ void GuiMenu::openDisplaySettings()
 	auto fullScreenMode = std::make_shared<SwitchComponent>(mWindow);
 	fullScreenMode->setState(Settings::getInstance()->getBool("FullScreenMode"));
 	s->addWithLabel(_("FULL SCREEN MODE"), fullScreenMode);
-	s->addSaveFunc([window, fullScreenMode] {
-		bool old_value = Settings::getInstance()->getBool("FullScreenMode");
-		if (old_value != fullScreenMode->getState())
+	s->addSaveFunc([window, fullScreenMode]
 		{
-			window->pushGui(new GuiMsgBox(window, _("REALLY WANT TO CHANGE THE SCREEN MODE ?"), _("YES"),
-				[fullScreenMode] {
-				LOG(LogInfo) << "GuiMenu::openDisplaySettings() - change to screen mode: " << ( fullScreenMode->getState() ? "full" : "header" );
-				Settings::getInstance()->setBool("FullScreenMode", fullScreenMode->getState());
-				Settings::getInstance()->saveFile();
-				Scripting::fireEvent("quit");
-				//quitES();
-				if(quitES(QuitMode::RESTART) != 0)
-					LOG(LogWarning) << "GuiMenu::openDisplaySettings() - Restart terminated with non-zero result!";
-			}, _("NO"), nullptr));
+			bool old_value = Settings::getInstance()->getBool("FullScreenMode");
+			if (old_value != fullScreenMode->getState())
+			{
+				window->pushGui(new GuiMsgBox(window, _("REALLY WANT TO CHANGE THE SCREEN MODE ?"), _("YES"),
+					[fullScreenMode] {
+					LOG(LogInfo) << "GuiMenu::openDisplaySettings() - change to screen mode: " << ( fullScreenMode->getState() ? "full" : "header" );
+					Settings::getInstance()->setBool("FullScreenMode", fullScreenMode->getState());
+					Settings::getInstance()->saveFile();
+					Scripting::fireEvent("quit");
+					//quitES();
+					if(quitES(QuitMode::RESTART) != 0)
+						LOG(LogWarning) << "GuiMenu::openDisplaySettings() - Restart terminated with non-zero result!";
+				}, _("NO"), nullptr));
+			}
+		});
 
+		if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::ScriptId::DISPLAY))
+		{
+			// blink with low battery
+			auto blink_low_battery = std::make_shared<SwitchComponent>(mWindow);
+			blink_low_battery->setState(Settings::getInstance()->getBool("DisplayBlinkLowBattery"));
+			s->addWithLabel(_("BLINK WITH LOW BATTERY"), blink_low_battery);
+			s->addSaveFunc([this, blink_low_battery]
+				{
+					bool old_blink_low_battery_value = Settings::getInstance()->getBool("DisplayBlinkLowBattery");
+					bool new_blink_low_battery_value = blink_low_battery->getState();
+					if (old_blink_low_battery_value != new_blink_low_battery_value)
+					{
+						mWindow->pushGui(new GuiMsgBox(mWindow,
+							_("THE PROCESS MAY DURE SOME SECONDS.\nPLEASE WAIT."),
+							_("OK"), [new_blink_low_battery_value]
+								{
+									Settings::getInstance()->setBool("DisplayBlinkLowBattery", new_blink_low_battery_value);
+									ApiSystem::getInstance()->setDisplayBlinkLowBattery(new_blink_low_battery_value);
+								},
+							_("CANCEL"), [] { return; } ));
+					}
+				});
 		}
-	});
 
 	if (Settings::getInstance()->getBool("FullScreenMode"))
 	{

@@ -256,11 +256,11 @@ bool setCurrentTimezone(std::string timezone);
 
 bool setCurrentPowerkeyState(bool state);
 bool queryCurrentPowerkeyState();
-bool setCurrentPowerkeyIntervalTime(int interval_time);
-int queryCurrentPowerkeyIntervalTime();
+bool setCurrentPowerkeyTimeInterval(int time_interval);
+int queryCurrentPowerkeyTimeInterval();
 bool setCurrentPowerkeyAction(const std::string action);
 std::string queryCurrentPowerkeyAction();
-
+bool setCurrentDisplayBlinkLowBattery(bool blink);
 
 std::string getShOutput(const std::string& mStr);
 

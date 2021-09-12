@@ -75,6 +75,7 @@ void Settings::setDefaults()
 	mBoolMap["HideSystemView"] = false;
 	mBoolMap["FullScreenMode"] = false;
 	mBoolMap["BrightnessPopup"] = true;
+	mBoolMap["DisplayBlinkLowBattery"] = false;
 	
 	mStringMap["StartupSystem"] = "";
 

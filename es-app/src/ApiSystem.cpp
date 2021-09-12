@@ -153,6 +153,9 @@ bool ApiSystem::isScriptingSupported(ScriptId script)
 		case POWER_KEY:
 				executables.push_back("es-powerkey");
 				break;
+		case DISPLAY:
+				executables.push_back("es-display");
+				break;
 
 /*
 	case ApiSystem::RETROACHIVEMENTS:
@@ -660,18 +663,18 @@ bool ApiSystem::getPowerkeyState()
 	return queryCurrentPowerkeyState();
 }
 
-bool ApiSystem::setPowerkeyIntervalTime(int interval_time)
+bool ApiSystem::setPowerkeyTimeInterval(int interval_time)
 {
-	LOG(LogInfo) << "ApiSystem::setPowerkeyIntervalTime() - interval_time: " << std::to_string(interval_time);
+	LOG(LogInfo) << "ApiSystem::setPowerkeyTimeInterval() - interval_time: " << std::to_string(interval_time);
 
-	return setCurrentPowerkeyIntervalTime(interval_time);
+	return setCurrentPowerkeyTimeInterval(interval_time);
 }
 
-int ApiSystem::getPowerkeyIntervalTime()
+int ApiSystem::getPowerkeyTimeInterval()
 {
-	LOG(LogInfo) << "ApiSystem::getPowerkeyIntervalTime()";
+	LOG(LogInfo) << "ApiSystem::getPowerkeyTimeInterval()";
 
-	return queryCurrentPowerkeyIntervalTime();
+	return queryCurrentPowerkeyTimeInterval();
 }
 
 bool ApiSystem::setPowerkeyAction(const std::string action)
@@ -686,4 +689,11 @@ std::string ApiSystem::getPowerkeyAction()
 	LOG(LogInfo) << "ApiSystem::getPowerkeyAction()";
 
 	return queryCurrentPowerkeyAction();
+}
+
+bool ApiSystem::setDisplayBlinkLowBattery(bool blink)
+{
+	LOG(LogInfo) << "ApiSystem::setPowerkeyAction()";
+
+	return setCurrentDisplayBlinkLowBattery(blink);
 }
