@@ -194,6 +194,7 @@ void Settings::setDefaults()
 	mBoolMap["MenusOnDisplayTop"] = false;
 	mBoolMap["MenusAllWidth"] = false;
 	mBoolMap["MenusAllHeight"] = false;
+	mBoolMap["AnimatedMainMenu"] = true;
 
 	mBoolMap["ShowDetailedSystemInfo"] = false;
 

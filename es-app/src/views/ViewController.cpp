@@ -517,7 +517,7 @@ bool ViewController::input(InputConfig* config, Input input)
 	if(!UIModeController::getInstance()->isUIModeKid() && config->isMappedTo("start", input) && input.value != 0)
 	{
 		// open menu
-		mWindow->pushGui(new GuiMenu(mWindow));
+		mWindow->pushGui(new GuiMenu(mWindow, Settings::getInstance()->getBool("AnimatedMainMenu")));
 		return true;
 	}
 

@@ -92,6 +92,19 @@ void GuiMenusOptions::initializeMenu(Window* window)
 			}
 		});
 
+	// animated main menu
+	auto animated_main_menu = std::make_shared<SwitchComponent>(window);
+	animated_main_menu->setState(Settings::getInstance()->getBool("AnimatedMainMenu"));
+	addWithLabel(_("OPEN MAIN MENU WITH ANIMATION"), animated_main_menu);
+	addSaveFunc([animated_main_menu]
+		{
+			bool old_value = Settings::getInstance()->getBool("AnimatedMainMenu");
+			if (old_value != animated_main_menu->getState())
+			{
+				Settings::getInstance()->setBool("AnimatedMainMenu", animated_main_menu->getState());
+			}
+		});
+
 /*
 	onFinalize([pthis, window]
 	{

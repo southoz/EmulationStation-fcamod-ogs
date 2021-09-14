@@ -51,12 +51,11 @@ public:
 		if (mMaxHeight == maxHeight)
 			return;
 
-		mMaxHeight = maxHeight; 
+		mMaxHeight = maxHeight;
 		updateSize();
 	}
 
 	void setPosition(float x, float y, float z = 0.0f) override;
-	void setSize(float w, float h) override;
 
 private:
 	void updateSize();

@@ -476,7 +476,7 @@ void TextComponent::applyTheme(const std::shared_ptr<ThemeData>& theme, const st
 			else if (str == "right")
 				setHorizontalAlignment(ALIGN_RIGHT);
 			else
-				LOG(LogError) << "Unknown text alignment string: " << str;
+				LOG(LogError) << "TextComponent::applyTheme() - Unknown text alignment string: " << str;
 		}
 
 		if (elem->has("verticalAlignment"))
@@ -489,7 +489,7 @@ void TextComponent::applyTheme(const std::shared_ptr<ThemeData>& theme, const st
 			else if (str == "bottom")
 				setVerticalAlignment(ALIGN_BOTTOM);
 			else
-				LOG(LogError) << "Unknown text alignment string: " << str;
+				LOG(LogError) << "TextComponent::applyTheme() - Unknown text alignment string: " << str;
 		}
 
 		if (elem->has("padding"))

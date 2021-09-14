@@ -110,18 +110,14 @@ GuiMenu::GuiMenu(Window* window, bool animate) : GuiComponent(window), mMenu(win
 
 		if (Settings::getInstance()->getBool("MenusOnDisplayTop"))
 		{
-			x_start = 0.1f;
-			y_start = 0.f;
 			y_end = 0.f;
 		}
 		if (Settings::getInstance()->getBool("MenusAllHeight"))
 		{
-			y_start = 0.f;
 			y_end = 0.f;
 		}
 		if (Settings::getInstance()->getBool("MenusAllWidth"))
 		{
-			x_start = 0.f;
 			x_end = 0.f;
 		}
 
