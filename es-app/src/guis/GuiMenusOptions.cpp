@@ -7,7 +7,7 @@
 #include "Log.h"
 
 
-GuiMenusOptions::GuiMenusOptions(Window* window) : GuiSettings(window, _("\"QUIT\" SETTINGS").c_str()), mPopupDisplayed(false)
+GuiMenusOptions::GuiMenusOptions(Window* window) : GuiSettings(window, _("MENUS SETTINGS").c_str()), mPopupDisplayed(false)
 {
 	initializeMenu(window);
 }
