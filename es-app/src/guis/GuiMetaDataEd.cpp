@@ -280,7 +280,7 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 	});
 
 	// resize
-	bool change_height_ratio = Settings::getInstance()->getBool("ShowHelpPrompts") || Settings::getInstance()->getBool("DrawClock");
+	bool change_height_ratio = Settings::getInstance()->getBool("ShowHelpPrompts");
 	float height_ratio = 1.0f;
 	if ( change_height_ratio )
 	{

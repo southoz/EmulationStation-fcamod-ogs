@@ -237,7 +237,7 @@ void MenuComponent::setSize(float w, float h)
 
 	if (Settings::getInstance()->getBool("MenusAllHeight"))
 	{
-		bool change_height_ratio = Settings::getInstance()->getBool("ShowHelpPrompts") || Settings::getInstance()->getBool("DrawClock");
+		bool change_height_ratio = Settings::getInstance()->getBool("ShowHelpPrompts");
 		float height_ratio = 1.0f;
 		if ( change_height_ratio )
 		{
