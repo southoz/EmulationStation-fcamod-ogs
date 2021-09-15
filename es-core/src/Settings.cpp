@@ -162,7 +162,7 @@ void Settings::setDefaults()
 	mBoolMap["LocalArt"] = false;
 
 	// Audio out device for volume control
-	mStringMap["AudioDevice"] = "Master";
+	mStringMap["AudioDevice"] = "Playback";
 	mStringMap["AudioCard"] = "default";
 
 	mStringMap["UIMode"] = "Full";
