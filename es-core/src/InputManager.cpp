@@ -11,8 +11,9 @@
 #include <iostream>
 #include <assert.h>
 
-#define KEYBOARD_GUID_STRING "-1"
-#define CEC_GUID_STRING      "-2"
+#define KEYBOARD_GUID_STRING          "-1"
+#define CEC_GUID_STRING               "-2"
+#define SYSTEM_HOT_KEY_NAME_STRING    "system_hk"
 
 // SO HEY POTENTIAL POOR SAP WHO IS TRYING TO MAKE SENSE OF ALL THIS (by which I mean my future self)
 // There are like four distinct IDs used for joysticks (crazy, right?)
@@ -31,7 +32,7 @@ int SDL_USER_CECBUTTONUP   = -1;
 
 InputManager* InputManager::mInstance = NULL;
 
-InputManager::InputManager() : mKeyboardInputConfig(NULL)
+InputManager::InputManager() : mKeyboardInputConfig(NULL), mIgnoreKeys(false)
 {
 }
 
@@ -220,7 +221,7 @@ bool InputManager::parseEvent(const SDL_Event& ev, Window* window)
 				else
 					normValue = -1;
 
-			window->input(getInputConfigByDevice(ev.jaxis.which), Input(ev.jaxis.which, TYPE_AXIS, ev.jaxis.axis, normValue, false));
+			propagateInputEvent(getInputConfigByDevice(ev.jaxis.which), Input(ev.jaxis.which, TYPE_AXIS, ev.jaxis.axis, normValue, false), window);
 			causedEvent = true;
 		}
 
@@ -229,11 +230,11 @@ bool InputManager::parseEvent(const SDL_Event& ev, Window* window)
 
 	case SDL_JOYBUTTONDOWN:
 	case SDL_JOYBUTTONUP:
-		window->input(getInputConfigByDevice(ev.jbutton.which), Input(ev.jbutton.which, TYPE_BUTTON, ev.jbutton.button, ev.jbutton.state == SDL_PRESSED, false));
+		propagateInputEvent(getInputConfigByDevice(ev.jbutton.which), Input(ev.jbutton.which, TYPE_BUTTON, ev.jbutton.button, ev.jbutton.state == SDL_PRESSED, false), window);
 		return true;
 
 	case SDL_JOYHATMOTION:
-		window->input(getInputConfigByDevice(ev.jhat.which), Input(ev.jhat.which, TYPE_HAT, ev.jhat.hat, ev.jhat.value, false));
+		propagateInputEvent(getInputConfigByDevice(ev.jhat.which), Input(ev.jhat.which, TYPE_HAT, ev.jhat.hat, ev.jhat.value, false), window);
 		return true;
 
 	case SDL_KEYDOWN:
@@ -253,11 +254,11 @@ bool InputManager::parseEvent(const SDL_Event& ev, Window* window)
 			return false;
 		}
 
-		window->input(getInputConfigByDevice(DEVICE_KEYBOARD), Input(DEVICE_KEYBOARD, TYPE_KEY, ev.key.keysym.sym, 1, false));
+		propagateInputEvent(getInputConfigByDevice(DEVICE_KEYBOARD), Input(DEVICE_KEYBOARD, TYPE_KEY, ev.key.keysym.sym, 1, false), window);
 		return true;
 
 	case SDL_KEYUP:
-		window->input(getInputConfigByDevice(DEVICE_KEYBOARD), Input(DEVICE_KEYBOARD, TYPE_KEY, ev.key.keysym.sym, 0, false));
+		propagateInputEvent(getInputConfigByDevice(DEVICE_KEYBOARD), Input(DEVICE_KEYBOARD, TYPE_KEY, ev.key.keysym.sym, 0, false), window);
 		return true;
 
 	case SDL_TEXTINPUT:
@@ -275,11 +276,27 @@ bool InputManager::parseEvent(const SDL_Event& ev, Window* window)
 
 	if((ev.type == (unsigned int)SDL_USER_CECBUTTONDOWN) || (ev.type == (unsigned int)SDL_USER_CECBUTTONUP))
 	{
-		window->input(getInputConfigByDevice(DEVICE_CEC), Input(DEVICE_CEC, TYPE_CEC_BUTTON, ev.user.code, ev.type == (unsigned int)SDL_USER_CECBUTTONDOWN, false));
+		propagateInputEvent(getInputConfigByDevice(DEVICE_CEC), Input(DEVICE_CEC, TYPE_CEC_BUTTON, ev.user.code, ev.type == (unsigned int)SDL_USER_CECBUTTONDOWN, false), window);
 		return true;
 	}
 
 	return false;
+}
+
+void InputManager::propagateInputEvent(InputConfig* config, Input input, Window* window)
+{
+	if (config->isMappedTo(SYSTEM_HOT_KEY_NAME_STRING, input))
+	{
+		if (input.value != 0)
+			mIgnoreKeys = true;
+		else
+			mIgnoreKeys = false;
+	}
+
+	if (mIgnoreKeys)
+		return;
+
+	window->input(config, input);
 }
 
 bool InputManager::loadInputConfig(InputConfig* config)

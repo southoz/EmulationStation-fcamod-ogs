@@ -4,8 +4,8 @@
 
 #include <SDL_joystick.h>
 #include <map>
+#include "InputConfig.h"
 
-class InputConfig;
 class Window;
 union SDL_Event;
 
@@ -18,6 +18,8 @@ private:
 	static InputManager* mInstance;
 
 	static const int DEADZONE = 23000;
+
+	bool mIgnoreKeys;
 
 	void loadDefaultKBConfig();
 
@@ -33,6 +35,9 @@ private:
 	void addJoystickByDeviceIndex(int id);
 	void removeJoystickByJoystickID(SDL_JoystickID id);
 	bool loadInputConfig(InputConfig* config); // returns true if successfully loaded, false if not (or didn't exist)
+
+	void propagateInputEvent(InputConfig* config, Input input, Window* window);
+
 
 public:
 	virtual ~InputManager();
