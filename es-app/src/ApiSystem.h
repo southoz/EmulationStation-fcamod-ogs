@@ -41,7 +41,8 @@ public:
 	{
 		TIMEZONE = 0,
 		POWER_KEY = 1,
-		DISPLAY = 2
+		DISPLAY = 2,
+		SYSTEM_HOTKEY_EVENTS = 3
 /*
 		WIFI = 0,
 		RETROACHIVEMENTS = 1,
@@ -124,12 +125,23 @@ public:
 	bool setTimezone(std::string timezone);
 
 	bool setPowerkeyState(bool state);
-	bool getPowerkeyState();
+	bool isPowerkeyState();
 	bool setPowerkeyTimeInterval(int time_interval);
 	int getPowerkeyTimeInterval();
 	bool setPowerkeyAction(const std::string action);
 	std::string getPowerkeyAction();
 	bool setDisplayBlinkLowBattery(bool blink);
+	bool setSystemHotkeyBrightnessEvent( bool state );
+	bool isSystemHotkeyBrightnessEvent();
+	bool setSystemHotkeyVolumeEvent( bool state );
+	bool isSystemHotkeyVolumeEvent();
+	bool setSystemHotkeyWifiEvent( bool state );
+	bool isSystemHotkeyWifiEvent();
+	bool setSystemHotkeyPerformanceEvent( bool state );
+	bool isSystemHotkeyPerformanceEvent();
+	bool setSystemHotkeySuspendEvent( bool state );
+	bool isSystemHotkeySuspendEvent();
+
 
 	static UpdateState::State state;
 

@@ -156,6 +156,9 @@ bool ApiSystem::isScriptingSupported(ScriptId script)
 		case DISPLAY:
 				executables.push_back("es-display");
 				break;
+		case SYSTEM_HOTKEY_EVENTS:
+				executables.push_back("es-system_hotkey");
+				break;
 
 /*
 	case ApiSystem::RETROACHIVEMENTS:
@@ -656,9 +659,9 @@ bool ApiSystem::setPowerkeyState(bool state)
 	return setCurrentPowerkeyState(state);
 }
 
-bool ApiSystem::getPowerkeyState()
+bool ApiSystem::isPowerkeyState()
 {
-	LOG(LogInfo) << "ApiSystem::getPowerkeyState()";
+	LOG(LogInfo) << "ApiSystem::isPowerkeyState()";
 
 	return queryCurrentPowerkeyState();
 }
@@ -696,4 +699,74 @@ bool ApiSystem::setDisplayBlinkLowBattery(bool blink)
 	LOG(LogInfo) << "ApiSystem::setPowerkeyAction()";
 
 	return setCurrentDisplayBlinkLowBattery(blink);
+}
+
+bool ApiSystem::setSystemHotkeyBrightnessEvent( bool state )
+{
+	LOG(LogInfo) << "ApiSystem::setSystemHotkeyBrightnessEvent()";
+
+	return setCurrentSystemHotkeyBrightnessEvent(state);
+}
+
+bool ApiSystem::isSystemHotkeyBrightnessEvent()
+{
+	LOG(LogInfo) << "ApiSystem::isSystemHotkeyBrightnessEvent()";
+
+	return queryCurrentSystemHotkeyBrightnessEvent();
+}
+
+bool ApiSystem::setSystemHotkeyVolumeEvent( bool state )
+{
+	LOG(LogInfo) << "ApiSystem::setSystemHotkeyVolumeEvent()";
+
+	return setCurrentSystemHotkeyVolumeEvent(state);
+}
+
+bool ApiSystem::isSystemHotkeyVolumeEvent()
+{
+	LOG(LogInfo) << "ApiSystem::isSystemHotkeyVolumeEvent()";
+
+	return queryCurrentSystemHotkeyVolumeEvent();
+}
+
+bool ApiSystem::setSystemHotkeyWifiEvent( bool state )
+{
+	LOG(LogInfo) << "ApiSystem::setSystemHotkeyWifiEvent()";
+
+	return setCurrentSystemHotkeyWifiEvent(state);
+}
+
+bool ApiSystem::isSystemHotkeyWifiEvent()
+{
+	LOG(LogInfo) << "ApiSystem::isSystemHotkeyWifiEvent()";
+
+	return queryCurrentSystemHotkeyWifiEvent();
+}
+
+bool ApiSystem::setSystemHotkeyPerformanceEvent( bool state )
+{
+	LOG(LogInfo) << "ApiSystem::setSystemHotkeyPerformanceEvent()";
+
+	return setCurrentSystemHotkeyPerformanceEvent(state);
+}
+
+bool ApiSystem::isSystemHotkeyPerformanceEvent()
+{
+	LOG(LogInfo) << "ApiSystem::isSystemHotkeyPerformanceEvent()";
+
+	return queryCurrentSystemHotkeyPerformanceEvent();
+}
+
+bool ApiSystem::setSystemHotkeySuspendEvent( bool state )
+{
+	LOG(LogInfo) << "ApiSystem::setSystemHotkeySuspendEvent()";
+
+	return setCurrentSystemHotkeySuspendEvent(state);
+}
+
+bool ApiSystem::isSystemHotkeySuspendEvent()
+{
+	LOG(LogInfo) << "ApiSystem::isSystemHotkeySuspendEvent()";
+
+	return queryCurrentSystemHotkeySuspendEvent();
 }

@@ -262,6 +262,17 @@ bool setCurrentPowerkeyAction(const std::string action);
 std::string queryCurrentPowerkeyAction();
 bool setCurrentDisplayBlinkLowBattery(bool blink);
 
+bool setCurrentSystemHotkeyBrightnessEvent( bool active );
+bool queryCurrentSystemHotkeyBrightnessEvent();
+bool setCurrentSystemHotkeyVolumeEvent( bool active );
+bool queryCurrentSystemHotkeyVolumeEvent();
+bool setCurrentSystemHotkeyWifiEvent( bool active );
+bool queryCurrentSystemHotkeyWifiEvent();
+bool setCurrentSystemHotkeyPerformanceEvent( bool active );
+bool queryCurrentSystemHotkeyPerformanceEvent();
+bool setCurrentSystemHotkeySuspendEvent( bool active );
+bool queryCurrentSystemHotkeySuspendEvent();
+
 std::string getShOutput(const std::string& mStr);
 
 #endif // ES_CORE_PLATFORM_H

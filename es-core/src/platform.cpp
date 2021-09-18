@@ -153,6 +153,16 @@ void processQuitMode()
 	}
 }
 
+std::string stateToString(bool state)
+{
+	return state ? std::string("enabled") : std::string("disabled");
+}
+
+bool stringToState(const std::string state)
+{
+	return ( Utils::String::replace(state, "\n", "") == "enabled" );
+}
+
 std::string queryBatteryRootPath()
 {
 	static std::string batteryRootPath;
@@ -902,15 +912,12 @@ bool setCurrentTimezone(std::string timezone)
 
 bool setCurrentPowerkeyState(bool state)
 {
-	return executeSystemScript("es-powerkey set two_push_shutdown " + (state ? std::string("enabled") : std::string("disabled")));
+	return executeSystemScript("es-powerkey set two_push_shutdown " + stateToString(state));
 }
 
 bool queryCurrentPowerkeyState()
 {
-	if ( Utils::String::replace(getShOutput(R"(es-powerkey get two_push_shutdown)"), "\n", "") == "enabled" )
-		return true;
-
-	return false;
+	return stringToState(getShOutput(R"(es-powerkey get two_push_shutdown)"));
 }
 
 bool setCurrentPowerkeyTimeInterval(int time_interval)
@@ -941,7 +948,57 @@ std::string queryCurrentPowerkeyAction()
 	return action;
 }
 
-bool setCurrentDisplayBlinkLowBattery(bool blink)
+bool setCurrentDisplayBlinkLowBattery(bool state)
 {
-	return executeSystemScript("es-display blink_low_battery " + (blink ? std::string("enabled") : std::string("disabled")));
+	return executeSystemScript("es-display blink_low_battery " + stateToString(state));
+}
+
+bool setCurrentSystemHotkeyBrightnessEvent( bool state )
+{
+	return executeSystemScript("es-system_hotkey set brightness " + stateToString(state));
+}
+
+bool queryCurrentSystemHotkeyBrightnessEvent()
+{
+	return stringToState(getShOutput(R"(es-system_hotkey get brightness)"));
+}
+
+bool setCurrentSystemHotkeyVolumeEvent( bool state )
+{
+	return executeSystemScript("es-system_hotkey set volume " + stateToString(state));
+}
+
+bool queryCurrentSystemHotkeyVolumeEvent()
+{
+	return stringToState(getShOutput(R"(es-system_hotkey get volume)"));
+}
+
+bool setCurrentSystemHotkeyWifiEvent( bool state )
+{
+	return executeSystemScript("es-system_hotkey set wifi " + stateToString(state));
+}
+
+bool queryCurrentSystemHotkeyWifiEvent()
+{
+	return stringToState(getShOutput(R"(es-system_hotkey get wifi)"));
+}
+
+bool setCurrentSystemHotkeyPerformanceEvent( bool state )
+{
+	return executeSystemScript("es-system_hotkey set performance " + stateToString(state));
+}
+
+bool queryCurrentSystemHotkeyPerformanceEvent()
+{
+	return stringToState(getShOutput(R"(es-system_hotkey get performance)"));
+}
+
+bool setCurrentSystemHotkeySuspendEvent( bool state )
+{
+	return executeSystemScript("es-system_hotkey set suspend " + stateToString(state));
+}
+
+bool queryCurrentSystemHotkeySuspendEvent()
+{
+	return stringToState(getShOutput(R"(es-system_hotkey get suspend)"));
 }

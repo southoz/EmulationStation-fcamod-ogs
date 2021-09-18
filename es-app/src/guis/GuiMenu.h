@@ -39,6 +39,7 @@ private:
 	void openSystemInformation();
 	void openQuitSettings();
 	void openMenusSettings();
+	void openSystemHotkeyEventsSettings();
 
 	void openUpdateSettings();
 	void openEmulatorSettings();

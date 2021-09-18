@@ -13,6 +13,7 @@
 #include "guis/GuiSystemInformation.h"
 #include "guis/GuiQuitOptions.h"
 #include "guis/GuiMenusOptions.h"
+#include "guis/GuiSystemHotkeyEventsOptions.h"
 #include "views/UIModeController.h"
 #include "views/ViewController.h"
 #include "CollectionSystemManager.h"
@@ -1692,6 +1693,11 @@ void GuiMenu::openAdvancedSettings()
 
 	s->addEntry(_("\"QUIT\" SETTINGS"), true, [this] { openQuitSettings(); });
 
+	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::ScriptId::SYSTEM_HOTKEY_EVENTS))
+	{
+		s->addEntry(_("SYSTEM HOTKEY EVENTS SETTINGS"), true, [this] { openSystemHotkeyEventsSettings(); });
+	}
+
 
 	// log level
 	auto logLevel = std::make_shared< OptionListComponent<std::string> >(mWindow, _("LOG LEVEL"), false);
@@ -1768,6 +1774,11 @@ void GuiMenu::openQuitSettings()
 	});
 
 	mWindow->pushGui(s);
+}
+
+void GuiMenu::openSystemHotkeyEventsSettings()
+{
+	mWindow->pushGui(new GuiSystemHotkeyEventsOptions(mWindow));
 }
 
 void GuiMenu::openMenusSettings()

@@ -95,7 +95,7 @@ void GuiQuitOptions::initializeMenu()
 
 		// push powerkey double to shutdown
 		auto powerkey = std::make_shared<SwitchComponent>(mWindow);
-		bool powerkey_value = ApiSystem::getInstance()->getPowerkeyState();
+		bool powerkey_value = ApiSystem::getInstance()->isPowerkeyState();
 		powerkey->setState( powerkey_value );
 		addWithLabel(_("PUSH TWO TIMES TO EXECUTE ACTION"), powerkey);
 		addSaveFunc([this, powerkey, powerkey_value]
