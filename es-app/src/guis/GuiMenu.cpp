@@ -151,17 +151,13 @@ void GuiMenu::openDisplaySettings()
 
 	// Brightness
 	auto brightness = std::make_shared<SliderComponent>(mWindow, 1.0f, 100.f, 1.0f, "%");
-	int old_brightness_level = ApiSystem::getInstance()->getBrightnessLevel();
-	brightness->setValue((float) old_brightness_level);
+	brightness->setValue((float) ApiSystem::getInstance()->getBrightnessLevel());
 	s->addWithLabel(_("BRIGHTNESS"), brightness);
-	s->addSaveFunc([s, brightness, old_brightness_level]
+	brightness->setOnValueChanged([s](const float &newVal)
 		{
-			if (old_brightness_level != (int)Math::round( brightness->getValue() ))
-			{
-				ApiSystem::getInstance()->setBrightnessLevel( (int)Math::round( brightness->getValue() ));
-				if (Settings::getInstance()->getBool("FullScreenMode"))
-					s->setVariable("reloadGuiMenu", true);
-			}
+			ApiSystem::getInstance()->setBrightnessLevel( (int)Math::round( newVal ) );
+			if (Settings::getInstance()->getBool("FullScreenMode"))
+				s->setVariable("reloadGuiMenu", true);
 		});
 
 		// brightness
@@ -429,14 +425,21 @@ void GuiMenu::openScraperSettings()
 
 void GuiMenu::openSoundSettings()
 {
+	auto pthis = this;
+	Window* window = mWindow;
+
 	auto s = new GuiSettings(mWindow, _("SOUND SETTINGS"));
 	
 	// volume
 	auto volume = std::make_shared<SliderComponent>(mWindow, 0.f, 100.f, 1.f, "%");
-	volume->setValue((float)VolumeControl::getInstance()->getVolume());
-	volume->setOnValueChanged([](const float &newVal) { VolumeControl::getInstance()->setVolume((int)Math::round(newVal)); });
+	volume->setValue( (float)ApiSystem::getInstance()->getVolume() );
 	s->addWithLabel(_("SYSTEM VOLUME"), volume);
-	//s->addSaveFunc([volume] { VolumeControl::getInstance()->setVolume((int)Math::round(volume->getValue())); });
+	volume->setOnValueChanged([s](const float &newVal)
+		{
+			ApiSystem::getInstance()->setVolume( (int)Math::round(newVal) );
+			if (Settings::getInstance()->getBool("FullScreenMode"))
+				s->setVariable("reloadGuiMenu", true);
+		});
 
 	if (UIModeController::getInstance()->isUIModeFull())
 	{
@@ -558,6 +561,20 @@ void GuiMenu::openSoundSettings()
 		videolowermusic->setState(Settings::getInstance()->getBool("VideoLowersMusic"));
 		s->addWithLabel(_("LOWER MUSIC WHEN PLAYING VIDEO"), videolowermusic);
 		s->addSaveFunc([videolowermusic] { Settings::getInstance()->setBool("VideoLowersMusic", videolowermusic->getState()); });
+	}
+
+	if (Settings::getInstance()->getBool("FullScreenMode"))
+	{
+
+		s->onFinalize([s, pthis, window]
+		{
+			if (s->getVariable("reloadGuiMenu"))
+			{
+				delete pthis;
+				window->pushGui(new GuiMenu(window, false));
+			}
+		});
+
 	}
 
 	s->updatePosition();
