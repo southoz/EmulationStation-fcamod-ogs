@@ -90,6 +90,7 @@ const std::map<PlatformId, unsigned short> screenscraper_platformid_map{
 	{ PLAYSTATION_VITA, 62 },
 	{ PLAYSTATION_PORTABLE, 61 },
 	{ SUPER_NINTENDO, 4 },
+	{ SUPER_NINTENDO_MSU1, 210 },
 	{ TURBOGRAFX_16, 31 },
 	{ TURBOGRAFX_CD, 114 },
 	{ WONDERSWAN, 45 },

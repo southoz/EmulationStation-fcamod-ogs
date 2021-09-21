@@ -69,6 +69,7 @@ namespace PlatformIds
 		{ "psvita",          PLAYSTATION_VITA },
 		{ "psp",             PLAYSTATION_PORTABLE },
 		{ "snes",            SUPER_NINTENDO },
+		{ "snes-msu1",       SUPER_NINTENDO_MSU1 },
 		{ "scummvm",         SCUMMVM },
 		{ "x68000",          SHARP_X6800 },
 		{ "pcengine",        TURBOGRAFX_16 }, // (aka PC Engine) HuCards onlyy
