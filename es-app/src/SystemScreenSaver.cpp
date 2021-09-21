@@ -69,12 +69,12 @@ void SystemScreenSaver::startScreenSaver()
 
 	stopScreenSaver();
 
+	if (!loadingNext && Settings::getInstance()->getBool("StopMusicOnScreenSaver")) //Settings::getInstance()->getBool("VideoAudio"))
+		AudioManager::getInstance()->deinit();
+
 	std::string screensaver_behavior = Settings::getInstance()->getString("ScreenSaverBehavior");
 	if (screensaver_behavior == "random video")
 	{
-		if (!loadingNext && Settings::getInstance()->getBool("VideoAudio"))
-			//AudioManager::getInstance()->deinit();
-
 		mVideoChangeTime = Settings::getInstance()->getInt("ScreenSaverSwapVideoTimeout");
 
 		// Configure to fade out the windows, Skip Fading if Instant mode
@@ -191,10 +191,13 @@ void SystemScreenSaver::stopScreenSaver()
 	PowerSaver::runningScreenSaver(false);
 
 	// Exiting video screen saver -> Restore sound
-	if (isExitingScreenSaver && Settings::getInstance()->getBool("VideoAudio") && mVideoScreensaver)
+	if (isExitingScreenSaver && Settings::getInstance()->getBool("StopMusicOnScreenSaver")) // && Settings::getInstance()->getBool("VideoAudio") && mVideoScreensaver)
 	{
 		AudioManager::getInstance()->init();
-		AudioManager::getInstance()->playRandomMusic();
+
+		if (Settings::getInstance()->getBool("audio.bgmusic"))
+			AudioManager::getInstance()->playRandomMusic();
+
 	}
 }
 

@@ -44,6 +44,15 @@ GuiGeneralScreensaverOptions::GuiGeneralScreensaverOptions(Window* window, std::
 		PowerSaver::updateTimeouts();
 	});
 
+	// Screensaver stops music
+	if (Settings::getInstance()->getBool("audio.bgmusic"))
+	{
+		auto ctlStopMusic = std::make_shared<SwitchComponent>(mWindow);
+		ctlStopMusic->setState(Settings::getInstance()->getBool("StopMusicOnScreenSaver"));
+		addWithLabel(_("STOP MUSIC ON SCREENSAVER"), ctlStopMusic);
+		addSaveFunc([ctlStopMusic] { Settings::getInstance()->setBool("StopMusicOnScreenSaver", ctlStopMusic->getState()); });
+	}
+
 	ComponentListRow row;
 
 	// show filtered menu

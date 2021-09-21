@@ -909,6 +909,10 @@ msgid "SCREENSAVER BEHAVIOR"
 msgstr "MODO DE SALVAPANTALLAS"
 
 #:
+msgid "STOP MUSIC ON SCREENSAVER"
+msgstr "DETENER MÚSICA EN EL SALVAPANTALLAS"
+
+#:
 msgid "random video"
 msgstr "vídeo aleatorio"
 
