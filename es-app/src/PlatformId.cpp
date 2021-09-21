@@ -99,6 +99,7 @@ namespace PlatformIds
 		{ "zx81",            ZX81 },
 		{ "tic80",           TIC80 },
 		{ "ti99",            TI_99 },
+		{ "astrocade",       ASTROCADE },
 
 		// batocera specific names
 		{ "gb2players",      GAME_BOY },
