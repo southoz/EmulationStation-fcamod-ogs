@@ -540,6 +540,10 @@ msgid "THREADED LOADING"
 msgstr "Acelerar la carga del sistema"
 
 #:
+msgid "SHOW FILE BROWSER"
+msgstr "MOSTRAR NAVEGADOR DE ARCHIVOS"
+
+#:
 msgid "PRELOAD VLC SETTINGS"
 msgstr "CONFIGURACIÓN PRECARGA VLC"
 

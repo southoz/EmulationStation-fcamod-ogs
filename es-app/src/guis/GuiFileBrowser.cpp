@@ -45,7 +45,7 @@ GuiFileBrowser::GuiFileBrowser(Window* window, const std::string startPath, cons
 
 	if (startPath.empty() || !Utils::FileSystem::exists(startPath))
 	{
-		navigateTo(Utils::FileSystem::getEsConfigPath() + "/screenshots");
+		navigateTo(Utils::FileSystem::getHomePath() + "/screenshots");
 	}
 	else
 		navigateTo(startPath);
@@ -197,7 +197,7 @@ bool GuiFileBrowser::input(InputConfig* config, Input input)
 
 	if (config->isMappedTo("select", input))
 	{
-		navigateTo(Utils::FileSystem::getEsConfigPath() + "/screenshots");
+		navigateTo(Utils::FileSystem::getHomePath() + "/screenshots");
 		return true;
 	}
 

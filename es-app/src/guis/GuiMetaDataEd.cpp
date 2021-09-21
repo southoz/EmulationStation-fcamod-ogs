@@ -234,7 +234,11 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 						dir = relativePath;
 
 					std::string title = iter->displayName + " - " + mMetaData->getName();
-					mWindow->pushGui(new GuiFileBrowser(mWindow, dir, filePath, type, updateVal, title));
+
+					if (Settings::getInstance()->getBool("ShowFileBrowser"))
+						mWindow->pushGui(new GuiFileBrowser(mWindow, dir, filePath, type, updateVal, title));
+					else
+						mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, title, filePath, updateVal, false));
 				});
 
 				break;

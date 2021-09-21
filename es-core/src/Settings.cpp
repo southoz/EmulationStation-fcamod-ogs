@@ -141,13 +141,14 @@ void Settings::setDefaults()
 	mIntMap["ScreenSaverSwapImageTimeout"] = 10000;
 	mBoolMap["SlideshowScreenSaverStretch"] = false;
 	mBoolMap["SlideshowScreenSaverCustomImageSource"] = false;
-	mStringMap["SlideshowScreenSaverImageDir"] = Utils::FileSystem::getEsConfigPath() + "/slideshow/image";
+	mStringMap["SlideshowScreenSaverImageDir"] = Utils::FileSystem::getHomePath() + "/slideshow/image";
 	mStringMap["SlideshowScreenSaverImageFilter"] = ".png,.jpg";
 	mBoolMap["SlideshowScreenSaverRecurse"] = false;
 	mBoolMap["SlideshowScreenSaverGameName"] = true;
 	mIntMap["ScreenSaverSwapVideoTimeout"] = 30000;
 
 	mBoolMap["ShowFilenames"] = false;
+	mBoolMap["ShowFileBrowser"] = true;
 
 	mBoolMap["VideoAudio"] = true;
 	mBoolMap["VolumePopup"] = true;

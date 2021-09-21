@@ -1772,6 +1772,13 @@ void GuiMenu::openAdvancedSettings()
 		}
 	});
 
+	// show file browser
+	auto show_file_browser = std::make_shared<SwitchComponent>(mWindow);
+	show_file_browser->setState(Settings::getInstance()->getBool("ShowFileBrowser"));
+	s->addWithLabel(_("SHOW FILE BROWSER"), show_file_browser);
+	s->addSaveFunc([show_file_browser] { Settings::getInstance()->setBool("ShowFileBrowser", show_file_browser->getState()); });
+
+
 	// CONTROLLER ACTIVITY
 /*
 	auto activity = std::make_shared<SwitchComponent>(mWindow);

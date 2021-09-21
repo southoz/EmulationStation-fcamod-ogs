@@ -198,17 +198,18 @@ namespace Utils
 		}
 
 		int FileSystemCacheActivator::mReferenceCount = 0;
-			   
+
 		fileList getDirInfo(const std::string& _path/*, const bool _recursive*/)
 		{
 			std::string path = getGenericPath(_path);
 			fileList  contentList;
 
+			// tell filecache we enumerated the folder
+			FileCache::add(path + "/*", FileCache(true, true));
+
 			// only parse the directory, if it's a directory
 			if (isDirectory(path))
 			{
-				FileCache::add(path + "/*", FileCache(true, true));
-
 				DIR* dir = opendir(path.c_str());
 
 				if (dir != NULL)
@@ -223,15 +224,27 @@ namespace Utils
 						// ignore "." and ".."
 						if ((name != ".") && (name != ".."))
 						{
-							std::string fullName(path + "/" + getGenericPath(name));
+							std::string fullName(getGenericPath(path + "/" + name));
 
 							FileInfo fi;
 							fi.path = fullName;
 							fi.hidden = Utils::FileSystem::isHidden(fullName);
-							fi.directory = (entry->d_type == 4); // DT_DIR;
-							contentList.push_back(fi);
+
+							if (entry->d_type == 10) // DT_LNK
+							{
+								struct stat64 si;
+								if (stat64(resolveSymlink(fullName).c_str(), &si) == 0)
+									fi.directory = S_ISDIR(si.st_mode);
+								else
+									fi.directory = false;
+							}
+							else
+								fi.directory = (entry->d_type == 4); // DT_DIR;
 
 							FileCache::add(fullName, FileCache(entry, fi.hidden));
+
+							//DT_LNK
+							contentList.push_back(fi);
 						}
 					}
 

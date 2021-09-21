@@ -60,7 +60,13 @@ GuiSlideshowScreensaverOptions::GuiSlideshowScreensaverOptions(Window* window, c
 	addSaveFunc([sss_custom_source] { Settings::getInstance()->setBool("SlideshowScreenSaverCustomImageSource", sss_custom_source->getState()); });
 
 	// custom image directory
-	auto sss_image_dir = addBrowsablePath(_("CUSTOM IMAGE DIR"), Settings::getInstance()->getString("SlideshowScreenSaverImageDir"));
+	std::shared_ptr<TextComponent> sss_image_dir = nullptr;
+
+	if (Settings::getInstance()->getBool("ShowFileBrowser"))
+		sss_image_dir = addBrowsablePath(_("CUSTOM IMAGE DIR"), Settings::getInstance()->getString("SlideshowScreenSaverImageDir"));
+	else
+		sss_image_dir = addEditableTextComponent(_("CUSTOM IMAGE DIR"), Settings::getInstance()->getString("SlideshowScreenSaverImageDir"));
+
 	addSaveFunc([sss_image_dir] { Settings::getInstance()->setString("SlideshowScreenSaverImageDir", sss_image_dir->getValue()); });
 
 	// recurse custom image directory
