@@ -11,6 +11,7 @@
 #include "Window.h"
 #include "components/AsyncNotificationComponent.h"
 #include "VolumeControl.h"
+#include "EsLocale.h"
 #include <algorithm>
 
 UpdateState::State ApiSystem::state = UpdateState::State::NO_UPDATE;
@@ -158,6 +159,9 @@ bool ApiSystem::isScriptingSupported(ScriptId script)
 				break;
 		case SYSTEM_HOTKEY_EVENTS:
 				executables.push_back("es-system_hotkey");
+				break;
+		case WIFI:
+				executables.push_back("es-wifi");
 				break;
 
 /*
@@ -485,7 +489,7 @@ std::string ApiSystem::getIpAddress()
 
 	std::string result = queryIPAddress(); // platform.h
 	if (result.empty())
-		return "NOT CONNECTED";
+		return "";
 
 	return result;
 }
@@ -654,119 +658,166 @@ bool ApiSystem::setTimezone(std::string timezone)
 
 bool ApiSystem::setPowerkeyState(bool state)
 {
-	LOG(LogInfo) << "ApiSystem::setPowerkeyState() - state: " << Utils::String::boolToString(state);
+	LOG(LogInfo) << "ApiSystem::setPowerkeyState()";
 
-	return setCurrentPowerkeyState(state);
+	return executeSystemScript("es-powerkey set two_push_shutdown " + stateToString(state));
 }
 
 bool ApiSystem::isPowerkeyState()
 {
 	LOG(LogInfo) << "ApiSystem::isPowerkeyState()";
 
-	return queryCurrentPowerkeyState();
+	return stringToState(getShOutput(R"(es-powerkey get two_push_shutdown)"));
 }
 
-bool ApiSystem::setPowerkeyTimeInterval(int interval_time)
+bool ApiSystem::setPowerkeyTimeInterval(int time_interval)
 {
-	LOG(LogInfo) << "ApiSystem::setPowerkeyTimeInterval() - interval_time: " << std::to_string(interval_time);
+	LOG(LogInfo) << "ApiSystem::setPowerkeyTimeInterval()";
 
-	return setCurrentPowerkeyTimeInterval(interval_time);
+	return executeSystemScript("es-powerkey set max_interval_time " + std::to_string(time_interval));
 }
 
 int ApiSystem::getPowerkeyTimeInterval()
 {
 	LOG(LogInfo) << "ApiSystem::getPowerkeyTimeInterval()";
 
-	return queryCurrentPowerkeyTimeInterval();
+	std::string time_interval = Utils::String::replace(getShOutput(R"(es-powerkey get max_interval_time)"), "\n", "");
+	if (time_interval.empty())
+		return 5;
+
+	return std::atoi( time_interval.c_str() );
 }
 
 bool ApiSystem::setPowerkeyAction(const std::string action)
 {
 	LOG(LogInfo) << "ApiSystem::setPowerkeyAction()";
 
-	return setCurrentPowerkeyAction(action);
+	return executeSystemScript("es-powerkey set action " + action);
 }
 
 std::string ApiSystem::getPowerkeyAction()
 {
 	LOG(LogInfo) << "ApiSystem::getPowerkeyAction()";
 
-	return queryCurrentPowerkeyAction();
+	std::string action = Utils::String::replace(getShOutput(R"(es-powerkey get action)"), "\n", "");
+	if (action.empty())
+		return "shutdown";
+
+	return action;
 }
 
 bool ApiSystem::setDisplayBlinkLowBattery(bool blink)
 {
 	LOG(LogInfo) << "ApiSystem::setPowerkeyAction()";
 
-	return setCurrentDisplayBlinkLowBattery(blink);
+	return executeSystemScript("es-display blink_low_battery " + stateToString(state));
 }
 
 bool ApiSystem::setSystemHotkeyBrightnessEvent( bool state )
 {
 	LOG(LogInfo) << "ApiSystem::setSystemHotkeyBrightnessEvent()";
 
-	return setCurrentSystemHotkeyBrightnessEvent(state);
+	return executeSystemScript("es-system_hotkey set brightness " + stateToString(state));
 }
 
 bool ApiSystem::isSystemHotkeyBrightnessEvent()
 {
 	LOG(LogInfo) << "ApiSystem::isSystemHotkeyBrightnessEvent()";
 
-	return queryCurrentSystemHotkeyBrightnessEvent();
+	return stringToState(getShOutput(R"(es-system_hotkey get brightness)"));
 }
 
 bool ApiSystem::setSystemHotkeyVolumeEvent( bool state )
 {
 	LOG(LogInfo) << "ApiSystem::setSystemHotkeyVolumeEvent()";
 
-	return setCurrentSystemHotkeyVolumeEvent(state);
+	return executeSystemScript("es-system_hotkey set volume " + stateToString(state));
 }
 
 bool ApiSystem::isSystemHotkeyVolumeEvent()
 {
 	LOG(LogInfo) << "ApiSystem::isSystemHotkeyVolumeEvent()";
 
-	return queryCurrentSystemHotkeyVolumeEvent();
+	return stringToState(getShOutput(R"(es-system_hotkey get volume)"));
 }
 
 bool ApiSystem::setSystemHotkeyWifiEvent( bool state )
 {
 	LOG(LogInfo) << "ApiSystem::setSystemHotkeyWifiEvent()";
 
-	return setCurrentSystemHotkeyWifiEvent(state);
+	return executeSystemScript("es-system_hotkey set wifi " + stateToString(state));
 }
 
 bool ApiSystem::isSystemHotkeyWifiEvent()
 {
 	LOG(LogInfo) << "ApiSystem::isSystemHotkeyWifiEvent()";
 
-	return queryCurrentSystemHotkeyWifiEvent();
+	return stringToState(getShOutput(R"(es-system_hotkey get wifi)"));
 }
 
 bool ApiSystem::setSystemHotkeyPerformanceEvent( bool state )
 {
 	LOG(LogInfo) << "ApiSystem::setSystemHotkeyPerformanceEvent()";
 
-	return setCurrentSystemHotkeyPerformanceEvent(state);
+	return executeSystemScript("es-system_hotkey set performance " + stateToString(state));
 }
 
 bool ApiSystem::isSystemHotkeyPerformanceEvent()
 {
 	LOG(LogInfo) << "ApiSystem::isSystemHotkeyPerformanceEvent()";
 
-	return queryCurrentSystemHotkeyPerformanceEvent();
+	return stringToState(getShOutput(R"(es-system_hotkey get performance)"));
 }
 
 bool ApiSystem::setSystemHotkeySuspendEvent( bool state )
 {
 	LOG(LogInfo) << "ApiSystem::setSystemHotkeySuspendEvent()";
 
-	return setCurrentSystemHotkeySuspendEvent(state);
+	return executeSystemScript("es-system_hotkey set suspend " + stateToString(state));
 }
 
 bool ApiSystem::isSystemHotkeySuspendEvent()
 {
 	LOG(LogInfo) << "ApiSystem::isSystemHotkeySuspendEvent()";
 
-	return queryCurrentSystemHotkeySuspendEvent();
+	return stringToState(getShOutput(R"(es-system_hotkey get suspend)"));
+}
+
+bool ApiSystem::ping()
+{
+	if (!executeScript("timeout 1 ping -c 1 -t 255 8.8.8.8")) // ping Google DNS
+		return executeScript("timeout 2 ping -c 1 -t 255 8.8.4.4"); // ping Google secondary DNS & give 2 seconds
+
+	return true;
+}
+
+std::vector<std::string> ApiSystem::getWifiNetworks(bool scan)
+{
+	LOG(LogInfo) << "ApiSystem::getWifiNetworks()";
+
+	return executeEnumerationScript(scan ? "es-wifi scanlist" : "es-wifi list");
+}
+
+bool ApiSystem::enableWifi(std::string ssid, std::string key)
+{
+	LOG(LogInfo) << "ApiSystem::enableWifi()";
+
+	return executeScript("es-wifi enable \"" + ssid + "\" \"" + key + "\"");
+}
+
+bool ApiSystem::disableWifi()
+{
+	LOG(LogInfo) << "ApiSystem::disableWifi()";
+
+	return executeScript("es-wifi disable");
+}
+
+std::string ApiSystem::stateToString(bool state)
+{
+	return state ? std::string("enabled") : std::string("disabled");
+}
+
+bool ApiSystem::stringToState(const std::string state)
+{
+	return ( Utils::String::replace(state, "\n", "") == "enabled" );
 }

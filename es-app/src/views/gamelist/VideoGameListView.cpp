@@ -4,6 +4,7 @@
 #include "components/VideoVlcComponent.h"
 #include "utils/FileSystemUtil.h"
 #include "views/ViewController.h"
+#include "Window.h"
 
 VideoGameListView::VideoGameListView(Window* window, FolderData* root) :
 	BasicGameListView(window, root),
@@ -108,6 +109,8 @@ VideoGameListView::~VideoGameListView()
 
 	if (mVideo != nullptr)
 		delete mVideo;
+
+	mWindow->unregisterPostedFunctions(this);
 }
 
 void VideoGameListView::createThumbnail()

@@ -15,7 +15,7 @@ GuiSettings::GuiSettings(Window* window, const std::string title) : GuiComponent
 	addChild(&mMenu);
 
 	mCloseButton = "start";
-	mMenu.addButton(_("BACK"), _("go back"), [this] { close(); });
+	mMenu.addButton(_("BACK"), _("BACK"), [this] { close(); });
 
 	setSize((float)Renderer::getScreenWidth(), (float)Renderer::getScreenHeight());
 

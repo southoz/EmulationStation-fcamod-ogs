@@ -96,7 +96,8 @@ public:
 	void registerNotificationComponent(AsyncNotificationComponent* pc);
 	void unRegisterNotificationComponent(AsyncNotificationComponent* pc);
 
-	void postToUiThread(const std::function<void(Window*)>& func);
+	void postToUiThread(const std::function<void()>& func, void* data = nullptr);
+	void unregisterPostedFunctions(void* data);
 	void reactivateGui();
 
 	void onThemeChanged(const std::shared_ptr<ThemeData>& theme);
@@ -106,7 +107,14 @@ private:
 
 	void renderRegisteredNotificationComponents(const Transform4x4f& trans);
 	std::vector<AsyncNotificationComponent*> mAsyncNotificationComponent;
-	std::vector<std::function<void(Window*)>> mFunctions;
+
+	struct PostedFunction
+	{
+		std::function<void()> func;
+		void* container;
+	};
+
+	std::vector<PostedFunction> mFunctions;
 
 	typedef std::pair<std::string, int> NotificationMessage;
 	std::vector<NotificationMessage> mNotificationMessages;

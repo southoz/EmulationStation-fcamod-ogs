@@ -66,8 +66,9 @@ void ThreadedScraper::processError(int status, const std::string statusString)
 		status == HttpReq::REQ_403_BADLOGIN || status == HttpReq::REQ_401_FORBIDDEN)
 	{
 		mExit = true;
+		Window* w = mWindow;
 		std::string msg_status( Utils::String::trim(statusString) );
-		mWindow->postToUiThread([msg_status](Window* w) { w->pushGui(new GuiMsgBox(w, _("SCRAPE FAILED") + " : " + _(msg_status))); });
+		mWindow->postToUiThread([msg_status, w]() { w->pushGui(new GuiMsgBox(w, _("SCRAPE FAILED") + " : " + msg_status)); });
 		LOG(LogInfo) << "ThreadedScraper::processError():71 - ThreadedScraper search error for traslations: " << Utils::String::showSpecialCharacters(msg_status);
 	}
 	else
@@ -183,7 +184,7 @@ void ThreadedScraper::acceptResult(const ScraperSearchResult& result)
 
 	auto game = search.game;
 
-	mWindow->postToUiThread([game, result](Window* w)
+	mWindow->postToUiThread([game, result]()
 	{
 		LOG(LogDebug) << "ThreadedScraper::importScrappedMetadata";
 		game->getMetadata().importScrappedMetadata(result.mdl);

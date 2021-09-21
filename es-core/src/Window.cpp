@@ -793,11 +793,28 @@ void Window::renderRegisteredNotificationComponents(const Transform4x4f& trans)
 	}
 }
 
-void Window::postToUiThread(const std::function<void(Window*)>& func)
+void Window::unregisterPostedFunctions(void* data)
+{
+	if (data == nullptr)
+		return;
+
+	for (auto it = mFunctions.cbegin(); it != mFunctions.cend(); )
+	{
+		if ((*it).container == data)
+			it = mFunctions.erase(it);
+		else
+			it++;
+	}
+}
+
+void Window::postToUiThread(const std::function<void()>& func, void* data)
 {
 	std::unique_lock<std::mutex> lock(mNotificationMessagesLock);
 
-	mFunctions.push_back(func);
+	PostedFunction pf;
+	pf.func = func;
+	pf.container = data;
+	mFunctions.push_back(pf);
 }
 
 void Window::processPostedFunctions()
@@ -805,7 +822,9 @@ void Window::processPostedFunctions()
 	std::unique_lock<std::mutex> lock(mNotificationMessagesLock);
 
 	for (auto func : mFunctions)
-		func(this);
+	{
+		TRYCATCH("processPostedFunction", func.func())
+	}
 
 	mFunctions.clear();
 }

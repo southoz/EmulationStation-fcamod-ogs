@@ -132,7 +132,7 @@ private:
 				mMenu.addRow(row, (!mParent->mMultiSelect && it->selected));
 			}
 
-			mMenu.addButton(_("BACK"), _("accept"), [this] { delete this; });
+			mMenu.addButton(_("BACK"), _("ACCEPT"), [this] { delete this; });
 
 			if(mParent->mMultiSelect)
 			{
@@ -231,7 +231,7 @@ public:
 		mRightArrow.setResize(0, mText.getFont()->getLetterHeight());
 
 		if(mSize.x() < (mLeftArrow.getSize().x() + mRightArrow.getSize().x()))
-			LOG(LogWarning) << "OptionListComponent too narrow!";
+			LOG(LogWarning) << "OptionListComponent::onSizeChanged() - too narrow!";
 
 		mText.setSize(mSize.x() - mLeftArrow.getSize().x() - mRightArrow.getSize().x(), mText.getFont()->getHeight());
 

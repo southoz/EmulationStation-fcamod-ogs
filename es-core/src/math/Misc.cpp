@@ -85,6 +85,12 @@ namespace Math
 
 	} // Math::smootherStep
 
+	float easeOutCubic(const float _t)
+	{
+		float f = Math::lerp(0, 1.01, 1 - pow(1 - _t, 3));
+		return f >= 1.0 ? 1.0 : f;
+	} // Math::easeOutCubic
+
 	namespace Scroll
 	{
 		float bounce(const float _delayTime, const float _scrollTime, const float _currentTime, const float _scrollLength)

@@ -40,12 +40,15 @@ private:
 	void openQuitSettings();
 	void openMenusSettings();
 	void openSystemHotkeyEventsSettings();
+	void openNetworkSettings(bool selectWifiEnable = false);
+
+	static void openWifiSettings(Window* win, std::string title, std::string data, const std::function<void(std::string)>& onsave);
 
 	void openUpdateSettings();
 	void openEmulatorSettings();
 	void openSystemEmulatorSettings(SystemData* system);
 
-	void createInputTextRow(GuiSettings *gui, std::string title, const char *settingsID, bool password);
+	void createInputTextRow(GuiSettings * gui, std::string title, const char* settingsID, bool password, bool storeInSettings=false, const std::function<void(Window*, std::string/*title*/, std::string /*value*/, const std::function<void(std::string)>& onsave)>& customEditor = nullptr);
 	void openDisplaySettings();
 
 	MenuComponent mMenu;

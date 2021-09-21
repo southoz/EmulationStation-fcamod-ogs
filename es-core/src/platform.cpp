@@ -153,16 +153,6 @@ void processQuitMode()
 	}
 }
 
-std::string stateToString(bool state)
-{
-	return state ? std::string("enabled") : std::string("disabled");
-}
-
-bool stringToState(const std::string state)
-{
-	return ( Utils::String::replace(state, "\n", "") == "enabled" );
-}
-
 std::string queryBatteryRootPath()
 {
 	static std::string batteryRootPath;
@@ -908,97 +898,4 @@ bool setCurrentTimezone(std::string timezone)
 		return executeSystemScript("/usr/bin/sudo timedatectl set-timezone \"" + timezone + '"');
 
 	return executeSystemScript("sudo ln -sf \"/usr/share/zoneinfo/" + timezone +"\" /etc/localtime");
-}
-
-bool setCurrentPowerkeyState(bool state)
-{
-	return executeSystemScript("es-powerkey set two_push_shutdown " + stateToString(state));
-}
-
-bool queryCurrentPowerkeyState()
-{
-	return stringToState(getShOutput(R"(es-powerkey get two_push_shutdown)"));
-}
-
-bool setCurrentPowerkeyTimeInterval(int time_interval)
-{
-	return executeSystemScript("es-powerkey set max_interval_time " + std::to_string(time_interval));
-}
-
-int queryCurrentPowerkeyTimeInterval()
-{
-	std::string time_interval = Utils::String::replace(getShOutput(R"(es-powerkey get max_interval_time)"), "\n", "");
-	if (time_interval.empty())
-		return 5;
-
-	return std::atoi( time_interval.c_str() );
-}
-
-bool setCurrentPowerkeyAction(const std::string action)
-{
-	return executeSystemScript("es-powerkey set action " + action);
-}
-
-std::string queryCurrentPowerkeyAction()
-{
-	std::string action = Utils::String::replace(getShOutput(R"(es-powerkey get action)"), "\n", "");
-	if (action.empty())
-		return "shutdown";
-
-	return action;
-}
-
-bool setCurrentDisplayBlinkLowBattery(bool state)
-{
-	return executeSystemScript("es-display blink_low_battery " + stateToString(state));
-}
-
-bool setCurrentSystemHotkeyBrightnessEvent( bool state )
-{
-	return executeSystemScript("es-system_hotkey set brightness " + stateToString(state));
-}
-
-bool queryCurrentSystemHotkeyBrightnessEvent()
-{
-	return stringToState(getShOutput(R"(es-system_hotkey get brightness)"));
-}
-
-bool setCurrentSystemHotkeyVolumeEvent( bool state )
-{
-	return executeSystemScript("es-system_hotkey set volume " + stateToString(state));
-}
-
-bool queryCurrentSystemHotkeyVolumeEvent()
-{
-	return stringToState(getShOutput(R"(es-system_hotkey get volume)"));
-}
-
-bool setCurrentSystemHotkeyWifiEvent( bool state )
-{
-	return executeSystemScript("es-system_hotkey set wifi " + stateToString(state));
-}
-
-bool queryCurrentSystemHotkeyWifiEvent()
-{
-	return stringToState(getShOutput(R"(es-system_hotkey get wifi)"));
-}
-
-bool setCurrentSystemHotkeyPerformanceEvent( bool state )
-{
-	return executeSystemScript("es-system_hotkey set performance " + stateToString(state));
-}
-
-bool queryCurrentSystemHotkeyPerformanceEvent()
-{
-	return stringToState(getShOutput(R"(es-system_hotkey get performance)"));
-}
-
-bool setCurrentSystemHotkeySuspendEvent( bool state )
-{
-	return executeSystemScript("es-system_hotkey set suspend " + stateToString(state));
-}
-
-bool queryCurrentSystemHotkeySuspendEvent()
-{
-	return stringToState(getShOutput(R"(es-system_hotkey get suspend)"));
 }

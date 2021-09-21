@@ -104,7 +104,7 @@ private:
 				mMenu.addRow(row, it->selected);
 			}
 
-			mMenu.addButton(_("BACK"), _("accept"), [this] { delete this; });
+			mMenu.addButton(_("BACK"), _("ACCEPT"), [this] { delete this; });
 
 			mMenu.setPosition(
 				(Renderer::getScreenWidth() - mMenu.getSize().x()) / 2,

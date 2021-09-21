@@ -29,6 +29,7 @@ public:
 	void onSizeChanged() override;
 
 	inline void addRow(const ComponentListRow& row, bool setCursorHere = false) { mList->addRow(row, setCursorHere); updateSize(); }
+	inline void clear() { mList->clear(); }
 
 	void addWithLabel(const std::string& label, const std::shared_ptr<GuiComponent>& comp, const std::string iconName = "", bool setCursorHere = false, bool invert_when_selected = true);
 	void addEntry(const std::string name, bool add_arrow, const std::function<void()>& func, const std::string iconName="", bool setCursorHere = false, bool invert_when_selected = true);
@@ -57,8 +58,12 @@ public:
 
 	void setPosition(float x, float y, float z = 0.0f) override;
 
-private:
 	void updateSize();
+	void clearButtons();
+
+	std::shared_ptr<ComponentList> getList() { return mList; };
+
+private:
 	void updateGrid();
 
 	NinePatchComponent mBackground;

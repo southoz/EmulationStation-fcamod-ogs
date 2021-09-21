@@ -5,6 +5,7 @@
 #include "components/VideoVlcComponent.h"
 #include "utils/FileSystemUtil.h"
 #include "views/ViewController.h"
+#include "Window.h"
 
 DetailedGameListView::DetailedGameListView(Window* window, FolderData* root) :
 	BasicGameListView(window, root), 
@@ -92,6 +93,9 @@ DetailedGameListView::~DetailedGameListView()
 
 	if (mVideo != nullptr)
 		delete mVideo;
+
+	mWindow->unregisterPostedFunctions(this);
+
 }
 
 void DetailedGameListView::createImage()

@@ -680,8 +680,8 @@ msgid "BACK"
 msgstr "VOLVER"
 
 #:
-msgid "go back"
-msgstr "ir atrás"
+msgid "ACCEPT"
+msgstr "ACEPTAR"
 
 #:
 msgid "CLOSE"
@@ -811,10 +811,6 @@ msgstr "CONTRASEÑA"
 #:
 msgid "ADVANCED"
 msgstr "AVANZADO"
-
-#:
-msgid "REALLY UPDATE GAMES LISTS ?"
-msgstr "¿SEGURO QUE QUIERE ACTUALIZAR LAS LISTAS DE JUEGOS?"
 
 #:
 msgid "REALLY UPDATE GAMES LISTS ?"
@@ -1043,6 +1039,10 @@ msgid "STATUS"
 msgstr "ESTADO"
 
 #:
+msgid "INTERNET STATUS"
+msgstr "ESTADO DE INTERNET"
+
+#:
 msgid "IP ADDRESS"
 msgstr "DIRECCIÓN IP"
 
@@ -1097,6 +1097,30 @@ msgstr "WIFI HABILITADO"
 #:
 msgid "WIFI CONFIGURATION ERROR"
 msgstr "ERROR DE CONFIGURACIÓN WIFI"
+
+#:
+msgid "INFORMATIONS"
+msgstr "INFORMACIONES"
+
+#:
+msgid "SETTINGS"
+msgstr "CONFIGURACIONES"
+
+#:
+msgid "MANUAL INPUT"
+msgstr "ENTRADA MANUAL"
+
+#:
+msgid "NO WIFI NETWORKS FOUND"
+msgstr "NO SE ENCONTRARON REDES INALÁMBRICAS"
+
+#:
+msgid "SEARCHING WIFI NETWORKS"
+msgstr "BUSCANDO REDES INALÁMBRICAS"
+
+#:
+msgid "REFRESH"
+msgstr "ACTUALIZAR"
 
 #:
 msgid "SCRAPER"

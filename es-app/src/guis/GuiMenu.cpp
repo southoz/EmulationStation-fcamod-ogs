@@ -14,6 +14,7 @@
 #include "guis/GuiQuitOptions.h"
 #include "guis/GuiMenusOptions.h"
 #include "guis/GuiSystemHotkeyEventsOptions.h"
+#include "guis/GuiWifi.h"
 #include "views/UIModeController.h"
 #include "views/ViewController.h"
 #include "CollectionSystemManager.h"
@@ -30,6 +31,7 @@
 #include "GuiGamelistOptions.h" // grid sizes
 #include "platform.h"
 #include "renderers/Renderer.h" // setSwapInterval()
+#include "guis/GuiTextEditPopup.h"
 #include "guis/GuiTextEditPopupKeyboard.h"
 #include "scrapers/ThreadedScraper.h"
 #include "ApiSystem.h"
@@ -66,6 +68,9 @@ GuiMenu::GuiMenu(Window* window, bool animate) : GuiComponent(window), mMenu(win
 			addEntry(_("EMULATOR SETTINGS"), true, [this] { openEmulatorSettings(); }, "iconSystem");
 			break;
 		}
+
+		if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::WIFI))
+			addEntry(_("NETWORK SETTINGS").c_str(), true, [this] { openNetworkSettings(); }, "iconNetwork");
 		
 		addEntry(_("SCRAPER"), true, [this] { openScraperSettings(); }, "iconScraper");
 
@@ -1411,6 +1416,100 @@ void GuiMenu::updateGameLists(Window* window, bool confirm)
 		_("NO"), nullptr));
 }
 
+void GuiMenu::openWifiSettings(Window* win, std::string title, std::string data, const std::function<void(std::string)>& onsave)
+{
+	win->pushGui(new GuiWifi(win, title, data, onsave));
+}
+
+void GuiMenu::openNetworkSettings(bool selectWifiEnable)
+{
+	bool baseWifiEnabled = SystemConf::getInstance()->getBool("wifi.enabled");
+
+	auto theme = ThemeData::getMenuTheme();
+	std::shared_ptr<Font> font = theme->Text.font;
+	unsigned int color = theme->Text.color;
+
+	Window *window = mWindow;
+
+	auto s = new GuiSettings(mWindow, _("NETWORK SETTINGS").c_str());
+	s->addGroup(_("INFORMATIONS"));
+
+	auto ip = std::make_shared<TextComponent>(mWindow, ApiSystem::getInstance()->getIpAddress(), font, color);
+	s->addWithLabel(_("IP ADDRESS"), ip);
+
+	auto status = std::make_shared<TextComponent>(mWindow, ApiSystem::getInstance()->ping() ? _("CONNECTED") : _("NOT CONNECTED"), font, color);
+	s->addWithLabel(_("INTERNET STATUS"), status);
+
+	// Network Indicator
+	auto networkIndicator = std::make_shared<SwitchComponent>(mWindow);
+	networkIndicator->setState(Settings::getInstance()->getBool("ShowNetworkIndicator"));
+	s->addWithLabel(_("SHOW NETWORK INDICATOR"), networkIndicator);
+	s->addSaveFunc([networkIndicator] { Settings::getInstance()->setBool("ShowNetworkIndicator", networkIndicator->getState()); });
+
+	s->addGroup(_("SETTINGS"));
+
+	// Hostname
+	createInputTextRow(s, _("HOSTNAME"), "system.hostname", false);
+
+	// Wifi enable
+	auto enable_wifi = std::make_shared<SwitchComponent>(mWindow);
+	enable_wifi->setState(baseWifiEnabled);
+	s->addWithLabel(_("ENABLE WIFI"), enable_wifi, selectWifiEnable);
+
+	// window, title, settingstring,
+	const std::string baseSSID = SystemConf::getInstance()->get("wifi.ssid");
+	const std::string baseKEY = SystemConf::getInstance()->get("wifi.key");
+
+	if (baseWifiEnabled)
+	{
+		createInputTextRow(s, _("WIFI SSID"), "wifi.ssid", false, false, &openWifiSettings);
+		createInputTextRow(s, _("WIFI KEY"), "wifi.key", true);
+	}
+
+	s->addSaveFunc([baseWifiEnabled, baseSSID, baseKEY, enable_wifi, window]
+	{
+		bool wifienabled = enable_wifi->getState();
+
+		SystemConf::getInstance()->setBool("wifi.enabled", wifienabled);
+
+		if (wifienabled)
+		{
+			std::string newSSID = SystemConf::getInstance()->get("wifi.ssid");
+			std::string newKey = SystemConf::getInstance()->get("wifi.key");
+
+			if (baseSSID != newSSID || baseKEY != newKey || !baseWifiEnabled)
+			{
+				if (ApiSystem::getInstance()->enableWifi(newSSID, newKey))
+					window->pushGui(new GuiMsgBox(window, _("WIFI ENABLED")));
+				else
+					window->pushGui(new GuiMsgBox(window, _("WIFI CONFIGURATION ERROR")));
+			}
+		}
+		else if (baseWifiEnabled)
+			ApiSystem::getInstance()->disableWifi();
+	});
+
+
+	enable_wifi->setOnChangedCallback([this, s, baseWifiEnabled, enable_wifi]()
+	{
+		bool wifienabled = enable_wifi->getState();
+		if (baseWifiEnabled != wifienabled)
+		{
+			SystemConf::getInstance()->setBool("wifi.enabled", wifienabled);
+
+			if (wifienabled)
+				ApiSystem::getInstance()->enableWifi(SystemConf::getInstance()->get("wifi.ssid"), SystemConf::getInstance()->get("wifi.key"));
+			else
+				ApiSystem::getInstance()->disableWifi();
+
+			delete s;
+			openNetworkSettings(true);
+		}
+	});
+
+	mWindow->pushGui(s);
+}
+
 void GuiMenu::openUpdateSettings()
 {
 	Window* window = mWindow;
@@ -1696,7 +1795,7 @@ void GuiMenu::openAdvancedSettings()
 		Settings::getInstance()->setBool("ShowBatteryIndicator", battery->getState());
 		//s->setVariable("reloadAll", true);
 	});
-
+/*
 	// Network Indicator
 	auto networkIndicator = std::make_shared<SwitchComponent>(mWindow);
 	networkIndicator->setState(Settings::getInstance()->getBool("ShowNetworkIndicator"));
@@ -1706,7 +1805,7 @@ void GuiMenu::openAdvancedSettings()
 		Settings::getInstance()->setBool("ShowNetworkIndicator", networkIndicator->getState());
 		//s->setVariable("reloadAll", true);
 	});
-
+*/
 
 	s->addEntry(_("\"QUIT\" SETTINGS"), true, [this] { openQuitSettings(); });
 
@@ -2118,8 +2217,10 @@ std::vector<HelpPrompt> GuiMenu::getHelpPrompts()
 	return prompts;
 }
 
-void GuiMenu::createInputTextRow(GuiSettings *gui, std::string title, const char *settingsID, bool password)
+void GuiMenu::createInputTextRow(GuiSettings *gui, std::string title, const char *settingsID, bool password, bool storeInSettings
+	, const std::function<void(Window*, std::string/*title*/, std::string /*value*/, const std::function<void(std::string)>& onsave)>& customEditor)
 {
+
 	auto theme = ThemeData::getMenuTheme();
 	std::shared_ptr<Font> font = theme->Text.font;
 	unsigned int color = theme->Text.color;
@@ -2129,13 +2230,17 @@ void GuiMenu::createInputTextRow(GuiSettings *gui, std::string title, const char
 	ComponentListRow row;
 
 	auto lbl = std::make_shared<TextComponent>(window, title, font, color);
+	if (EsLocale::isRTL())
+		lbl->setHorizontalAlignment(Alignment::ALIGN_RIGHT);
+
 	row.addElement(lbl, true); // label
 
-	std::shared_ptr<GuiComponent> ed;
+	std::string value = storeInSettings ? Settings::getInstance()->getString(settingsID) : SystemConf::getInstance()->get(settingsID);
 
-	std::string value = Settings::getInstance()->getString(settingsID);
+	std::shared_ptr<TextComponent> ed = std::make_shared<TextComponent>(window, ((password && value != "") ? "*********" : value), font, color, ALIGN_RIGHT);
+	if (EsLocale::isRTL())
+		ed->setHorizontalAlignment(Alignment::ALIGN_LEFT);
 
-	ed = std::make_shared<TextComponent>(window, ((password && value != "") ? "*********" : value), font, color, ALIGN_RIGHT); // Font::get(FONT_SIZE_MEDIUM, FONT_PATH_LIGHT)
 	row.addElement(ed, true);
 
 	auto spacer = std::make_shared<GuiComponent>(mWindow);
@@ -2145,22 +2250,35 @@ void GuiMenu::createInputTextRow(GuiSettings *gui, std::string title, const char
 	auto bracket = std::make_shared<ImageComponent>(mWindow);
 	bracket->setImage(theme->Icons.arrow);
 	bracket->setResize(Vector2f(0, lbl->getFont()->getLetterHeight()));
+
+	if (EsLocale::isRTL())
+		bracket->setFlipX(true);
+
 	row.addElement(bracket, false);
 
-	auto updateVal = [ed, settingsID, password](const std::string &newVal) {
+	auto updateVal = [ed, settingsID, password, storeInSettings](const std::string &newVal)
+	{
 		if (!password)
 			ed->setValue(newVal);
-		else {
+		else
 			ed->setValue("*********");
-		}
 
-		Settings::getInstance()->setString(settingsID, newVal);
+		if (storeInSettings)
+			Settings::getInstance()->setString(settingsID, newVal);
+		else
+			SystemConf::getInstance()->set(settingsID, newVal);
 	}; // ok callback (apply new value to ed)
 
-	row.makeAcceptInputHandler([this, title, updateVal, settingsID]
+	row.makeAcceptInputHandler([this, title, updateVal, settingsID, storeInSettings, customEditor]
 	{
-		std::string data = Settings::getInstance()->getString(settingsID);
-		mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, title, data, updateVal, false));
+		std::string data = storeInSettings ? Settings::getInstance()->getString(settingsID) : SystemConf::getInstance()->get(settingsID);
+
+		if (customEditor != nullptr)
+			customEditor(mWindow, title, data, updateVal);
+		else if (Settings::getInstance()->getBool("UseOSK"))
+			mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, title, data, updateVal, false));
+		else
+			mWindow->pushGui(new GuiTextEditPopup(mWindow, title, data, updateVal, false));
 	});
 
 	gui->addRow(row);

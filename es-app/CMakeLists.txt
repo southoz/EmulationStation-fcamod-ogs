@@ -25,6 +25,7 @@ set(ES_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/src/components/UpdatableTextComponent.h
 
     # Guis
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiLoading.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiSettings.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/UpdatableGuiSettings.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiFastSelect.h
@@ -39,6 +40,7 @@ set(ES_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiQuitOptions.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiMenusOptions.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiSystemHotkeyEventsOptions.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiWifi.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiMenu.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiScraperMulti.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiScraperStart.h
@@ -107,6 +109,7 @@ set(ES_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiQuitOptions.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiMenusOptions.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiSystemHotkeyEventsOptions.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiWifi.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiMenu.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiScraperMulti.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiScraperStart.cpp

@@ -186,6 +186,7 @@ void Settings::setDefaults()
 	mStringMap["UserMusicDirectory"] = "";
 
 	mBoolMap["updates.enabled"] = false;
+	mBoolMap["wifi.enabled"] = false;
 
 	// Log settings
 	mStringMap["LogLevel"] = "default";

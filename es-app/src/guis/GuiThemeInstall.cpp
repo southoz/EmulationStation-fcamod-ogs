@@ -58,7 +58,7 @@ GuiThemeInstall::GuiThemeInstall(Window* window)
 		mMenu.addRow(row);	
 	}
 
-	mMenu.addButton(_("BACK"), "back", [&] { delete this; });
+	mMenu.addButton(_("BACK"), _("BACK"), [&] { delete this; });
 
 	if (Renderer::isSmallScreen())
 		mMenu.setPosition((Renderer::getScreenWidth() - mMenu.getSize().x()) / 2, (Renderer::getScreenHeight() - mMenu.getSize().y()) / 2);

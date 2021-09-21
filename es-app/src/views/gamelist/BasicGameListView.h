@@ -9,6 +9,7 @@ class BasicGameListView : public ISimpleGameListView
 {
 public:
 	BasicGameListView(Window* window, FolderData* root);
+	~BasicGameListView();
 
 	// Called when a FileData* is added, has its metadata changed, or is removed
 	virtual void onFileChanged(FileData* file, FileChangeType change);

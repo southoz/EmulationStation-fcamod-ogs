@@ -27,6 +27,10 @@ struct ThemeDownloadInfo
 
 class ApiSystem 
 {
+private:
+	std::string stateToString(bool state);
+	bool stringToState(const std::string state);
+
 protected:
 	ApiSystem();
 
@@ -42,9 +46,10 @@ public:
 		TIMEZONE = 0,
 		POWER_KEY = 1,
 		DISPLAY = 2,
-		SYSTEM_HOTKEY_EVENTS = 3
+		SYSTEM_HOTKEY_EVENTS = 3,
+		WIFI = 4
 /*
-		WIFI = 0,
+
 		RETROACHIVEMENTS = 1,
 		BLUETOOTH = 2,
 		RESOLUTION = 3,
@@ -142,6 +147,10 @@ public:
 	bool setSystemHotkeySuspendEvent( bool state );
 	bool isSystemHotkeySuspendEvent();
 
+	virtual bool ping();
+	std::vector<std::string> getWifiNetworks(bool scan = false);
+	bool enableWifi(std::string ssid, std::string key);
+	bool disableWifi();
 
 	static UpdateState::State state;
 

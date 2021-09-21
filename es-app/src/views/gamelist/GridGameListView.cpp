@@ -10,6 +10,7 @@
 #include "guis/GuiGamelistOptions.h"
 
 #include "components/VideoVlcComponent.h"
+#include "Window.h"
 
 GridGameListView::GridGameListView(Window* window, FolderData* root, const std::shared_ptr<ThemeData>& theme, std::string themeName, Vector2f gridSize) :
 	ISimpleGameListView(window, root),
@@ -132,6 +133,8 @@ GridGameListView::~GridGameListView()
 
 	if (mVideo != nullptr)
 		delete mVideo;
+
+	mWindow->unregisterPostedFunctions(this);
 }
 
 void GridGameListView::setThemeName(std::string name)

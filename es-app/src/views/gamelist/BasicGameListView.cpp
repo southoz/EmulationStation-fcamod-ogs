@@ -6,6 +6,7 @@
 #include "CollectionSystemManager.h"
 #include "Settings.h"
 #include "SystemData.h"
+#include "Window.h"
 
 BasicGameListView::BasicGameListView(Window* window, FolderData* root)
 	: ISimpleGameListView(window, root), mList(window)
@@ -18,6 +19,11 @@ BasicGameListView::BasicGameListView(Window* window, FolderData* root)
 	addChild(&mList);		
 
 	populateList(mRoot->getChildrenListToDisplay());
+}
+
+BasicGameListView::~BasicGameListView()
+{
+	mWindow->unregisterPostedFunctions(this);
 }
 
 void BasicGameListView::onShow()
