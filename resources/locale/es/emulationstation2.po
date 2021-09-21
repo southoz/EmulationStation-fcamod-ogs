@@ -688,6 +688,18 @@ msgid "CLOSE"
 msgstr "CERRAR"
 
 #:
+msgid "PARENT FOLDER"
+msgstr "CARPETA PRINCIPAL"
+
+#:
+msgid "SCREENSHOTS FOLDER"
+msgstr "CARPETA DE CAPTURAS DE PANTALLA"
+
+#:
+msgid "FILE BROWSER"
+msgstr "EXAMINAR"
+
+#:
 msgid "MAIN MENU"
 msgstr "MENÚ PRINCIPAL"
 

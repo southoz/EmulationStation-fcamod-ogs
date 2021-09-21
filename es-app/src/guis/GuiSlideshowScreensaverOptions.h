@@ -11,7 +11,6 @@ public:
 	virtual ~GuiSlideshowScreensaverOptions();
 
 private:
-	void addEditableTextComponent(ComponentListRow row, const std::string label, std::shared_ptr<GuiComponent> ed, std::string value);
 	void addWithLabel(ComponentListRow row, const std::string label, std::shared_ptr<GuiComponent> component);
 };
 

@@ -105,7 +105,7 @@ void MenuComponent::addWithLabel(const std::string& label, const std::shared_ptr
 	addRow(row, setCursorHere);
 }
 
-void MenuComponent::addEntry(const std::string name, bool add_arrow, const std::function<void()>& func, const std::string iconName, bool setCursorHere, bool invert_when_selected)
+void MenuComponent::addEntry(const std::string name, bool add_arrow, const std::function<void()>& func, const std::string iconName, bool setCursorHere, bool invert_when_selected, bool onButtonRelease, const std::string userData, bool doUpdateSize)
 {
 	auto theme = ThemeData::getMenuTheme();
 	std::shared_ptr<Font> font = theme->Text.font;
@@ -135,12 +135,12 @@ void MenuComponent::addEntry(const std::string name, bool add_arrow, const std::
 
 	row.addElement(std::make_shared<TextComponent>(mWindow, name, font, color), true, invert_when_selected);
 
-	if (add_arrow)	
+	if (add_arrow)
 		row.addElement(makeArrow(mWindow), false);
 
-	row.makeAcceptInputHandler(func);
+	row.makeAcceptInputHandler(func, onButtonRelease);
 
-	addRow(row, setCursorHere);
+	addRow(row, setCursorHere, doUpdateSize, userData);
 }
 
 void MenuComponent::setTitle(const std::string title, const std::shared_ptr<Font>& font)

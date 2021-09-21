@@ -60,11 +60,8 @@ GuiSlideshowScreensaverOptions::GuiSlideshowScreensaverOptions(Window* window, c
 	addSaveFunc([sss_custom_source] { Settings::getInstance()->setBool("SlideshowScreenSaverCustomImageSource", sss_custom_source->getState()); });
 
 	// custom image directory
-	auto sss_image_dir = std::make_shared<TextComponent>(mWindow, "", ThemeData::getMenuTheme()->TextSmall.font, ThemeData::getMenuTheme()->TextSmall.color);
-	addEditableTextComponent(row, _("CUSTOM IMAGE DIR"), sss_image_dir, Settings::getInstance()->getString("SlideshowScreenSaverImageDir"));
-	addSaveFunc([sss_image_dir] {
-		Settings::getInstance()->setString("SlideshowScreenSaverImageDir", sss_image_dir->getValue());
-	});
+	auto sss_image_dir = addBrowsablePath(_("CUSTOM IMAGE DIR"), Settings::getInstance()->getString("SlideshowScreenSaverImageDir"));
+	addSaveFunc([sss_image_dir] { Settings::getInstance()->setString("SlideshowScreenSaverImageDir", sss_image_dir->getValue()); });
 
 	// recurse custom image directory
 	auto sss_recurse = std::make_shared<SwitchComponent>(mWindow);
@@ -75,12 +72,8 @@ GuiSlideshowScreensaverOptions::GuiSlideshowScreensaverOptions(Window* window, c
 	});
 
 	// custom image filter
-	auto sss_image_filter = std::make_shared<TextComponent>(mWindow, "", ThemeData::getMenuTheme()->TextSmall.font, ThemeData::getMenuTheme()->TextSmall.color);
-	addEditableTextComponent(row, _("CUSTOM IMAGE FILTER"), sss_image_filter, Settings::getInstance()->getString("SlideshowScreenSaverImageFilter"));
-	addSaveFunc([sss_image_filter] {
-		Settings::getInstance()->setString("SlideshowScreenSaverImageFilter", sss_image_filter->getValue());
-	});
-
+	auto sss_image_filter = addEditableTextComponent(_("CUSTOM IMAGE FILTER"), Settings::getInstance()->getString("SlideshowScreenSaverImageFilter"));
+	addSaveFunc([sss_image_filter] { Settings::getInstance()->setString("SlideshowScreenSaverImageFilter", sss_image_filter->getValue()); });
 }
 
 GuiSlideshowScreensaverOptions::~GuiSlideshowScreensaverOptions()
@@ -97,32 +90,4 @@ void GuiSlideshowScreensaverOptions::addWithLabel(ComponentListRow row, const st
 	row.addElement(component, false, true);
 
 	addRow(row);
-}
-
-void GuiSlideshowScreensaverOptions::addEditableTextComponent(ComponentListRow row, const std::string label, std::shared_ptr<GuiComponent> ed, std::string value)
-{
-	row.elements.clear();
-
-	auto lbl = std::make_shared<TextComponent>(mWindow, Utils::String::toUpper(label), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color);
-	row.addElement(lbl, true); // label
-
-	row.addElement(ed, true);
-
-	auto spacer = std::make_shared<GuiComponent>(mWindow);
-	spacer->setSize(Renderer::getScreenWidth() * 0.005f, 0);
-	row.addElement(spacer, false);
-
-	auto bracket = std::make_shared<ImageComponent>(mWindow);
-	bracket->setImage(ThemeData::getMenuTheme()->Icons.arrow); // ":/arrow.svg");
-	bracket->setResize(Vector2f(0, lbl->getFont()->getLetterHeight()));
-	row.addElement(bracket, false);
-
-	auto updateVal = [ed](const std::string& newVal) { ed->setValue(newVal); }; // ok callback (apply new value to ed)
-	row.makeAcceptInputHandler([this, label, ed, updateVal] {
-		mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, label, ed->getValue(), updateVal, false));
-	});
-
-	assert(ed);
-	addRow(row);
-	ed->setValue(value);
 }

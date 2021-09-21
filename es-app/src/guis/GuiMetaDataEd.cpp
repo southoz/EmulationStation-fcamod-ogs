@@ -10,6 +10,7 @@
 #include "guis/GuiGameScraper.h"
 #include "guis/GuiMsgBox.h"
 #include "guis/GuiTextEditPopup.h"
+#include "guis/GuiFileBrowser.h"
 #include "resources/Font.h"
 #include "utils/StringUtil.h"
 #include "views/ViewController.h"
@@ -59,6 +60,7 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 
 	auto emul_choice = std::make_shared<OptionListComponent<std::string>>(mWindow, _("SELECT EMULATOR"), false);
 	auto core_choice = std::make_shared<OptionListComponent<std::string>>(mWindow, _("SELECT CORE"), false);
+	std::string relativePath = mMetaData->getRelativeRootPath();
 
 	// populate list
 	for(auto iter = mdd.cbegin(); iter != mdd.cend(); iter++)
@@ -193,6 +195,51 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 				row.addElement(ed, false);
 				break;
 			}
+
+			case MD_PATH:
+			{
+				ed = std::make_shared<TextComponent>(window, "", theme->Text.font, theme->Text.color, ALIGN_RIGHT);
+				row.addElement(ed, true);
+
+				auto spacer = std::make_shared<GuiComponent>(mWindow);
+				spacer->setSize(Renderer::getScreenWidth() * 0.005f, 0);
+				row.addElement(spacer, false);
+
+				auto bracket = std::make_shared<ImageComponent>(mWindow);
+				bracket->setImage(ThemeData::getMenuTheme()->Icons.arrow);
+				bracket->setResize(Vector2f(0, lbl->getFont()->getLetterHeight()));
+				row.addElement(bracket, false);
+
+				GuiFileBrowser::FileTypes type = GuiFileBrowser::FileTypes::IMAGES;
+
+				if (iter->key == "video")
+					type = GuiFileBrowser::FileTypes::VIDEO;
+				else if (iter->key == "manual" || iter->key == "magazine" || iter->key == "map")
+					type = (GuiFileBrowser::FileTypes) (GuiFileBrowser::FileTypes::IMAGES | GuiFileBrowser::FileTypes::MANUALS);
+
+				auto updateVal = [ed, relativePath](const std::string& newVal)
+				{
+					auto val = Utils::FileSystem::createRelativePath(newVal, relativePath, true);
+					ed->setValue(val);
+				};
+
+				row.makeAcceptInputHandler([this, type, ed, iter, updateVal, relativePath]
+				{
+					std::string filePath = ed->getValue();
+					if (!filePath.empty())
+						filePath = Utils::FileSystem::resolveRelativePath(filePath, relativePath, true);
+
+					std::string dir = Utils::FileSystem::getParent(filePath);
+					if (dir.empty())
+						dir = relativePath;
+
+					std::string title = iter->displayName + " - " + mMetaData->getName();
+					mWindow->pushGui(new GuiFileBrowser(mWindow, dir, filePath, type, updateVal, title));
+				});
+
+				break;
+			}
+
 			case MD_MULTILINE_STRING:
 			default:
 			{

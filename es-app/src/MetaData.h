@@ -82,6 +82,8 @@ public:
 
 	void importScrappedMetadata(const MetaDataList& source);
 
+	std::string getRelativeRootPath();
+
 private:
 	std::string		mName;
 	unsigned char	mType;

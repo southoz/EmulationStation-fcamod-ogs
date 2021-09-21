@@ -326,3 +326,11 @@ void MetaDataList::importScrappedMetadata(const MetaDataList& source)
 		}
 	}
 }
+
+std::string MetaDataList::getRelativeRootPath()
+{
+	if (mRelativeTo)
+		return mRelativeTo->getStartPath();
+
+	return "";
+}

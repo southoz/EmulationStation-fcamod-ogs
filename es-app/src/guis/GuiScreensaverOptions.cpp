@@ -1,6 +1,7 @@
 #include "guis/GuiScreensaverOptions.h"
 
 #include "guis/GuiTextEditPopupKeyboard.h"
+#include "guis/GuiFileBrowser.h"
 #include "views/ViewController.h"
 #include "Settings.h"
 #include "SystemData.h"
@@ -69,13 +70,16 @@ std::vector<HelpPrompt> GuiScreensaverOptions::getHelpPrompts()
 	return prompts;
 }
 
-void GuiScreensaverOptions::addEditableTextComponent(ComponentListRow row, const std::string label, std::shared_ptr<GuiComponent> ed, std::string value)
+std::shared_ptr<TextComponent> GuiScreensaverOptions::addEditableTextComponent(const std::string label, std::string value)
 {
-	row.elements.clear();
+	auto theme = ThemeData::getMenuTheme();
 
-	auto lbl = std::make_shared<TextComponent>(mWindow, Utils::String::toUpper(label), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color);
+	ComponentListRow row;
+
+	auto lbl = std::make_shared<TextComponent>(mWindow, Utils::String::toUpper(label), theme->Text.font, theme->Text.color);
 	row.addElement(lbl, true); // label
 
+	std::shared_ptr<TextComponent> ed = std::make_shared<TextComponent>(mWindow, "", theme->TextSmall.font, theme->TextSmall.color);
 	row.addElement(ed, true);
 
 	auto spacer = std::make_shared<GuiComponent>(mWindow);
@@ -91,7 +95,47 @@ void GuiScreensaverOptions::addEditableTextComponent(ComponentListRow row, const
 	row.makeAcceptInputHandler([this, label, ed, updateVal] {
 		mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, label, ed->getValue(), updateVal, false));
 	});
-	assert(ed);
-	addRow(row);
+
 	ed->setValue(value);
+
+	addRow(row);
+	return ed;
+}
+
+std::shared_ptr<TextComponent> GuiScreensaverOptions::addBrowsablePath(const std::string label, std::string value)
+{
+	auto theme = ThemeData::getMenuTheme();
+
+	ComponentListRow row;
+
+	auto lbl = std::make_shared<TextComponent>(mWindow, Utils::String::toUpper(label), theme->Text.font, theme->Text.color);
+	row.addElement(lbl, true); // label
+
+	std::shared_ptr<TextComponent> ed = std::make_shared<TextComponent>(mWindow, "", theme->TextSmall.font, theme->TextSmall.color);
+	row.addElement(ed, true);
+
+	auto spacer = std::make_shared<GuiComponent>(mWindow);
+	spacer->setSize(Renderer::getScreenWidth() * 0.005f, 0);
+	row.addElement(spacer, false);
+
+	auto bracket = std::make_shared<ImageComponent>(mWindow);
+	bracket->setImage(ThemeData::getMenuTheme()->Icons.arrow);
+	bracket->setResize(Vector2f(0, lbl->getFont()->getLetterHeight()));
+	row.addElement(bracket, false);
+
+	auto updateVal = [ed](const std::string& newVal)
+	{
+		ed->setValue(newVal);
+	}; // ok callback (apply new value to ed)
+
+	row.makeAcceptInputHandler([this, label, ed, updateVal]
+	{
+		auto parent = Utils::FileSystem::getParent(ed->getValue());
+		mWindow->pushGui(new GuiFileBrowser(mWindow, parent, ed->getValue(), GuiFileBrowser::DIRECTORY, updateVal, label));
+	});
+
+	ed->setValue(value);
+
+	addRow(row);
+	return ed;
 }

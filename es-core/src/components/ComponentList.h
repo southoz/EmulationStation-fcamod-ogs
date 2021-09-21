@@ -42,10 +42,13 @@ struct ComponentListRow
 	}
 
 	// Utility method for making an input handler for "when the users presses A on this, do func."
-	inline void makeAcceptInputHandler(const std::function<void()>& func)
+	inline void makeAcceptInputHandler(const std::function<void()>& func, bool onButtonRelease = false)
 	{
-		input_handler = [func](InputConfig* config, Input input) -> bool {
-			if(config->isMappedTo(BUTTON_OK, input) && input.value != 0)
+		if (func == nullptr)
+			return;
+
+		input_handler = [func, onButtonRelease](InputConfig* config, Input input) -> bool {
+			if(config->isMappedTo(BUTTON_OK, input) && (onButtonRelease ? input.value == 0 : input.value != 0)) // batocera
 			{
 				func();
 				return true;
@@ -55,12 +58,12 @@ struct ComponentListRow
 	}
 };
 
-class ComponentList : public IList<ComponentListRow, void*>
+class ComponentList : public IList<ComponentListRow, std::string>
 {
 public:
 	ComponentList(Window* window);
 
-	void addRow(const ComponentListRow& row, bool setCursorHere = false);
+	void addRow(const ComponentListRow& row, bool setCursorHere = false, bool updateSize = true, const std::string userData = "");
 	void addGroup(const std::string& label);
 
 	void textInput(const char* text) override;
@@ -75,6 +78,8 @@ public:
 
 	bool moveCursor(int amt);
 	inline int getCursorId() const { return mCursor; }
+
+	std::string getSelectedUserData();
 
 	float getTotalRowHeight() const;
 	inline float getRowHeight(int row) const { return getRowHeight(mEntries.at(row).data); }

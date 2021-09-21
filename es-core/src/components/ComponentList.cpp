@@ -3,18 +3,18 @@
 
 #define TOTAL_HORIZONTAL_PADDING_PX 20
 
-ComponentList::ComponentList(Window* window) : IList<ComponentListRow, void*>(window, LIST_SCROLL_STYLE_SLOW, LIST_NEVER_LOOP)
+ComponentList::ComponentList(Window* window) : IList<ComponentListRow, std::string>(window, LIST_SCROLL_STYLE_SLOW, LIST_NEVER_LOOP)
 {
 	mSelectorBarOffset = 0;
 	mCameraOffset = 0;
 	mFocused = false;
 }
 
-void ComponentList::addRow(const ComponentListRow& row, bool setCursorHere)
+void ComponentList::addRow(const ComponentListRow& row, bool setCursorHere, bool updateSize, const std::string userData)
 {
-	IList<ComponentListRow, void*>::Entry e;
+	IList<ComponentListRow, std::string>::Entry e;
 	e.name = "";
-	e.object = NULL;
+	e.object = userData;
 	e.data = row;
 
 	this->add(e);
@@ -22,8 +22,11 @@ void ComponentList::addRow(const ComponentListRow& row, bool setCursorHere)
 	for(auto it = mEntries.back().data.elements.cbegin(); it != mEntries.back().data.elements.cend(); it++)
 		addChild(it->component.get());
 
-	updateElementSize(mEntries.back().data);
-	updateElementPosition(mEntries.back().data);
+	if (updateSize)
+	{
+		updateElementSize(mEntries.back().data);
+		updateElementPosition(mEntries.back().data);
+	}
 
 	// Fix group initial cursor position
 	if (mCursor == 0 && mEntries.size() == 2 && !mEntries[0].data.selectable)
@@ -381,4 +384,12 @@ bool ComponentList::moveCursor(int amt)
 	bool ret = listInput(amt);
 	listInput(0);
 	return ret;
+}
+
+std::string ComponentList::getSelectedUserData()
+{
+	if (mCursor >= 0 && mCursor < mEntries.size())
+		return mEntries[mCursor].object;
+
+	return "";
 }

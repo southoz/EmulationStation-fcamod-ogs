@@ -52,6 +52,6 @@ GuiVideoScreensaverOptions::~GuiVideoScreensaverOptions()
 
 void GuiVideoScreensaverOptions::save()
 {
-	bool startingStatusNotRisky = (Settings::getInstance()->getString("ScreenSaverGameInfo") == "never" || !Settings::getInstance()->getBool("ScreenSaverOmxPlayer"));
+	bool startingStatusNotRisky = (Settings::getInstance()->getString("ScreenSaverGameInfo") == "never");
 	GuiScreensaverOptions::save();
 }

@@ -28,11 +28,12 @@ public:
 
 	void onSizeChanged() override;
 
-	inline void addRow(const ComponentListRow& row, bool setCursorHere = false) { mList->addRow(row, setCursorHere); updateSize(); }
+	inline void addRow(const ComponentListRow& row, bool setCursorHere = false, bool doUpdateSize = true, const std::string userData = "") { mList->addRow(row, setCursorHere, true, userData); if (doUpdateSize) updateSize(); }
 	inline void clear() { mList->clear(); }
 
 	void addWithLabel(const std::string& label, const std::shared_ptr<GuiComponent>& comp, const std::string iconName = "", bool setCursorHere = false, bool invert_when_selected = true);
-	void addEntry(const std::string name, bool add_arrow, const std::function<void()>& func, const std::string iconName="", bool setCursorHere = false, bool invert_when_selected = true);
+	void addEntry(const std::string name, bool add_arrow, const std::function<void()>& func, const std::string iconName="", bool setCursorHere = false, bool invert_when_selected = true, bool onButtonRelease = false, const std::string userData = "", bool doUpdateSize = true);
+
 	void addGroup(const std::string& label) { mList->addGroup(label); updateSize(); }
 
 	void addButton(const std::string& label, const std::string& helpText, const std::function<void()>& callback);
@@ -42,6 +43,9 @@ public:
 
 	inline void setCursorToList() { mGrid.setCursorTo(mList); }
 	inline void setCursorToButtons() { assert(mButtonGrid); mGrid.setCursorTo(mButtonGrid); }
+
+	inline int size() const { return mList->size(); }
+	std::string getSelected() { return mList->getSelected(); }
 
 	virtual std::vector<HelpPrompt> getHelpPrompts() override;
 

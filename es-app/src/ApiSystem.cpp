@@ -791,6 +791,11 @@ bool ApiSystem::ping()
 	return true;
 }
 
+std::string ApiSystem::getInternetStatus()
+{
+	return ping() ? _("CONNECTED") : _("NOT CONNECTED");
+}
+
 std::vector<std::string> ApiSystem::getWifiNetworks(bool scan)
 {
 	LOG(LogInfo) << "ApiSystem::getWifiNetworks()";
