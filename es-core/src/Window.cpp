@@ -196,27 +196,31 @@ void Window::textInput(const char* text)
 
 void Window::input(InputConfig* config, Input input)
 {
-	if (mScreenSaver) {
-		if (mScreenSaver->isScreenSaverActive() && Settings::getInstance()->getBool("ScreenSaverControls") &&
-			((Settings::getInstance()->getString("ScreenSaverBehavior") == "slideshow") || 
-			(Settings::getInstance()->getString("ScreenSaverBehavior") == "random video")))
+	if (mScreenSaver)
+	{
+		std::string screensaver_behavior = Settings::getInstance()->getString("ScreenSaverBehavior");
+		if ( screensaver_behavior != "suspend" )
 		{
-			if(mScreenSaver->getCurrentGame() != NULL && (config->isMappedLike("right", input) || config->isMappedTo("start", input) || config->isMappedTo("select", input)))
+			if (mScreenSaver->isScreenSaverActive() && Settings::getInstance()->getBool("ScreenSaverControls") &&
+				((screensaver_behavior == "slideshow") || (screensaver_behavior == "random video")))
 			{
-				if(config->isMappedLike("right", input) || config->isMappedTo("select", input))
+				if(mScreenSaver->getCurrentGame() != NULL && (config->isMappedLike("right", input) || config->isMappedTo("start", input) || config->isMappedTo("select", input)))
 				{
-					if (input.value != 0) // handle screensaver control
-						mScreenSaver->nextVideo();
-					
-					return;
-				}
-				else if(config->isMappedTo("start", input) && input.value != 0)
-				{
-					// launch game!
-					cancelScreenSaver();
-					mScreenSaver->launchGame();
-					// to force handling the wake up process
-					mSleeping = true;
+					if(config->isMappedLike("right", input) || config->isMappedTo("select", input))
+					{
+						if (input.value != 0) // handle screensaver control
+							mScreenSaver->nextVideo();
+
+						return;
+					}
+					else if(config->isMappedTo("start", input) && input.value != 0)
+					{
+						// launch game!
+						cancelScreenSaver();
+						mScreenSaver->launchGame();
+						// to force handling the wake up process
+						mSleeping = true;
+					}
 				}
 			}
 		}
@@ -691,8 +695,11 @@ void Window::startScreenSaver()
 
 bool Window::cancelScreenSaver()
 {
+	if ( Settings::getInstance()->getString("ScreenSaverBehavior") == "suspend" )
+		return false;
+
 	if (mScreenSaver && mRenderScreenSaver)
-	{		
+	{
 		mScreenSaver->stopScreenSaver();
 		mRenderScreenSaver = false;
 		mScreenSaver->resetCounts();

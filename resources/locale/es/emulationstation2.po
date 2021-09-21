@@ -913,6 +913,10 @@ msgid "black"
 msgstr "pantalla en negro"
 
 #:
+msgid "suspend"
+msgstr "suspender"
+
+#:
 msgid "SHOW FRAMERATE"
 msgstr "MOSTRAR TASA DE IMÁGENES"
 

@@ -449,8 +449,11 @@ bool SystemView::input(InputConfig* config, Input input)
 			listInput(0);
 		if(!UIModeController::getInstance()->isUIModeKid() && config->isMappedTo("select", input) && Settings::getInstance()->getBool("ScreenSaverControls"))
 		{
-			mWindow->startScreenSaver();
-			mWindow->renderScreenSaver();
+			if (Settings::getInstance()->getString("ScreenSaverBehavior") != "suspend")
+			{
+				mWindow->startScreenSaver();
+				mWindow->renderScreenSaver();
+			}
 			return true;
 		}
 	}

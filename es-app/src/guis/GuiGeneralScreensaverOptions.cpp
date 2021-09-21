@@ -28,6 +28,7 @@ GuiGeneralScreensaverOptions::GuiGeneralScreensaverOptions(Window* window, std::
 	screensavers.push_back("black");
 	screensavers.push_back("random video");
 	screensavers.push_back("slideshow");
+  screensavers.push_back("suspend");
 	for(auto it = screensavers.cbegin(); it != screensavers.cend(); it++)
 		screensaver_behavior->add(_(it->c_str()), *it, Settings::getInstance()->getString("ScreenSaverBehavior") == *it);
 	addWithLabel(_("SCREENSAVER BEHAVIOR"), screensaver_behavior);

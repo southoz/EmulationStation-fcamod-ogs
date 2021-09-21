@@ -16,6 +16,8 @@
 #include <time.h>
 #include "AudioManager.h"
 #include "math/Vector2i.h"
+#include "platform.h"
+#include "Scripting.h"
 
 #define FADE_TIME 			500
 
@@ -152,6 +154,14 @@ void SystemScreenSaver::startScreenSaver()
 			return;
 		}	
 	}
+	else if (screensaver_behavior == "suspend")
+	{
+		LOG(LogDebug) << "SystemScreenSaver::startScreenSaver() - suspend device";
+		Scripting::fireEvent("quit", "suspend");
+		Scripting::fireEvent("suspend");
+		if (quitES(QuitMode::SUSPEND) != 0)
+			LOG(LogWarning) << "SystemScreenSaver::startScreenSaver() - Suspend terminated with non-zero result!";
+	}
 
 	// No videos. Just use a standard screensaver
 	mState = STATE_SCREENSAVER_ACTIVE;
@@ -160,6 +170,9 @@ void SystemScreenSaver::startScreenSaver()
 
 void SystemScreenSaver::stopScreenSaver()
 {
+	if (Settings::getInstance()->getString("ScreenSaverBehavior") == "suspend")
+		return;
+
 	bool isExitingScreenSaver = !mLoadingNext;
 
 	if (mLoadingNext)
@@ -187,6 +200,9 @@ void SystemScreenSaver::stopScreenSaver()
 
 void SystemScreenSaver::renderScreenSaver()
 {
+	if (Settings::getInstance()->getString("ScreenSaverBehavior") == "suspend")
+		return;
+
 	Transform4x4f transform = Transform4x4f::Identity();
 	
 	if (mVideoScreensaver)
@@ -397,6 +413,9 @@ std::string SystemScreenSaver::pickRandomCustomImage()
 
 void SystemScreenSaver::update(int deltaTime)
 {
+	if (Settings::getInstance()->getString("ScreenSaverBehavior") == "suspend")
+		return;
+
 	// Use this to update the fade value for the current fade stage
 	if (mState == STATE_FADE_OUT_WINDOW)
 	{
