@@ -287,6 +287,18 @@ void AudioManager::setVideoPlaying(bool state)
 	sInstance->mVideoPlaying = state;
 }
 
+int AudioManager::getMaxMusicVolume()
+{
+	int ret = (Settings::getInstance()->getInt("MusicVolume") * MIX_MAX_VOLUME) / 100;
+	if (ret > MIX_MAX_VOLUME)
+		return MIX_MAX_VOLUME;
+
+	if (ret < 0)
+		return 0;
+
+	return ret;
+}
+
 void AudioManager::update(int deltaTime)
 {
 	if (sInstance == nullptr || !sInstance->mInitialized || !Settings::getInstance()->getBool("audio.bgmusic"))
@@ -294,21 +306,34 @@ void AudioManager::update(int deltaTime)
 
 	float deltaVol = deltaTime / 8.0f;
 
-	#define MINVOL 5
+//	#define MINVOL 5
 
-	if (sInstance->mVideoPlaying && sInstance->mMusicVolume > MINVOL)
-	{		
-		sInstance->mMusicVolume -= deltaVol;
-		if (sInstance->mMusicVolume < MINVOL)
-			sInstance->mMusicVolume = MINVOL;
+	int maxVol = getMaxMusicVolume();
+	int minVol = maxVol / 20;
+	if (maxVol > 0 && minVol == 0)
+		minVol = 1;
 
-		Mix_VolumeMusic((int) sInstance->mMusicVolume);
-	}
-	else if (!sInstance->mVideoPlaying && sInstance->mMusicVolume < MIX_MAX_VOLUME)
+	if (sInstance->mVideoPlaying && sInstance->mMusicVolume != minVol)
 	{
-		sInstance->mMusicVolume += deltaVol;
-		if (sInstance->mMusicVolume > MIX_MAX_VOLUME)
-			sInstance->mMusicVolume = MIX_MAX_VOLUME;
+		if (sInstance->mMusicVolume > minVol)
+		{
+			sInstance->mMusicVolume -= deltaVol;
+			if (sInstance->mMusicVolume < minVol)
+				sInstance->mMusicVolume = minVol;
+		}
+
+		Mix_VolumeMusic((int)sInstance->mMusicVolume);
+	}
+	else if (!sInstance->mVideoPlaying && sInstance->mMusicVolume != maxVol)
+	{
+		if (sInstance->mMusicVolume < maxVol)
+		{
+			sInstance->mMusicVolume += deltaVol;
+			if (sInstance->mMusicVolume > maxVol)
+				sInstance->mMusicVolume = maxVol;
+		}
+		else
+			sInstance->mMusicVolume = maxVol;
 
 		Mix_VolumeMusic((int)sInstance->mMusicVolume);
 	}

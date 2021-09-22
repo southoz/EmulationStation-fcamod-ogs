@@ -55,6 +55,8 @@ public:
 	static void setVideoPlaying(bool state);
 	static void update(int deltaTime);
 
+	static int getMaxMusicVolume();
+
 private:
 	AudioManager();
 

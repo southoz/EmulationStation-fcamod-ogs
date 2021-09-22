@@ -153,13 +153,13 @@ void Settings::setDefaults()
 	mBoolMap["VideoAudio"] = true;
 	mBoolMap["VolumePopup"] = true;
 	mBoolMap["VideoLowersMusic"] = true;
+	mIntMap["MusicVolume"] = 128;
 	mStringMap["CollectionSystemsAuto"] = "";
 	mStringMap["CollectionSystemsCustom"] = "";
 	mBoolMap["CollectionShowSystemInfo"] = true;
 	mBoolMap["SortAllSystems"] = false;
 	mBoolMap["UseCustomCollectionsSystem"] = true;
 	mBoolMap["FavoritesFirst"] = true;
-	
 
 	mBoolMap["LocalArt"] = false;
 

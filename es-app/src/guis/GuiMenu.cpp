@@ -446,6 +446,12 @@ void GuiMenu::openSoundSettings()
 				s->setVariable("reloadGuiMenu", true);
 		});
 
+		// Music Volume
+		auto musicVolume = std::make_shared<SliderComponent>(mWindow, 0.f, 100.f, 1.f, "%");
+		musicVolume->setValue(Settings::getInstance()->getInt("MusicVolume"));
+		musicVolume->setOnValueChanged([](const float &newVal) { Settings::getInstance()->setInt("MusicVolume", (int)round(newVal)); });
+		s->addWithLabel(_("MUSIC VOLUME"), musicVolume);
+
 	if (UIModeController::getInstance()->isUIModeFull())
 	{
 		// audio card

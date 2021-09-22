@@ -987,6 +987,10 @@ msgid "SYSTEM VOLUME"
 msgstr "VOLUMEN DEL SISTEMA"
 
 #:
+msgid "MUSIC VOLUME"
+msgstr "VOLUMEN DE LA MÚSICA"
+
+#:
 msgid "AUDIO CARD"
 msgstr "TARJETA DE SONIDO"
 
