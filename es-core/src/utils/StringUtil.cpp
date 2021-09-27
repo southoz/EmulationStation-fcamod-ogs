@@ -476,22 +476,7 @@ namespace Utils
 
 		stringVector commaStringToVector(const std::string& _string)
 		{
-			stringVector vector;
-			size_t       start = 0;
-			size_t       comma = _string.find(",");
-
-			while(comma != std::string::npos)
-			{
-				vector.push_back(_string.substr(start, comma - start));
-				start = comma + 1;
-				comma = _string.find(",", start);
-			}
-
-			vector.push_back(_string.substr(start));
-			std::sort(vector.begin(), vector.end());
-
-			return vector;
-
+			return Utils::String::split(_string, ',', false);
 		} // commaStringToVector
 
 		std::string vectorToCommaString(stringVector _vector)

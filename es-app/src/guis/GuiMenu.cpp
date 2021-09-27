@@ -1257,6 +1257,18 @@ void GuiMenu::openUISettings()
 			s->setVariable("reloadAll", true);
 	});
 
+	// ignore articles when sorting
+	auto ignoreArticles = std::make_shared<SwitchComponent>(mWindow);
+	ignoreArticles->setState(Settings::getInstance()->getBool("IgnoreLeadingArticles"));
+	s->addWithLabel(_("IGNORE LEADING ARTICLES WHEN SORTING"), ignoreArticles);
+	s->addSaveFunc([s, ignoreArticles]
+	{
+		if (Settings::getInstance()->setBool("IgnoreLeadingArticles", ignoreArticles->getState()))
+		{
+			s->setVariable("reloadAll", true);
+		}
+	});
+
 	s->onFinalize([s, pthis, window]
 	{
 		if (s->getVariable("reloadCollections"))

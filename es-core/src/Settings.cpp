@@ -1,6 +1,7 @@
 #include "Settings.h"
 
 #include "utils/FileSystemUtil.h"
+#include "utils/StringUtil.h"
 //#include "Log.h"
 #include "Scripting.h"
 #include "platform.h"
@@ -60,6 +61,7 @@ void Settings::setDefaults()
 	mBoolMap["InvertButtonsPD"] = false;
 	mBoolMap["ParseGamelistOnly"] = false;
 	mBoolMap["ShowHiddenFiles"] = false;
+	mBoolMap["IgnoreLeadingArticles"] = false;
 	mBoolMap["DrawFramerate"] = false;
 	mBoolMap["ShowExit"] = true;
 
