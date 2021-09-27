@@ -495,7 +495,7 @@ std::string ApiSystem::getIpAddress()
 
 	std::string result = queryIPAddress(); // platform.h
 	if (result.empty())
-		return "";
+		return "___.___.___.___/__";
 
 	return result;
 }
