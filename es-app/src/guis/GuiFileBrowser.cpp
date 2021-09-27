@@ -15,11 +15,11 @@
 
 #define WINDOW_WIDTH (float)Math::max((int)Renderer::getScreenHeight(), (int)(Renderer::getScreenWidth() * 0.65f))
 
-#define DRIVE_ICON		_U("\uF0A0 ")
-#define FOLDER_ICON		_U("\uF07C ")
-#define IMAGE_ICON		_U("\uF03E ")
-#define VIDEO_ICON		_U("\uF03D ")
-#define DOCUMENT_ICON	_U("\uF02D ")
+#define DRIVE_ICON			_U("\uF0A0 ")
+#define FOLDER_ICON			_U("\uF07C ")
+#define IMAGE_ICON			_U("\uF03E ")
+#define VIDEO_ICON			_U("\uF03D ")
+#define DOCUMENT_ICON		_U("\uF02D ")
 
 GuiFileBrowser::GuiFileBrowser(Window* window, const std::string startPath, const std::string selectedFile, FileTypes types, const std::function<void(const std::string&)>& okCallback, const std::string& title)
 	: GuiComponent(window), mMenu(window, title.empty() ? _("FILE BROWSER") : title)
@@ -69,6 +69,12 @@ void GuiFileBrowser::navigateTo(const std::string path)
 			navigateTo(Utils::FileSystem::getParent(mCurrentPath));
 		});
 	}
+
+	files.sort([](const Utils::FileSystem::FileInfo& file1, const Utils::FileSystem::FileInfo& file2) {
+			auto name1 = Utils::FileSystem::getFileName(file1.path);
+			auto name2 = Utils::FileSystem::getFileName(file2.path);
+			return Utils::String::compareIgnoreCase(name1, name2) < 0;
+	});
 
 	for (auto file : files)
 	{
