@@ -18,6 +18,9 @@ public:
 
 	virtual void addUpdatableComponent(GuiComponent* component);
 
+	void clear() { mUpdatables.clear(); }
+
+private:
 	std::vector<GuiComponent *> mUpdatables;
 };
 

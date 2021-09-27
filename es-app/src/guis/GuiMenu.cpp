@@ -4,12 +4,14 @@
 #include "components/FlagOptionListComponent.h"
 #include "components/SliderComponent.h"
 #include "components/SwitchComponent.h"
+#include "components/UpdatableTextComponent.h"
 #include "guis/GuiCollectionSystemsOptions.h"
 #include "guis/GuiDetectDevice.h"
 #include "guis/GuiGeneralScreensaverOptions.h"
 #include "guis/GuiMsgBox.h"
 #include "guis/GuiScraperStart.h"
 #include "guis/GuiSettings.h"
+#include "guis/UpdatableGuiSettings.h"
 #include "guis/GuiSystemInformation.h"
 #include "guis/GuiQuitOptions.h"
 #include "guis/GuiMenusOptions.h"
@@ -1449,10 +1451,10 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 
 	Window *window = mWindow;
 
-	auto s = new GuiSettings(mWindow, _("NETWORK SETTINGS").c_str());
+	auto s = new UpdatableGuiSettings(mWindow, _("NETWORK SETTINGS").c_str());
 	s->addGroup(_("INFORMATIONS"));
 
-	auto ip = std::make_shared<TextComponent>(mWindow, ApiSystem::getInstance()->getIpAddress(), font, color);
+	auto ip = std::make_shared<UpdatableTextComponent>(mWindow, ApiSystem::getInstance()->getIpAddress(), font, color);
 	s->addWithLabel(_("IP ADDRESS"), ip);
 
 	auto status = std::make_shared<TextComponent>(mWindow, ApiSystem::getInstance()->ping() ? _("CONNECTED") : _("NOT CONNECTED"), font, color);
@@ -1524,6 +1526,18 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 			openNetworkSettings(true);
 		}
 	});
+
+	if (selectWifiEnable)
+	{
+		s->clear();
+		ip->setUpdatableFunction([ip, status]
+			{
+				LOG(LogDebug) << "GuiMenu::openWifiSettings() - update network status";
+				ip->setText(ApiSystem::getInstance()->getIpAddress());
+				status->setText(ApiSystem::getInstance()->ping() ? _("CONNECTED") : _("NOT CONNECTED"));
+			}, 5000);
+		s->addUpdatableComponent(ip.get());
+	}
 
 	mWindow->pushGui(s);
 }

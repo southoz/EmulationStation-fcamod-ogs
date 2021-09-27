@@ -18,7 +18,7 @@ UpdatableGuiSettings::UpdatableGuiSettings(Window* window, const std::string tit
 
 UpdatableGuiSettings::~UpdatableGuiSettings()
 {
-	mUpdatables.clear();
+	clear();
 }
 
 void UpdatableGuiSettings::addUpdatableComponent(GuiComponent *component)
