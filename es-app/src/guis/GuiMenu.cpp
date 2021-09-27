@@ -39,6 +39,7 @@
 #include "ApiSystem.h"
 #include "views/gamelist/IGameListView.h"
 #include "SystemConf.h"
+#include "RetroAchievements.h"
 
 GuiMenu::GuiMenu(Window* window, bool animate) : GuiComponent(window), mMenu(window, _("MAIN MENU")), mVersion(window)
 {
@@ -1855,6 +1856,10 @@ void GuiMenu::openAdvancedSettings()
 		s->addEntry(_("SYSTEM HOTKEY EVENTS SETTINGS"), true, [this] { openSystemHotkeyEventsSettings(); });
 	}
 
+	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::ScriptId::RETROACHIVEMENTS))
+	{
+		s->addEntry(_("RETROACHIEVEMENTS SETTINGS"), true, [this] { openRetroAchievementsSettings(); });
+	}
 
 	// log level
 	auto logLevel = std::make_shared< OptionListComponent<std::string> >(mWindow, _("LOG LEVEL"), false);
@@ -1936,6 +1941,112 @@ void GuiMenu::openQuitSettings()
 void GuiMenu::openSystemHotkeyEventsSettings()
 {
 	mWindow->pushGui(new GuiSystemHotkeyEventsOptions(mWindow));
+}
+
+void GuiMenu::openRetroAchievementsSettings()
+{
+	Window* window = mWindow;
+	GuiSettings* retroachievements = new GuiSettings(mWindow, _("RETROACHIEVEMENTS SETTINGS").c_str());
+
+	retroachievements->addGroup(_("SETTINGS"));
+
+	std::string username = ApiSystem::getInstance()->getRetroachievementsUsername();
+	std::string password = ApiSystem::getInstance()->getRetroachievementsPassword();
+
+	// retroachievements_enable
+	auto retroachievements_enabled = std::make_shared<SwitchComponent>(mWindow);
+	bool retroachievementsEnabled = ApiSystem::getInstance()->getRetroachievementsEnabled();
+	retroachievements_enabled->setState(retroachievementsEnabled);
+	retroachievements->addWithLabel(_("RETROACHIEVEMENTS"), retroachievements_enabled);
+
+	// retroachievements_hardcore_mode
+	auto retroachievements_hardcore_enabled = std::make_shared<SwitchComponent>(mWindow);
+	bool old_rah_value = ApiSystem::getInstance()->getRetroachievementsHardcoreEnabled();
+	retroachievements_hardcore_enabled->setState(old_rah_value);
+	retroachievements->addWithLabel(_("HARDCORE MODE"), retroachievements_hardcore_enabled);
+	retroachievements->addSaveFunc([retroachievements_hardcore_enabled, old_rah_value]
+		{
+			if (old_rah_value != retroachievements_hardcore_enabled->getState())
+				ApiSystem::getInstance()->setRetroachievementsHardcoreEnabled(retroachievements_hardcore_enabled->getState());
+		});
+
+	// retroachievements_leaderboards
+	auto retroachievements_leaderboards_enabled = std::make_shared<SwitchComponent>(mWindow);
+	bool old_lb_value = ApiSystem::getInstance()->getRetroachievementsLeaderboardsEnabled();
+	retroachievements_leaderboards_enabled->setState(old_lb_value);
+	retroachievements->addWithLabel(_("LEADERBOARDS"), retroachievements_leaderboards_enabled);
+	retroachievements->addSaveFunc([retroachievements_leaderboards_enabled, old_lb_value]
+		{
+			if (old_lb_value != retroachievements_leaderboards_enabled->getState())
+				ApiSystem::getInstance()->setRetroachievementsLeaderboardsEnabled(retroachievements_leaderboards_enabled->getState());
+		});
+
+	// retroachievements_verbose_mode
+	auto retroachievements_verbose_enabled = std::make_shared<SwitchComponent>(mWindow);
+	bool old_vb_value = ApiSystem::getInstance()->getRetroachievementsVerboseEnabled();
+	retroachievements_verbose_enabled->setState(old_vb_value);
+	retroachievements->addWithLabel(_("VERBOSE MODE"), retroachievements_verbose_enabled);
+	retroachievements->addSaveFunc([retroachievements_verbose_enabled, old_vb_value]
+		{
+			if (old_vb_value != retroachievements_verbose_enabled->getState())
+				ApiSystem::getInstance()->setRetroachievementsVerboseEnabled(retroachievements_verbose_enabled->getState());
+		});
+
+	// retroachievements_automatic_screenshot
+	auto retroachievements_screenshot_enabled = std::make_shared<SwitchComponent>(mWindow);
+	bool old_scr_value = ApiSystem::getInstance()->getRetroachievementsAutomaticScreenshotEnabled();
+	retroachievements_screenshot_enabled->setState(old_scr_value);
+	retroachievements->addWithLabel(_("AUTOMATIC SCREENSHOT"), retroachievements_screenshot_enabled);
+	retroachievements->addSaveFunc([retroachievements_screenshot_enabled, old_scr_value]
+		{
+			if (old_scr_value != retroachievements_screenshot_enabled->getState())
+				ApiSystem::getInstance()->setRetroachievementsAutomaticScreenshotEnabled(retroachievements_screenshot_enabled->getState());
+		});
+
+	// Unlock sound
+	auto retroachievements_unlock_sound_enabled = std::make_shared<SwitchComponent>(mWindow);
+	bool old_us_value = ApiSystem::getInstance()->getRetroachievementsUnlockSoundEnabled();
+	retroachievements_unlock_sound_enabled->setState(old_us_value);
+	retroachievements->addWithLabel(_("UNLOCK SOUND"), retroachievements_unlock_sound_enabled);
+	retroachievements->addSaveFunc([retroachievements_unlock_sound_enabled, old_us_value]
+		{
+			if (old_us_value != retroachievements_unlock_sound_enabled->getState())
+				ApiSystem::getInstance()->setRetroachievementsUnlockSoundEnabled(retroachievements_unlock_sound_enabled->getState());
+		});
+
+	// retroachievements, username, password
+	createInputTextRow(retroachievements, _("USERNAME"), "global.retroachievements.username", false);
+	createInputTextRow(retroachievements, _("PASSWORD"), "global.retroachievements.password", true);
+
+	retroachievements->addSaveFunc([retroachievementsEnabled, retroachievements_enabled, username, password, window]
+	{
+		bool newState = retroachievements_enabled->getState();
+		if (newState != retroachievementsEnabled)
+			ApiSystem::getInstance()->setRetroachievementsEnabled(newState);
+
+		std::string newUsername = SystemConf::getInstance()->get("global.retroachievements.username");
+		std::string newPassword = SystemConf::getInstance()->get("global.retroachievements.password");
+
+		if (username != newUsername)
+			ApiSystem::getInstance()->setRetroachievementsUsername(newUsername);
+
+		if (password != newPassword)
+			ApiSystem::getInstance()->setRetroachievementsPassword(newPassword);
+
+		if (newState && (!retroachievementsEnabled || username != newUsername || password != newPassword))
+		{
+			std::string error;
+			if (!RetroAchievements::testAccount(newUsername, newPassword, error))
+			{
+				window->pushGui(new GuiMsgBox(window, _("UNABLE TO ACTIVATE RETROACHIEVEMENTS") + ":\n" + error, _("OK"), nullptr, GuiMsgBoxIcon::ICON_ERROR));
+					retroachievements_enabled->setState(false);
+					ApiSystem::getInstance()->setRetroachievementsEnabled(false);
+					newState = false;
+			}
+		}
+	});
+
+	mWindow->pushGui(retroachievements);
 }
 
 void GuiMenu::openMenusSettings()

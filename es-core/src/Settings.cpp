@@ -30,7 +30,9 @@ std::vector<const char*> settings_dont_save {
 	{ "VSync" },
 	{ "MusicDirectory" },
 	{ "UserMusicDirectory" },
-	{ "ThemeRandomSet" }
+	{ "ThemeRandomSet" },
+	{ "global.retroachievements.username" },
+	{ "global.retroachievements.password" }
 };
 
 Settings::Settings()

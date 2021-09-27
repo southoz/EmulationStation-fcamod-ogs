@@ -156,6 +156,23 @@ public:
 
 	bool setLanguage(std::string language);
 
+	bool setRetroachievementsEnabled(bool state);
+	bool getRetroachievementsEnabled();
+	bool setRetroachievementsHardcoreEnabled(bool state);
+	bool getRetroachievementsHardcoreEnabled();
+	bool setRetroachievementsLeaderboardsEnabled(bool state);
+	bool getRetroachievementsLeaderboardsEnabled();
+	bool setRetroachievementsVerboseEnabled(bool state);
+	bool getRetroachievementsVerboseEnabled();
+	bool setRetroachievementsAutomaticScreenshotEnabled(bool state);
+	bool getRetroachievementsAutomaticScreenshotEnabled();
+	bool setRetroachievementsUnlockSoundEnabled(bool state);
+	bool getRetroachievementsUnlockSoundEnabled();
+	std::string getRetroachievementsUsername();
+	bool setRetroachievementsUsername(std::string username);
+	std::string getRetroachievementsPassword();
+	bool setRetroachievementsPassword(std::string password);
+
 	static UpdateState::State state;
 
 	std::pair<std::string, int> updateSystem(const std::function<void(const std::string)>& func = nullptr);

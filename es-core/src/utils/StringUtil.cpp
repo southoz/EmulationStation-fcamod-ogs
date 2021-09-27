@@ -920,6 +920,11 @@ namespace Utils
 			return (value ? "true" : "false");
 		}
 
+		bool toBool(const std::string value)
+		{
+			return equalsIgnoreCase(value, "true");
+		}
+
 	} // String::
 
 } // Utils::

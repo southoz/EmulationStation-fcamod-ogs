@@ -839,3 +839,116 @@ bool ApiSystem::setLanguage(std::string language)
 
 	return executeScript("es-language set " + language + " &");
 }
+
+bool ApiSystem::setRetroachievementsEnabled(bool state)
+{
+	LOG(LogInfo) << "ApiSystem::setRetroachievementsEnabled()";
+
+	return executeScript("es-cheevos set cheevos_enable " + Utils::String::boolToString(state));
+}
+
+bool ApiSystem::getRetroachievementsEnabled()
+{
+	LOG(LogInfo) << "ApiSystem::getRetroachievementsEnabled()";
+
+	return Utils::String::toBool(getShOutput(R"(es-cheevos get cheevos_enable)"));
+}
+
+bool ApiSystem::setRetroachievementsHardcoreEnabled(bool state)
+{
+	LOG(LogInfo) << "ApiSystem::setRetroachievementsHardcoreEnabled()";
+
+	return executeScript("es-cheevos set cheevos_hardcore_mode_enable " + Utils::String::boolToString(state));
+}
+
+bool ApiSystem::getRetroachievementsHardcoreEnabled()
+{
+	LOG(LogInfo) << "ApiSystem::getRetroachievementsHardcoreEnabled()";
+
+	return Utils::String::toBool(getShOutput(R"(es-cheevos get cheevos_hardcore_mode_enable)"));
+}
+
+bool ApiSystem::setRetroachievementsLeaderboardsEnabled(bool state)
+{
+	LOG(LogInfo) << "ApiSystem::setRetroachievementsLeaderboardsEnabled()";
+
+	return executeScript("es-cheevos set cheevos_leaderboards_enable " + Utils::String::boolToString(state));
+}
+
+bool ApiSystem::getRetroachievementsLeaderboardsEnabled()
+{
+	LOG(LogInfo) << "ApiSystem::getRetroachievementsLeaderboardsEnabled()";
+
+	return Utils::String::toBool(getShOutput(R"(es-cheevos get cheevos_leaderboards_enable)"));
+}
+
+bool ApiSystem::setRetroachievementsVerboseEnabled(bool state)
+{
+	LOG(LogInfo) << "ApiSystem::setRetroachievementsVerboseEnabled()";
+
+	return executeScript("es-cheevos set cheevos_verbose_enable " + Utils::String::boolToString(state));
+}
+
+bool ApiSystem::getRetroachievementsVerboseEnabled()
+{
+	LOG(LogInfo) << "ApiSystem::getRetroachievementsVerboseEnabled()";
+
+	return Utils::String::toBool(getShOutput(R"(es-cheevos get cheevos_verbose_enable)"));
+}
+
+bool ApiSystem::setRetroachievementsAutomaticScreenshotEnabled(bool state)
+{
+	LOG(LogInfo) << "ApiSystem::setRetroachievementsAutomaticScreenshotEnabled()";
+
+	return executeScript("es-cheevos set cheevos_auto_screenshot " + Utils::String::boolToString(state));
+}
+
+bool ApiSystem::getRetroachievementsAutomaticScreenshotEnabled()
+{
+	LOG(LogInfo) << "ApiSystem::getRetroachievementsAutomaticScreenshotEnabled()";
+
+	return Utils::String::toBool(getShOutput(R"(es-cheevos get cheevos_auto_screenshot)"));
+}
+
+bool ApiSystem::setRetroachievementsUnlockSoundEnabled(bool state)
+{
+	LOG(LogInfo) << "ApiSystem::setRetroachievementsUnlockSoundEnabled()";
+
+	return executeScript("es-cheevos set cheevos_unlock_sound_enable " + Utils::String::boolToString(state));
+}
+
+bool ApiSystem::getRetroachievementsUnlockSoundEnabled()
+{
+	LOG(LogInfo) << "ApiSystem::getRetroachievementsUnlockSoundEnabled()";
+
+	return Utils::String::toBool(getShOutput(R"(es-cheevos get cheevos_unlock_sound_enable)"));
+}
+
+bool ApiSystem::setRetroachievementsUsername(std::string username)
+{
+	LOG(LogInfo) << "ApiSystem::setRetroachievementsUsername()";
+
+	return executeScript("es-cheevos set cheevos_username \"" + username + '"');
+}
+
+std::string ApiSystem::getRetroachievementsUsername()
+{
+	LOG(LogInfo) << "ApiSystem::getRetroachievementsUsername()";
+
+	return getShOutput(R"(es-cheevos get cheevos_username)");
+}
+
+bool ApiSystem::setRetroachievementsPassword(std::string password)
+{
+	LOG(LogInfo) << "ApiSystem::setRetroachievementsPassword()";
+
+	return executeScript("es-cheevos set cheevos_password \"" + password + '"');
+}
+
+std::string ApiSystem::getRetroachievementsPassword()
+{
+	LOG(LogInfo) << "ApiSystem::getRetroachievementsPassword()";
+
+	return getShOutput(R"(es-cheevos get cheevos_password)");
+}
+

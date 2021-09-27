@@ -50,6 +50,7 @@ namespace Utils
 		const std::string hiddenSpecialCharacters(const std::string msg);
 		const std::string showSpecialCharacters(const std::string msg);
 		const std::string boolToString(bool value, bool uppercase = false);
+		bool toBool(const std::string value);
 	} // String::
 
 } // Utils::

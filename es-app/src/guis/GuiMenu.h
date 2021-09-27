@@ -40,6 +40,7 @@ private:
 	void openQuitSettings();
 	void openMenusSettings();
 	void openSystemHotkeyEventsSettings();
+	void openRetroAchievementsSettings();
 	void openNetworkSettings(bool selectWifiEnable = false);
 
 	static void openWifiSettings(Window* win, std::string title, std::string data, const std::function<void(std::string)>& onsave);

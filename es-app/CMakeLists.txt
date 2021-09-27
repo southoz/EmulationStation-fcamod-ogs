@@ -15,6 +15,7 @@ set(ES_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ApiSystem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ContentInstaller.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/NetworkThread.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/RetroAchievements.h
 
     # GuiComponents
     ${CMAKE_CURRENT_SOURCE_DIR}/src/components/AsyncReqComponent.h
@@ -88,6 +89,7 @@ set(ES_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ApiSystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ContentInstaller.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/NetworkThread.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/RetroAchievements.cpp
 
     # GuiComponents
     ${CMAKE_CURRENT_SOURCE_DIR}/src/components/AsyncReqComponent.cpp
