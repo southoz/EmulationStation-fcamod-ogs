@@ -28,6 +28,7 @@ namespace PlatformIds
 		{ "c16",             COMMODORE_16 },
 		{ "c64",             COMMODORE_64 },
 		{ "c128",            COMMODORE_64 },
+		{ "vic20",           COMMODORE_VIC20 },
 		{ "intellivision",   INTELLIVISION },
 		{ "macintosh",       MAC_OS },
 		{ "xbox",            XBOX },
