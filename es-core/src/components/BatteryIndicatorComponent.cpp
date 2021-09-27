@@ -21,8 +21,10 @@ void BatteryIndicatorComponent::init()
 	}
 	else
 	{
-		setPosition(Renderer::getScreenWidth() * 0.955, Renderer::getScreenHeight() *0.0125);
-		setSize(Renderer::getScreenWidth() * 0.033, Renderer::getScreenHeight() *0.033);
+		//setPosition(Renderer::getScreenWidth() * 0.955, Renderer::getScreenHeight() *0.0125);
+		setPosition(Renderer::getScreenWidth() * 0.935, Renderer::getScreenHeight() *0.005);
+		//setSize(Renderer::getScreenWidth() * 0.033, Renderer::getScreenHeight() *0.033);
+		setSize(Renderer::getScreenWidth() * 0.06, 25);
 	}
 
 	mView = ActivityView::BATTERY;
