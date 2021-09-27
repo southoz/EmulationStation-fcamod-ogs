@@ -1680,8 +1680,10 @@ void GuiMenu::openAdvancedSettings()
 
 				if (language->getSelected() != Settings::getInstance()->getString("Language"))
 				{
-					if (Settings::getInstance()->setString("Language", language->getSelected()))
-						s->setVariable("reloadGuiMenu", true);
+					Settings::getInstance()->setString("Language", language->getSelected());
+					s->setVariable("reloadGuiMenu", true);
+					if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::LANGUAGE))
+						ApiSystem::getInstance()->setLanguage(language->getSelected());
 				}
 			});
 		}

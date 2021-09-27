@@ -47,9 +47,10 @@ public:
 		POWER_KEY = 1,
 		DISPLAY = 2,
 		SYSTEM_HOTKEY_EVENTS = 3,
-		WIFI = 4
+		WIFI = 4,
+		RETROACHIVEMENTS = 5,
+		LANGUAGE = 6
 /*
-
 		RETROACHIVEMENTS = 1,
 		BLUETOOTH = 2,
 		RESOLUTION = 3,
@@ -152,6 +153,8 @@ public:
 	std::vector<std::string> getWifiNetworks(bool scan = false);
 	bool enableWifi(std::string ssid, std::string key);
 	bool disableWifi();
+
+	bool setLanguage(std::string language);
 
 	static UpdateState::State state;
 

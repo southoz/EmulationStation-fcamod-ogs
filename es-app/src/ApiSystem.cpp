@@ -163,6 +163,12 @@ bool ApiSystem::isScriptingSupported(ScriptId script)
 		case WIFI:
 				executables.push_back("es-wifi");
 				break;
+	case ApiSystem::RETROACHIVEMENTS:
+				executables.push_back("es-cheevos");
+				break;
+	case ApiSystem::LANGUAGE:
+				executables.push_back("es-language");
+				break;
 
 /*
 	case ApiSystem::RETROACHIVEMENTS:
@@ -825,4 +831,11 @@ std::string ApiSystem::stateToString(bool state)
 bool ApiSystem::stringToState(const std::string state)
 {
 	return ( Utils::String::replace(state, "\n", "") == "enabled" );
+}
+
+bool ApiSystem::setLanguage(std::string language)
+{
+	LOG(LogInfo) << "ApiSystem::setLanguage()";
+
+	return executeScript("es-language set " + language + " &");
 }

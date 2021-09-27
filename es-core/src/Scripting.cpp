@@ -27,7 +27,7 @@ namespace Scripting
             for (std::list<std::string>::const_iterator it = scripts.cbegin(); it != scripts.cend(); ++it) {
                 // append folder to path
                 std::string script = *it + " \"" + arg1 + "\" \"" + arg2 + "\"";
-                LOG(LogDebug) << "  executing: " << script;
+                LOG(LogDebug) << "Scripting::fireEvent() - executing: " << script;
                 runSystemCommand(script, "", NULL);
             }
         }
