@@ -91,6 +91,7 @@ const std::map<PlatformId, std::string> gamesdb_new_platformid_map{
 	{ PLAYSTATION_VITA, "39" },
 	{ PLAYSTATION_PORTABLE, "13" },
 	{ SUPER_NINTENDO, "6" },
+	{ SUPER_NINTENDO_MSU1, "6" },
 	{ TURBOGRAFX_16, "34" },   // HuCards only
 	{ TURBOGRAFX_CD, "4955" }, // CD-ROMs only
 	{ WONDERSWAN, "4925" },
