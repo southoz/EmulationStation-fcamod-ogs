@@ -103,6 +103,7 @@ const std::map<PlatformId, unsigned short> screenscraper_platformid_map{
 	{ TANDY, 144 },	
 	{ SUPERGRAFX, 105 },
 	{ WATARA_SUPERVISION, 207 },
+	{ MEGADUCK, 90},
 
 	{ AMIGACD32, 130 },
 	{ AMIGACDTV, 129 },

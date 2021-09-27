@@ -103,6 +103,7 @@ const std::map<PlatformId, std::string> gamesdb_new_platformid_map{
 	{ TANDY, "4941" },
 	{ SUPERGRAFX, "34" }, // The code is TurboGrafx 16, but they manage SUPERGRAFX into this one....
 	{ WATARA_SUPERVISION, "4959" },
+	{ MEGADUCK, "4948" },
 
 	{ AMIGACD32, "4947" },
 	// { AMIGACDTV, ?? },

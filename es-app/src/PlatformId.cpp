@@ -85,6 +85,7 @@ namespace PlatformIds
 		{ "supergrafx",      SUPERGRAFX },
 		{ "watara",          WATARA_SUPERVISION },
 		{ "supervision",     WATARA_SUPERVISION },
+		{ "megaduck",        MEGADUCK },
 		{ "amigacd32",       AMIGACD32 },
 		{ "amigacdtv",       AMIGACDTV },
 		{ "atomiswave",      ATOMISWAVE },
