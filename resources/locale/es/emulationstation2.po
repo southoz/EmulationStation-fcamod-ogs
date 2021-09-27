@@ -2513,6 +2513,10 @@ msgid "ERROR: EVERY SYSTEM IS HIDDEN, RE-DISPLAYING ALL OF THEM NOW"
 msgstr "ERROR: TODOS LOS SISTEMAS ESTÁN OCULTOS, MOSTRANDO TODOS NUEVAMENTE"
 
 #:
+msgid "QUICK SEARCH"
+msgstr "BÚSQUEDA RÁPIDA"
+
+#:
 msgid "Loading theme..."
 msgstr "Cargando tema..."
 
