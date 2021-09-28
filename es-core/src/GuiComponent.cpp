@@ -8,7 +8,6 @@
 #include "ThemeData.h"
 #include "Window.h"
 #include <algorithm>
-//#include <SDL_timer.h>
 
 bool GuiComponent::ALLOWANIMATIONS = true;
 
@@ -19,9 +18,6 @@ GuiComponent::GuiComponent(Window* window) : mWindow(window), mParent(NULL), mOp
 {
 	for(unsigned char i = 0; i < MAX_ANIMATIONS; i++)
 		mAnimationMap[i] = NULL;
-
-
-//	mAutoUpdatedStartTime = SDL_GetTicks();
 }
 
 GuiComponent::~GuiComponent()
@@ -61,27 +57,11 @@ void GuiComponent::updateChildren(int deltaTime)
 		getChild(i)->update(deltaTime);
 	}
 }
-/*
-void GuiComponent::executeAutoUpdate()
-{
-	LOG(LogDebug) << "GuiComponent::executeAutoUpdate() -  executing auto update";
-	int mAutoUpdatedEndTime = SDL_GetTicks();
-	int time = mAutoUpdatedEndTime - mAutoUpdatedStartTime;
-	if (time > mAutoUpdateElapsedTime)
-	{
-		mAutoUpdateCallback();
-		mAutoUpdatedStartTime = SDL_GetTicks();
-	}
-}
-*/
+
 void GuiComponent::update(int deltaTime)
 {
 	updateSelf(deltaTime);
 	updateChildren(deltaTime);
-
-//	if (isAutoUpdated())
-//		executeAutoUpdate();
-
 }
 
 void GuiComponent::render(const Transform4x4f& parentTrans)
@@ -175,7 +155,7 @@ void GuiComponent::setZIndex(float z)
 }
 
 float GuiComponent::getDefaultZIndex() const
-{	
+{
 	return mDefaultZIndex;
 }
 
@@ -204,7 +184,7 @@ bool GuiComponent::isChild(GuiComponent* cmp)
 	for (auto i = mChildren.cbegin(); i != mChildren.cend(); i++)
 		if (*i == cmp)
 			return true;
-	
+
 	return false;
 }
 
@@ -553,7 +533,9 @@ void GuiComponent::animateTo(Vector2f from, Vector2f to, unsigned int  flags, in
 	if ((flags & AnimateFlags::POSITION) == 0)
 		from = to;
 
-	Vector3f scale = mScale;	
+	Vector3f scale = mScale;
+
+	float opacity = mOpacity;
 
 	float x1 = from.x();
 	float x2 = to.x();
@@ -572,13 +554,13 @@ void GuiComponent::animateTo(Vector2f from, Vector2f to, unsigned int  flags, in
 		if ((flags & AnimateFlags::SCALE) == AnimateFlags::SCALE)
 			mScale = Vector3f(0, 0, 1);
 
-		auto fadeFunc = [this, x1, x2, y1, y2, flags, scale](float t) {
+		auto fadeFunc = [this, x1, x2, y1, y2, flags, scale, opacity](float t) {
 
 			t -= 1; // cubic ease out
 			float pct = Math::lerp(0, 1, t*t*t + 1);
 
 			if ((flags & AnimateFlags::OPACITY) == AnimateFlags::OPACITY)
-				setOpacity(pct*255.0);
+				setOpacity(pct * opacity);
 
 			if ((flags & AnimateFlags::SCALE) == AnimateFlags::SCALE)
 				mScale = Vector3f(pct * scale.x(), pct * scale.y(), pct * scale.z());
@@ -590,13 +572,13 @@ void GuiComponent::animateTo(Vector2f from, Vector2f to, unsigned int  flags, in
 				setPosition(x, y);
 		};
 
-		setAnimation(new LambdaAnimation(fadeFunc, delay), 0, [this, fadeFunc, x2, y2, flags, scale]
+		setAnimation(new LambdaAnimation(fadeFunc, delay), 0, [this, fadeFunc, x2, y2, flags, scale, opacity]
 		{
 			if ((flags & AnimateFlags::SCALE) == AnimateFlags::SCALE)
 				mScale = scale;
 
 			if ((flags & AnimateFlags::OPACITY) == AnimateFlags::OPACITY)
-				setOpacity(255);
+				setOpacity(opacity);
 
 			float x = x2 + mSize.x() / 2 - (mSize.x() / 2 * mScale.x());
 			float y = y2 + mSize.y() / 2 - (mSize.y() / 2 * mScale.y());
