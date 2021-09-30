@@ -14,7 +14,7 @@ std::vector<std::shared_ptr<Sound>> AudioManager::sSoundVector;
 std::shared_ptr<AudioManager> AudioManager::sInstance;
 
 AudioManager::AudioManager() : mCurrentMusic(NULL), mInitialized(false), mMusicVolume(MIX_MAX_VOLUME), mVideoPlaying(false)
-{	
+{
 	init();
 }
 
@@ -27,7 +27,7 @@ std::shared_ptr<AudioManager> & AudioManager::getInstance()
 {
 	if (sInstance == nullptr)
 		sInstance = std::shared_ptr<AudioManager>(new AudioManager);
-	
+
 	return sInstance;
 }
 
@@ -45,6 +45,7 @@ void AudioManager::init()
 		return;
 
 	mRunningFromPlaylist = false;
+	mMusicVolume = 0;
 
 	if (SDL_InitSubSystem(SDL_INIT_AUDIO) != 0)
 	{
@@ -52,15 +53,15 @@ void AudioManager::init()
 		return;
 	}
 
-	//Open the audio device and pause
+	// Open the audio device and pause
 	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) < 0)
 		LOG(LogError) << "MUSIC Error - Unable to open SDLMixer audio: " << SDL_GetError() << std::endl;
 	else
 	{
-		mInitialized = true;
 		LOG(LogInfo) << "SDL AUDIO Initialized";
+		mInitialized = true;
 
-		// Reload sounds
+		// Reload known sounds
 		for (unsigned int i = 0; i < sSoundVector.size(); i++)
 			sSoundVector[i]->init();
 	}
@@ -71,13 +72,15 @@ void AudioManager::deinit()
 	if (!mInitialized)
 		return;
 
+	LOG(LogDebug) << "AudioManager::deinit";
+
 	mInitialized = false;
 
 	//stop all playback
 	stop();
 	stopMusic();
 
-	// Stop playing all Sounds & reload them 
+	// Free known sounds from memory
 	for (unsigned int i = 0; i < sSoundVector.size(); i++)
 		sSoundVector[i]->deinit();
 
@@ -87,6 +90,8 @@ void AudioManager::deinit()
 	//completely tear down SDL audio. else SDL hogs audio resources and emulators might fail to start...
 	Mix_CloseAudio();
 	SDL_QuitSubSystem(SDL_INIT_AUDIO);
+
+	LOG(LogInfo) << "SDL AUDIO Deinitialized";
 }
 
 void AudioManager::registerSound(std::shared_ptr<Sound> & sound)
@@ -107,7 +112,7 @@ void AudioManager::unregisterSound(std::shared_ptr<Sound> & sound)
 			return;
 		}
 	}
-	LOG(LogError) << "AudioManager Error - tried to unregister a sound that wasn't registered!";
+	LOG(LogWarning) << "AudioManager Error - tried to unregister a sound that wasn't registered!";
 }
 
 void AudioManager::play()
@@ -123,17 +128,17 @@ void AudioManager::stop()
 			sSoundVector[i]->stop();
 }
 
-void AudioManager::findMusic(const std::string &path, std::vector<std::string>& all_matching_files) 
+void AudioManager::findMusic(const std::string &path, std::vector<std::string>& all_matching_files)
 {
 	if (!Utils::FileSystem::isDirectory(path))
 		return;
-	
+
 	bool anySystem = !Settings::getInstance()->getBool("audio.persystem");
 
 	auto dirContent = Utils::FileSystem::getDirContent(path);
-	for (auto it = dirContent.cbegin(); it != dirContent.cend(); ++it) 
+	for (auto it = dirContent.cbegin(); it != dirContent.cend(); ++it)
 	{
-		if (Utils::FileSystem::isDirectory(*it)) 
+		if (Utils::FileSystem::isDirectory(*it))
 		{
 			if (*it == "." || *it == "..")
 				continue;
@@ -141,18 +146,18 @@ void AudioManager::findMusic(const std::string &path, std::vector<std::string>& 
 			if (anySystem || mSystemName == Utils::FileSystem::getFileName(*it))
 				findMusic(*it, all_matching_files);
 		}
-		else 
+		else
 		{
 			std::string extension = Utils::String::toLower(Utils::FileSystem::getExtension(*it));
 			if (extension == ".mp3" || extension == ".ogg")
-				all_matching_files.push_back(*it);			
-		}		
+				all_matching_files.push_back(*it);
+		}
 	}
 }
 
-void AudioManager::playRandomMusic(bool continueIfPlaying) 
+void AudioManager::playRandomMusic(bool continueIfPlaying)
 {
-	if (!mInitialized)
+	if (!mInitialized || !Settings::getInstance()->getBool("audio.bgmusic"))
 		return;
 
 	std::vector<std::string> musics;
@@ -173,15 +178,15 @@ void AudioManager::playRandomMusic(bool continueIfPlaying)
 	if (musics.empty())
 		findMusic(Utils::FileSystem::getEsConfigPath() + "/music", musics);
 
-	if (musics.empty()) 
+	if (musics.empty())
 		return;
-	
+
 	srand(time(NULL) % getpid() + getppid());
 
 	int randomIndex = rand() % musics.size();
 
 	// continue playing ?
-	if (mCurrentMusic != NULL && continueIfPlaying) 
+	if (mCurrentMusic != NULL && continueIfPlaying)
 		return;
 
 	playMusic(musics.at(randomIndex));
@@ -194,8 +199,11 @@ void AudioManager::playMusic(std::string path)
 		return;
 
 	// free the previous music
-	stopMusic();
-		
+	stopMusic(false);
+
+	if (!Settings::getInstance()->getBool("audio.bgmusic"))
+		return;
+
 	// load a new music
 	mCurrentMusic = Mix_LoadMUS(path.c_str());
 	if (mCurrentMusic == NULL)
@@ -204,7 +212,7 @@ void AudioManager::playMusic(std::string path)
 		return;
 	}
 
-	if (Mix_FadeInMusic(mCurrentMusic, 1, 1000) == -1) 
+	if (Mix_FadeInMusic(mCurrentMusic, 1, 1000) == -1)
 	{
 		stopMusic();
 		return;
@@ -215,26 +223,36 @@ void AudioManager::playMusic(std::string path)
 	mCurrentSong = Utils::FileSystem::getStem(path);
 }
 
-void AudioManager::onMusicFinished() 
+void AudioManager::onMusicFinished()
 {
 	AudioManager::getInstance()->playRandomMusic(false);
 }
 
-void AudioManager::stopMusic() 
+void AudioManager::stopMusic(bool fadeOut)
 {
 	if (mCurrentMusic == NULL)
 		return;
-	
+
 	Mix_HookMusicFinished(nullptr);
+
+	if (fadeOut)
+	{
+		// Fade-out is nicer on Batocera!
+		while (!Mix_FadeOutMusic(500) && Mix_PlayingMusic())
+			SDL_Delay(100);
+	}
+
 	Mix_HaltMusic();
 	Mix_FreeMusic(mCurrentMusic);
-	
 	mCurrentMusicPath = "";
-	mCurrentMusic = NULL;	
+	mCurrentMusic = NULL;
 }
 
 void AudioManager::themeChanged(const std::shared_ptr<ThemeData>& theme, bool force)
 {
+	if (theme == nullptr)
+		return;
+
 	if (!force && mSystemName == theme->getSystemThemeFolder())
 		return;
 
@@ -243,12 +261,12 @@ void AudioManager::themeChanged(const std::shared_ptr<ThemeData>& theme, bool fo
 
 	if (!Settings::getInstance()->getBool("audio.bgmusic"))
 		return;
-	
+
 	const ThemeData::ThemeElement* elem = theme->getElement("system", "directory", "sound");
 
 	if (Settings::getInstance()->getBool("audio.thememusics"))
 	{
-		if (elem && elem->has("path"))
+		if (elem && elem->has("path") && !Settings::getInstance()->getBool("audio.persystem"))
 			mCurrentThemeMusicDirectory = elem->get<std::string>("path");
 
 		std::string bgSound;
@@ -273,14 +291,14 @@ void AudioManager::themeChanged(const std::shared_ptr<ThemeData>& theme, bool fo
 
 	mSystemName = theme->getSystemThemeFolder();
 	if (!mRunningFromPlaylist || Settings::getInstance()->getBool("audio.persystem"))
-		playRandomMusic(false);	
+		playRandomMusic(false);
 }
 
 void AudioManager::setVideoPlaying(bool state)
 {
 	if (sInstance == nullptr || !sInstance->mInitialized || !Settings::getInstance()->getBool("audio.bgmusic"))
 		return;
-	
+
 	if (state && !Settings::getInstance()->getBool("VideoLowersMusic"))
 		return;
 

@@ -12,12 +12,12 @@
 class Sound;
 
 class AudioManager
-{	
+{
 
 public:
 	static std::shared_ptr<AudioManager> & getInstance();
 	static bool isInitialized();
-	
+
 	void init();
 	void deinit();
 
@@ -28,15 +28,15 @@ public:
 	void stop();
 
 	void playRandomMusic(bool continueIfPlaying = true);
-	void stopMusic();
+	void stopMusic(bool fadeOut=true);
 	void themeChanged(const std::shared_ptr<ThemeData>& theme, bool force=false);
 
 	void setSystemName(std::string name) {
 		mSystemName = name;
 	}
 
-	std::string popSongName() 
-	{ 		
+	std::string popSongName()
+	{
 		if (!mCurrentSong.empty())
 		{
 			std::string ret = mCurrentSong;
@@ -62,18 +62,18 @@ private:
 
 	static std::vector<std::shared_ptr<Sound>> sSoundVector;
 	static std::shared_ptr<AudioManager> sInstance;
-	
-	
+
+
 	static void onMusicFinished();
 
 	void	findMusic(const std::string &path, std::vector<std::string>& all_matching_files);
 	void	playMusic(std::string path);
-		
+
 	std::string mCurrentSong;
 	std::string mCurrentMusicPath;
 	std::string mSystemName;
-	std::string mCurrentThemeMusicDirectory;	
-	bool		mRunningFromPlaylist;	
+	std::string mCurrentThemeMusicDirectory;
+	bool		mRunningFromPlaylist;
 	bool		mInitialized;
 
 	Mix_Music* mCurrentMusic;
