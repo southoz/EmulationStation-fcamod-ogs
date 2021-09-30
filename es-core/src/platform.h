@@ -112,6 +112,9 @@ struct NetworkInformation
 
 NetworkInformation queryNetworkInformation(bool summary);
 std::string queryIPAddress();
+bool queryWifiEnabled();
+std::string queryWifiSsid();
+std::string queryWifiPsk(std::string ssid = "");
 bool queryNetworkConnected();
 
 
@@ -224,6 +227,8 @@ struct SoftwareInformation
 	std::string linux;
 };
 
+std::string queryHostname();
+bool setCurrentHostname(std::string hostname);
 SoftwareInformation querySoftwareInformation(bool summary);
 
 struct DeviceInformation

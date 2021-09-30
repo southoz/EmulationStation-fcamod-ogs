@@ -30,6 +30,7 @@
 #include "NetworkThread.h"
 #include "scrapers/ThreadedScraper.h"
 #include "ImageIO.h"
+#include "ApiSystem.h"
 
 const std::string INVALID_HOME_PATH = "Invalid home path supplied.";
 const std::string INVALID_CONFIG_PATH = "Invalid config path supplied.";
@@ -556,6 +557,8 @@ Log::flush();
 	}
 
 	ThreadedScraper::stop();
+
+	ApiSystem::getInstance()->deinit();
 
 	while(window.peekGui() != ViewController::get())
 		delete window.peekGui();

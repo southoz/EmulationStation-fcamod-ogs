@@ -486,7 +486,13 @@ std::string ApiSystem::getApplicationName()
 std::string ApiSystem::getHostname()
 {
 	LOG(LogDebug) << "ApiSystem::getHostname()";
-	return querySoftwareInformation(true).hostname;
+	return queryHostname();
+}
+
+bool ApiSystem::setHostname(std::string hostname)
+{
+	LOG(LogDebug) << "ApiSystem::setHostname()";
+	return setCurrentHostname(hostname);
 }
 
 std::string ApiSystem::getIpAddress()
@@ -821,6 +827,13 @@ bool ApiSystem::disableWifi()
 	LOG(LogInfo) << "ApiSystem::disableWifi()";
 
 	return executeScript("es-wifi disable");
+}
+
+bool ApiSystem::isWifiEnabled()
+{
+	LOG(LogInfo) << "ApiSystem::disableWifi()";
+
+	return queryWifiEnabled();
 }
 
 std::string ApiSystem::stateToString(bool state)

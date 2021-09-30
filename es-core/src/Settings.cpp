@@ -32,7 +32,10 @@ std::vector<const char*> settings_dont_save {
 	{ "UserMusicDirectory" },
 	{ "ThemeRandomSet" },
 	{ "global.retroachievements.username" },
-	{ "global.retroachievements.password" }
+	{ "global.retroachievements.password" },
+	{ "system.hostname" },
+	{ "wifi.enabled" },
+	{ "wifi.key" }
 };
 
 Settings::Settings()
@@ -187,12 +190,15 @@ void Settings::setDefaults()
 	mBoolMap["audio.bgmusic"] = true;
 	mBoolMap["audio.persystem"] = false;
 	mBoolMap["audio.thememusics"] = true;
-	
+
 	mStringMap["MusicDirectory"] = "/roms/bgmusic";
 	mStringMap["UserMusicDirectory"] = "";
 
 	mBoolMap["updates.enabled"] = false;
-	mBoolMap["wifi.enabled"] = false;
+	mBoolMap["wifi.enabled"] = queryWifiEnabled();
+	mStringMap["wifi.ssid"] = queryWifiSsid();
+	mStringMap["wifi.key"] = queryWifiPsk();
+	mStringMap["system.hostname"] = queryHostname();
 
 	// Log settings
 	mStringMap["LogLevel"] = "default";

@@ -405,16 +405,18 @@ NetworkInformation queryNetworkInformation(bool summary)
 					field.clear();
 					field.append( "$8" ) // wifi signal
 							 .append( " \" \" $5" ) // wifi channel
-							 .append( " \" \"  $10" ) // wifi security
 							 .append( " \" \"  $6" ) // rate
-							 .append( " \" \"  $7" ); // rate unit
+							 .append( " \" \"  $7" ) // rate unit
+							 .append( " \" \"  $10 \" \"  $11 " ); // wifi security
 					snprintf(result_buffer, 256, nmcli_command.c_str(), network.ssid.c_str(), field.c_str());
 					std::vector<std::string> results = Utils::String::split(getShOutput( result_buffer ), ' ');
 					network.signal = std::atoi( results.at(0).c_str() ); // wifi signal
 					network.channel = std::atoi( results.at(1).c_str() ); // wifi channel
-					network.security = results.at(2); // wifi security
-					network.rate = std::atoi( results.at(3).c_str() ); // rate
-					network.rate_unit = results.at(4);
+					network.rate = std::atoi( results.at(2).c_str() ); // rate
+					network.rate_unit = results.at(3);
+					network.security = results.at(4); // wifi security
+					if (results.size() == 6)
+						network.security.append(" - ").append(results.at(5));
 				}
 				else
 				{
@@ -453,6 +455,32 @@ bool queryNetworkConnected()
 		LOG(LogError) << "PLATFORM::queryNetworkConnected() - Error reading network data!!!";
 	}
 	return false;
+}
+
+bool queryWifiEnabled()
+{
+	if ( Utils::FileSystem::exists("/usr/bin/nmcli")
+			&& (Utils::String::replace(getShOutput(R"(nmcli radio  wifi)"), "\n", "") == "enabled" ) )
+		return true;
+
+	return false;
+}
+
+std::string queryWifiSsid()
+{
+	return getShOutput("nmcli -f GENERAL.CONNECTION device show wlan0 | awk '{for (i=2; i<NF; i++) printf $i \" \"; print $NF}'");
+}
+
+std::string queryWifiPsk(std::string ssid)
+{
+	std::string _ssid(ssid);
+	if (_ssid.empty())
+		_ssid.append( queryWifiSsid() );
+
+	if (_ssid.empty())
+		return "";
+
+	return Utils::String::replace(getShOutput("nmcli -s -g 802-11-wireless-security.psk connection show \"" + _ssid + '"'), "\n", "");
 }
 
 CpuAndSocketInformation queryCpuAndChipsetInformation(bool summary)
@@ -754,6 +782,22 @@ void saveBrightnessLevel(int brightness_level)
 	}
 }
 
+std::string queryHostname()
+{
+	std::string hostname = "";
+
+	hostname.append( getShOutput(R"(hostname)") );
+	if ( hostname.empty() && Utils::FileSystem::exists("/usr/bin/hostnamectl") )
+		hostname.append( getShOutput(R"(hostnamectl | grep -iw hostname | awk '{print $3}')") );
+
+	return hostname;
+}
+
+bool setCurrentHostname(std::string hostname)
+{
+	return executeSystemScript("sudo hostnamectl set-hostname \"" + hostname + '"');
+}
+
 SoftwareInformation querySoftwareInformation(bool summary)
 {
 	SoftwareInformation si;
@@ -778,8 +822,7 @@ SoftwareInformation querySoftwareInformation(bool summary)
 				si.version = getShOutput(R"(cat /usr/share/plymouth/themes/ubuntu-text/ubuntu-text.plymouth | grep -iw title | awk '{gsub(/=/," ")}; {print $3 " " $4}')");
 		}
 
-		if ( Utils::FileSystem::exists("/usr/bin/hostnamectl") )
-			si.hostname = getShOutput(R"(hostnamectl | grep -iw hostname | awk '{print $3}')");
+		si.hostname = queryHostname();
 
 		if (!summary)
 		{

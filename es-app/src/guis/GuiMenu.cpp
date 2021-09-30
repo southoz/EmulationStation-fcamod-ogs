@@ -1445,6 +1445,7 @@ void GuiMenu::openWifiSettings(Window* win, std::string title, std::string data,
 void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 {
 	bool baseWifiEnabled = SystemConf::getInstance()->getBool("wifi.enabled");
+	std::string baseHostname = SystemConf::getInstance()->get("system.hostname");
 
 	auto theme = ThemeData::getMenuTheme();
 	std::shared_ptr<Font> font = theme->Text.font;
@@ -1470,7 +1471,7 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	s->addGroup(_("SETTINGS"));
 
 	// Hostname
-	createInputTextRow(s, _("HOSTNAME"), "system.hostname", false);
+	createInputTextRow(s, _("HOSTNAME"), "system.hostname", false, false);
 
 	// Wifi enable
 	auto enable_wifi = std::make_shared<SwitchComponent>(mWindow);
@@ -1484,12 +1485,14 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	if (baseWifiEnabled)
 	{
 		createInputTextRow(s, _("WIFI SSID"), "wifi.ssid", false, false, &openWifiSettings);
-		createInputTextRow(s, _("WIFI KEY"), "wifi.key", true);
+		createInputTextRow(s, _("WIFI KEY"), "wifi.key", true, false);
 	}
 
-	s->addSaveFunc([baseWifiEnabled, baseSSID, baseKEY, enable_wifi, window]
+	s->addSaveFunc([baseWifiEnabled, baseSSID, baseKEY, baseHostname, enable_wifi, window]
 	{
 		bool wifienabled = enable_wifi->getState();
+		if (baseHostname != SystemConf::getInstance()->get("system.hostname"))
+			ApiSystem::getInstance()->setHostname(SystemConf::getInstance()->get("system.hostname"));
 
 		SystemConf::getInstance()->setBool("wifi.enabled", wifienabled);
 

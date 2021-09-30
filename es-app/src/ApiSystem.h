@@ -100,6 +100,7 @@ public:
 	std::string getVersion();
 	std::string getApplicationName();
 	std::string getHostname();
+	bool setHostname(std::string hostname);
 	std::string getIpAddress();
 	float getLoadCpu();
 	float getTemperatureCpu();
@@ -153,6 +154,7 @@ public:
 	std::vector<std::string> getWifiNetworks(bool scan = false);
 	bool enableWifi(std::string ssid, std::string key);
 	bool disableWifi();
+	bool isWifiEnabled();
 
 	bool setLanguage(std::string language);
 
