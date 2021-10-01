@@ -439,9 +439,14 @@ bool GuiTextEditPopupKeyboard::input(InputConfig* config, Input input)
 
 	if (config->isMappedTo("x", input) && input.value && mOkCallback != nullptr)
 	{
-		mOkCallback("");
-		delete this;
-		return true;
+		bool editing = mText->isEditing();
+		if (!editing)
+			mText->startEditing();
+
+		mText->setValue("");
+
+		if (!editing)
+			mText->stopEditing();
 	}
 
 	return false;
@@ -543,8 +548,9 @@ std::shared_ptr<ButtonComponent> GuiTextEditPopupKeyboard::makeButton(const std:
 		}
 		else if (key == _("RESET"))
 		{
-			mOkCallback("");
-			delete this;
+			mText->startEditing();
+			mText->setValue("");
+			mText->stopEditing();
 			return;
 		}
 		else if (key == _("CANCEL"))
