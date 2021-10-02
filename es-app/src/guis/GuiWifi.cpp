@@ -88,6 +88,16 @@ bool GuiWifi::input(InputConfig* config, Input input)
 
 		return true;
 	}
+	else if (input.value != 0 && config->isMappedTo("x", input))
+	{
+		onRefresh();
+		return true;
+	}
+	else if (input.value != 0 && config->isMappedTo("y", input))
+	{
+		onManualInput();
+		return true;
+	}
 
 	return false;
 }
@@ -95,7 +105,10 @@ bool GuiWifi::input(InputConfig* config, Input input)
 std::vector<HelpPrompt> GuiWifi::getHelpPrompts()
 {
 	std::vector<HelpPrompt> prompts = mMenu.getHelpPrompts();
+	prompts.push_back(HelpPrompt("x", _("REFRESH")));
+	prompts.push_back(HelpPrompt(BUTTON_OK, _("SELECTIONNER")));
 	prompts.push_back(HelpPrompt(BUTTON_BACK, _("BACK")));
+	prompts.push_back(HelpPrompt("y", _("MANUAL INPUT")));
 	return prompts;
 }
 
