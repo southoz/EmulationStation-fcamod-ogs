@@ -68,12 +68,12 @@ std::vector<std::vector<const char*>> kbEs {
 	{ "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "{", "}", "OK" },
 	{ "à", "ä", "é", "ë", "ì", "ï", "ú", "í", "ó", "ò", "¿", "?", "OK" },
 
-	{ "a", "s", "d", "f", "g", "h", "j", "k", "l", ";", ":", "¡", "-rowspan-" },
-	{ "A", "S", "D", "F", "G", "H", "J", "K", "L", "'", "\"", "\\", "-rowspan-" },
+	{ "a", "s", "d", "f", "g", "h", "j", "k", "l", "ñ", ";", ":", "-rowspan-" },
+	{ "A", "S", "D", "F", "G", "H", "J", "K", "L", "Ñ", "'", "\"", "-rowspan-" },
 	{ "á", "â", "è", "ê", "ö", "î", "ù", "ô", "ü", "û", "|", "€", "-rowspan-" },
 
-	{ "<", "z", "x", "c", "v", "b", "n", "m", "ñ", ",", ".", "ALT", "-colspan-" },
-	{ ">", "Z", "X", "C", "V", "B", "N", "M", "Ñ", "~", "`", "ALT", "-colspan-" },
+	{ "<", "z", "x", "c", "v", "b", "n", "m", ",", ".", "¡", "ALT", "-colspan-" },
+	{ ">", "Z", "X", "C", "V", "B", "N", "M", "~", "`", "\\", "ALT", "-colspan-" },
 	{ "£", "$", "¨", "/", "º", "ª", "@", "#", "*", "", "", "ALT", "-colspan-" },
 
 	{ "SHIFT", "-colspan-", "SPACE", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "RESET", "-colspan-", "CANCEL", "-colspan-" },
@@ -447,6 +447,16 @@ bool GuiTextEditPopupKeyboard::input(InputConfig* config, Input input)
 
 		if (!editing)
 			mText->stopEditing();
+	}
+
+	if (config->isMappedTo(BUTTON_L1, input) && input.value)
+	{
+		mText->moveCursor(-1);
+	}
+
+	if (config->isMappedTo(BUTTON_R1, input) && input.value)
+	{
+		mText->moveCursor(1);
 	}
 
 	return false;

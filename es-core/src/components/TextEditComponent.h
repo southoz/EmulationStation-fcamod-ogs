@@ -31,6 +31,7 @@ public:
 	inline const std::shared_ptr<Font>& getFont() const { return mFont; }
 
 	void setCursor(size_t pos);
+	void moveCursor(int amt);
 
 	virtual std::vector<HelpPrompt> getHelpPrompts() override;
 
@@ -42,7 +43,6 @@ private:
 	void onCursorChanged();
 
 	void updateCursorRepeat(int deltaTime);
-	void moveCursor(int amt);
 
 	bool isMultiline();
 	Vector2f getTextAreaPos() const;
