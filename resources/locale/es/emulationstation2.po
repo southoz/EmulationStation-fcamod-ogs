@@ -2041,10 +2041,6 @@ msgid "SPACE"
 msgstr "ESPACIO"
 
 #:
-msgid "DELETE A CHAR"
-msgstr "BORRAR UN CARACTER"
-
-#:
 msgid "SHIFT"
 msgstr "MAYÚSCULAS"
 

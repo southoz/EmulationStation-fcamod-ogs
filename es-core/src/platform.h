@@ -114,7 +114,7 @@ NetworkInformation queryNetworkInformation(bool summary);
 std::string queryIPAddress();
 bool queryWifiEnabled();
 std::string queryWifiSsid();
-std::string queryWifiPsk(std::string ssid = "");
+std::string queryWifiPsk(std::string ssid = queryWifiSsid());
 bool queryNetworkConnected();
 
 

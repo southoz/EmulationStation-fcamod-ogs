@@ -150,9 +150,10 @@ public:
 	bool isSystemHotkeySuspendEvent();
 
 	virtual bool ping();
-	std::string getInternetStatus();
+	bool getInternetStatus();
 	std::vector<std::string> getWifiNetworks(bool scan = false);
 	bool enableWifi(std::string ssid, std::string key);
+	bool disconnectWifi(std::string ssid);
 	bool disableWifi();
 	bool isWifiEnabled();
 

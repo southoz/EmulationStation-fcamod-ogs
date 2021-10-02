@@ -125,15 +125,20 @@ void GuiSystemInformation::showSummarySystemInfo()
 
 	// connected to network
 	auto networkStatus = std::make_shared<UpdatableTextComponent>(mWindow, formatNetworkStatus( ni.isConnected ), font, color);
+
+	// acces to internet
+	auto internetStatus = std::make_shared<TextComponent>(mWindow, formatNetworkStatus( ApiSystem::getInstance()->getInternetStatus() ), font, color);
+
 	// Wifi ssid
 	auto wifiSsid = std::make_shared<TextComponent>(mWindow, ni.ssid, font, color);
 	// IP address
 	auto ipAddress = std::make_shared<TextComponent>(mWindow, ni.ip_address, font, color);
-	networkStatus->setUpdatableFunction([networkStatus, wifiSsid, ipAddress, color]
+	networkStatus->setUpdatableFunction([networkStatus, internetStatus, wifiSsid, ipAddress, color]
 		{
 			LOG(LogDebug) << "GuiSystemInformation::showSummarySystemInfo() - update network status";
 			NetworkInformation ni = ApiSystem::getInstance()->getNetworkInformation();
 			networkStatus->setText(formatNetworkStatus( ni.isConnected ));
+			internetStatus->setText(formatNetworkStatus( ApiSystem::getInstance()->getInternetStatus() ));
 			if (ni.isConnected)
 			{
 				wifiSsid->setText(ni.ssid);
@@ -147,6 +152,7 @@ void GuiSystemInformation::showSummarySystemInfo()
 		}, 5000);
 	addUpdatableComponent(networkStatus.get());
 	addWithLabel(_("STATUS"), networkStatus);
+	addWithLabel(_("INTERNET STATUS"), internetStatus);
 	addWithLabel(_("WIFI SSID"), wifiSsid);
 	addWithLabel(_("IP ADDRESS"), ipAddress);
 }
@@ -463,7 +469,8 @@ void GuiSystemInformation::openNetwork()
 	NetworkInformation ni = ApiSystem::getInstance()->getNetworkInformation(false);
 
 // connected to network
-	auto status = std::make_shared<UpdatableTextComponent>(window, ni.isConnected ? "    " + _("CONNECTED") : _("NOT CONNECTED"), font, color);
+	auto status = std::make_shared<UpdatableTextComponent>(window, formatNetworkStatus( ni.isConnected ), font, color);
+	auto internetStatus = std::make_shared<TextComponent>(mWindow, formatNetworkStatus( ApiSystem::getInstance()->getInternetStatus() ), font, color);
 	auto isWifi = std::make_shared<TextComponent>(window, _( Utils::String::boolToString(ni.isWifi, true) ), font, color);
 	auto address = std::make_shared<TextComponent>(window, ni.ip_address, font, color);
 	auto netmask = std::make_shared<TextComponent>(window, ni.netmask, font, color);
@@ -477,11 +484,12 @@ void GuiSystemInformation::openNetwork()
 	auto channel = std::make_shared<TextComponent>(window, std::to_string(ni.channel), font, color);
 	auto security = std::make_shared<TextComponent>(window, ni.security, font, color);
 
-	status->setUpdatableFunction([status, isWifi, ssid, address, netmask, gateway, mac, dns1, dns2, signal, channel, security, rate]
+	status->setUpdatableFunction([status, internetStatus, isWifi, ssid, address, netmask, gateway, mac, dns1, dns2, signal, channel, security, rate]
 		{
 			LOG(LogDebug) << "GuiSystemInformation::showSummarySystemInfo() - update network";
 			NetworkInformation ni = ApiSystem::getInstance()->getNetworkInformation(false);
-			status->setText( ni.isConnected ? "    " + _("CONNECTED") : _("NOT CONNECTED") );
+			status->setText( formatNetworkStatus( ni.isConnected ) );
+			internetStatus->setText( formatNetworkStatus( ApiSystem::getInstance()->getInternetStatus() ) );
 			isWifi->setText( "" );
 			address->setText( "" );
 			netmask->setText( "" );
@@ -516,6 +524,7 @@ void GuiSystemInformation::openNetwork()
 	s->addUpdatableComponent(status.get());
 
 	s->addWithLabel(_("STATUS"), status);
+	s->addWithLabel(_("INTERNET STATUS"), internetStatus);
 	s->addWithLabel(_("WIFI"), isWifi);
 	s->addWithLabel(_("IP ADDRESS"), address);
 	s->addWithLabel(_( (ni.isIPv6 ? "SUBNET" : "NETMASK") ), netmask);

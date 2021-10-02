@@ -473,14 +473,10 @@ std::string queryWifiSsid()
 
 std::string queryWifiPsk(std::string ssid)
 {
-	std::string _ssid(ssid);
-	if (_ssid.empty())
-		_ssid.append( queryWifiSsid() );
-
-	if (_ssid.empty())
+	if (ssid.empty())
 		return "";
 
-	return Utils::String::replace(getShOutput("nmcli -s -g 802-11-wireless-security.psk connection show \"" + _ssid + '"'), "\n", "");
+	return Utils::String::replace(getShOutput("nmcli -s -g 802-11-wireless-security.psk connection show \"" + ssid + '"'), "\n", "");
 }
 
 CpuAndSocketInformation queryCpuAndChipsetInformation(bool summary)
@@ -817,9 +813,9 @@ SoftwareInformation querySoftwareInformation(bool summary)
 		else if ( Utils::FileSystem::exists("/home/ark/") )
 		{
 			if ( Utils::FileSystem::exists("/usr/share/plymouth/themes/text.plymouth") )
-				si.version = getShOutput(R"(cat /usr/share/plymouth/themes/text.plymouth | grep -iw title | awk '{gsub(/=/," ")}; {print $3 " " $4}')");
+				si.version = getShOutput(R"(cat /usr/share/plymouth/themes/text.plymouth | grep -iw title | awk '{gsub(/=/," ")}; {for (i=3; i<NF; i++) printf $i \" \"; print $NF}')");
 			else if ( Utils::FileSystem::exists("/usr/share/plymouth/themes/ubuntu-text/ubuntu-text.plymouth") )
-				si.version = getShOutput(R"(cat /usr/share/plymouth/themes/ubuntu-text/ubuntu-text.plymouth | grep -iw title | awk '{gsub(/=/," ")}; {print $3 " " $4}')");
+				si.version = getShOutput(R"(cat /usr/share/plymouth/themes/ubuntu-text/ubuntu-text.plymouth | grep -iw title | awk '{gsub(/=/," ")}; {for (i=3; i<NF; i++) printf $i \" \"; print $NF}}')");
 		}
 
 		si.hostname = queryHostname();

@@ -1459,7 +1459,7 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	auto ip = std::make_shared<UpdatableTextComponent>(mWindow, ApiSystem::getInstance()->getIpAddress(), font, color);
 	s->addWithLabel(_("IP ADDRESS"), ip);
 
-	auto status = std::make_shared<TextComponent>(mWindow, ApiSystem::getInstance()->ping() ? _("CONNECTED") : _("NOT CONNECTED"), font, color);
+	auto status = std::make_shared<TextComponent>(mWindow, formatNetworkStatus( ApiSystem::getInstance()->getInternetStatus() ), font, color);
 	s->addWithLabel(_("INTERNET STATUS"), status);
 
 	// Network Indicator
@@ -1482,6 +1482,8 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	const std::string baseSSID = SystemConf::getInstance()->get("wifi.ssid");
 	const std::string baseKEY = SystemConf::getInstance()->get("wifi.key");
 
+	LOG(LogDebug) << "GuiMenu::openNetworkSettings() - baseSSID: " << SystemConf::getInstance()->get("wifi.ssid") << ", baseKEY: " << SystemConf::getInstance()->get("wifi.key");
+
 	if (baseWifiEnabled)
 	{
 		createInputTextRow(s, _("WIFI SSID"), "wifi.ssid", false, false, &openWifiSettings);
@@ -1490,7 +1492,10 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 
 	s->addSaveFunc([baseWifiEnabled, baseSSID, baseKEY, baseHostname, enable_wifi, window]
 	{
+		LOG(LogDebug) << "GuiMenu::openNetworkSettings()::addSaveFunc() - baseWifiEnabled: " << Utils::String::boolToString(baseWifiEnabled) << ", baseSSID: " << baseSSID << ", baseKEY: " << baseKEY;
+
 		bool wifienabled = enable_wifi->getState();
+		LOG(LogDebug) << "GuiMenu::openNetworkSettings()::addSaveFunc() - wifienabled: " << Utils::String::boolToString(wifienabled);
 		if (baseHostname != SystemConf::getInstance()->get("system.hostname"))
 			ApiSystem::getInstance()->setHostname(SystemConf::getInstance()->get("system.hostname"));
 
@@ -1500,9 +1505,11 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 		{
 			std::string newSSID = SystemConf::getInstance()->get("wifi.ssid");
 			std::string newKey = SystemConf::getInstance()->get("wifi.key");
+			LOG(LogDebug) << "GuiMenu::openNetworkSettings()::addSaveFunc() - baseSSID: " << newSSID << ", baseKEY: " << newKey;
 
 			if (baseSSID != newSSID || baseKEY != newKey || !baseWifiEnabled)
 			{
+				LOG(LogDebug) << "GuiMenu::openNetworkSettings()::addSaveFunc() - enabling Wifi";
 				if (ApiSystem::getInstance()->enableWifi(newSSID, newKey))
 					window->pushGui(new GuiMsgBox(window, _("WIFI ENABLED")));
 				else
@@ -1510,7 +1517,10 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 			}
 		}
 		else if (baseWifiEnabled)
+		{
+			LOG(LogDebug) << "GuiMenu::openNetworkSettings()::addSaveFunc() - enabling Wifi";
 			ApiSystem::getInstance()->disableWifi();
+		}
 	});
 
 
@@ -1538,7 +1548,7 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 			{
 				LOG(LogDebug) << "GuiMenu::openWifiSettings() - update network status";
 				ip->setText(ApiSystem::getInstance()->getIpAddress());
-				status->setText(ApiSystem::getInstance()->ping() ? _("CONNECTED") : _("NOT CONNECTED"));
+				status->setText(formatNetworkStatus( ApiSystem::getInstance()->getInternetStatus() ));
 			}, 5000);
 		s->addUpdatableComponent(ip.get());
 	}
@@ -2437,4 +2447,9 @@ void GuiMenu::createInputTextRow(GuiSettings *gui, std::string title, const char
 	});
 
 	gui->addRow(row);
+}
+
+std::string GuiMenu::formatNetworkStatus(bool isConnected)
+{
+	return (isConnected ? "    " + _("CONNECTED") + " " : _("NOT CONNECTED"));
 }

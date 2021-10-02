@@ -52,6 +52,8 @@ private:
 	void createInputTextRow(GuiSettings * gui, std::string title, const char* settingsID, bool password, bool storeInSettings=false, const std::function<void(Window*, std::string/*title*/, std::string /*value*/, const std::function<void(std::string)>& onsave)>& customEditor = nullptr);
 	void openDisplaySettings();
 
+	static std::string formatNetworkStatus(bool isConnected);
+
 	MenuComponent mMenu;
 	TextComponent mVersion;
 
