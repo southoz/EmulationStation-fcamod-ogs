@@ -373,4 +373,4 @@ http://www.emulationstation.org
 Thanks
 ======
 
-Special thanks to: [Southoz](https://github.com/southoz/EmulationStation-fcamod-ogs), [Christian Haitian](https://github.com/christianhaitian/EmulationStation-fcamod), both [Batocera](https://github.com/batocera-linux/batocera-emulationstation) and [Emuelec](https://github.com/EmuELEC/emuelec-emulationstation) teams . Sometimes I used their code.
+Special thanks to: [Southoz](https://github.com/southoz/EmulationStation-fcamod-ogs), [Christian Haitian](https://github.com/christianhaitian/EmulationStation-fcamod), both [Batocera](https://github.com/batocera-linux/batocera-emulationstation), [Emuelec](https://github.com/EmuELEC/emuelec-emulationstation) and [351Elec](https://github.com/351ELEC/351elec-emulationstation teams . Sometimes I used their code.
