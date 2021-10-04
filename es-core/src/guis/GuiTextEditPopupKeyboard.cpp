@@ -385,80 +385,80 @@ bool GuiTextEditPopupKeyboard::input(InputConfig* config, Input input)
 	if (GuiComponent::input(config, input))
 		return true;
 
-	// pressing start
-	if (config->isMappedTo("start", input) && input.value)
-	{
-		if (mOkCallback)
-			mOkCallback(mText->getValue());
-
-		delete this;
-		return true;
-	}
-
 	if ((config->getDeviceId() == DEVICE_KEYBOARD && input.id == SDLK_ESCAPE))
 	{
 		delete this;
 		return true;
 	}
 
-	// pressing back when not text editing closes us
-	if (config->isMappedTo(BUTTON_BACK, input) && input.value)
+	if (input.value)
 	{
-		delete this;
-		return true;
+		// pressing start
+		if (config->isMappedTo("start", input))
+		{
+			if (mOkCallback)
+				mOkCallback(mText->getValue());
+
+			delete this;
+			return true;
+		}
+
+		// pressing back when not text editing closes us
+		if (config->isMappedTo(BUTTON_BACK, input))
+		{
+			delete this;
+			return true;
+		}
+
+		// For deleting a chara (Left Top Button)
+		if (config->isMappedLike(BUTTON_PU, input)) {
+			bool editing = mText->isEditing();
+			if (!editing)
+				mText->startEditing();
+
+			mText->textInput("\b");
+
+			if (!editing)
+				mText->stopEditing();
+		}
+
+		// For Adding a space (Right Top Button)
+		if (config->isMappedLike(BUTTON_PD, input))
+		{
+			bool editing = mText->isEditing();
+			if (!editing)
+				mText->startEditing();
+
+			mText->textInput(" ");
+
+			if (!editing)
+				mText->stopEditing();
+		}
+
+		// For Shifting (Y)
+		if (config->isMappedTo("y", input))
+			shiftKeys();
+
+		if (config->isMappedTo("x", input))
+		{
+			bool editing = mText->isEditing();
+			if (!editing)
+				mText->startEditing();
+
+			mText->setValue("");
+
+			if (!editing)
+				mText->stopEditing();
+		}
+
+		if ( (!Settings::getInstance()->getBool("InvertButtonsPU") && config->isMappedTo(BUTTON_L1, input))
+				|| (Settings::getInstance()->getBool("InvertButtonsPU") && config->isMappedTo(BUTTON_L2, input)) )
+			mText->moveCursor(-1);
+
+		if ( (!Settings::getInstance()->getBool("InvertButtonsPD") && config->isMappedTo(BUTTON_R1, input))
+				|| (Settings::getInstance()->getBool("InvertButtonsPD") && config->isMappedTo(BUTTON_R2, input)) )
+			mText->moveCursor(1);
 	}
-
-	// For deleting a chara (Left Top Button)
-	if (config->isMappedLike(BUTTON_PU, input) && input.value) {
-		bool editing = mText->isEditing();
-		if (!editing)
-			mText->startEditing();
-
-		mText->textInput("\b");
-
-		if (!editing)
-			mText->stopEditing();
-	}
-
-	// For Adding a space (Right Top Button)
-	if (config->isMappedLike(BUTTON_PD, input) && input.value)
-	{
-		bool editing = mText->isEditing();
-		if (!editing)
-			mText->startEditing();
-
-		mText->textInput(" ");
-
-		if (!editing)
-			mText->stopEditing();
-	}
-
-	// For Shifting (Y)
-	if (config->isMappedTo("y", input) && input.value)
-		shiftKeys();
-
-	if (config->isMappedTo("x", input) && input.value && mOkCallback != nullptr)
-	{
-		bool editing = mText->isEditing();
-		if (!editing)
-			mText->startEditing();
-
-		mText->setValue("");
-
-		if (!editing)
-			mText->stopEditing();
-	}
-
-	if (config->isMappedTo(BUTTON_L1, input) && input.value)
-	{
-		mText->moveCursor(-1);
-	}
-
-	if (config->isMappedTo(BUTTON_R1, input) && input.value)
-	{
-		mText->moveCursor(1);
-	}
-
 	return false;
 }
 
