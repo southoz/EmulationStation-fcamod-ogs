@@ -115,6 +115,8 @@ std::string queryIPAddress();
 bool queryWifiEnabled();
 std::string queryWifiSsid();
 std::string queryWifiPsk(std::string ssid = queryWifiSsid());
+std::string queryDnsOne();
+std::string queryDnsTwo();
 bool queryNetworkConnected();
 
 

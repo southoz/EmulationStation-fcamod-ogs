@@ -386,17 +386,8 @@ NetworkInformation queryNetworkInformation(bool summary)
 				snprintf(result_buffer, 128, nmcli_command.c_str(), field.c_str(), network.iface.c_str(), "");
 				network.mac = getShOutput( result_buffer );
 
-				field.clear();
-				field.append( "ip4.dns" ), // dns1 address
-				awk_flag.clear();
-				awk_flag.append("tolower($1) ~ /^").append(field).append("\\[1\\]/");
-				snprintf(result_buffer, 128, nmcli_command.c_str(), field.c_str(), network.iface.c_str(), awk_flag.c_str());
-				network.dns1 = getShOutput( result_buffer );
-
-				awk_flag.clear();
-				awk_flag.append("tolower($1) ~ /^").append(field).append("\\[2\\]/"); // dns2 address
-				snprintf(result_buffer, 128, nmcli_command.c_str(), field.c_str(), network.iface.c_str(), awk_flag.c_str());
-				network.dns2 = getShOutput( result_buffer );
+				network.dns1 = queryDnsOne();
+				network.dns2 = queryDnsTwo();
 
 				nmcli_command.clear();
 				if (network.isWifi)
@@ -445,30 +436,17 @@ std::string queryIPAddress()
 
 bool queryNetworkConnected()
 {
-	try
-	{
-		if ( Utils::FileSystem::exists("/usr/bin/nmcli")
-				&& (Utils::String::replace(getShOutput(R"(nmcli -t -f RUNNING general)"), "\n", "") == "running" )
-				&& (Utils::String::replace(getShOutput(R"(nmcli -t -f STATE general)"), "\n", "") == "connected" ) )
-			return true;
-	} catch (...) {
-		LOG(LogError) << "PLATFORM::queryNetworkConnected() - Error reading network data!!!";
-	}
-	return false;
+	return executeSystemScript("es-wifi is_connected");
 }
 
 bool queryWifiEnabled()
 {
-	if ( Utils::FileSystem::exists("/usr/bin/nmcli")
-			&& (Utils::String::replace(getShOutput(R"(nmcli radio  wifi)"), "\n", "") == "enabled" ) )
-		return true;
-
-	return false;
+	return executeSystemScript("es-wifi is_enabled");
 }
 
 std::string queryWifiSsid()
 {
-	return getShOutput("nmcli -f GENERAL.CONNECTION device show wlan0 | awk '{for (i=2; i<NF; i++) printf $i \" \"; print $NF}'");
+	return getShOutput("es-wifi get_ssid");
 }
 
 std::string queryWifiPsk(std::string ssid)
@@ -476,7 +454,23 @@ std::string queryWifiPsk(std::string ssid)
 	if (ssid.empty())
 		return "";
 
-	return Utils::String::replace(getShOutput("nmcli -s -g 802-11-wireless-security.psk connection show \"" + ssid + '"'), "\n", "");
+	return getShOutput("es-wifi get_ssid_psk \"" + ssid + '"');
+}
+
+std::string queryDnsOne()
+{
+	if (!queryNetworkConnected())
+		return "";
+
+	return getShOutput("es-wifi get_dns1");
+}
+
+std::string queryDnsTwo()
+{
+	if (!queryNetworkConnected())
+		return "";
+
+	return getShOutput("es-wifi get_dns2");
 }
 
 CpuAndSocketInformation queryCpuAndChipsetInformation(bool summary)

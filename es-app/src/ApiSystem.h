@@ -156,6 +156,8 @@ public:
 	bool disconnectWifi(std::string ssid);
 	bool disableWifi();
 	bool isWifiEnabled();
+	bool enableManualWifiDns(std::string ssid, std::string dnsOne, std::string dnsTwo);
+	bool disableManualWifiDns(std::string ssid);
 
 	bool setLanguage(std::string language);
 

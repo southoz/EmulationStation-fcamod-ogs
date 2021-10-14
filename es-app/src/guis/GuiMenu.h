@@ -41,7 +41,7 @@ private:
 	void openMenusSettings();
 	void openSystemHotkeyEventsSettings();
 	void openRetroAchievementsSettings();
-	void openNetworkSettings(bool selectWifiEnable = false);
+	void openNetworkSettings(bool selectWifiEnable = false, bool selectManualWifiDnsEnable = false);
 
 	static void openWifiSettings(Window* win, std::string title, std::string data, const std::function<void(std::string)>& onsave);
 

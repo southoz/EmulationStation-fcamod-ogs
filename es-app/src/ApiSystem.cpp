@@ -803,7 +803,7 @@ bool ApiSystem::ping()
 	return true;
 }
 
-bool  ApiSystem::getInternetStatus()
+bool ApiSystem::getInternetStatus()
 {
 	LOG(LogInfo) << "ApiSystem::getInternetStatus()";
 	if (ping())
@@ -845,6 +845,20 @@ bool ApiSystem::isWifiEnabled()
 	LOG(LogInfo) << "ApiSystem::disableWifi()";
 
 	return queryWifiEnabled();
+}
+
+bool ApiSystem::enableManualWifiDns(std::string ssid, std::string dnsOne, std::string dnsTwo)
+{
+	LOG(LogInfo) << "ApiSystem::enableManualWifiDns()";
+
+	return executeScript("es-wifi enable_manual_dns \"" + ssid + "\" \"" + dnsOne + "\" \"" + dnsTwo + '"');
+}
+
+bool ApiSystem::disableManualWifiDns(std::string ssid)
+{
+	LOG(LogInfo) << "ApiSystem::disableManualWifiDns()";
+
+	return executeScript("es-wifi disable_manual_dns \"" + ssid + '"');
 }
 
 std::string ApiSystem::stateToString(bool state)

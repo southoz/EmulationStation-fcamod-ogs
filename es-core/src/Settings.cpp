@@ -35,7 +35,9 @@ std::vector<const char*> settings_dont_save {
 	{ "global.retroachievements.password" },
 	{ "system.hostname" },
 	{ "wifi.enabled" },
-	{ "wifi.key" }
+	{ "wifi.key" },
+	{ "wifi.dns1" },
+	{ "wifi.dns2" }
 };
 
 Settings::Settings()
@@ -199,6 +201,9 @@ void Settings::setDefaults()
 	mStringMap["wifi.ssid"] = queryWifiSsid();
 	mStringMap["wifi.key"] = queryWifiPsk();
 	mStringMap["system.hostname"] = queryHostname();
+	mBoolMap["wifi.manual_dns"] = false;
+	mStringMap["wifi.dns1"] = queryDnsOne();
+	mStringMap["wifi.dns2"] = queryDnsTwo();
 
 	// Log settings
 	mStringMap["LogLevel"] = "default";

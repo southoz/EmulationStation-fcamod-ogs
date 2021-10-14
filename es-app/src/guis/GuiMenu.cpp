@@ -1442,10 +1442,13 @@ void GuiMenu::openWifiSettings(Window* win, std::string title, std::string data,
 	win->pushGui(new GuiWifi(win, title, data, onsave));
 }
 
-void GuiMenu::openNetworkSettings(bool selectWifiEnable)
+void GuiMenu::openNetworkSettings(bool selectWifiEnable, bool selectManualWifiDnsEnable)
 {
-	bool baseWifiEnabled = SystemConf::getInstance()->getBool("wifi.enabled");
-	std::string baseHostname = SystemConf::getInstance()->get("system.hostname");
+	const bool baseWifiEnabled = SystemConf::getInstance()->getBool("wifi.enabled"),
+						 baseManualDns = SystemConf::getInstance()->getBool("wifi.manual_dns");
+	const std::string baseHostname = SystemConf::getInstance()->get("system.hostname"),
+										baseDnsOne = SystemConf::getInstance()->get("wifi.dns1"),
+										baseDnsTwo = SystemConf::getInstance()->get("wifi.dns2");
 
 	auto theme = ThemeData::getMenuTheme();
 	std::shared_ptr<Font> font = theme->Text.font;
@@ -1459,7 +1462,8 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	auto ip = std::make_shared<UpdatableTextComponent>(mWindow, ApiSystem::getInstance()->getIpAddress(), font, color);
 	s->addWithLabel(_("IP ADDRESS"), ip);
 
-	auto status = std::make_shared<TextComponent>(mWindow, formatNetworkStatus( ApiSystem::getInstance()->getInternetStatus() ), font, color);
+	const bool baseInternetStatus = ApiSystem::getInstance()->getInternetStatus();
+	auto status = std::make_shared<TextComponent>(mWindow, formatNetworkStatus( baseInternetStatus ), font, color);
 	s->addWithLabel(_("INTERNET STATUS"), status);
 
 	// Network Indicator
@@ -1479,74 +1483,116 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	s->addWithLabel(_("ENABLE WIFI"), enable_wifi, selectWifiEnable);
 
 	// window, title, settingstring,
-	const std::string baseSSID = SystemConf::getInstance()->get("wifi.ssid");
-	const std::string baseKEY = SystemConf::getInstance()->get("wifi.key");
+	const std::string baseSSID = SystemConf::getInstance()->get("wifi.ssid"),
+										baseKEY = SystemConf::getInstance()->get("wifi.key");
 
-	LOG(LogDebug) << "GuiMenu::openNetworkSettings() - baseSSID: " << SystemConf::getInstance()->get("wifi.ssid") << ", baseKEY: " << SystemConf::getInstance()->get("wifi.key");
+	// manual dns enable
+	auto manual_dns = std::make_shared<SwitchComponent>(mWindow);
+	manual_dns->setState(baseManualDns);
 
 	if (baseWifiEnabled)
 	{
 		createInputTextRow(s, _("WIFI SSID"), "wifi.ssid", false, false, &openWifiSettings);
 		createInputTextRow(s, _("WIFI KEY"), "wifi.key", true, false);
+
+		s->addWithLabel(_("MANUAL DNS"), manual_dns, selectManualWifiDnsEnable);
+
+		if (baseManualDns)
+		{
+			createInputTextRow(s, _("DNS1"), "wifi.dns1", false);
+			createInputTextRow(s, _("DNS2"), "wifi.dns2", false);
+		}
 	}
 
-	s->addSaveFunc([baseWifiEnabled, baseSSID, baseKEY, baseHostname, enable_wifi, window]
-	{
-		LOG(LogDebug) << "GuiMenu::openNetworkSettings()::addSaveFunc() - baseWifiEnabled: " << Utils::String::boolToString(baseWifiEnabled) << ", baseSSID: " << baseSSID << ", baseKEY: " << baseKEY;
-
-		bool wifienabled = enable_wifi->getState();
-		LOG(LogDebug) << "GuiMenu::openNetworkSettings()::addSaveFunc() - wifienabled: " << Utils::String::boolToString(wifienabled);
-		if (baseHostname != SystemConf::getInstance()->get("system.hostname"))
-			ApiSystem::getInstance()->setHostname(SystemConf::getInstance()->get("system.hostname"));
-
-		SystemConf::getInstance()->setBool("wifi.enabled", wifienabled);
-
-		if (wifienabled)
+	s->addSaveFunc([enable_wifi, baseInternetStatus, manual_dns, baseManualDns, baseDnsOne, baseDnsTwo, window]
 		{
-			std::string newSSID = SystemConf::getInstance()->get("wifi.ssid");
-			std::string newKey = SystemConf::getInstance()->get("wifi.key");
-			LOG(LogDebug) << "GuiMenu::openNetworkSettings()::addSaveFunc() - baseSSID: " << newSSID << ", baseKEY: " << newKey;
-
-			if (baseSSID != newSSID || baseKEY != newKey || !baseWifiEnabled)
+			if (enable_wifi->getState() && baseInternetStatus)
 			{
-				LOG(LogDebug) << "GuiMenu::openNetworkSettings()::addSaveFunc() - enabling Wifi";
-				if (ApiSystem::getInstance()->enableWifi(newSSID, newKey))
-					window->pushGui(new GuiMsgBox(window, _("WIFI ENABLED")));
-				else
-					window->pushGui(new GuiMsgBox(window, _("WIFI CONFIGURATION ERROR")));
+				bool manualDns = manual_dns->getState();
+				std::string ssid = SystemConf::getInstance()->get("wifi.ssid");
+
+				if (manualDns)
+				{
+					std::string dnsOne = SystemConf::getInstance()->get("wifi.dns1"),
+											dnsTwo = SystemConf::getInstance()->get("wifi.dns2");
+					if (baseDnsOne != dnsOne || baseDnsTwo != dnsTwo || !baseManualDns)
+						ApiSystem::getInstance()->enableManualWifiDns(ssid, dnsOne, dnsTwo);
+				}
+				else if (baseManualDns)
+				{
+					ApiSystem::getInstance()->disableManualWifiDns(ssid);
+				}
 			}
-		}
-		else if (baseWifiEnabled)
-		{
-			LOG(LogDebug) << "GuiMenu::openNetworkSettings()::addSaveFunc() - enabling Wifi";
-			ApiSystem::getInstance()->disableWifi();
-		}
-	});
+		});
 
-
-	enable_wifi->setOnChangedCallback([this, s, baseWifiEnabled, enable_wifi]()
-	{
-		bool wifienabled = enable_wifi->getState();
-		if (baseWifiEnabled != wifienabled)
+	s->addSaveFunc([baseWifiEnabled, baseSSID, baseKEY, baseHostname, enable_wifi, baseManualDns, baseDnsOne, baseDnsTwo, window]
 		{
+			bool wifienabled = enable_wifi->getState();
+
+			if (baseHostname != SystemConf::getInstance()->get("system.hostname"))
+				ApiSystem::getInstance()->setHostname(SystemConf::getInstance()->get("system.hostname"));
+
 			SystemConf::getInstance()->setBool("wifi.enabled", wifienabled);
 
 			if (wifienabled)
-				ApiSystem::getInstance()->enableWifi(SystemConf::getInstance()->get("wifi.ssid"), SystemConf::getInstance()->get("wifi.key"));
-			else
+			{
+				std::string newSSID = SystemConf::getInstance()->get("wifi.ssid"),
+										newKey = SystemConf::getInstance()->get("wifi.key");
+
+				if (baseSSID != newSSID || baseKEY != newKey || !baseWifiEnabled)
+				{
+					if (ApiSystem::getInstance()->enableWifi(newSSID, newKey))
+						window->pushGui(new GuiMsgBox(window, _("WIFI ENABLED")));
+					else
+						window->pushGui(new GuiMsgBox(window, _("WIFI CONFIGURATION ERROR")));
+				}
+			}
+			else if (baseWifiEnabled)
+			{
 				ApiSystem::getInstance()->disableWifi();
+			}
+		});
 
-			delete s;
-			openNetworkSettings(true);
-		}
-	});
+	enable_wifi->setOnChangedCallback([this, s, baseWifiEnabled, enable_wifi]()
+		{
+			bool wifienabled = enable_wifi->getState();
+			if (baseWifiEnabled != wifienabled)
+			{
+				SystemConf::getInstance()->setBool("wifi.enabled", wifienabled);
 
-	if (selectWifiEnable)
+				if (wifienabled)
+					ApiSystem::getInstance()->enableWifi(SystemConf::getInstance()->get("wifi.ssid"), SystemConf::getInstance()->get("wifi.key"));
+				else
+					ApiSystem::getInstance()->disableWifi();
+
+				delete s;
+				openNetworkSettings(true, false);
+			}
+		});
+
+	manual_dns->setOnChangedCallback([this, s, baseManualDns, manual_dns]()
+		{
+			bool manualDns = manual_dns->getState();
+			if (baseManualDns != manualDns)
+			{
+				SystemConf::getInstance()->setBool("wifi.manual_dns", manualDns);
+				std::string ssid = SystemConf::getInstance()->get("wifi.ssid");
+
+				if (manualDns)
+					ApiSystem::getInstance()->enableManualWifiDns(ssid, SystemConf::getInstance()->get("wifi.dns1"), SystemConf::getInstance()->get("wifi.dns2"));
+				else
+					ApiSystem::getInstance()->disableManualWifiDns(ssid);
+
+				delete s;
+				openNetworkSettings(false, true);
+			}
+		});
+
+	if (selectWifiEnable || selectManualWifiDnsEnable)
 	{
 		s->clear();
 		ip->setUpdatableFunction([ip, status]
 			{
-				LOG(LogDebug) << "GuiMenu::openWifiSettings() - update network status";
 				ip->setText(ApiSystem::getInstance()->getIpAddress());
 				status->setText(formatNetworkStatus( ApiSystem::getInstance()->getInternetStatus() ));
 			}, 5000);
