@@ -169,7 +169,9 @@ bool ApiSystem::isScriptingSupported(ScriptId script)
 	case ApiSystem::LANGUAGE:
 				executables.push_back("es-language");
 				break;
-
+	case ApiSystem::SYSTEM_INFORMATION:
+				executables.push_back("es-system_inf");
+				break;
 /*
 	case ApiSystem::RETROACHIVEMENTS:
 #ifdef CHEEVOS_DEV_LOGIN

@@ -791,39 +791,15 @@ bool setCurrentHostname(std::string hostname)
 SoftwareInformation querySoftwareInformation(bool summary)
 {
 	SoftwareInformation si;
-	try
+
+	si.application_name = getShOutput("es-system_inf get_system_name");
+	si.version = getShOutput("es-system_inf get_system_version");
+	si.hostname = queryHostname();
+
+	if (!summary)
 	{
-		if ( Utils::FileSystem::exists("/opt/.retrooz/") )
-			si.application_name = "RetroOZ";
-		else if ( Utils::FileSystem::exists("/home/ark/") )
-			si.application_name = "ArkOS";
-		else if ( Utils::FileSystem::exists("/usr/share/plymouth/themes/text.plymouth") )
-			si.application_name = getShOutput(R"(cat /usr/share/plymouth/themes/text.plymouth | grep -iw title | awk '{ gsub(/=/," "); print $2}')");
-		else if ( Utils::FileSystem::exists("/usr/share/plymouth/themes/ubuntu-text/ubuntu-text.plymouth") )
-			si.application_name = getShOutput(R"(cat /usr/share/plymouth/themes/ubuntu-text/ubuntu-text.plymouth | grep -iw title | awk '{ gsub(/=/," "); print $2}')");
-
-		if ( Utils::FileSystem::exists("/opt/.retrooz/version") )
-			si.version = Utils::String::replace(getShOutput(R"(cat /opt/.retrooz/version)"), "\n", "");
-		else if ( Utils::FileSystem::exists("/home/ark/") )
-		{
-			if ( Utils::FileSystem::exists("/usr/share/plymouth/themes/text.plymouth") )
-				si.version = getShOutput(R"(cat /usr/share/plymouth/themes/text.plymouth | grep -iw title | awk '{gsub(/=/," ")}; {for (i=3; i<NF; i++) printf $i \" \"; print $NF}')");
-			else if ( Utils::FileSystem::exists("/usr/share/plymouth/themes/ubuntu-text/ubuntu-text.plymouth") )
-				si.version = getShOutput(R"(cat /usr/share/plymouth/themes/ubuntu-text/ubuntu-text.plymouth | grep -iw title | awk '{gsub(/=/," ")}; {for (i=3; i<NF; i++) printf $i \" \"; print $NF}}')");
-		}
-
-		si.hostname = queryHostname();
-
-		if (!summary)
-		{
-			if ( Utils::FileSystem::exists("/usr/bin/hostnamectl") )
-			{
-				si.so_base = getShOutput(R"(hostnamectl | grep -iw system | awk '{print $3 " " $4 " " $5}')");
-				si.linux = getShOutput(R"(hostnamectl | grep -iw kernel | awk '{print $2 " " $3}')");
-			}
-		}
-	} catch (...) {
-		LOG(LogError) << "Platform::querySoftwareInformation() - Error reading software data!!!";
+		si.so_base = getShOutput("es-system_inf get_base_os_info");
+		si.linux = getShOutput("es-system_inf get_kernel_info");
 	}
 	return si;
 }
