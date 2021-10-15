@@ -221,6 +221,7 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 				{
 					auto val = Utils::FileSystem::createRelativePath(newVal, relativePath, true);
 					ed->setValue(val);
+					return true;
 				};
 
 				row.makeAcceptInputHandler([this, type, ed, iter, updateVal, relativePath]
@@ -271,6 +272,7 @@ GuiMetaDataEd::GuiMetaDataEd(Window* window, MetaDataList* md, const std::vector
 							new_value = _("unknown").c_str();
 
 					ed->setValue(new_value);
+					return true;
 				}; // ok callback (apply new value to ed)
 				row.makeAcceptInputHandler([this, title, ed, updateVal, multiLine] 
 				{

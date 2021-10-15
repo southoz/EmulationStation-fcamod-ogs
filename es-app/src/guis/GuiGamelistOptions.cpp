@@ -415,6 +415,7 @@ void GuiGamelistOptions::addTextFilterToMenu()
 
 			delete this;
 		}
+		return true;
 	};
 
 	row.makeAcceptInputHandler([this, updateVal]

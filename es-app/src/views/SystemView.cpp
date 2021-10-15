@@ -344,6 +344,7 @@ void SystemView::showQuickSearch()
 
 			ViewController::get()->reloadGameListView(all);
 			ViewController::get()->goToGameList(all, false);
+			return true;
 		};
 
 		if (Settings::getInstance()->getBool("UseOSK"))

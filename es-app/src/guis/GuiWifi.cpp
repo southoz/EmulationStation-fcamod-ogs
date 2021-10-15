@@ -11,7 +11,7 @@
 #include "guis/GuiTextEditPopupKeyboard.h"
 #include "GuiLoading.h"
 
-GuiWifi::GuiWifi(Window* window, const std::string title, std::string data, const std::function<void(std::string)>& onsave)
+GuiWifi::GuiWifi(Window* window, const std::string title, std::string data, const std::function<bool(std::string)>& onsave)
 	: GuiComponent(window), mMenu(window, title.c_str())
 {
 	mTitle = title;
@@ -62,18 +62,22 @@ void GuiWifi::load(std::vector<std::string> ssids)
 void GuiWifi::onManualInput()
 {
 	if (Settings::getInstance()->getBool("UseOSK"))
-		mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, mTitle, mInitialData, [this](const std::string& value) { onSave(value); }, false));
+		mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, mTitle, mInitialData, [this](const std::string& value) { return onSave(value); }, false));
 	else
-		mWindow->pushGui(new GuiTextEditPopup(mWindow, mTitle, mInitialData, [this](const std::string& value) { onSave(value); }, false));
+		mWindow->pushGui(new GuiTextEditPopup(mWindow, mTitle, mInitialData, [this](const std::string& value) { return onSave(value); }, false));
 }
 
-void GuiWifi::onSave(const std::string& value)
+bool GuiWifi::onSave(const std::string& value)
 {
 	if (mWaitingLoad)
-		return;
+		return false;
 
-	mSaveFunction(value);
-	delete this;
+	if (mSaveFunction(value))
+	{
+		delete this;
+		return true;
+	}
+	return false;
 }
 
 bool GuiWifi::input(InputConfig* config, Input input)

@@ -90,6 +90,7 @@ void GuiCollectionSystemsOptions::initializeMenu()
 		GuiComponent* topGui = window->peekGui();
 		window->removeGui(topGui);
 		createCollection(name);
+		return true;
 	};
 	addEntry(_("CREATE NEW CUSTOM COLLECTION").c_str(), true, [this, createCustomCollection] {
 		if (Settings::getInstance()->getBool("UseOSK")) {

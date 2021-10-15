@@ -40,6 +40,7 @@
 #include "views/gamelist/IGameListView.h"
 #include "SystemConf.h"
 #include "RetroAchievements.h"
+#include "utils/NetworkUtil.h"
 
 GuiMenu::GuiMenu(Window* window, bool animate) : GuiComponent(window), mMenu(window, _("MAIN MENU")), mVersion(window)
 {
@@ -1437,7 +1438,7 @@ void GuiMenu::updateGameLists(Window* window, bool confirm)
 		_("NO"), nullptr));
 }
 
-void GuiMenu::openWifiSettings(Window* win, std::string title, std::string data, const std::function<void(std::string)>& onsave)
+void GuiMenu::openWifiSettings(Window* win, std::string title, std::string data, const std::function<bool(std::string)>& onsave)
 {
 	win->pushGui(new GuiWifi(win, title, data, onsave));
 }
@@ -1462,8 +1463,7 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable, bool selectManualWifiDn
 	auto ip = std::make_shared<UpdatableTextComponent>(mWindow, ApiSystem::getInstance()->getIpAddress(), font, color);
 	s->addWithLabel(_("IP ADDRESS"), ip);
 
-	const bool baseInternetStatus = ApiSystem::getInstance()->getInternetStatus();
-	auto status = std::make_shared<TextComponent>(mWindow, formatNetworkStatus( baseInternetStatus ), font, color);
+	auto status = std::make_shared<TextComponent>(mWindow, formatNetworkStatus( ApiSystem::getInstance()->getInternetStatus() ), font, color);
 	s->addWithLabel(_("INTERNET STATUS"), status);
 
 	// Network Indicator
@@ -1499,14 +1499,14 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable, bool selectManualWifiDn
 
 		if (baseManualDns)
 		{
-			createInputTextRow(s, _("DNS1"), "wifi.dns1", false);
-			createInputTextRow(s, _("DNS2"), "wifi.dns2", false);
+			createInputTextRow(s, _("DNS1"), "wifi.dns1", false, false, nullptr, &Utils::Network::validateIPv4);
+			createInputTextRow(s, _("DNS2"), "wifi.dns2", false, false, nullptr, &Utils::Network::validateIPv4);
 		}
 	}
 
-	s->addSaveFunc([enable_wifi, baseInternetStatus, manual_dns, baseManualDns, baseDnsOne, baseDnsTwo, window]
+	s->addSaveFunc([this, enable_wifi, manual_dns, baseManualDns, baseDnsOne, baseDnsTwo, window]
 		{
-			if (enable_wifi->getState() && baseInternetStatus)
+			if (enable_wifi->getState())
 			{
 				bool manualDns = manual_dns->getState();
 				std::string ssid = SystemConf::getInstance()->get("wifi.ssid");
@@ -1516,11 +1516,23 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable, bool selectManualWifiDn
 					std::string dnsOne = SystemConf::getInstance()->get("wifi.dns1"),
 											dnsTwo = SystemConf::getInstance()->get("wifi.dns2");
 					if (baseDnsOne != dnsOne || baseDnsTwo != dnsTwo || !baseManualDns)
-						ApiSystem::getInstance()->enableManualWifiDns(ssid, dnsOne, dnsTwo);
+					{
+						mWindow->pushGui(new GuiMsgBox(mWindow,
+							_("THE PROCESS MAY DURE SOME SECONDS.\nPLEASE WAIT."),
+							_("OK"), [ssid, dnsOne, dnsTwo]
+								{
+									ApiSystem::getInstance()->enableManualWifiDns(ssid, dnsOne, dnsTwo);
+								}));
+					}
 				}
 				else if (baseManualDns)
 				{
-					ApiSystem::getInstance()->disableManualWifiDns(ssid);
+					mWindow->pushGui(new GuiMsgBox(mWindow,
+						_("THE PROCESS MAY DURE SOME SECONDS.\nPLEASE WAIT."),
+						_("OK"), [ssid]
+							{
+								ApiSystem::getInstance()->disableManualWifiDns(ssid);
+							}));
 				}
 			}
 		});
@@ -1573,6 +1585,7 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable, bool selectManualWifiDn
 	manual_dns->setOnChangedCallback([this, s, baseManualDns, manual_dns]()
 		{
 			bool manualDns = manual_dns->getState();
+
 			if (baseManualDns != manualDns)
 			{
 				SystemConf::getInstance()->setBool("wifi.manual_dns", manualDns);
@@ -2428,8 +2441,9 @@ std::vector<HelpPrompt> GuiMenu::getHelpPrompts()
 	return prompts;
 }
 
-void GuiMenu::createInputTextRow(GuiSettings *gui, std::string title, const char *settingsID, bool password, bool storeInSettings
-	, const std::function<void(Window*, std::string/*title*/, std::string /*value*/, const std::function<void(std::string)>& onsave)>& customEditor)
+void GuiMenu::createInputTextRow(GuiSettings *gui, std::string title, const char *settingsID, bool password, bool storeInSettings,
+		const std::function<void(Window*, std::string/*title*/, std::string /*value*/, const std::function<bool(std::string)>& onsave)>& customEditor,
+		const std::function<bool(std::string /*value*/)>& onValidateValue)
 {
 
 	auto theme = ThemeData::getMenuTheme();
@@ -2467,8 +2481,16 @@ void GuiMenu::createInputTextRow(GuiSettings *gui, std::string title, const char
 
 	row.addElement(bracket, false);
 
-	auto updateVal = [ed, settingsID, password, storeInSettings](const std::string &newVal)
+	std::function<bool(const std::string /*&newVal*/)> updateVal = [ed, settingsID, password, storeInSettings, window, onValidateValue](const std::string &newVal)
 	{
+		if ( (onValidateValue != nullptr) && !onValidateValue(newVal))
+		{
+			char strbuf[128];
+			snprintf(strbuf, 128, _("THE VALUE '%s' ISN'T VALID.").c_str(), newVal.c_str());
+			window->pushGui(new GuiMsgBox(window, strbuf, _("OK")));
+			return false;
+		}
+
 		if (!password)
 			ed->setValue(newVal);
 		else
@@ -2478,6 +2500,8 @@ void GuiMenu::createInputTextRow(GuiSettings *gui, std::string title, const char
 			Settings::getInstance()->setString(settingsID, newVal);
 		else
 			SystemConf::getInstance()->set(settingsID, newVal);
+
+		return true;
 	}; // ok callback (apply new value to ed)
 
 	row.makeAcceptInputHandler([this, title, updateVal, settingsID, storeInSettings, customEditor]

@@ -6,7 +6,7 @@
 #include "Settings.h"
 
 GuiTextEditPopup::GuiTextEditPopup(Window* window, const std::string& title, const std::string& initValue,
-	const std::function<void(const std::string&)>& okCallback, bool multiLine, const char* acceptBtnText)
+	const std::function<bool(const std::string&)>& okCallback, bool multiLine, const char* acceptBtnText)
 	: GuiComponent(window), mBackground(window, ":/frame.png"), mGrid(window, Vector2i(1, 3)), mMultiLine(multiLine)
 {
 	auto theme = ThemeData::getMenuTheme();
@@ -27,7 +27,7 @@ GuiTextEditPopup::GuiTextEditPopup(Window* window, const std::string& title, con
 		mText->setCursor(initValue.size());
 
 	std::vector< std::shared_ptr<ButtonComponent> > buttons;
-	buttons.push_back(std::make_shared<ButtonComponent>(mWindow, _(acceptBtnText), _(acceptBtnText), [this, okCallback] { okCallback(mText->getValue()); delete this; }));
+	buttons.push_back(std::make_shared<ButtonComponent>(mWindow, _(acceptBtnText), _(acceptBtnText), [this, okCallback] { if (okCallback(mText->getValue())) delete this; }));
 	buttons.push_back(std::make_shared<ButtonComponent>(mWindow, _("CANCEL"), _("DISCARD CHANGES"), [this] { delete this; }));
 
 	mButtonGrid = makeButtonGrid(mWindow, buttons);

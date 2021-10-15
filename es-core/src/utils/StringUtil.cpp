@@ -4,10 +4,6 @@
 #include <stdarg.h>
 #include <cstring>
 
-#if defined(_WIN32)
-#include <Windows.h>
-#endif
-
 namespace Utils
 {
 	namespace String
@@ -923,6 +919,14 @@ namespace Utils
 		bool toBool(const std::string value)
 		{
 			return equalsIgnoreCase(value, "true");
+		}
+
+		// check if a given string is a numeric string or not
+		bool isNumber(const std::string &str)
+		{
+			// 'std::find_first_not_of' searches the string for the first character
+			// that does not match any of the characters specified in its arguments
+			return !str.empty() && (str.find_first_not_of("[0123456789]") == std::string::npos);
 		}
 
 	} // String::

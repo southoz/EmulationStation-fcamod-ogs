@@ -2796,3 +2796,7 @@ msgstr "Texto del Logo"
 #:
 msgid "SHIFTS FOR UPPER,LOWER, AND SPECIAL"
 msgstr "SHIFT PARA MAYÚSCULAS, MINÚSCULAS Y ESPECIALES"
+
+#, c-format
+msgid "THE VALUE '%s' ISN'T VALID."
+msgstr "EL VALOR '%s' NO ES VÁLIDO."

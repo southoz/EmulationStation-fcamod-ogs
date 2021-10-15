@@ -487,6 +487,7 @@ void ScraperSearchComponent::openInputScreen(ScraperSearchParams& params)
 	{
 		params.nameOverride = name;
 		search(params);
+		return true;
 	};
 
 	stop();

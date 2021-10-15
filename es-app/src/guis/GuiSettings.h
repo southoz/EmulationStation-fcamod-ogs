@@ -21,7 +21,7 @@ public:
 
 	inline void addGroup(const std::string& label) { mMenu.addGroup(label); };
 
-	void addInputTextRow(std::string title, const char* settingsID, bool password, bool storeInSettings = false, const std::function<void(Window*, std::string/*title*/, std::string /*value*/, const std::function<void(std::string)>& onsave)>& customEditor = nullptr);
+	void addInputTextRow(std::string title, const char* settingsID, bool password, bool storeInSettings = false, const std::function<void(Window*, std::string/*title*/, std::string /*value*/, const std::function<void(std::string)>& onsave)>& customEditor = nullptr, const std::function<bool(std::string /*value*/)>& onValidateValue = nullptr);
 
 	void addSubMenu(const std::string& label, const std::function<void()>& func);
 

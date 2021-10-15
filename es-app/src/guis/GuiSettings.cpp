@@ -8,6 +8,7 @@
 #include "EsLocale.h"
 #include "guis/GuiTextEditPopup.h"
 #include "guis/GuiTextEditPopupKeyboard.h"
+#include "guis/GuiMsgBox.h"
 
 
 GuiSettings::GuiSettings(Window* window, const std::string title) : GuiComponent(window), mMenu(window, title)
@@ -110,8 +111,9 @@ void GuiSettings::addSubMenu(const std::string& label, const std::function<void(
 	mMenu.addRow(row);
 };
 
-void GuiSettings::addInputTextRow(std::string title, const char *settingsID, bool password, bool storeInSettings
-	, const std::function<void(Window*, std::string/*title*/, std::string /*value*/, const std::function<void(std::string)>& onsave)>& customEditor)
+void GuiSettings::addInputTextRow(std::string title, const char *settingsID, bool password, bool storeInSettings,
+		const std::function<void(Window*, std::string/*title*/, std::string /*value*/, const std::function<void(std::string)>& onsave)>& customEditor,
+		const std::function<bool(std::string /*value*/)>& onValidateValue)
 {
 	auto theme = ThemeData::getMenuTheme();
 	std::shared_ptr<Font> font = theme->Text.font;
@@ -148,8 +150,14 @@ void GuiSettings::addInputTextRow(std::string title, const char *settingsID, boo
 
 	row.addElement(bracket, false);
 
-	auto updateVal = [ed, settingsID, password, storeInSettings](const std::string &newVal)
+	std::function<bool(const std::string /*&newVal*/)> updateVal = [ed, settingsID, password, storeInSettings, window, onValidateValue](const std::string &newVal)
 	{
+		if ( (onValidateValue != nullptr) && !onValidateValue(newVal))
+		{
+			window->pushGui(new GuiMsgBox(window, _("THE VALUE \"%s\" ISN'T VALID."), _("OK")));
+			return false;
+		}
+
 		if (!password)
 			ed->setValue(newVal);
 		else
@@ -159,6 +167,8 @@ void GuiSettings::addInputTextRow(std::string title, const char *settingsID, boo
 			Settings::getInstance()->setString(settingsID, newVal);
 		else
 			SystemConf::getInstance()->set(settingsID, newVal);
+
+		return true;
 	}; // ok callback (apply new value to ed)
 
 	row.makeAcceptInputHandler([this, title, updateVal, settingsID, storeInSettings, customEditor]

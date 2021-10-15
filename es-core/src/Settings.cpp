@@ -332,7 +332,8 @@ void Settings::loadFile()
 }
 
 //Print a warning message if the setting we're trying to get doesn't already exist in the map, then return the value in the map.
-#define SETTINGS_GETSET(type, mapName, getMethodName, setMethodName, defaultValue) type Settings::getMethodName(const std::string& name) \
+#define SETTINGS_GETSET(type, mapName, getMethodName, setMethodName, defaultValue) \
+type Settings::getMethodName(const std::string& name) \
 { \
 	if(mapName.find(name) == mapName.cend()) \
 	{ \

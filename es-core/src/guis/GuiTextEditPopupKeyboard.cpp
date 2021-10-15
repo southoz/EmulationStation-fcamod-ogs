@@ -83,7 +83,7 @@ std::vector<std::vector<const char*>> kbEs {
 
 
 GuiTextEditPopupKeyboard::GuiTextEditPopupKeyboard(Window* window, const std::string& title, const std::string& initValue,
-	const std::function<void(const std::string&)>& okCallback, bool multiLine, const std::string acceptBtnText)
+	const std::function<bool(const std::string&)>& okCallback, bool multiLine, const std::string acceptBtnText)
 	: GuiComponent(window), mBackground(window, ":/frame.png"), mGrid(window, Vector2i(1, 6)), mMultiLine(multiLine)
 {
 	setTag("popup");
@@ -396,10 +396,9 @@ bool GuiTextEditPopupKeyboard::input(InputConfig* config, Input input)
 		// pressing start
 		if (config->isMappedTo("start", input))
 		{
-			if (mOkCallback)
-				mOkCallback(mText->getValue());
+			if ((mOkCallback != nullptr) && mOkCallback(mText->getValue()))
+				delete this;
 
-			delete this;
 			return true;
 		}
 
@@ -538,8 +537,9 @@ std::shared_ptr<ButtonComponent> GuiTextEditPopupKeyboard::makeButton(const std:
 	{
 		if (key == _U("\u23CE") || key.find("OK") != std::string::npos)
 		{
-			mOkCallback(mText->getValue());
-			delete this;
+			if (mOkCallback(mText->getValue()))
+				delete this;
+
 			return;
 		}
 		else if (key == _U("\u232B") || key == "DEL")
