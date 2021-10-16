@@ -207,7 +207,9 @@ void GuiSystemInformation::showDetailedSystemInfo()
 	if (bi.hasBattery)
 		addSubMenu(_("BATTERY"), [this, bi]() { openBattery(&bi); });
 
-	addSubMenu(_("SOFTWARE"), [this]() { openSoftware(); });
+	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::SYSTEM_INFORMATION))
+		addSubMenu(_("SOFTWARE"), [this]() { openSoftware(); });
+
 	addSubMenu(_("DEVICE"), [this]() { openDevice(); });
 }
 
