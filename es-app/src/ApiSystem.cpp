@@ -800,19 +800,18 @@ bool ApiSystem::isSystemHotkeySuspendEvent()
 	return stringToState(getShOutput(R"(es-system_hotkey get suspend)"));
 }
 
-
-bool ApiSystem::setDeviceAutoSuspend( bool state )
+bool ApiSystem::setDeviceAutoSuspendByTime( bool state )
 {
-	LOG(LogInfo) << "ApiSystem::setDeviceAutoSuspend()";
+	LOG(LogInfo) << "ApiSystem::setDeviceAutoSuspendByTime()";
 
-	return executeScript("es-auto_suspend set auto_suspend " + stateToString(state));
+	return executeScript("es-auto_suspend set auto_suspend_time " + stateToString(state));
 }
 
-bool ApiSystem::isDeviceAutoSuspend()
+bool ApiSystem::isDeviceAutoSuspendByTime()
 {
-	LOG(LogInfo) << "ApiSystem::isDeviceAutoSuspend()";
+	LOG(LogInfo) << "ApiSystem::isDeviceAutoSuspendByTime()";
 
-	return stringToState(getShOutput(R"(es-auto_suspend get auto_suspend)"));
+	return stringToState(getShOutput(R"(es-auto_suspend get auto_suspend_time)"));
 }
 
 bool ApiSystem::setAutoSuspendTimeout( int timeout )
@@ -821,19 +820,69 @@ bool ApiSystem::setAutoSuspendTimeout( int timeout )
 
 	if (timeout <= 0)
 		timeout = 5;
+	else if (timeout > 120)
+		timeout = 120;
 
 	return executeScript("es-auto_suspend set auto_suspend_timeout " + std::to_string(timeout));
 }
 
 int ApiSystem::getAutoSuspendTimeout()
 {
-	LOG(LogInfo) << "ApiSystem::isDeviceAutoSuspend()";
+	LOG(LogInfo) << "ApiSystem::getAutoSuspendTimeout()";
 
 	int timeout = std::atoi(getShOutput(R"(es-auto_suspend get auto_suspend_timeout)").c_str());
 	if (timeout <= 0)
 		return 5;
+	else if (timeout > 120)
+		return 120;
 
 	return timeout;
+}
+
+bool ApiSystem::setDeviceAutoSuspendByBatteryLevel( bool state )
+{
+	LOG(LogInfo) << "ApiSystem::setDeviceAutoSuspendByBatteryLevel()";
+
+	return executeScript("es-auto_suspend set auto_suspend_battery " + stateToString(state));
+}
+
+bool ApiSystem::isDeviceAutoSuspendByBatteryLevel()
+{
+	LOG(LogInfo) << "ApiSystem::isDeviceAutoSuspendByBatteryLevel()";
+
+	return stringToState(getShOutput(R"(es-auto_suspend get auto_suspend_battery)"));
+}
+
+bool ApiSystem::setAutoSuspendBatteryLevel( int battery_level )
+{
+	LOG(LogInfo) << "ApiSystem::setAutoSuspendTimeoutBatteryLevel()";
+
+	if (battery_level <= 0)
+		battery_level = 10;
+	else if (battery_level > 100)
+		battery_level = 100;
+
+	return executeScript("es-auto_suspend set auto_suspend_battery_level " + std::to_string(battery_level));
+}
+
+int ApiSystem::getAutoSuspendBatteryLevel()
+{
+	LOG(LogInfo) << "ApiSystem::getAutoSuspendBatteryLevel()";
+
+	int battery_level = std::atoi(getShOutput(R"(es-auto_suspend get auto_suspend_battery_level)").c_str());
+	if (battery_level <= 0)
+		return 10;
+	else if (battery_level > 100)
+		return 100;
+
+	return battery_level;
+}
+
+bool ApiSystem::isDeviceAutoSuspend()
+{
+	LOG(LogInfo) << "ApiSystem::isDeviceAutoSuspend()";
+
+	return isDeviceAutoSuspendByTime() || isDeviceAutoSuspendByBatteryLevel();
 }
 
 bool ApiSystem::ping()

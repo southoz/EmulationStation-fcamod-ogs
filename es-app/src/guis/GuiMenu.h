@@ -39,6 +39,7 @@ private:
 	void openSystemInformation();
 	void openQuitSettings();
 	void openMenusSettings();
+	void openAutoSuspendSettings();
 	void openSystemHotkeyEventsSettings();
 	void openRetroAchievementsSettings();
 	void openNetworkSettings(bool selectWifiEnable = false, bool selectManualWifiDnsEnable = false);

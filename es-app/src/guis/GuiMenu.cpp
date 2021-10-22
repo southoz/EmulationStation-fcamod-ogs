@@ -17,6 +17,7 @@
 #include "guis/GuiMenusOptions.h"
 #include "guis/GuiSystemHotkeyEventsOptions.h"
 #include "guis/GuiWifi.h"
+#include "guis/GuiAutoSuspendOptions.h"
 #include "views/UIModeController.h"
 #include "views/ViewController.h"
 #include "CollectionSystemManager.h"
@@ -1922,6 +1923,11 @@ void GuiMenu::openAdvancedSettings()
 
 	s->addEntry(_("\"QUIT\" SETTINGS"), true, [this] { openQuitSettings(); });
 
+	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::ScriptId::AUTO_SUSPEND))
+	{
+		s->addEntry(_("DEVICE AUTO SUSPEND SETTINGS"), true, [this] { openAutoSuspendSettings(); });
+	}
+
 	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::ScriptId::SYSTEM_HOTKEY_EVENTS))
 	{
 		s->addEntry(_("SYSTEM HOTKEY EVENTS SETTINGS"), true, [this] { openSystemHotkeyEventsSettings(); });
@@ -2007,6 +2013,11 @@ void GuiMenu::openQuitSettings()
 	});
 
 	mWindow->pushGui(s);
+}
+
+void GuiMenu::openAutoSuspendSettings()
+{
+	mWindow->pushGui(new GuiAutoSuspendOptions(mWindow));
 }
 
 void GuiMenu::openSystemHotkeyEventsSettings()

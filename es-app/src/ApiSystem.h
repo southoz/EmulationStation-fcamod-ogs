@@ -150,10 +150,15 @@ public:
 	bool isSystemHotkeyPerformanceEvent();
 	bool setSystemHotkeySuspendEvent( bool state );
 	bool isSystemHotkeySuspendEvent();
-	bool setDeviceAutoSuspend( bool state );
+	bool setDeviceAutoSuspendByTime( bool state );
 	bool isDeviceAutoSuspend();
+	bool isDeviceAutoSuspendByTime();
 	bool setAutoSuspendTimeout( int timeout );
 	int getAutoSuspendTimeout();
+	bool setDeviceAutoSuspendByBatteryLevel( bool state );
+	bool isDeviceAutoSuspendByBatteryLevel();
+	bool setAutoSuspendBatteryLevel( int battery_level );
+	int getAutoSuspendBatteryLevel();
 
 	virtual bool ping();
 	bool getInternetStatus();
