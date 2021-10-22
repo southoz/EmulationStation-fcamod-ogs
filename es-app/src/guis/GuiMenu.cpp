@@ -207,13 +207,13 @@ void GuiMenu::openDisplaySettings()
 		{
 			// blink with low battery
 			auto blink_low_battery = std::make_shared<SwitchComponent>(mWindow);
-			blink_low_battery->setState(Settings::getInstance()->getBool("DisplayBlinkLowBattery"));
+			bool blink_low_battery_value = Settings::getInstance()->getBool("DisplayBlinkLowBattery");
+			blink_low_battery->setState(blink_low_battery_value);
 			s->addWithLabel(_("BLINK WITH LOW BATTERY"), blink_low_battery);
-			s->addSaveFunc([this, blink_low_battery]
+			s->addSaveFunc([this, blink_low_battery, blink_low_battery_value]
 				{
-					bool old_blink_low_battery_value = Settings::getInstance()->getBool("DisplayBlinkLowBattery");
 					bool new_blink_low_battery_value = blink_low_battery->getState();
-					if (old_blink_low_battery_value != new_blink_low_battery_value)
+					if (blink_low_battery_value != new_blink_low_battery_value)
 					{
 						mWindow->pushGui(new GuiMsgBox(mWindow,
 							_("THE PROCESS MAY DURE SOME SECONDS.\nPLEASE WAIT."),
@@ -221,8 +221,7 @@ void GuiMenu::openDisplaySettings()
 								{
 									Settings::getInstance()->setBool("DisplayBlinkLowBattery", new_blink_low_battery_value);
 									ApiSystem::getInstance()->setDisplayBlinkLowBattery(new_blink_low_battery_value);
-								},
-							_("CANCEL"), [] { return; } ));
+								} ));
 					}
 				});
 		}
@@ -2461,6 +2460,8 @@ void GuiMenu::createInputTextRow(GuiSettings *gui, std::string title, const char
 	row.addElement(lbl, true); // label
 
 	std::string value = storeInSettings ? Settings::getInstance()->getString(settingsID) : SystemConf::getInstance()->get(settingsID);
+
+	LOG(LogDebug) << "GuiMenu::createInputTextRow() - settings: " << settingsID << ", value: " << value << ", storeInSettings: " << Utils::String::boolToString(storeInSettings);
 
 	std::shared_ptr<TextComponent> ed = std::make_shared<TextComponent>(window, ((password && value != "") ? "*********" : value), font, color, ALIGN_RIGHT);
 	if (EsLocale::isRTL())

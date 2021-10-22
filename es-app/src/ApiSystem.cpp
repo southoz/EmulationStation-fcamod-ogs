@@ -172,6 +172,9 @@ bool ApiSystem::isScriptingSupported(ScriptId script)
 	case ApiSystem::SYSTEM_INFORMATION:
 				executables.push_back("es-system_inf");
 				break;
+	case ApiSystem::AUTO_SUSPEND:
+				executables.push_back("es-auto_suspend");
+				break;
 /*
 	case ApiSystem::RETROACHIVEMENTS:
 #ifdef CHEEVOS_DEV_LOGIN
@@ -720,9 +723,9 @@ std::string ApiSystem::getPowerkeyAction()
 	return action;
 }
 
-bool ApiSystem::setDisplayBlinkLowBattery(bool blink)
+bool ApiSystem::setDisplayBlinkLowBattery(bool state)
 {
-	LOG(LogInfo) << "ApiSystem::setPowerkeyAction()";
+	LOG(LogInfo) << "ApiSystem::setDisplayBlinkLowBattery()";
 
 	return executeScript("es-display blink_low_battery " + stateToString(state));
 }
@@ -795,6 +798,42 @@ bool ApiSystem::isSystemHotkeySuspendEvent()
 	LOG(LogInfo) << "ApiSystem::isSystemHotkeySuspendEvent()";
 
 	return stringToState(getShOutput(R"(es-system_hotkey get suspend)"));
+}
+
+
+bool ApiSystem::setDeviceAutoSuspend( bool state )
+{
+	LOG(LogInfo) << "ApiSystem::setDeviceAutoSuspend()";
+
+	return executeScript("es-auto_suspend set auto_suspend " + stateToString(state));
+}
+
+bool ApiSystem::isDeviceAutoSuspend()
+{
+	LOG(LogInfo) << "ApiSystem::isDeviceAutoSuspend()";
+
+	return stringToState(getShOutput(R"(es-auto_suspend get auto_suspend)"));
+}
+
+bool ApiSystem::setAutoSuspendTimeout( int timeout )
+{
+	LOG(LogInfo) << "ApiSystem::setAutoSuspendTimeout()";
+
+	if (timeout <= 0)
+		timeout = 5;
+
+	return executeScript("es-auto_suspend set auto_suspend_timeout " + std::to_string(timeout));
+}
+
+int ApiSystem::getAutoSuspendTimeout()
+{
+	LOG(LogInfo) << "ApiSystem::isDeviceAutoSuspend()";
+
+	int timeout = std::atoi(getShOutput(R"(es-auto_suspend get auto_suspend_timeout)").c_str());
+	if (timeout <= 0)
+		return 5;
+
+	return timeout;
 }
 
 bool ApiSystem::ping()

@@ -14,6 +14,7 @@ public:
 
 private:
 	void initializeMenu();
+	void configAutoSuspend(Window *window, bool enabled);
 
 
 	bool mPopupDisplayed;

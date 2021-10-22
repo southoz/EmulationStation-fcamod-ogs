@@ -6,6 +6,7 @@
 #include "guis/GuiMsgBox.h"
 #include "Window.h"
 #include "ApiSystem.h"
+#include "PowerSaver.h"
 
 
 GuiQuitOptions::GuiQuitOptions(Window* window) : GuiSettings(window, _("\"QUIT\" SETTINGS").c_str()), mPopupDisplayed(false)
@@ -108,8 +109,7 @@ void GuiQuitOptions::initializeMenu()
 						mPopupDisplayed = true;
 						mWindow->pushGui(new GuiMsgBox(mWindow,
 							_("THE PROCESS MAY DURE SOME SECONDS.\nPLEASE WAIT."),
-							_("OK"), [new_powerkey_value] { ApiSystem::getInstance()->setPowerkeyState( new_powerkey_value ); },
-							_("CANCEL"), [] { return; } ));
+							_("OK"), [new_powerkey_value] { ApiSystem::getInstance()->setPowerkeyState( new_powerkey_value ); }));
 					}
 					else
 					{
@@ -138,8 +138,7 @@ void GuiQuitOptions::initializeMenu()
 						mPopupDisplayed = true;
 						mWindow->pushGui(new GuiMsgBox(mWindow,
 							_("THE PROCESS MAY DURE SOME SECONDS.\nPLEASE WAIT."),
-							_("OK"), [new_powerkey_action] { ApiSystem::getInstance()->setPowerkeyAction( new_powerkey_action ); },
-							_("CANCEL"), [] { return; } ));
+							_("OK"), [new_powerkey_action] { ApiSystem::getInstance()->setPowerkeyAction( new_powerkey_action ); }));
 					}
 					else
 					{
@@ -170,8 +169,7 @@ void GuiQuitOptions::initializeMenu()
 						mPopupDisplayed = true;
 						mWindow->pushGui(new GuiMsgBox(mWindow,
 							_("THE PROCESS MAY DURE SOME SECONDS.\nPLEASE WAIT."),
-							_("OK"), [new_time_interval_value] { ApiSystem::getInstance()->setPowerkeyTimeInterval( (int) new_time_interval_value ); },
-							_("CANCEL"), [] { return; } ));
+							_("OK"), [new_time_interval_value] { ApiSystem::getInstance()->setPowerkeyTimeInterval( (int) new_time_interval_value ); }));
 					}
 					else
 					{
@@ -181,4 +179,78 @@ void GuiQuitOptions::initializeMenu()
 				}
 			});
 	}
+
+	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::ScriptId::AUTO_SUSPEND))
+	{
+		addGroup(_("DEVICE AUTO SUSPEND"));
+
+		// enable device autosuspend
+		auto auto_suspend = std::make_shared<SwitchComponent>(mWindow);
+		bool auto_suspend_value = ApiSystem::getInstance()->isDeviceAutoSuspend();
+		auto_suspend->setState( auto_suspend_value );
+		addWithLabel(_("ENABLE"), auto_suspend);
+		addSaveFunc([this, auto_suspend, auto_suspend_value]
+			{
+				bool new_auto_suspend_value = auto_suspend->getState();
+				if (auto_suspend_value != new_auto_suspend_value)
+				{
+					Window *window = mWindow;
+					if (!mPopupDisplayed)
+					{
+						mPopupDisplayed = true;
+						window->pushGui(new GuiMsgBox(window,
+							_("THE PROCESS MAY DURE SOME SECONDS.\nPLEASE WAIT."),
+							_("OK"), [this, window, new_auto_suspend_value] { configAutoSuspend( window, new_auto_suspend_value ); }));
+					}
+					else
+					{
+						mPopupDisplayed = false;
+						configAutoSuspend( window, new_auto_suspend_value );
+					}
+				}
+			});
+
+		// auto suspend timeout
+		auto auto_suspend_timeout = std::make_shared<SliderComponent>(mWindow, 1.f, 120.f, 1.f, "m", true);
+		float auto_suspend_timeout_value = (float) ApiSystem::getInstance()->getAutoSuspendTimeout();
+		auto_suspend_timeout->setValue( auto_suspend_timeout_value );
+		addWithLabel(_("SUSPEND AFTER"), auto_suspend_timeout);
+		addSaveFunc([this, auto_suspend_timeout, auto_suspend_timeout_value]
+			{
+				float new_auto_suspend_timeout_value = Math::round( auto_suspend_timeout->getValue() );
+				if (auto_suspend_timeout_value != new_auto_suspend_timeout_value)
+				{
+					if (!mPopupDisplayed)
+					{
+						mPopupDisplayed = true;
+						mWindow->pushGui(new GuiMsgBox(mWindow,
+							_("THE PROCESS MAY DURE SOME SECONDS.\nPLEASE WAIT."),
+							_("OK"), [new_auto_suspend_timeout_value]
+								{
+									ApiSystem::getInstance()->setAutoSuspendTimeout( (int) new_auto_suspend_timeout_value );
+								}));
+					}
+					else
+					{
+						mPopupDisplayed = false;
+						ApiSystem::getInstance()->setAutoSuspendTimeout( (int) new_auto_suspend_timeout_value );
+					}
+				}
+			});
+	}
+}
+
+void GuiQuitOptions::configAutoSuspend(Window *window, bool enabled)
+{
+	if (enabled && Settings::getInstance()->getString("ScreenSaverBehavior") == "suspend")
+	{
+		window->pushGui(new GuiMsgBox(window,
+			_("THE \"SUSPEND\" SCREENSAVER WAS DISABLED. THE SCREENSAVER BEHAVIOR WAS SETTLED TO \"DIM\"."),
+			_("OK"), []
+				{
+					Settings::getInstance()->setString("ScreenSaverBehavior", "dim");
+					PowerSaver::updateTimeouts();
+				}));
+	}
+	ApiSystem::getInstance()->setDeviceAutoSuspend( enabled );
 }

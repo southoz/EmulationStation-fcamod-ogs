@@ -128,7 +128,7 @@ void Settings::setDefaults()
 	mStringMap["TransitionStyle"] = "auto";
 	mStringMap["Language"] = "en";	
 	mStringMap["ThemeSet"] = "";
-	mStringMap["ScreenSaverBehavior"] = "dim";	
+	mStringMap["ScreenSaverBehavior"] = "dim";
 	mStringMap["GamelistViewStyle"] = "automatic";
 	mStringMap["DefaultGridSize"] = "";
 	mStringMap["HiddenSystems"] = "";

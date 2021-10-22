@@ -7,6 +7,7 @@
 #include "guis/GuiSlideshowScreensaverOptions.h"
 #include "guis/GuiVideoScreensaverOptions.h"
 #include "Settings.h"
+#include "ApiSystem.h"
 
 GuiGeneralScreensaverOptions::GuiGeneralScreensaverOptions(Window* window, std::string title) : GuiScreensaverOptions(window, title)
 {
@@ -34,11 +35,19 @@ GuiGeneralScreensaverOptions::GuiGeneralScreensaverOptions(Window* window, std::
 	addWithLabel(_("SCREENSAVER BEHAVIOR"), screensaver_behavior);
 	addSaveFunc([this, screensaver_behavior] {
 		if (Settings::getInstance()->getString("ScreenSaverBehavior") != "random video"
-			&& screensaver_behavior->getSelected() == "random video") {
+			&& screensaver_behavior->getSelected() == "random video")
+		{
 			// if before it wasn't risky but now there's a risk of problems, show warning
 			mWindow->pushGui(new GuiMsgBox(mWindow,
 				_("THE \"RANDOM VIDEO\" SCREENSAVER SHOWS VIDEOS FROM YOUR GAMELIST.\nIF YOU DON'T HAVE VIDEOS, OR IF NONE OF THEM CAN BE PLAYED AFTER A FEW ATTEMPTS, IT WILL DEFAULT TO \"BLACK\".\nMORE OPTIONS IN THE \"UI SETTINGS\" -> \"RANDOM VIDEO SCREENSAVER SETTINGS\" MENU."),
 				_("OK"), [] { return; }));
+		}
+		if ((screensaver_behavior->getSelected() == "suspend") && ApiSystem::getInstance()->isDeviceAutoSuspend())
+		{
+			mWindow->pushGui(new GuiMsgBox(mWindow,
+					_("THE \"SUSPEND\" SCREENSAVER WON'T BE ENABLED BECAUSE THE \"DEVICE AUTO SUSPEND\" IS ENABLED."),
+					_("OK"), [] { return; }));
+			return;
 		}
 		Settings::getInstance()->setString("ScreenSaverBehavior", screensaver_behavior->getSelected());
 		PowerSaver::updateTimeouts();

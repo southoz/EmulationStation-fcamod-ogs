@@ -50,7 +50,8 @@ public:
 		WIFI = 4,
 		RETROACHIVEMENTS = 5,
 		LANGUAGE = 6,
-		SYSTEM_INFORMATION = 7
+		SYSTEM_INFORMATION = 7,
+		AUTO_SUSPEND = 8
 /*
 		RETROACHIVEMENTS = 1,
 		BLUETOOTH = 2,
@@ -138,7 +139,7 @@ public:
 	int getPowerkeyTimeInterval();
 	bool setPowerkeyAction(const std::string action);
 	std::string getPowerkeyAction();
-	bool setDisplayBlinkLowBattery(bool blink);
+	bool setDisplayBlinkLowBattery(bool state);
 	bool setSystemHotkeyBrightnessEvent( bool state );
 	bool isSystemHotkeyBrightnessEvent();
 	bool setSystemHotkeyVolumeEvent( bool state );
@@ -149,6 +150,10 @@ public:
 	bool isSystemHotkeyPerformanceEvent();
 	bool setSystemHotkeySuspendEvent( bool state );
 	bool isSystemHotkeySuspendEvent();
+	bool setDeviceAutoSuspend( bool state );
+	bool isDeviceAutoSuspend();
+	bool setAutoSuspendTimeout( int timeout );
+	int getAutoSuspendTimeout();
 
 	virtual bool ping();
 	bool getInternetStatus();
