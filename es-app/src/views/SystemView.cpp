@@ -470,6 +470,12 @@ bool SystemView::input(InputConfig* config, Input input)
 			setCursor(SystemData::getRandomSystem());
 			return true;
 		}
+		if(config->isMappedLike("leftthumb", input) || config->isMappedLike("rightthumb", input)) // emuelec
+		{
+			// next song
+			AudioManager::getInstance()->playRandomMusic(false);
+			return true;
+		}
 	}else{
 		if(config->isMappedLike("left", input) ||
 			config->isMappedLike("right", input) ||
@@ -732,7 +738,7 @@ std::vector<HelpPrompt> SystemView::getHelpPrompts()
 	if (SystemData::getSystem("all") != nullptr)
 		prompts.push_back(HelpPrompt("y", _("SEARCH"))); // QUICK
 
-	if (!UIModeController::getInstance()->isUIModeKid() && Settings::getInstance()->getBool("ScreenSaverControls"))
+	if (!UIModeController::getInstance()->isUIModeKid() && Settings::getInstance()->getBool("ScreenSaverControls") && (Settings::getInstance()->getString("ScreenSaverBehavior") != "suspend"))
 		prompts.push_back(HelpPrompt("select", _("LAUNCH SCREENSAVER")));
 
 	return prompts;

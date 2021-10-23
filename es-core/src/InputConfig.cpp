@@ -133,6 +133,10 @@ bool InputConfig::isMappedLike(const std::string& name, Input input)
 		return isMappedTo("up", input) || isMappedTo("leftanalogup", input) || isMappedTo("rightanalogup", input);
 	}else if(name == "down"){
 		return isMappedTo("down", input) || isMappedTo("leftanalogdown", input) || isMappedTo("rightanalogdown", input);
+	}else if(name == "leftthumb"){
+		return isMappedTo("leftthumb", input) || isMappedTo("l3", input);
+	}else if(name == "rightthumb"){
+		return isMappedTo("rightthumb", input) || isMappedTo("r3", input);
 	}
 	return isMappedTo(name, input);
 }
