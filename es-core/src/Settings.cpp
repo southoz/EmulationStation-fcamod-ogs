@@ -36,6 +36,7 @@ std::vector<const char*> settings_dont_save {
 	{ "system.hostname" },
 	{ "wifi.enabled" },
 	{ "wifi.key" },
+	{ "wifi.ssid" },
 	{ "wifi.dns1" },
 	{ "wifi.dns2" }
 };
@@ -186,9 +187,8 @@ void Settings::setDefaults()
 	mStringMap["ScrapperImageSrc"] = "ss";
 	mStringMap["ScrapperThumbSrc"] = "box-2D";
 	mStringMap["ScrapperLogoSrc"] = "wheel";
-	
 	mBoolMap["ScrapeVideos"] = false;
-	
+
 	mBoolMap["audio.bgmusic"] = true;
 	mBoolMap["audio.persystem"] = false;
 	mBoolMap["audio.thememusics"] = true;
@@ -197,13 +197,7 @@ void Settings::setDefaults()
 	mStringMap["UserMusicDirectory"] = "";
 
 	mBoolMap["updates.enabled"] = false;
-	mBoolMap["wifi.enabled"] = queryWifiEnabled();
-	mStringMap["wifi.ssid"] = queryWifiSsid();
-	mStringMap["wifi.key"] = queryWifiPsk();
-	mStringMap["system.hostname"] = queryHostname();
 	mBoolMap["wifi.manual_dns"] = false;
-	mStringMap["wifi.dns1"] = queryDnsOne();
-	mStringMap["wifi.dns2"] = queryDnsTwo();
 
 	// Log settings
 	mStringMap["LogLevel"] = "default";

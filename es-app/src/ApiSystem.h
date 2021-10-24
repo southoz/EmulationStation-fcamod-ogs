@@ -169,6 +169,11 @@ public:
 	bool isWifiEnabled();
 	bool enableManualWifiDns(std::string ssid, std::string dnsOne, std::string dnsTwo);
 	bool disableManualWifiDns(std::string ssid);
+	std::string getWifiSsid();
+	std::string getWifiPsk(std::string ssid);
+	std::string getDnsOne();
+	std::string getDnsTwo();
+
 
 	bool setLanguage(std::string language);
 

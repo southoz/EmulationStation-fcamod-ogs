@@ -951,6 +951,35 @@ bool ApiSystem::disableManualWifiDns(std::string ssid)
 	return executeScript("es-wifi disable_manual_dns \"" + ssid + '"');
 }
 
+std::string ApiSystem::getWifiSsid()
+{
+	LOG(LogInfo) << "ApiSystem::getWifiSsid()";
+
+	return queryWifiSsid();
+}
+
+std::string ApiSystem::getWifiPsk(std::string ssid)
+{
+	LOG(LogInfo) << "ApiSystem::getWifiPsk() - ssid: " << ssid;
+
+	return queryWifiPsk(ssid);
+}
+
+std::string ApiSystem::getDnsOne()
+{
+	LOG(LogInfo) << "ApiSystem::getDnsOne()";
+
+	return queryDnsOne();
+}
+
+std::string ApiSystem::getDnsTwo()
+{
+	LOG(LogInfo) << "ApiSystem::getDnsTwo()";
+
+	return queryDnsTwo();
+}
+
+
 std::string ApiSystem::stateToString(bool state)
 {
 	return state ? std::string("enabled") : std::string("disabled");

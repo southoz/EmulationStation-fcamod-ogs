@@ -75,7 +75,7 @@ GuiMenu::GuiMenu(Window* window, bool animate) : GuiComponent(window), mMenu(win
 		}
 
 		if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::WIFI))
-			addEntry(_("NETWORK SETTINGS").c_str(), true, [this] { openNetworkSettings(); }, "iconNetwork");
+			addEntry(_("NETWORK SETTINGS").c_str(), true, [this] { preloadNetworkSettings(); openNetworkSettings(); }, "iconNetwork");
 		
 		addEntry(_("SCRAPER"), true, [this] { openScraperSettings(); }, "iconScraper");
 
@@ -1441,6 +1441,16 @@ void GuiMenu::updateGameLists(Window* window, bool confirm)
 void GuiMenu::openWifiSettings(Window* win, std::string title, std::string data, const std::function<bool(std::string)>& onsave)
 {
 	win->pushGui(new GuiWifi(win, title, data, onsave));
+}
+
+void GuiMenu::preloadNetworkSettings()
+{
+	SystemConf::getInstance()->setBool("wifi.enabled", ApiSystem::getInstance()->isWifiEnabled());
+	SystemConf::getInstance()->set("system.hostname", ApiSystem::getInstance()->getHostname());
+	SystemConf::getInstance()->set("wifi.ssid", ApiSystem::getInstance()->getWifiSsid());
+	SystemConf::getInstance()->set("wifi.key", ApiSystem::getInstance()->getWifiPsk(SystemConf::getInstance()->get("wifi.ssid")));
+	SystemConf::getInstance()->set("wifi.dns1", ApiSystem::getInstance()->getDnsOne());
+	SystemConf::getInstance()->set("wifi.dns2", ApiSystem::getInstance()->getDnsTwo());
 }
 
 void GuiMenu::openNetworkSettings(bool selectWifiEnable, bool selectManualWifiDnsEnable)

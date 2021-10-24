@@ -3,7 +3,6 @@
 #define ES_CORE_UTILS_NETWORK_UTIL_H
 
 #include <string>
-#include <vector>
 
 namespace Utils
 {
