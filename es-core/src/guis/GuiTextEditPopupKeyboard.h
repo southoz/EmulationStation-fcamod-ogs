@@ -34,6 +34,8 @@ private:
 
 	std::shared_ptr<ButtonComponent> mShiftButton;
 	std::shared_ptr<ButtonComponent> mAltButton;
+	std::shared_ptr<ButtonComponent> mInputCursorLeft;
+	std::shared_ptr<ButtonComponent> mInputCursorRight;
 
 	void shiftKeys();
 	void altKeys();

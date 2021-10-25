@@ -32,9 +32,9 @@ std::vector<std::vector<const char*>> kbUs {
 	{ "`", "Z", "X", "C", "V", "B", "N", "M", "<", ">", "/", "ALT", "-colspan-" },
 	{ "€", "", "", "", "", "", "", "", "", "", "", "ALT", "-colspan-" },
 
-	{ "SHIFT", "-colspan-", "SPACE", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "RESET", "-colspan-", "CANCEL", "-colspan-" },
-	{ "SHIFT", "-colspan-", "SPACE", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "RESET", "-colspan-", "CANCEL", "-colspan-" },
-	{ "SHIFT", "-colspan-", "SPACE", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "RESET", "-colspan-", "CANCEL", "-colspan-" }
+	{ "SHIFT", "-colspan-", "SPACE", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "CUR_LEFT", "CUR_RIGHT", "RESET", "-colspan-", "CANCEL", "-colspan-" },
+	{ "SHIFT", "-colspan-", "SPACE", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "CUR_LEFT", "CUR_RIGHT", "RESET", "-colspan-", "CANCEL", "-colspan-" },
+	{ "SHIFT", "-colspan-", "SPACE", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "CUR_LEFT", "CUR_RIGHT", "RESET", "-colspan-", "CANCEL", "-colspan-" }
 };
 
 std::vector<std::vector<const char*>> kbFr {
@@ -54,9 +54,9 @@ std::vector<std::vector<const char*>> kbFr {
 	{ ">", "W", "X", "C", "V", "B", "N", "?", ".", "/", "+", "ALT", "-colspan-" },
 	{ "€", "", "", "", "", "", "", "", "", "", "", "ALT", "-colspan-" },
 
-	{ "SHIFT", "-colspan-", "SPACE", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "RESET", "-colspan-", "CANCEL", "-colspan-" },
-	{ "SHIFT", "-colspan-", "SPACE", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "RESET", "-colspan-", "CANCEL", "-colspan-" },
-	{ "SHIFT", "-colspan-", "SPACE", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "RESET", "-colspan-", "CANCEL", "-colspan-" }
+	{ "SHIFT", "-colspan-", "SPACE", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "CUR_LEFT", "CUR_RIGHT", "RESET", "-colspan-", "CANCEL", "-colspan-" },
+	{ "SHIFT", "-colspan-", "SPACE", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "CUR_LEFT", "CUR_RIGHT", "RESET", "-colspan-", "CANCEL", "-colspan-" },
+	{ "SHIFT", "-colspan-", "SPACE", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "CUR_LEFT", "CUR_RIGHT", "RESET", "-colspan-", "CANCEL", "-colspan-" }
 };
 
 std::vector<std::vector<const char*>> kbEs {
@@ -76,9 +76,9 @@ std::vector<std::vector<const char*>> kbEs {
 	{ ">", "Z", "X", "C", "V", "B", "N", "M", "~", "`", "\\", "ALT", "-colspan-" },
 	{ "£", "$", "¨", "/", "º", "ª", "@", "#", "*", "", "", "ALT", "-colspan-" },
 
-	{ "SHIFT", "-colspan-", "SPACE", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "RESET", "-colspan-", "CANCEL", "-colspan-" },
-	{ "SHIFT", "-colspan-", "SPACE", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "RESET", "-colspan-", "CANCEL", "-colspan-" },
-	{ "SHIFT", "-colspan-", "SPACE", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "RESET", "-colspan-", "CANCEL", "-colspan-" }
+	{ "SHIFT", "-colspan-", "SPACE", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "CUR_LEFT", "CUR_RIGHT", "RESET", "-colspan-", "CANCEL", "-colspan-" },
+	{ "SHIFT", "-colspan-", "SPACE", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "CUR_LEFT", "CUR_RIGHT", "RESET", "-colspan-", "CANCEL", "-colspan-" },
+	{ "SHIFT", "-colspan-", "SPACE", "-colspan-", "-colspan-", "-colspan-", "-colspan-", "CUR_LEFT", "CUR_RIGHT", "RESET", "-colspan-", "CANCEL", "-colspan-" }
 };
 
 
@@ -179,6 +179,16 @@ GuiTextEditPopupKeyboard::GuiTextEditPopupKeyboard(Window* window, const std::st
 				{
 					mAltButton = std::make_shared<ButtonComponent>(mWindow, _U("\u2387"), _("ALT GR"), [this] { altKeys(); }, false);
 					button = mAltButton;
+				}
+				else if (lower == "CUR_LEFT")
+				{
+					mInputCursorLeft = std::make_shared<ButtonComponent>(mWindow, _U("\u21E6"), _("MOVE CURSOR LEFT"), [this] { mText->moveCursor(-1); }, false);
+					button = mInputCursorLeft;
+				}
+				else if (lower == "CUR_RIGHT")
+				{
+					mInputCursorRight = std::make_shared<ButtonComponent>(mWindow, _U("\u21E8"), _("MOVE CURSOR RIGHT"), [this] { mText->moveCursor(+1); }, false);
+					button = mInputCursorRight;
 				}
 				else
 					button = makeButton(lower, upper, alted);
@@ -535,7 +545,7 @@ std::shared_ptr<ButtonComponent> GuiTextEditPopupKeyboard::makeButton(const std:
 {
 	std::shared_ptr<ButtonComponent> button = std::make_shared<ButtonComponent>(mWindow, key, key, [this, key, shiftedKey, altedKey]
 	{
-		if (key == _U("\u23CE") || key.find("OK") != std::string::npos)
+		if (key == _U("\u23CE") || key == "OK")
 		{
 			if (mOkCallback(mText->getValue()))
 				delete this;

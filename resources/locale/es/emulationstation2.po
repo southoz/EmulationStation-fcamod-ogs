@@ -2071,6 +2071,14 @@ msgid "SHIFTS FOR UPPER,LOWER, AND SPECIAL"
 msgstr "PULSE SHIFT PARA MAYÚSCULAS"
 
 #:
+msgid "MOVE CURSOR LEFT"
+msgstr "MOVER CURSOR IZQ."
+
+#:
+msgid "MOVE CURSOR RIGHT"
+msgstr "MOVER CURSOR DCHA."
+
+#:
 msgid "SPACE"
 msgstr "ESPACIO"
 
