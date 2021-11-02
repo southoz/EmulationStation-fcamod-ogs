@@ -182,12 +182,12 @@ GuiTextEditPopupKeyboard::GuiTextEditPopupKeyboard(Window* window, const std::st
 				}
 				else if (lower == "CUR_LEFT")
 				{
-					mInputCursorLeft = std::make_shared<ButtonComponent>(mWindow, _U("\u21E6"), _("MOVE CURSOR LEFT"), [this] { mText->moveCursor(-1); }, false);
+					mInputCursorLeft = std::make_shared<ButtonComponent>(mWindow, _U("\u25C4"), _("MOVE CURSOR LEFT"), [this] { mText->moveCursor(-1); }, false);
 					button = mInputCursorLeft;
 				}
 				else if (lower == "CUR_RIGHT")
 				{
-					mInputCursorRight = std::make_shared<ButtonComponent>(mWindow, _U("\u21E8"), _("MOVE CURSOR RIGHT"), [this] { mText->moveCursor(+1); }, false);
+					mInputCursorRight = std::make_shared<ButtonComponent>(mWindow, _U("\u25BA"), _("MOVE CURSOR RIGHT"), [this] { mText->moveCursor(+1); }, false);
 					button = mInputCursorRight;
 				}
 				else
