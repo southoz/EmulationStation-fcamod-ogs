@@ -1297,7 +1297,7 @@ bool CollectionSystemManager::includeFileInAutoCollections(FileData* file)
 {
 	// if/when there are more in the future, maybe this can be a more complex method, with a proper list
 	// but for now a simple string comparison is more performant
-	return file->getSystem()->isGameSystem();
+	return file->getSystem()->isGameSystem() && !file->getSystem()->hasPlatformId(PlatformIds::PLATFORM_IGNORE);
 }
 
 std::string getCustomCollectionConfigPath(std::string collectionName)
