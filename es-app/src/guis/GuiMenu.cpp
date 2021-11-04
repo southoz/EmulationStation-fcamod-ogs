@@ -1876,13 +1876,6 @@ void GuiMenu::openAdvancedSettings()
 	s->addWithLabel(_("THREADED LOADING"), threadedLoading);
 	s->addSaveFunc([threadedLoading] { Settings::getInstance()->setBool("ThreadedLoading", threadedLoading->getState()); });
 
-	// preload vlc
-	auto preload_vlc = std::make_shared<SwitchComponent>(mWindow);
-	preload_vlc->setState(Settings::getInstance()->getBool("PreloadVlc"));
-	s->addWithLabel(_("PRELOAD VLC"), preload_vlc);
-	s->addSaveFunc([preload_vlc] { Settings::getInstance()->setBool("PreloadVlc", preload_vlc->getState()); });
-
-
 	// show detailed system information
 	auto detailedSystemInfo = std::make_shared<SwitchComponent>(mWindow);
 	detailedSystemInfo->setState(Settings::getInstance()->getBool("ShowDetailedSystemInfo"));

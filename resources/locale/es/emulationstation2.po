@@ -544,10 +544,6 @@ msgid "SHOW FILE BROWSER"
 msgstr "MOSTRAR NAVEGADOR DE ARCHIVOS"
 
 #:
-msgid "PRELOAD VLC"
-msgstr "PRECARGA DE VLC"
-
-#:
 msgid "ENABLED"
 msgstr "HABILITAR"
 
