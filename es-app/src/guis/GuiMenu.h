@@ -50,8 +50,6 @@ private:
 	void openUpdateSettings();
 	void openEmulatorSettings();
 	void openSystemEmulatorSettings(SystemData* system);
-
-	void createInputTextRow(GuiSettings * gui, std::string title, const char* settingsID, bool password, bool storeInSettings=false, const std::function<void(Window*, std::string/*title*/, std::string /*value*/, const std::function<bool(std::string)>& onsave)>& customEditor = nullptr, const std::function<bool(std::string /*value*/)>& onValidateValue = nullptr);
 	void openDisplaySettings();
 
 	static std::string formatNetworkStatus(bool isConnected);

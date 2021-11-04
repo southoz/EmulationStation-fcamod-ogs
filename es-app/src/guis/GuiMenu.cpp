@@ -383,8 +383,8 @@ void GuiMenu::openScraperSettings()
 		s->addSaveFunc([scrape_video] { Settings::getInstance()->setBool("ScrapeVideos", scrape_video->getState()); });
 
 		// Account
-		createInputTextRow(s, _("USERNAME"), "ScreenScraperUser", false);
-		createInputTextRow(s, _("PASSWORD"), "ScreenScraperPass", true);
+		s->addInputTextRow(_("USERNAME"), "ScreenScraperUser", false);
+		s->addInputTextRow(_("PASSWORD"), "ScreenScraperPass", true);
 	}
 	else
 	{
@@ -1485,7 +1485,7 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable, bool selectManualWifiDn
 	s->addGroup(_("SETTINGS"));
 
 	// Hostname
-	createInputTextRow(s, _("HOSTNAME"), "system.hostname", false, false);
+	s->addInputTextRow(_("HOSTNAME"), "system.hostname", false, false);
 
 	// Wifi enable
 	auto enable_wifi = std::make_shared<SwitchComponent>(mWindow);
@@ -1502,15 +1502,15 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable, bool selectManualWifiDn
 
 	if (baseWifiEnabled)
 	{
-		createInputTextRow(s, _("WIFI SSID"), "wifi.ssid", false, false, &openWifiSettings);
-		createInputTextRow(s, _("WIFI KEY"), "wifi.key", true, false);
+		s->addInputTextRow(_("WIFI SSID"), "wifi.ssid", false, false, &openWifiSettings);
+		s->addInputTextRow(_("WIFI KEY"), "wifi.key", true, false);
 
 		s->addWithLabel(_("MANUAL DNS"), manual_dns, selectManualWifiDnsEnable);
 
 		if (baseManualDns)
 		{
-			createInputTextRow(s, _("DNS1"), "wifi.dns1", false, false, nullptr, &Utils::Network::validateIPv4);
-			createInputTextRow(s, _("DNS2"), "wifi.dns2", false, false, nullptr, &Utils::Network::validateIPv4);
+			s->addInputTextRow(_("DNS1"), "wifi.dns1", false, false, nullptr, &Utils::Network::validateIPv4);
+			s->addInputTextRow(_("DNS2"), "wifi.dns2", false, false, nullptr, &Utils::Network::validateIPv4);
 		}
 	}
 
@@ -1876,6 +1876,13 @@ void GuiMenu::openAdvancedSettings()
 	s->addWithLabel(_("THREADED LOADING"), threadedLoading);
 	s->addSaveFunc([threadedLoading] { Settings::getInstance()->setBool("ThreadedLoading", threadedLoading->getState()); });
 
+	// preload vlc
+	auto preload_vlc = std::make_shared<SwitchComponent>(mWindow);
+	preload_vlc->setState(Settings::getInstance()->getBool("PreloadVlc"));
+	s->addWithLabel(_("PRELOAD VLC"), preload_vlc);
+	s->addSaveFunc([preload_vlc] { Settings::getInstance()->setBool("PreloadVlc", preload_vlc->getState()); });
+
+
 	// show detailed system information
 	auto detailedSystemInfo = std::make_shared<SwitchComponent>(mWindow);
 	detailedSystemInfo->setState(Settings::getInstance()->getBool("ShowDetailedSystemInfo"));
@@ -2107,8 +2114,8 @@ void GuiMenu::openRetroAchievementsSettings()
 		});
 
 	// retroachievements, username, password
-	createInputTextRow(retroachievements, _("USERNAME"), "global.retroachievements.username", false);
-	createInputTextRow(retroachievements, _("PASSWORD"), "global.retroachievements.password", true);
+	retroachievements->addInputTextRow(_("USERNAME"), "global.retroachievements.username", false);
+	retroachievements->addInputTextRow(_("PASSWORD"), "global.retroachievements.password", true);
 
 	retroachievements->addSaveFunc([retroachievementsEnabled, retroachievements_enabled, username, password, window]
 	{
@@ -2459,86 +2466,6 @@ std::vector<HelpPrompt> GuiMenu::getHelpPrompts()
 	prompts.push_back(HelpPrompt(BUTTON_OK, _("SELECT")));
 	prompts.push_back(HelpPrompt("start", _("CLOSE")));
 	return prompts;
-}
-
-void GuiMenu::createInputTextRow(GuiSettings *gui, std::string title, const char *settingsID, bool password, bool storeInSettings,
-		const std::function<void(Window*, std::string/*title*/, std::string /*value*/, const std::function<bool(std::string)>& onsave)>& customEditor,
-		const std::function<bool(std::string /*value*/)>& onValidateValue)
-{
-
-	auto theme = ThemeData::getMenuTheme();
-	std::shared_ptr<Font> font = theme->Text.font;
-	unsigned int color = theme->Text.color;
-
-	// LABEL
-	Window *window = mWindow;
-	ComponentListRow row;
-
-	auto lbl = std::make_shared<TextComponent>(window, title, font, color);
-	if (EsLocale::isRTL())
-		lbl->setHorizontalAlignment(Alignment::ALIGN_RIGHT);
-
-	row.addElement(lbl, true); // label
-
-	std::string value = storeInSettings ? Settings::getInstance()->getString(settingsID) : SystemConf::getInstance()->get(settingsID);
-
-	LOG(LogDebug) << "GuiMenu::createInputTextRow() - settings: " << settingsID << ", value: " << value << ", storeInSettings: " << Utils::String::boolToString(storeInSettings);
-
-	std::shared_ptr<TextComponent> ed = std::make_shared<TextComponent>(window, ((password && value != "") ? "*********" : value), font, color, ALIGN_RIGHT);
-	if (EsLocale::isRTL())
-		ed->setHorizontalAlignment(Alignment::ALIGN_LEFT);
-
-	row.addElement(ed, true);
-
-	auto spacer = std::make_shared<GuiComponent>(mWindow);
-	spacer->setSize(Renderer::getScreenWidth() * 0.005f, 0);
-	row.addElement(spacer, false);
-
-	auto bracket = std::make_shared<ImageComponent>(mWindow);
-	bracket->setImage(theme->Icons.arrow);
-	bracket->setResize(Vector2f(0, lbl->getFont()->getLetterHeight()));
-
-	if (EsLocale::isRTL())
-		bracket->setFlipX(true);
-
-	row.addElement(bracket, false);
-
-	std::function<bool(const std::string /*&newVal*/)> updateVal = [ed, settingsID, password, storeInSettings, window, onValidateValue](const std::string &newVal)
-	{
-		if ( (onValidateValue != nullptr) && !onValidateValue(newVal))
-		{
-			char strbuf[128];
-			snprintf(strbuf, 128, _("THE VALUE '%s' ISN'T VALID.").c_str(), newVal.c_str());
-			window->pushGui(new GuiMsgBox(window, strbuf, _("OK")));
-			return false;
-		}
-
-		if (!password)
-			ed->setValue(newVal);
-		else
-			ed->setValue("*********");
-
-		if (storeInSettings)
-			Settings::getInstance()->setString(settingsID, newVal);
-		else
-			SystemConf::getInstance()->set(settingsID, newVal);
-
-		return true;
-	}; // ok callback (apply new value to ed)
-
-	row.makeAcceptInputHandler([this, title, updateVal, settingsID, storeInSettings, customEditor]
-	{
-		std::string data = storeInSettings ? Settings::getInstance()->getString(settingsID) : SystemConf::getInstance()->get(settingsID);
-
-		if (customEditor != nullptr)
-			customEditor(mWindow, title, data, updateVal);
-		else if (Settings::getInstance()->getBool("UseOSK"))
-			mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, title, data, updateVal, false));
-		else
-			mWindow->pushGui(new GuiTextEditPopup(mWindow, title, data, updateVal, false));
-	});
-
-	gui->addRow(row);
 }
 
 std::string GuiMenu::formatNetworkStatus(bool isConnected)
