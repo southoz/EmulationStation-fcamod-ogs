@@ -594,7 +594,7 @@ void ViewController::preload()
 	if (!preloadUI)
 		return;
 
-	mWindow->renderLoadingScreen(_("Preloading UI"), 0);
+	mWindow->renderLoadingScreen(_("Preloading UI..."), 0);
 	getSystemListView();
 
 	int i = 1;
@@ -611,7 +611,7 @@ void ViewController::preload()
 			i++;
 
 			if ((i % 4) == 0)
-				mWindow->renderLoadingScreen(_("Starting UI"), (float)i / (float)max);
+				mWindow->renderLoadingScreen(_("Starting UI..."), (float)i / (float)max);
 		}
 
 		(*it)->resetFilters();

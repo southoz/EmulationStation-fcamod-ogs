@@ -255,8 +255,8 @@ msgid "Loading..."
 msgstr "Cargando..."
 
 #:
-msgid "Preloading UI"
-msgstr "Iniciando la UI..."
+msgid "Preloading UI..."
+msgstr "Precargando la interface de usuario..."
 
 #:
 msgid "ADD/REMOVE GAMES TO THIS GAME COLLECTION"
@@ -544,8 +544,8 @@ msgid "SHOW FILE BROWSER"
 msgstr "MOSTRAR NAVEGADOR DE ARCHIVOS"
 
 #:
-msgid "PRELOAD VLC SETTINGS"
-msgstr "CONFIGURACIÓN PRECARGA VLC"
+msgid "PRELOAD VLC"
+msgstr "PRECARGA DE VLC"
 
 #:
 msgid "ENABLED"
@@ -2531,8 +2531,8 @@ msgid "PREPARING"
 msgstr "PREPARANDO"
 
 #:
-msgid "Starting UI"
-msgstr "Inicialización interfaz"
+msgid "Starting UI..."
+msgstr "Iniciando la interfaz de usuario..."
 
 #:
 msgid "SAVING DATA. PLEASE WAIT..."
@@ -2695,6 +2695,10 @@ msgstr "Nunca jugados"
 #:
 msgid "collections"
 msgstr "colecciones"
+
+#:
+msgid "vertical arcade"
+msgstr "arcade vertical"
 
 #:
 msgid "Disabling the 'Show Game Info' option;"
