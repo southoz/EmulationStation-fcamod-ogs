@@ -33,7 +33,7 @@ std::vector<CollectionSystemDecl> CollectionSystemManager::getSystemDecls()
 		{ AUTO_ALL_GAMES,       "all",          "all games",         "filename, ascending",      "auto-allgames",           false,       true },
 		{ AUTO_LAST_PLAYED,     "recent",       "last played",       "last played, descending",  "auto-lastplayed",         false,       true },
 		{ AUTO_FAVORITES,       "favorites",    "favorites",         "filename, ascending",      "auto-favorites",          false,       true },
-		{ AUTO_AT2PLAYERS,      "2players",	    "2 players",         "filename, ascending",      "auto-at2players",         false,       true },
+		{ AUTO_AT2PLAYERS,      "2players",     "2 players",         "filename, ascending",      "auto-at2players",         false,       true },
 		{ AUTO_AT4PLAYERS,      "4players",     "4 players",         "filename, ascending",      "auto-at4players",         false,       true },
 		{ AUTO_NEVER_PLAYED,    "neverplayed",  "never played",      "filename, ascending",      "auto-neverplayed",        false,       true },
 		{ AUTO_VERTICALARCADE,  "vertical",     "vertical arcade",   "filename, ascending",      "auto-verticalarcade",     false,       true }, // batocera
