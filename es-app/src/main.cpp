@@ -79,9 +79,9 @@ void playVideo()
 	vid.onShow();
 	vid.topWindow(true);
 
-	int firstTime = SDL_GetTicks();
-	int totalTime = 0;
-	int deltaTime = 1000;
+	unsigned int firstTime = SDL_GetTicks();
+	unsigned int totalTime = 0;
+	unsigned int deltaTime = 1000;
 
 	while (!exitLoop)
 	{
@@ -101,8 +101,7 @@ void playVideo()
 
 		if (vid.isPlaying())
 		{
-			int curTime = SDL_GetTicks();
-			int totalTime = curTime - firstTime;
+			unsigned int totalTime = SDL_GetTicks() - firstTime;
 
 			if (gPlayVideoDuration > 0 && totalTime > gPlayVideoDuration )
 			{
@@ -396,15 +395,16 @@ int main(int argc, char* argv[])
 	if (!gPlayVideo.empty())
 	{
 		playVideo();
+		Log::flush();
 		return 0;
 	}
 
 	//if ~/.emulationstation doesn't exist and cannot be created, bail
 	if(!verifyHomeFolderExists())
 	{
-Log::flush();
+		Log::flush();
 		return 1;
-}
+	}
 
 	//always close the log on exit
 	atexit(&onExit);
@@ -428,6 +428,7 @@ Log::flush();
 		if(!window.init(true, Settings::getInstance()->getBool("FullScreenMode")))
 		{
 			LOG(LogError) << WINDOW_FAILED_INITIALIZE;
+			Log::flush();
 			return 1;
 		}
 
@@ -446,6 +447,7 @@ Log::flush();
 			if (!scrape_cmdline)
 				Renderer::deinit();
 
+			Log::flush();
 			return 1;
 		}
 
@@ -455,6 +457,7 @@ Log::flush();
 			_("QUIT"), [] {
 				SDL_Event* quit = new SDL_Event();
 				quit->type = SDL_QUIT;
+				Log::flush();
 				SDL_PushEvent(quit);
 			}));
 	}
@@ -490,15 +493,14 @@ Log::flush();
 	if (Settings::getInstance()->getBool("audio.bgmusic"))
 		AudioManager::getInstance()->playRandomMusic();
 
-	int lastTime = SDL_GetTicks();
-	int ps_time = SDL_GetTicks();
+	unsigned int lastTime = SDL_GetTicks(),
+							 ps_time = lastTime;
 	int exitMode = 0;
 
 	bool running = true;
 
 	while(running)
 	{
-		int processStart = SDL_GetTicks();
 
 		SDL_Event event;
 		bool ps_standby = PowerSaver::getState() && (int) SDL_GetTicks() - ps_time > PowerSaver::getMode();
@@ -526,7 +528,7 @@ Log::flush();
 		{
 			// If exitting SDL_WaitEventTimeout due to timeout. Trail considering
 			// timeout as an event
-			ps_time = SDL_GetTicks();			
+			ps_time = SDL_GetTicks();
 		}
 
 		if (window.isSleeping())
@@ -536,7 +538,7 @@ Log::flush();
 			continue;
 		}
 
-		int curTime = SDL_GetTicks();
+		unsigned int curTime = SDL_GetTicks();
 		int deltaTime = curTime - lastTime;
 		lastTime = curTime;
 
@@ -548,11 +550,9 @@ Log::flush();
 
 		window.update(deltaTime);
 		window.render();
-		
+
 		Log::flush();
 
-		int processDuration = SDL_GetTicks() - processStart;
-		
 		Renderer::swapBuffers();
 	}
 
@@ -581,6 +581,7 @@ Log::flush();
 	processQuitMode();
 
 	LOG(LogInfo) << "MAIN::main() - EmulationStation cleanly shutting down.";
+	Log::flush();
 
 	return 0;
 }
