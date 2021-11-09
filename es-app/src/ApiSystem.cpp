@@ -655,6 +655,13 @@ float ApiSystem::getBatteryVoltage()
 	return queryBatteryVoltage();
 }
 
+std::string ApiSystem::getDeviceName()
+{
+	LOG(LogDebug) << "ApiSystem::getDeviceName()";
+
+	return queryDeviceName();
+}
+
 std::string ApiSystem::getTimezones()
 {
 	LOG(LogDebug) << "ApiSystem::getTimezones()";

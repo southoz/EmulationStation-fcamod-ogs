@@ -124,6 +124,7 @@ struct CpuAndSocketInformation
 {
 	CpuAndSocketInformation()
 	{
+		soc_name = "N/A";
 		vendor_id = "N/A";
 		model_name = "N/A";
 		ncpus = 0;
@@ -137,6 +138,7 @@ struct CpuAndSocketInformation
 		frequency_min = 0;
 	}
 
+	std::string soc_name;
 	std::string vendor_id;
 	std::string model_name;
 	int ncpus;
@@ -154,6 +156,7 @@ CpuAndSocketInformation queryCpuAndChipsetInformation(bool summary);
 float queryLoadCpu();
 float queryTemperatureCpu();
 int queryFrequencyCpu();
+std::string querySocName();
 
 struct RamMemoryInformation
 {
@@ -237,6 +240,7 @@ struct DeviceInformation
 {
 	DeviceInformation()
 	{
+		name = "N/A";
 		hardware = "N/A";
 		revision = "N/A";
 		serial = "N/A";
@@ -244,6 +248,7 @@ struct DeviceInformation
 		boot_id = "N/A";
 	}
 
+	std::string name;
 	std::string hardware;
 	std::string revision;
 	std::string serial;
@@ -251,6 +256,7 @@ struct DeviceInformation
 	std::string boot_id;
 };
 
+std::string queryDeviceName();
 DeviceInformation queryDeviceInformation(bool summary);
 
 bool isUsbDriveMounted(std::string device);

@@ -473,6 +473,10 @@ std::string queryDnsTwo()
 	return getShOutput("es-wifi get_dns2");
 }
 
+std::string querySocName() {
+	return getShOutput("es-system_inf get_soc_name");
+}
+
 CpuAndSocketInformation queryCpuAndChipsetInformation(bool summary)
 {
 	CpuAndSocketInformation chipset;
@@ -484,6 +488,10 @@ CpuAndSocketInformation queryCpuAndChipsetInformation(bool summary)
 
 		if (!summary)
 		{
+			if (Utils::FileSystem::exists("/usr/local/bin/es-system_inf"))
+			{
+				chipset.soc_name = querySocName();
+			}
 			if (Utils::FileSystem::exists("/usr/bin/lscpu"))
 			{
 				chipset.vendor_id = getShOutput(R"(lscpu | egrep 'Vendor ID' | awk '{print $3}')");
@@ -804,11 +812,16 @@ SoftwareInformation querySoftwareInformation(bool summary)
 	return si;
 }
 
+std::string queryDeviceName() {
+	return getShOutput("es-system_inf get_device_name");
+}
+
 DeviceInformation queryDeviceInformation(bool summary)
 {
 	DeviceInformation di;
 	try
 	{
+		di.name = queryDeviceName();
 		if ( Utils::FileSystem::exists("/proc/cpuinfo") )
 		{
 			di.hardware = getShOutput(R"(cat /proc/cpuinfo | grep -iw hardware | awk '{print $3 " " $4}')");

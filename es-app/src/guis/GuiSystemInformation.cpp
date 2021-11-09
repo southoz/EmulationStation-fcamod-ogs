@@ -46,6 +46,10 @@ void GuiSystemInformation::showSummarySystemInfo()
 	RamMemoryInformation memory = ApiSystem::getInstance()->getRamMemoryInformation();
 	NetworkInformation ni = ApiSystem::getInstance()->getNetworkInformation();
 
+	// device name
+	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::SYSTEM_INFORMATION))
+		addWithLabel(_("DEVICE"), std::make_shared<TextComponent>(mWindow, ApiSystem::getInstance()->getDeviceName(), font, color));
+
 	addGroup(_("CPU"));
 	// CPU load
 	bool warning = ApiSystem::getInstance()->isLoadCpuLimit( csi.cpu_load );
@@ -225,6 +229,10 @@ void GuiSystemInformation::openCpuAndSocket()
 	auto s = new UpdatableGuiSettings(window, _("CPU AND SOCKET"));
 
 	CpuAndSocketInformation csi = ApiSystem::getInstance()->getCpuAndChipsetInformation(false);
+
+	// SOC name
+	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::SYSTEM_INFORMATION))
+		s->addWithLabel(_("SOC"), std::make_shared<TextComponent>(window, csi.soc_name,font, color));
 
 	// vendor ID
 	s->addWithLabel(_("VENDOR ID"), std::make_shared<TextComponent>(window, csi.vendor_id,font, color));
@@ -641,7 +649,11 @@ void GuiSystemInformation::openDevice()
 
 	DeviceInformation di = ApiSystem::getInstance()->getDeviceInformation(false);
 
-	// device info
+	// device name
+	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::SYSTEM_INFORMATION))
+		s->addWithLabel(_("NAME"), std::make_shared<TextComponent>(window, di.name, font, color));
+
+	// device hardware
 	s->addWithLabel(_("HARDWARE"), std::make_shared<TextComponent>(window, di.hardware, font, color));
 
 	// revision

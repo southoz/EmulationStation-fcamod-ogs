@@ -114,6 +114,7 @@ public:
 	int getBatteryLevel();
 	bool isBatteryCharging();
 	float getBatteryVoltage();
+	std::string getDeviceName();
 
 	NetworkInformation getNetworkInformation(bool summary = true);
 	BatteryInformation getBatteryInformation(bool summary = true);
