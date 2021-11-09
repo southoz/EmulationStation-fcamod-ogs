@@ -51,7 +51,8 @@ public:
 		RETROACHIVEMENTS = 5,
 		LANGUAGE = 6,
 		SYSTEM_INFORMATION = 7,
-		AUTO_SUSPEND = 8
+		AUTO_SUSPEND = 8,
+		OPTMIZE_SYSTEM = 9
 /*
 		RETROACHIVEMENTS = 1,
 		BLUETOOTH = 2,
@@ -193,6 +194,9 @@ public:
 	bool setRetroachievementsUsername(std::string username);
 	std::string getRetroachievementsPassword();
 	bool setRetroachievementsPassword(std::string password);
+	bool setOptimizeSystem(bool state);
+
+
 
 	static UpdateState::State state;
 

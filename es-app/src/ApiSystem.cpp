@@ -175,6 +175,9 @@ bool ApiSystem::isScriptingSupported(ScriptId script)
 	case ApiSystem::AUTO_SUSPEND:
 				executables.push_back("es-auto_suspend");
 				break;
+	case ApiSystem::OPTMIZE_SYSTEM:
+				executables.push_back("es-optimize_system");
+				break;
 /*
 	case ApiSystem::RETROACHIVEMENTS:
 #ifdef CHEEVOS_DEV_LOGIN
@@ -1109,3 +1112,9 @@ std::string ApiSystem::getRetroachievementsPassword()
 	return getShOutput(R"(es-cheevos get cheevos_password)");
 }
 
+bool ApiSystem::setOptimizeSystem(bool state)
+{
+	LOG(LogInfo) << "ApiSystem::setOptimizeSystem()";
+
+	return executeScript("es-optimize_system " + Utils::String::boolToString(state));
+}

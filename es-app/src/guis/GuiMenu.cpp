@@ -1854,7 +1854,7 @@ void GuiMenu::openAdvancedSettings()
 	s->addWithLabel(_("PRELOAD UI"), preloadUI);
 	s->addSaveFunc([preloadUI] { Settings::getInstance()->setBool("PreloadUI", preloadUI->getState()); });
 	
-	// optimizeVram
+	// optimize VRAM
 	auto optimizeVram = std::make_shared<SwitchComponent>(mWindow);
 	optimizeVram->setState(Settings::getInstance()->getBool("OptimizeVRAM"));
 	s->addWithLabel(_("OPTIMIZE IMAGES VRAM USE"), optimizeVram);
@@ -1875,6 +1875,34 @@ void GuiMenu::openAdvancedSettings()
 	threadedLoading->setState(Settings::getInstance()->getBool("ThreadedLoading"));
 	s->addWithLabel(_("THREADED LOADING"), threadedLoading);
 	s->addSaveFunc([threadedLoading] { Settings::getInstance()->setBool("ThreadedLoading", threadedLoading->getState()); });
+
+	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::OPTMIZE_SYSTEM))
+	{
+		// optimize system
+		auto optimize_system = std::make_shared<SwitchComponent>(mWindow);
+		bool optimize_system_old_value = Settings::getInstance()->getBool("OptimizeSystem");
+		optimize_system->setState(optimize_system_old_value);
+		s->addWithLabel(_("OPTIMIZE SYSTEM"), optimize_system);
+		s->addSaveFunc([window, optimize_system, optimize_system_old_value]
+			{
+				if (optimize_system_old_value != optimize_system->getState())
+				{
+					window->pushGui(new GuiMsgBox(window, _("IT IS NOT RECOMMENDED TO ENABLE THIS OPTION IF YOU ARE DEVELOPING OR TESTING.") + " " + ("THE PROCESS MAY DURE SOME SECONDS.\nPLEASE WAIT.") + "\n" + _("THE SYSTEM WILL NOW REBOOT"),
+					_("OK"),
+						[optimize_system] {
+						LOG(LogInfo) << "GuiMenu::openAdvancedSettings() - optimize system: " << Utils::String::boolToString( optimize_system->getState() );
+						Settings::getInstance()->setBool("OptimizeSystem", optimize_system->getState());
+						Settings::getInstance()->saveFile();
+						ApiSystem::getInstance()->setOptimizeSystem( optimize_system->getState() );
+
+						Scripting::fireEvent("quit", "reboot");
+						Scripting::fireEvent("reboot");
+						if (quitES(QuitMode::REBOOT) != 0)
+							LOG(LogWarning) << "GuiMenu::openQuitMenu() - Restart terminated with non-zero result!";
+					}));
+				}
+			});
+	}
 
 	// show detailed system information
 	auto detailedSystemInfo = std::make_shared<SwitchComponent>(mWindow);
