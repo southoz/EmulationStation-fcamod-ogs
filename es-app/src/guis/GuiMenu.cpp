@@ -1887,18 +1887,22 @@ void GuiMenu::openAdvancedSettings()
 			{
 				if (optimize_system_old_value != optimize_system->getState())
 				{
-					window->pushGui(new GuiMsgBox(window, _("IT IS NOT RECOMMENDED TO ENABLE THIS OPTION IF YOU ARE DEVELOPING OR TESTING.") + " " + ("THE PROCESS MAY DURE SOME SECONDS.\nPLEASE WAIT.") + "\n" + _("THE SYSTEM WILL NOW REBOOT"),
-					_("OK"),
-						[optimize_system] {
-						LOG(LogInfo) << "GuiMenu::openAdvancedSettings() - optimize system: " << Utils::String::boolToString( optimize_system->getState() );
-						Settings::getInstance()->setBool("OptimizeSystem", optimize_system->getState());
-						Settings::getInstance()->saveFile();
-						ApiSystem::getInstance()->setOptimizeSystem( optimize_system->getState() );
+					window->pushGui(new GuiMsgBox(window, _("IT IS NOT RECOMMENDED TO ENABLE THIS OPTION IF YOU ARE DEVELOPING OR TESTING.") + " " + _("THE PROCESS MAY DURE SOME SECONDS.\nPLEASE WAIT."),
+						_("OK"),
+							[window, optimize_system] {
+							LOG(LogInfo) << "GuiMenu::openAdvancedSettings() - optimize system: " << Utils::String::boolToString( optimize_system->getState() );
+							Settings::getInstance()->setBool("OptimizeSystem", optimize_system->getState());
+							Settings::getInstance()->saveFile();
+							ApiSystem::getInstance()->setOptimizeSystem( optimize_system->getState() );
 
-						Scripting::fireEvent("quit", "reboot");
-						Scripting::fireEvent("reboot");
-						if (quitES(QuitMode::REBOOT) != 0)
-							LOG(LogWarning) << "GuiMenu::openQuitMenu() - Restart terminated with non-zero result!";
+							window->pushGui(new GuiMsgBox(window, _("THE SYSTEM WILL NOW REBOOT"),
+										_("OK"),
+											[] {
+											Scripting::fireEvent("quit", "reboot");
+											Scripting::fireEvent("reboot");
+											if (quitES(QuitMode::REBOOT) != 0)
+												LOG(LogWarning) << "GuiMenu::openQuitMenu() - Restart terminated with non-zero result!";
+										}));
 					}));
 				}
 			});
