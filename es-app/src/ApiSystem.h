@@ -191,6 +191,8 @@ public:
 	bool getRetroachievementsAutomaticScreenshotEnabled();
 	bool setRetroachievementsUnlockSoundEnabled(bool state);
 	bool getRetroachievementsUnlockSoundEnabled();
+	virtual std::vector<std::string> getRetroachievementsSoundsList();
+	bool setRetroachievementsUnlockSound(std::string sound);
 	std::string getRetroachievementsUsername();
 	bool setRetroachievementsUsername(std::string username);
 	std::string getRetroachievementsPassword();
