@@ -1112,6 +1112,76 @@ bool ApiSystem::setRetroachievementsPassword(std::string password)
 	return executeScript("es-cheevos set cheevos_password \"" + password + '"');
 }
 
+bool ApiSystem::getRetroachievementsChallengeIndicators()
+{
+	LOG(LogInfo) << "ApiSystem::getRetroachievementsChallengeIndicators()";
+
+	return Utils::String::toBool( getShOutput(R"(es-cheevos get cheevos_challenge_indicators)") );
+}
+
+bool ApiSystem::setRetroachievementsChallengeIndicators(bool state)
+{
+	LOG(LogInfo) << "ApiSystem::setRetroachievementsChallengeIndicators()";
+
+	return executeScript("es-cheevos set cheevos_challenge_indicators " + Utils::String::boolToString(state));
+}
+
+bool ApiSystem::getRetroachievementsRichpresenceEnable()
+{
+	LOG(LogInfo) << "ApiSystem::getRetroachievementsRichpresenceEnable()";
+
+	return Utils::String::toBool( getShOutput(R"(es-cheevos get cheevos_richpresence_enable)") );
+}
+
+bool ApiSystem::setRetroachievementsRichpresenceEnable(bool state)
+{
+	LOG(LogInfo) << "ApiSystem::setRetroachievementsRichpresenceEnable()";
+
+	return executeScript("es-cheevos set cheevos_richpresence_enable " + Utils::String::boolToString(state));
+}
+
+bool ApiSystem::getRetroachievementsBadgesEnable()
+{
+	LOG(LogInfo) << "ApiSystem::getRetroachievementsBadgesEnable()";
+
+	return Utils::String::toBool( getShOutput(R"(es-cheevos get cheevos_badges_enable)") );
+}
+
+bool ApiSystem::setRetroachievementsBadgesEnable(bool state)
+{
+	LOG(LogInfo) << "ApiSystem::setRetroachievementsBadgesEnable()";
+
+	return executeScript("es-cheevos set cheevos_badges_enable " + Utils::String::boolToString(state));
+}
+
+bool ApiSystem::getRetroachievementsTestUnofficial()
+{
+	LOG(LogInfo) << "ApiSystem::getRetroachievementsTestUnofficial()";
+
+	return Utils::String::toBool( getShOutput(R"(es-cheevos get cheevos_test_unofficial)") );
+}
+
+bool ApiSystem::setRetroachievementsTestUnofficial(bool state)
+{
+	LOG(LogInfo) << "ApiSystem::setRetroachievementsTestUnofficial()";
+
+	return executeScript("es-cheevos set cheevos_test_unofficial " + Utils::String::boolToString(state));
+}
+
+bool ApiSystem::getRetroachievementsStartActive()
+{
+	LOG(LogInfo) << "ApiSystem::getRetroachievementsStartActive()";
+
+	return Utils::String::toBool( getShOutput(R"(es-cheevos get cheevos_start_active)") );
+}
+
+bool ApiSystem::setRetroachievementsStartActive(bool state)
+{
+	LOG(LogInfo) << "ApiSystem::setRetroachievementsStartActive()";
+
+	return executeScript("es-cheevos set cheevos_start_active " + Utils::String::boolToString(state));
+}
+
 std::string ApiSystem::getRetroachievementsPassword()
 {
 	LOG(LogInfo) << "ApiSystem::getRetroachievementsPassword()";

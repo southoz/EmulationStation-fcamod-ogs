@@ -195,6 +195,17 @@ public:
 	bool setRetroachievementsUsername(std::string username);
 	std::string getRetroachievementsPassword();
 	bool setRetroachievementsPassword(std::string password);
+	bool getRetroachievementsChallengeIndicators();
+	bool setRetroachievementsChallengeIndicators(bool state);
+	bool getRetroachievementsRichpresenceEnable();
+	bool setRetroachievementsRichpresenceEnable(bool state);
+	bool getRetroachievementsBadgesEnable();
+	bool setRetroachievementsBadgesEnable(bool state);
+	bool getRetroachievementsTestUnofficial();
+	bool setRetroachievementsTestUnofficial(bool state);
+	bool getRetroachievementsStartActive();
+	bool setRetroachievementsStartActive(bool state);
+
 	bool setOptimizeSystem(bool state);
 
 

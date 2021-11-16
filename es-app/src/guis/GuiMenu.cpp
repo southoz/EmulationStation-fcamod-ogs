@@ -2105,6 +2105,50 @@ void GuiMenu::openRetroAchievementsSettings()
 				ApiSystem::getInstance()->setRetroachievementsLeaderboardsEnabled(retroachievements_leaderboards_enabled->getState());
 		});
 
+	// retroachievements_challenge_indicators
+	auto retroachievements_challenge_indicators = std::make_shared<SwitchComponent>(mWindow);
+	bool old_ci_value = ApiSystem::getInstance()->getRetroachievementsChallengeIndicators();
+	retroachievements_challenge_indicators->setState(old_ci_value);
+	retroachievements->addWithLabel(_("CHALLENGE INDICATORS"), retroachievements_challenge_indicators);
+	retroachievements->addSaveFunc([retroachievements_challenge_indicators, old_ci_value]
+		{
+			if (old_ci_value != retroachievements_challenge_indicators->getState())
+				ApiSystem::getInstance()->setRetroachievementsChallengeIndicators(retroachievements_challenge_indicators->getState());
+		});
+
+	// retroachievements_richpresence_enable
+	auto retroachievements_richpresence_enable = std::make_shared<SwitchComponent>(mWindow);
+	bool old_re_value = ApiSystem::getInstance()->getRetroachievementsRichpresenceEnable();
+	retroachievements_richpresence_enable->setState(old_re_value);
+	retroachievements->addWithLabel(_("RICH PRESENCE"), retroachievements_richpresence_enable);
+	retroachievements->addSaveFunc([retroachievements_richpresence_enable, old_re_value]
+		{
+			if (old_re_value != retroachievements_richpresence_enable->getState())
+				ApiSystem::getInstance()->setRetroachievementsRichpresenceEnable(retroachievements_richpresence_enable->getState());
+		});
+
+	// retroachievements_badges_enable
+	auto retroachievements_badges_enable = std::make_shared<SwitchComponent>(mWindow);
+	bool old_be_value = ApiSystem::getInstance()->getRetroachievementsBadgesEnable();
+	retroachievements_badges_enable->setState(old_be_value);
+	retroachievements->addWithLabel(_("BADGES"), retroachievements_badges_enable);
+	retroachievements->addSaveFunc([retroachievements_badges_enable, old_be_value]
+		{
+			if (old_be_value != retroachievements_badges_enable->getState())
+				ApiSystem::getInstance()->setRetroachievementsBadgesEnable(retroachievements_badges_enable->getState());
+		});
+
+	// retroachievements_test_unofficial
+	auto retroachievements_test_unofficial = std::make_shared<SwitchComponent>(mWindow);
+	bool old_tu_value = ApiSystem::getInstance()->getRetroachievementsTestUnofficial();
+	retroachievements_test_unofficial->setState(old_tu_value);
+	retroachievements->addWithLabel(_("TEST UNOFFICIAL ACHIEVEMENTS"), retroachievements_test_unofficial);
+	retroachievements->addSaveFunc([retroachievements_test_unofficial, old_tu_value]
+		{
+			if (old_tu_value != retroachievements_test_unofficial->getState())
+				ApiSystem::getInstance()->setRetroachievementsTestUnofficial(retroachievements_test_unofficial->getState());
+		});
+
 	// retroachievements_verbose_mode
 	auto retroachievements_verbose_enabled = std::make_shared<SwitchComponent>(mWindow);
 	bool old_vb_value = ApiSystem::getInstance()->getRetroachievementsVerboseEnabled();
@@ -2136,6 +2180,17 @@ void GuiMenu::openRetroAchievementsSettings()
 		{
 			if (old_us_value != retroachievements_unlock_sound_enabled->getState())
 				ApiSystem::getInstance()->setRetroachievementsUnlockSoundEnabled(retroachievements_unlock_sound_enabled->getState());
+		});
+
+	// retroachievements_start_active
+	auto retroachievements_start_active = std::make_shared<SwitchComponent>(mWindow);
+	bool old_sa_value = ApiSystem::getInstance()->getRetroachievementsStartActive();
+	retroachievements_start_active->setState(old_sa_value);
+	retroachievements->addWithLabel(_("ENCORE MODE (LOCAL RESET OF ACHIEVEMENTS)"), retroachievements_start_active);
+	retroachievements->addSaveFunc([retroachievements_start_active, old_sa_value]
+		{
+			if (old_sa_value != retroachievements_start_active->getState())
+				ApiSystem::getInstance()->setRetroachievementsStartActive(retroachievements_start_active->getState());
 		});
 
 	// retroachievements, username, password
