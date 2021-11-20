@@ -733,7 +733,7 @@ void saveBrightnessLevel(int brightness_level)
 {
 	bool setted = false;
 	if (Utils::FileSystem::exists("/usr/bin/brightnessctl"))
-		setted = executeSystemScript("/usr/bin/brightnessctl s " + std::to_string(brightness_level) + '%');
+		setted = executeSystemScript("/usr/bin/brightnessctl s " + std::to_string(brightness_level) + "% &");
 
 	if (!setted)
 	{
@@ -793,7 +793,7 @@ std::string queryHostname()
 
 bool setCurrentHostname(std::string hostname)
 {
-	return executeSystemScript("sudo hostnamectl set-hostname \"" + hostname + '"');
+	return executeSystemScript("sudo hostnamectl set-hostname \"" + hostname + "\" &");
 }
 
 SoftwareInformation querySoftwareInformation(bool summary)
@@ -915,9 +915,9 @@ bool setCurrentTimezone(std::string timezone)
 		return false;
 
 	if (Utils::FileSystem::exists("/usr/local/bin/timezones"))
-		return executeSystemScript("/usr/local/bin/timezones set \"" + timezone + '"');
+		return executeSystemScript("/usr/local/bin/timezones set \"" + timezone + "\" &");
 	else if (Utils::FileSystem::exists("/usr/bin/timedatectl"))
-		return executeSystemScript("/usr/bin/sudo timedatectl set-timezone \"" + timezone + '"');
+		return executeSystemScript("/usr/bin/sudo timedatectl set-timezone \"" + timezone + "\" &");
 
-	return executeSystemScript("sudo ln -sf \"/usr/share/zoneinfo/" + timezone +"\" /etc/localtime");
+	return executeSystemScript("sudo ln -sf \"/usr/share/zoneinfo/" + timezone +"\" /etc/localtime &");
 }

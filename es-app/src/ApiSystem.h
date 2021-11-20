@@ -141,7 +141,10 @@ public:
 	int getPowerkeyTimeInterval();
 	bool setPowerkeyAction(const std::string action);
 	std::string getPowerkeyAction();
+	bool setPowerkeyValues(bool state, const std::string action, int time_interval);
+
 	bool setDisplayBlinkLowBattery(bool state);
+
 	bool setSystemHotkeyBrightnessEvent( bool state );
 	bool isSystemHotkeyBrightnessEvent();
 	bool setSystemHotkeyVolumeEvent( bool state );
@@ -152,6 +155,8 @@ public:
 	bool isSystemHotkeyPerformanceEvent();
 	bool setSystemHotkeySuspendEvent( bool state );
 	bool isSystemHotkeySuspendEvent();
+	bool setSystemHotkeysValues(bool brightness_state, bool volume_state, bool wifi_state, bool performance_state, bool suspend_state);
+
 	bool setDeviceAutoSuspendByTime( bool state );
 	bool isDeviceAutoSuspend();
 	bool isDeviceAutoSuspendByTime();
@@ -161,6 +166,7 @@ public:
 	bool isDeviceAutoSuspendByBatteryLevel();
 	bool setAutoSuspendBatteryLevel( int battery_level );
 	int getAutoSuspendBatteryLevel();
+	bool setDeviceAutoSuspendValues(bool time_state, int timeout, bool battery_state, int battery_level);
 
 	virtual bool ping();
 	bool getInternetStatus();

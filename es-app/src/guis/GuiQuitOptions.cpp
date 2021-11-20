@@ -3,20 +3,18 @@
 #include "components/SliderComponent.h"
 #include "components/SwitchComponent.h"
 #include "components/OptionListComponent.h"
-#include "guis/GuiMsgBox.h"
 #include "Window.h"
 #include "ApiSystem.h"
 #include "PowerSaver.h"
 
 
-GuiQuitOptions::GuiQuitOptions(Window* window) : GuiSettings(window, _("\"QUIT\" SETTINGS").c_str()), mPopupDisplayed(false)
+GuiQuitOptions::GuiQuitOptions(Window* window) : GuiSettings(window, _("\"QUIT\" SETTINGS").c_str())
 {
 	initializeMenu();
 }
 
 GuiQuitOptions::~GuiQuitOptions()
 {
-	mPopupDisplayed = false;
 }
 
 void GuiQuitOptions::initializeMenu()
@@ -99,26 +97,6 @@ void GuiQuitOptions::initializeMenu()
 		bool powerkey_value = ApiSystem::getInstance()->isPowerkeyState();
 		powerkey->setState( powerkey_value );
 		addWithLabel(_("PUSH TWO TIMES TO EXECUTE ACTION"), powerkey);
-		addSaveFunc([this, powerkey, powerkey_value]
-			{
-				bool new_powerkey_value = powerkey->getState();
-				if (powerkey_value != new_powerkey_value)
-				{
-					if (!mPopupDisplayed)
-					{
-						mPopupDisplayed = true;
-						mWindow->pushGui(new GuiMsgBox(mWindow,
-							_("THE PROCESS MAY DURE SOME SECONDS.\nPLEASE WAIT."),
-							_("OK"), [new_powerkey_value] { ApiSystem::getInstance()->setPowerkeyState( new_powerkey_value ); }));
-					}
-					else
-					{
-						mPopupDisplayed = false;
-						ApiSystem::getInstance()->setPowerkeyState( new_powerkey_value );
-					}
-				}
-
-			});
 
 		// powerkey action
 		std::string powerkey_action = ApiSystem::getInstance()->getPowerkeyAction();
@@ -128,25 +106,6 @@ void GuiQuitOptions::initializeMenu()
 		powerkey_list->add(_("SUSPEND"), "suspend", powerkey_action == "suspend");
 
 		addWithLabel(_("ACTION TO EXECUTE"), powerkey_list);
-		addSaveFunc([this, powerkey_list, powerkey_action]
-			{
-				std::string new_powerkey_action = powerkey_list->getSelected();
-				if (powerkey_action != new_powerkey_action)
-				{
-					if (!mPopupDisplayed)
-					{
-						mPopupDisplayed = true;
-						mWindow->pushGui(new GuiMsgBox(mWindow,
-							_("THE PROCESS MAY DURE SOME SECONDS.\nPLEASE WAIT."),
-							_("OK"), [new_powerkey_action] { ApiSystem::getInstance()->setPowerkeyAction( new_powerkey_action ); }));
-					}
-					else
-					{
-						mPopupDisplayed = false;
-						ApiSystem::getInstance()->setPowerkeyAction( new_powerkey_action );
-					}
-				}
-			});
 
 		if (!powerkey_list->hasSelection())
 		{
@@ -159,24 +118,10 @@ void GuiQuitOptions::initializeMenu()
 		float time_interval_value = (float) ApiSystem::getInstance()->getPowerkeyTimeInterval();
 		time_interval->setValue( time_interval_value );
 		addWithLabel(_("TIME INTERVAL"), time_interval);
-		addSaveFunc([this, time_interval, time_interval_value]
+
+		addSaveFunc([powerkey, powerkey_list, time_interval]
 			{
-				float new_time_interval_value = Math::round( time_interval->getValue() );
-				if (time_interval_value != new_time_interval_value)
-				{
-					if (!mPopupDisplayed)
-					{
-						mPopupDisplayed = true;
-						mWindow->pushGui(new GuiMsgBox(mWindow,
-							_("THE PROCESS MAY DURE SOME SECONDS.\nPLEASE WAIT."),
-							_("OK"), [new_time_interval_value] { ApiSystem::getInstance()->setPowerkeyTimeInterval( (int) new_time_interval_value ); }));
-					}
-					else
-					{
-						mPopupDisplayed = false;
-						ApiSystem::getInstance()->setPowerkeyTimeInterval( (int) new_time_interval_value );
-					}
-				}
+				ApiSystem::getInstance()->setPowerkeyValues( powerkey->getState(), powerkey_list->getSelected(), (int) Math::round( time_interval->getValue() ) );
 			});
 	}
 }
