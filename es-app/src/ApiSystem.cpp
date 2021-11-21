@@ -683,30 +683,11 @@ bool ApiSystem::setTimezone(std::string timezone)
 	return setCurrentTimezone(timezone);
 }
 
-bool ApiSystem::setPowerkeyState(bool state)
-{
-	LOG(LogInfo) << "ApiSystem::setPowerkeyState()";
-
-	return executeScript("es-powerkey set two_push_shutdown " + stateToString(state) + " &");
-}
-
 bool ApiSystem::isPowerkeyState()
 {
 	LOG(LogInfo) << "ApiSystem::isPowerkeyState()";
 
 	return stringToState(getShOutput(R"(es-powerkey get two_push_shutdown)"));
-}
-
-bool ApiSystem::setPowerkeyTimeInterval(int time_interval)
-{
-	LOG(LogInfo) << "ApiSystem::setPowerkeyTimeInterval()";
-
-	if (time_interval < 1)
-		time_interval = 1;
-	else if (time_interval > 10)
-		time_interval = 10;
-
-	return executeScript("es-powerkey set max_interval_time " + std::to_string(time_interval) + " &");
 }
 
 int ApiSystem::getPowerkeyTimeInterval()
@@ -724,13 +705,6 @@ int ApiSystem::getPowerkeyTimeInterval()
 		time = 10;
 
 	return time;
-}
-
-bool ApiSystem::setPowerkeyAction(const std::string action)
-{
-	LOG(LogInfo) << "ApiSystem::setPowerkeyAction()";
-
-	return executeScript("es-powerkey set action " + action + " &");
 }
 
 std::string ApiSystem::getPowerkeyAction()
@@ -763,25 +737,11 @@ bool ApiSystem::setDisplayBlinkLowBattery(bool state)
 	return executeScript("es-display blink_low_battery " + stateToString(state) + " &");
 }
 
-bool ApiSystem::setSystemHotkeyBrightnessEvent( bool state )
-{
-	LOG(LogInfo) << "ApiSystem::setSystemHotkeyBrightnessEvent()";
-
-	return executeScript("es-system_hotkey set brightness " + stateToString(state) + " &");
-}
-
 bool ApiSystem::isSystemHotkeyBrightnessEvent()
 {
 	LOG(LogInfo) << "ApiSystem::isSystemHotkeyBrightnessEvent()";
 
 	return stringToState(getShOutput(R"(es-system_hotkey get brightness)"));
-}
-
-bool ApiSystem::setSystemHotkeyVolumeEvent( bool state )
-{
-	LOG(LogInfo) << "ApiSystem::setSystemHotkeyVolumeEvent()";
-
-	return executeScript("es-system_hotkey set volume " + stateToString(state) + " &");
 }
 
 bool ApiSystem::isSystemHotkeyVolumeEvent()
@@ -791,13 +751,6 @@ bool ApiSystem::isSystemHotkeyVolumeEvent()
 	return stringToState(getShOutput(R"(es-system_hotkey get volume)"));
 }
 
-bool ApiSystem::setSystemHotkeyWifiEvent( bool state )
-{
-	LOG(LogInfo) << "ApiSystem::setSystemHotkeyWifiEvent()";
-
-	return executeScript("es-system_hotkey set wifi " + stateToString(state) + " &");
-}
-
 bool ApiSystem::isSystemHotkeyWifiEvent()
 {
 	LOG(LogInfo) << "ApiSystem::isSystemHotkeyWifiEvent()";
@@ -805,25 +758,11 @@ bool ApiSystem::isSystemHotkeyWifiEvent()
 	return stringToState(getShOutput(R"(es-system_hotkey get wifi)"));
 }
 
-bool ApiSystem::setSystemHotkeyPerformanceEvent( bool state )
-{
-	LOG(LogInfo) << "ApiSystem::setSystemHotkeyPerformanceEvent()";
-
-	return executeScript("es-system_hotkey set performance " + stateToString(state) + " &");
-}
-
 bool ApiSystem::isSystemHotkeyPerformanceEvent()
 {
 	LOG(LogInfo) << "ApiSystem::isSystemHotkeyPerformanceEvent()";
 
 	return stringToState(getShOutput(R"(es-system_hotkey get performance)"));
-}
-
-bool ApiSystem::setSystemHotkeySuspendEvent( bool state )
-{
-	LOG(LogInfo) << "ApiSystem::setSystemHotkeySuspendEvent()";
-
-	return executeScript("es-system_hotkey set suspend " + stateToString(state) + " &");
 }
 
 bool ApiSystem::isSystemHotkeySuspendEvent()
@@ -840,30 +779,11 @@ bool ApiSystem::setSystemHotkeysValues(bool brightness_state, bool volume_state,
 	return executeScript("es-system_hotkey set_all_values " + stateToString(brightness_state) + " " + stateToString(volume_state) + " " + stateToString(wifi_state) + " " + stateToString(performance_state) + " " + stateToString(suspend_state) + " &");
 }
 
-bool ApiSystem::setDeviceAutoSuspendByTime( bool state )
-{
-	LOG(LogInfo) << "ApiSystem::setDeviceAutoSuspendByTime()";
-
-	return executeScript("es-auto_suspend set auto_suspend_time " + stateToString(state) + " &");
-}
-
 bool ApiSystem::isDeviceAutoSuspendByTime()
 {
 	LOG(LogInfo) << "ApiSystem::isDeviceAutoSuspendByTime()";
 
 	return stringToState(getShOutput(R"(es-auto_suspend get auto_suspend_time)"));
-}
-
-bool ApiSystem::setAutoSuspendTimeout( int timeout )
-{
-	LOG(LogInfo) << "ApiSystem::setAutoSuspendTimeout()";
-
-	if (timeout <= 0)
-		timeout = 5;
-	else if (timeout > 120)
-		timeout = 120;
-
-	return executeScript("es-auto_suspend set auto_suspend_timeout " + std::to_string(timeout) + " &");
 }
 
 int ApiSystem::getAutoSuspendTimeout()
@@ -879,30 +799,11 @@ int ApiSystem::getAutoSuspendTimeout()
 	return timeout;
 }
 
-bool ApiSystem::setDeviceAutoSuspendByBatteryLevel( bool state )
-{
-	LOG(LogInfo) << "ApiSystem::setDeviceAutoSuspendByBatteryLevel()";
-
-	return executeScript("es-auto_suspend set auto_suspend_battery " + stateToString(state) + " &");
-}
-
 bool ApiSystem::isDeviceAutoSuspendByBatteryLevel()
 {
 	LOG(LogInfo) << "ApiSystem::isDeviceAutoSuspendByBatteryLevel()";
 
 	return stringToState(getShOutput(R"(es-auto_suspend get auto_suspend_battery)"));
-}
-
-bool ApiSystem::setAutoSuspendBatteryLevel( int battery_level )
-{
-	LOG(LogInfo) << "ApiSystem::setAutoSuspendTimeoutBatteryLevel()";
-
-	if (battery_level <= 0)
-		battery_level = 10;
-	else if (battery_level > 100)
-		battery_level = 100;
-
-	return executeScript("es-auto_suspend set auto_suspend_battery_level " + std::to_string(battery_level) + " &");
 }
 
 int ApiSystem::getAutoSuspendBatteryLevel()
@@ -1054,25 +955,11 @@ bool ApiSystem::setLanguage(std::string language)
 	return executeScript("es-language set " + language + " &");
 }
 
-bool ApiSystem::setRetroachievementsEnabled(bool state)
-{
-	LOG(LogInfo) << "ApiSystem::setRetroachievementsEnabled()";
-
-	return executeScript("es-cheevos set cheevos_enable " + Utils::String::boolToString(state) + " &");
-}
-
 bool ApiSystem::getRetroachievementsEnabled()
 {
 	LOG(LogInfo) << "ApiSystem::getRetroachievementsEnabled()";
 
 	return Utils::String::toBool(getShOutput(R"(es-cheevos get cheevos_enable)"));
-}
-
-bool ApiSystem::setRetroachievementsHardcoreEnabled(bool state)
-{
-	LOG(LogInfo) << "ApiSystem::setRetroachievementsHardcoreEnabled()";
-
-	return executeScript("es-cheevos set cheevos_hardcore_mode_enable " + Utils::String::boolToString(state) + " &");
 }
 
 bool ApiSystem::getRetroachievementsHardcoreEnabled()
@@ -1082,25 +969,11 @@ bool ApiSystem::getRetroachievementsHardcoreEnabled()
 	return Utils::String::toBool(getShOutput(R"(es-cheevos get cheevos_hardcore_mode_enable)"));
 }
 
-bool ApiSystem::setRetroachievementsLeaderboardsEnabled(bool state)
-{
-	LOG(LogInfo) << "ApiSystem::setRetroachievementsLeaderboardsEnabled()";
-
-	return executeScript("es-cheevos set cheevos_leaderboards_enable " + Utils::String::boolToString(state) + " &");
-}
-
 bool ApiSystem::getRetroachievementsLeaderboardsEnabled()
 {
 	LOG(LogInfo) << "ApiSystem::getRetroachievementsLeaderboardsEnabled()";
 
 	return Utils::String::toBool(getShOutput(R"(es-cheevos get cheevos_leaderboards_enable)"));
-}
-
-bool ApiSystem::setRetroachievementsVerboseEnabled(bool state)
-{
-	LOG(LogInfo) << "ApiSystem::setRetroachievementsVerboseEnabled()";
-
-	return executeScript("es-cheevos set cheevos_verbose_enable " + Utils::String::boolToString(state) + " &");
 }
 
 bool ApiSystem::getRetroachievementsVerboseEnabled()
@@ -1110,25 +983,11 @@ bool ApiSystem::getRetroachievementsVerboseEnabled()
 	return Utils::String::toBool(getShOutput(R"(es-cheevos get cheevos_verbose_enable)"));
 }
 
-bool ApiSystem::setRetroachievementsAutomaticScreenshotEnabled(bool state)
-{
-	LOG(LogInfo) << "ApiSystem::setRetroachievementsAutomaticScreenshotEnabled()";
-
-	return executeScript("es-cheevos set cheevos_auto_screenshot " + Utils::String::boolToString(state) + " &");
-}
-
 bool ApiSystem::getRetroachievementsAutomaticScreenshotEnabled()
 {
 	LOG(LogInfo) << "ApiSystem::getRetroachievementsAutomaticScreenshotEnabled()";
 
 	return Utils::String::toBool(getShOutput(R"(es-cheevos get cheevos_auto_screenshot)"));
-}
-
-bool ApiSystem::setRetroachievementsUnlockSoundEnabled(bool state)
-{
-	LOG(LogInfo) << "ApiSystem::setRetroachievementsUnlockSoundEnabled()";
-
-	return executeScript("es-cheevos set cheevos_unlock_sound_enable " + Utils::String::boolToString(state) + " &");
 }
 
 bool ApiSystem::getRetroachievementsUnlockSoundEnabled()
@@ -1172,32 +1031,11 @@ std::vector<std::string> ApiSystem::getRetroachievementsSoundsList()
 	return ret;
 }
 
-bool ApiSystem::setRetroachievementsUnlockSound(std::string sound)
-{
-	LOG(LogInfo) << "ApiSystem::setRetroachievementsUnlockSound() - sound: " << sound;
-
-	return executeScript("es-cheevos set cheevos_unlock_sound \"" + sound + "\" &");
-}
-
-bool ApiSystem::setRetroachievementsUsername(std::string username)
-{
-	LOG(LogInfo) << "ApiSystem::setRetroachievementsUsername()";
-
-	return executeScript("es-cheevos set cheevos_username \"" + username + "\" &");
-}
-
 std::string ApiSystem::getRetroachievementsUsername()
 {
 	LOG(LogInfo) << "ApiSystem::getRetroachievementsUsername()";
 
 	return getShOutput(R"(es-cheevos get cheevos_username)");
-}
-
-bool ApiSystem::setRetroachievementsPassword(std::string password)
-{
-	LOG(LogInfo) << "ApiSystem::setRetroachievementsPassword()";
-
-	return executeScript("es-cheevos set cheevos_password \"" + password + "\" &");
 }
 
 bool ApiSystem::getRetroachievementsChallengeIndicators()
@@ -1207,25 +1045,11 @@ bool ApiSystem::getRetroachievementsChallengeIndicators()
 	return Utils::String::toBool( getShOutput(R"(es-cheevos get cheevos_challenge_indicators)") );
 }
 
-bool ApiSystem::setRetroachievementsChallengeIndicators(bool state)
-{
-	LOG(LogInfo) << "ApiSystem::setRetroachievementsChallengeIndicators()";
-
-	return executeScript("es-cheevos set cheevos_challenge_indicators " + Utils::String::boolToString(state) + " &");
-}
-
 bool ApiSystem::getRetroachievementsRichpresenceEnable()
 {
 	LOG(LogInfo) << "ApiSystem::getRetroachievementsRichpresenceEnable()";
 
 	return Utils::String::toBool( getShOutput(R"(es-cheevos get cheevos_richpresence_enable)") );
-}
-
-bool ApiSystem::setRetroachievementsRichpresenceEnable(bool state)
-{
-	LOG(LogInfo) << "ApiSystem::setRetroachievementsRichpresenceEnable()";
-
-	return executeScript("es-cheevos set cheevos_richpresence_enable " + Utils::String::boolToString(state) + " &");
 }
 
 bool ApiSystem::getRetroachievementsBadgesEnable()
@@ -1235,13 +1059,6 @@ bool ApiSystem::getRetroachievementsBadgesEnable()
 	return Utils::String::toBool( getShOutput(R"(es-cheevos get cheevos_badges_enable)") );
 }
 
-bool ApiSystem::setRetroachievementsBadgesEnable(bool state)
-{
-	LOG(LogInfo) << "ApiSystem::setRetroachievementsBadgesEnable()";
-
-	return executeScript("es-cheevos set cheevos_badges_enable " + Utils::String::boolToString(state) + " &");
-}
-
 bool ApiSystem::getRetroachievementsTestUnofficial()
 {
 	LOG(LogInfo) << "ApiSystem::getRetroachievementsTestUnofficial()";
@@ -1249,25 +1066,11 @@ bool ApiSystem::getRetroachievementsTestUnofficial()
 	return Utils::String::toBool( getShOutput(R"(es-cheevos get cheevos_test_unofficial)") );
 }
 
-bool ApiSystem::setRetroachievementsTestUnofficial(bool state)
-{
-	LOG(LogInfo) << "ApiSystem::setRetroachievementsTestUnofficial()";
-
-	return executeScript("es-cheevos set cheevos_test_unofficial " + Utils::String::boolToString(state) + " &");
-}
-
 bool ApiSystem::getRetroachievementsStartActive()
 {
 	LOG(LogInfo) << "ApiSystem::getRetroachievementsStartActive()";
 
 	return Utils::String::toBool( getShOutput(R"(es-cheevos get cheevos_start_active)") );
-}
-
-bool ApiSystem::setRetroachievementsStartActive(bool state)
-{
-	LOG(LogInfo) << "ApiSystem::setRetroachievementsStartActive()";
-
-	return executeScript("es-cheevos set cheevos_start_active " + Utils::String::boolToString(state) + " &");
 }
 
 std::string ApiSystem::getRetroachievementsPassword()
@@ -1283,8 +1086,6 @@ bool  ApiSystem::setRetroachievementsValues(bool retroachievements_state, bool h
 
 	return executeScript("es-cheevos set_all_values " + Utils::String::boolToString(retroachievements_state) + " " + Utils::String::boolToString(hardcore_state) + " " + Utils::String::boolToString(leaderboards_state) + " " + Utils::String::boolToString(verbose_state) + " " + Utils::String::boolToString(automatic_screenshot_state) + " " + Utils::String::boolToString(challenge_indicators_state) + " " + Utils::String::boolToString(richpresence_state) + " " + Utils::String::boolToString(badges_state) + " " + Utils::String::boolToString(test_unofficial_state) + " " + Utils::String::boolToString(start_active_state) + " \"" + sound + "\" \"" + username + "\" \"" + password + "\" &");
 }
-
-
 
 bool ApiSystem::setOptimizeSystem(bool state)
 {

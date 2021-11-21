@@ -135,36 +135,24 @@ public:
 	std::string getCurrentTimezone();
 	bool setTimezone(std::string timezone);
 
-	bool setPowerkeyState(bool state);
 	bool isPowerkeyState();
-	bool setPowerkeyTimeInterval(int time_interval);
 	int getPowerkeyTimeInterval();
-	bool setPowerkeyAction(const std::string action);
 	std::string getPowerkeyAction();
 	bool setPowerkeyValues(bool state, const std::string action, int time_interval);
 
 	bool setDisplayBlinkLowBattery(bool state);
 
-	bool setSystemHotkeyBrightnessEvent( bool state );
 	bool isSystemHotkeyBrightnessEvent();
-	bool setSystemHotkeyVolumeEvent( bool state );
 	bool isSystemHotkeyVolumeEvent();
-	bool setSystemHotkeyWifiEvent( bool state );
 	bool isSystemHotkeyWifiEvent();
-	bool setSystemHotkeyPerformanceEvent( bool state );
 	bool isSystemHotkeyPerformanceEvent();
-	bool setSystemHotkeySuspendEvent( bool state );
 	bool isSystemHotkeySuspendEvent();
 	bool setSystemHotkeysValues(bool brightness_state, bool volume_state, bool wifi_state, bool performance_state, bool suspend_state);
 
-	bool setDeviceAutoSuspendByTime( bool state );
 	bool isDeviceAutoSuspend();
 	bool isDeviceAutoSuspendByTime();
-	bool setAutoSuspendTimeout( int timeout );
 	int getAutoSuspendTimeout();
-	bool setDeviceAutoSuspendByBatteryLevel( bool state );
 	bool isDeviceAutoSuspendByBatteryLevel();
-	bool setAutoSuspendBatteryLevel( int battery_level );
 	int getAutoSuspendBatteryLevel();
 	bool setDeviceAutoSuspendValues(bool time_state, int timeout, bool battery_state, int battery_level);
 
@@ -185,34 +173,20 @@ public:
 
 	bool setLanguage(std::string language);
 
-	bool setRetroachievementsEnabled(bool state);
 	bool getRetroachievementsEnabled();
-	bool setRetroachievementsHardcoreEnabled(bool state);
 	bool getRetroachievementsHardcoreEnabled();
-	bool setRetroachievementsLeaderboardsEnabled(bool state);
 	bool getRetroachievementsLeaderboardsEnabled();
-	bool setRetroachievementsVerboseEnabled(bool state);
 	bool getRetroachievementsVerboseEnabled();
-	bool setRetroachievementsAutomaticScreenshotEnabled(bool state);
 	bool getRetroachievementsAutomaticScreenshotEnabled();
-	bool setRetroachievementsUnlockSoundEnabled(bool state);
 	bool getRetroachievementsUnlockSoundEnabled();
 	virtual std::vector<std::string> getRetroachievementsSoundsList();
-	bool setRetroachievementsUnlockSound(std::string sound);
 	std::string getRetroachievementsUsername();
-	bool setRetroachievementsUsername(std::string username);
 	std::string getRetroachievementsPassword();
-	bool setRetroachievementsPassword(std::string password);
 	bool getRetroachievementsChallengeIndicators();
-	bool setRetroachievementsChallengeIndicators(bool state);
 	bool getRetroachievementsRichpresenceEnable();
-	bool setRetroachievementsRichpresenceEnable(bool state);
 	bool getRetroachievementsBadgesEnable();
-	bool setRetroachievementsBadgesEnable(bool state);
 	bool getRetroachievementsTestUnofficial();
-	bool setRetroachievementsTestUnofficial(bool state);
 	bool getRetroachievementsStartActive();
-	bool setRetroachievementsStartActive(bool state);
 	bool setRetroachievementsValues(bool retroachievements_state, bool hardcore_state, bool leaderboards_state, bool verbose_state, bool automatic_screenshot_state, bool challenge_indicators_state, bool richpresence_state, bool badges_state, bool test_unofficial_state, bool start_active_state, const std::string sound, const std::string username, const std::string password);
 
 	bool setOptimizeSystem(bool state);
