@@ -1277,6 +1277,15 @@ std::string ApiSystem::getRetroachievementsPassword()
 	return getShOutput(R"(es-cheevos get cheevos_password)");
 }
 
+bool  ApiSystem::setRetroachievementsValues(bool retroachievements_state, bool hardcore_state, bool leaderboards_state, bool verbose_state, bool automatic_screenshot_state, bool challenge_indicators_state, bool richpresence_state, bool badges_state, bool test_unofficial_state, bool start_active_state, const std::string sound, const std::string username, const std::string password)
+{
+	LOG(LogInfo) << "ApiSystem::setRetroachievementsValues()";
+
+	return executeScript("es-cheevos set_all_values " + Utils::String::boolToString(retroachievements_state) + " " + Utils::String::boolToString(hardcore_state) + " " + Utils::String::boolToString(leaderboards_state) + " " + Utils::String::boolToString(verbose_state) + " " + Utils::String::boolToString(automatic_screenshot_state) + " " + Utils::String::boolToString(challenge_indicators_state) + " " + Utils::String::boolToString(richpresence_state) + " " + Utils::String::boolToString(badges_state) + " " + Utils::String::boolToString(test_unofficial_state) + " " + Utils::String::boolToString(start_active_state) + " \"" + sound + "\" \"" + username + "\" \"" + password + "\" &");
+}
+
+
+
 bool ApiSystem::setOptimizeSystem(bool state)
 {
 	LOG(LogInfo) << "ApiSystem::setOptimizeSystem()";
