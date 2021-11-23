@@ -137,16 +137,19 @@ MetaDataList MetaDataList::createFromXML(MetaDataListType type, pugi::xml_node& 
 {
 	MetaDataList mdl(type);
 	mdl.mRelativeTo = system;
+	std::string relativeTo = mdl.mRelativeTo->getStartPath();
 
 	auto sz = sizeof(MetaDataList);
 
 	const std::vector<MetaDataDecl>& mdd = mdl.getMDD();
 
+	bool preloadMedias = Settings::getInstance()->getBool("PreloadMedias");
+
 	for(auto iter = mdd.cbegin(); iter != mdd.cend(); iter++)
 	{
 		pugi::xml_node md = node.child(iter->key.c_str());
 		if (md)
-		{			
+		{
 			std::string value = md.text().get();
 
 		//	if (iter->type == MD_PATH) // if it's a path, resolve relative paths
@@ -157,6 +160,16 @@ MetaDataList MetaDataList::createFromXML(MetaDataListType type, pugi::xml_node& 
 			
 			if (iter->type == MD_BOOL)
 				value = Utils::String::toLower(value);
+
+			if (preloadMedias && (iter->type == MD_PATH))
+			{
+				// game: 5 image, 6 video, 7 marquee, 8 thumbnail
+				if ((type == GAME_METADATA) && (iter->id >= 5) && (iter->id <= 8) && !Utils::FileSystem::exists(Utils::FileSystem::resolveRelativePath(value, relativeTo, true)))
+					continue;
+				// folder: 3 image, 4 thumbnail, 5 video, 6 marquee
+				else if ((iter->id >= 3 && iter->id <= 6 ) && !Utils::FileSystem::exists(Utils::FileSystem::resolveRelativePath(value, relativeTo, true)))
+					continue;
+			}
 
 			// Players -> remove "1-"
 			if (type == GAME_METADATA && iter->id == 14 && iter->type == MD_INT && Utils::String::startsWith(value, "1-")) // "players"

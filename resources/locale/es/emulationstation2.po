@@ -536,6 +536,14 @@ msgid "SHOW NETWORK INDICATOR"
 msgstr "MOSTRAR INDICADOR DE RED"
 
 #:
+msgid "PRELOAD METADATA MEDIA ON BOOT"
+msgstr "PRECARGA DE MULTIMEDIA EN EL ARRANQUE"
+
+#:
+msgid "Reduces lag when scrolling through a fully scraped gamelist, increases boot time"
+msgstr "Reduce el lag cuando navegamos por una lista de juegos completamente scrapeada, aumenta el tiempo de arranque"
+
+#:
 msgid "THREADED LOADING"
 msgstr "ACELERAR LA CARGA DEL SISTEMA"
 

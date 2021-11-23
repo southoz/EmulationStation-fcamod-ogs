@@ -104,6 +104,25 @@ namespace Utils
 				isSymLink = (entry->d_type == 10); // DT_LNK;
 			}
 
+			FileCache(const std::string& name, dirent* entry, bool _hidden)
+			{
+				exists = true;
+				hidden = _hidden;
+
+				if (entry->d_type == 10)
+				{
+					struct stat64 info;
+					if (stat64(resolveSymlink(name).c_str(), &info) == 0)
+						directory = S_ISDIR(info.st_mode);
+					else
+						directory = false;
+				}
+				else
+					directory = (entry->d_type == 4);
+
+				isSymLink = (entry->d_type == 10); // DT_LNK;
+			}
+
 			bool exists;
 			bool directory;
 			bool hidden;
@@ -306,6 +325,65 @@ namespace Utils
 			return contentList;
 
 		} // getDirContent
+
+		fileList getDirectoryFiles(const std::string& _path)
+		{
+			std::string path = getGenericPath(_path);
+			fileList  contentList;
+
+			// tell filecache we enumerated the folder
+			FileCache::add(path + "/*", FileCache(true, true));
+
+			// only parse the directory, if it's a directory
+			// if (isDirectory(path))
+			{
+				DIR* dir = opendir(path.c_str());
+
+				if (dir != NULL)
+				{
+					struct dirent* entry;
+
+					// loop over all files in the directory
+					while ((entry = readdir(dir)) != NULL)
+					{
+						std::string name(entry->d_name);
+
+						// ignore "." and ".."
+						if ((name != ".") && (name != ".."))
+						{
+							std::string fullName(getGenericPath(path + "/" + name));
+
+							FileInfo fi;
+							fi.path = fullName;
+							fi.hidden = Utils::FileSystem::isHidden(fullName);
+
+							if (entry->d_type == 10) // DT_LNK
+							{
+								struct stat64 si;
+								if (stat64(resolveSymlink(fullName).c_str(), &si) == 0)
+									fi.directory = S_ISDIR(si.st_mode);
+								else
+									fi.directory = false;
+							}
+							else
+								fi.directory = (entry->d_type == 4); // DT_DIR;
+
+							FileCache::add(fullName, FileCache(fullName, entry, fi.hidden));
+
+							//DT_LNK
+							contentList.push_back(fi);
+						}
+					}
+
+					closedir(dir);
+				}
+
+			}
+
+			// return the content list
+			return contentList;
+
+		} // getDirectoryFiles
 
 		stringList getPathList(const std::string& _path)
 		{

@@ -33,6 +33,9 @@ SystemData::SystemData(const std::string& name, const std::string& fullName, Sys
 	mViewModeChanged = false;
 	mFilterIndex = nullptr;// new FileFilterIndex();
 
+	auto hiddenSystems = Utils::String::split(Settings::getInstance()->getString("HiddenSystems"), ';');
+	mHidden = (mIsCollectionSystem ? !themeFolder.empty() : (std::find(hiddenSystems.cbegin(), hiddenSystems.cend(), getName()) != hiddenSystems.cend()));
+
 	// if it's an actual system, initialize it, if not, just create the data structure
 	if(!CollectionSystem && !mIsGroupSystem)
 	{
@@ -42,9 +45,12 @@ SystemData::SystemData(const std::string& name, const std::string& fullName, Sys
 		std::unordered_map<std::string, FileData*> fileMap;
 		
 		if (!Settings::getInstance()->getBool("ParseGamelistOnly"))
-		{			
+		{
 			populateFolder(mRootFolder, fileMap);
 			if (mRootFolder->getChildren().size() == 0)
+				return;
+
+			if (mHidden)// && !Settings::HiddenSystemsShowGames())
 				return;
 		}
 
@@ -131,6 +137,7 @@ void SystemData::populateFolder(FolderData* folder, std::unordered_map<std::stri
 	std::string extension;
 	bool isGame;
 	bool showHidden = Settings::getInstance()->getBool("ShowHiddenFiles");
+	bool preloadMedias = Settings::getInstance()->getBool("PreloadMedias");
 	
 	Utils::FileSystem::fileList dirContent = Utils::FileSystem::getDirInfo(folderPath);
 
@@ -138,6 +145,7 @@ void SystemData::populateFolder(FolderData* folder, std::unordered_map<std::stri
 	{
 		auto fileInfo = *it;
 		//filePath = *it;
+		std::string filePath = fileInfo.path;
 
 		// skip hidden files and folders
 		if(!showHidden && fileInfo.hidden)
@@ -145,7 +153,7 @@ void SystemData::populateFolder(FolderData* folder, std::unordered_map<std::stri
 
 		//this is a little complicated because we allow a list of extensions to be defined (delimited with a space)
 		//we first get the extension of the file itself:
-		extension = Utils::String::toLower(Utils::FileSystem::getExtension(fileInfo.path));		
+		extension = Utils::String::toLower(Utils::FileSystem::getExtension(filePath));
 
 		//fyi, folders *can* also match the extension and be added as games - this is mostly just to support higan
 		//see issue #75: https://github.com/Aloshi/EmulationStation/issues/75
@@ -153,15 +161,15 @@ void SystemData::populateFolder(FolderData* folder, std::unordered_map<std::stri
 		isGame = false;
 		if (mEnvData->isValidExtension(extension)) //std::find(mEnvData->mSearchExtensions.cbegin(), mEnvData->mSearchExtensions.cend(), extension) != mEnvData->mSearchExtensions.cend())
 		{
-			if (fileMap.find(fileInfo.path) == fileMap.end())
+			if (fileMap.find(filePath) == fileMap.end())
 			{
-				FileData* newGame = new FileData(GAME, fileInfo.path, this);
+				FileData* newGame = new FileData(GAME, filePath, this);
 
 				// preventing new arcade assets to be added
 				if (extension != ".zip" || !newGame->isArcadeAsset())
 				{
 					folder->addChild(newGame);
-					fileMap[fileInfo.path] = newGame;
+					fileMap[filePath] = newGame;
 					isGame = true;
 				}
 			}
@@ -170,14 +178,30 @@ void SystemData::populateFolder(FolderData* folder, std::unordered_map<std::stri
 		//add directories that also do not match an extension as folders
 		if (!isGame && fileInfo.directory)
 		{
+			std::string fn = Utils::String::toLower(Utils::FileSystem::getFileName(filePath));
+
+			if (preloadMedias && !mHidden)// (!mHidden || Settings::HiddenSystemsShowGames()))
+			{
+				// Recurse list files in medias folder, just to let OS build filesystem cache
+				if (fn == "media" || fn == "medias")
+				{
+					Utils::FileSystem::getDirContent(filePath, true);
+					continue;
+				}
+
+				// List files in folder, just to get OS build filesystem cache
+				if (fn == "manuals" || fn == "images" || fn == "videos" || Utils::String::startsWith(fn, "downloaded_"))
+				{
+					Utils::FileSystem::getDirectoryFiles(filePath);
+					continue;
+				}
+			}
+
 			// Don't loose time looking in downloaded_images, downloaded_videos & media folders
-			if (fileInfo.path.rfind("downloaded_") != std::string::npos || 
-				fileInfo.path.rfind("media") != std::string::npos || 
-				fileInfo.path.rfind("images") != std::string::npos ||
-				fileInfo.path.rfind("videos") != std::string::npos)
+			if (fn == "media" || fn == "medias" || fn == "images" || fn == "manuals" || fn == "videos" || fn == "assets" || Utils::String::startsWith(fn, "downloaded_") || Utils::String::startsWith(fn, "."))
 				continue;
 
-			FolderData* newFolder = new FolderData(fileInfo.path, this);
+			FolderData* newFolder = new FolderData(filePath, this);
 			populateFolder(newFolder, fileMap);
 
 			if (newFolder->getChildren().size() == 0)
@@ -672,8 +696,7 @@ bool SystemData::isVisible()
 	{
 		if (!mIsCollectionSystem)
 		{
-			auto hiddenSystems = Utils::String::split(Settings::getInstance()->getString("HiddenSystems"), ';');
-			return std::find(hiddenSystems.cbegin(), hiddenSystems.cend(), getName()) == hiddenSystems.cend();
+			return !mHidden;
 		}
 
 		return true;

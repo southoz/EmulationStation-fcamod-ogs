@@ -868,14 +868,18 @@ void ImageGridComponent<T>::updateTileAtPos(int tilePos, int imgPos, bool allowA
 
 		std::string name = mEntries.at(imgPos).name;
 
+		// Label
 		if (!mEntries.at(imgPos).data.favorite || tile->hasFavoriteMedia())
 			tile->setLabel(name);
 		else
 			tile->setLabel(_U("\uF006 ") + name);
 
+		bool preloadMedias = Settings::getInstance()->getBool("PreloadMedias");
+
+		// Image
 		std::string imagePath = mEntries.at(imgPos).data.texturePath;
 
-		if (ResourceManager::getInstance()->fileExists(imagePath))
+		if ((preloadMedias && !imagePath.empty()) || (!preloadMedias && ResourceManager::getInstance()->fileExists(imagePath)))
 		{
 			if (mEntries.at(imgPos).data.virtualFolder)
 				tile->setLabel(""); // _U("\uF114"));
@@ -890,7 +894,7 @@ void ImageGridComponent<T>::updateTileAtPos(int tilePos, int imgPos, bool allowA
 		// Marquee
 		std::string marqueePath = mEntries.at(imgPos).data.marqueePath;
 
-		if (!marqueePath.empty() && ResourceManager::getInstance()->fileExists(marqueePath))
+		if ((preloadMedias && !marqueePath.empty()) || (!preloadMedias && ResourceManager::getInstance()->fileExists(marqueePath)))
 			tile->setMarquee(marqueePath);
 		else
 			tile->setMarquee("");
@@ -899,10 +903,10 @@ void ImageGridComponent<T>::updateTileAtPos(int tilePos, int imgPos, bool allowA
 
 		// Video
 		if (mAllowVideo && imgPos == mCursor)
-		{			
+		{
 			std::string videoPath = mEntries.at(imgPos).data.videoPath;
 
-			if (!videoPath.empty() && ResourceManager::getInstance()->fileExists(videoPath))
+			if ((preloadMedias && !videoPath.empty()) || (!preloadMedias && ResourceManager::getInstance()->fileExists(videoPath)))
 				tile->setVideo(videoPath, mVideoDelay);
 			else
 				tile->setVideo("");
