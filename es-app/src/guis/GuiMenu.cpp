@@ -14,6 +14,7 @@
 #include "guis/UpdatableGuiSettings.h"
 #include "guis/GuiSystemInformation.h"
 #include "guis/GuiQuitOptions.h"
+#include "guis/GuiPowerkeyOptions.h"
 #include "guis/GuiMenusOptions.h"
 #include "guis/GuiSystemHotkeyEventsOptions.h"
 #include "guis/GuiWifi.h"
@@ -86,16 +87,18 @@ GuiMenu::GuiMenu(Window* window, bool animate) : GuiComponent(window), mMenu(win
 	}
 
 	std::string quit_menu_label = "QUIT";
+	LOG(LogDebug) << "GuiMenu::GuiMenu() - ShowOnlyExit: " << Utils::String::boolToString(Settings::getInstance()->getBool("ShowOnlyExit")) << ", ShowOnlyExitActionAsMenu: " << Utils::String::boolToString(Settings::getInstance()->getBool("ShowOnlyExitActionAsMenu"));
 	if ( Settings::getInstance()->getBool("ShowOnlyExit") && Settings::getInstance()->getBool("ShowOnlyExitActionAsMenu") )
 	{
-		std::string exit_action = Settings::getInstance()->getString("OnlyExitAction");
-		if ( exit_action == "exit_es" )
+		quit_menu_label = Settings::getInstance()->getString("OnlyExitAction");
+		LOG(LogDebug) << "GuiMenu::GuiMenu() - before quit_menu_label: " << quit_menu_label;
+		if ( quit_menu_label == "exit_es" )
 			quit_menu_label = "QUIT EMULATIONSTATION";
-		else
-			quit_menu_label = Utils::String::toUpper(exit_action);
+
+		LOG(LogDebug) << "GuiMenu::GuiMenu() - before quit_menu_label: " << quit_menu_label;
 	}
 
-	addEntry(_(quit_menu_label), !Settings::getInstance()->getBool("ShowOnlyExit"), [this] { openQuitMenu(); }, "iconQuit");
+	addEntry(Utils::String::toUpper(_(quit_menu_label)), !Settings::getInstance()->getBool("ShowOnlyExit"), [this] { openQuitMenu(); }, "iconQuit");
 
 	if (Settings::getInstance()->getBool("FullScreenMode"))
 	{
@@ -1971,6 +1974,11 @@ void GuiMenu::openAdvancedSettings()
 
 	s->addEntry(_("\"QUIT\" SETTINGS"), true, [this] { openQuitSettings(); });
 
+	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::ScriptId::POWER_KEY))
+	{
+		s->addEntry(_("POWERKEY BUTTON SETTINGS"), true, [this] { openPowerkeySettings(); });
+	}
+
 	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::ScriptId::AUTO_SUSPEND))
 	{
 		s->addEntry(_("DEVICE AUTO SUSPEND SETTINGS"), true, [this] { openAutoSuspendSettings(); });
@@ -2061,6 +2069,11 @@ void GuiMenu::openQuitSettings()
 	});
 
 	mWindow->pushGui(s);
+}
+
+void GuiMenu::openPowerkeySettings()
+{
+	mWindow->pushGui(new GuiPowerkeyOptions(mWindow));
 }
 
 void GuiMenu::openAutoSuspendSettings()

@@ -5,7 +5,6 @@
 #include "components/OptionListComponent.h"
 #include "Window.h"
 #include "ApiSystem.h"
-#include "PowerSaver.h"
 
 
 GuiQuitOptions::GuiQuitOptions(Window* window) : GuiSettings(window, _("\"QUIT\" SETTINGS").c_str())
@@ -53,8 +52,8 @@ void GuiQuitOptions::initializeMenu()
 	std::string only_exit_action = Settings::getInstance()->getString("OnlyExitAction");
 	auto only_exit_action_list = std::make_shared< OptionListComponent< std::string > >(mWindow, _("ACTION TO EXECUTE"), false);
 
-	only_exit_action_list->add(_("SHUTDOWN"), "shutdown", only_exit_action == "shutdown");
-	only_exit_action_list->add(_("SUSPEND"), "suspend", only_exit_action == "suspend");
+	only_exit_action_list->add(_("shutdown"), "shutdown", only_exit_action == "shutdown");
+	only_exit_action_list->add(_("suspend"), "suspend", only_exit_action == "suspend");
 	only_exit_action_list->add(_("QUIT EMULATIONSTATION"), "exit_es", only_exit_action == "exit_es");
 
 	addWithLabel(_("ACTION TO EXECUTE"), only_exit_action_list);
@@ -87,41 +86,4 @@ void GuiQuitOptions::initializeMenu()
 				setVariable("reloadGuiMenu", true);
 			}
 		});
-
-	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::ScriptId::POWER_KEY))
-	{
-		addGroup(_("POWERKEY BUTTON"));
-
-		// push powerkey double to shutdown
-		auto powerkey = std::make_shared<SwitchComponent>(mWindow);
-		bool powerkey_value = ApiSystem::getInstance()->isPowerkeyState();
-		powerkey->setState( powerkey_value );
-		addWithLabel(_("PUSH TWO TIMES TO EXECUTE ACTION"), powerkey);
-
-		// powerkey action
-		std::string powerkey_action = ApiSystem::getInstance()->getPowerkeyAction();
-		auto powerkey_list = std::make_shared< OptionListComponent< std::string > >(mWindow, _("ACTION TO EXECUTE"), false);
-
-		powerkey_list->add(_("SHUTDOWN"), "shutdown", powerkey_action == "shutdown");
-		powerkey_list->add(_("SUSPEND"), "suspend", powerkey_action == "suspend");
-
-		addWithLabel(_("ACTION TO EXECUTE"), powerkey_list);
-
-		if (!powerkey_list->hasSelection())
-		{
-			powerkey_list->selectFirstItem();
-			powerkey_action = powerkey_list->getSelected();
-		}
-
-		// max interval time
-		auto time_interval = std::make_shared<SliderComponent>(mWindow, 1.f, 10.f, 1.f, "s", true);
-		float time_interval_value = (float) ApiSystem::getInstance()->getPowerkeyTimeInterval();
-		time_interval->setValue( time_interval_value );
-		addWithLabel(_("TIME INTERVAL"), time_interval);
-
-		addSaveFunc([powerkey, powerkey_list, time_interval]
-			{
-				ApiSystem::getInstance()->setPowerkeyValues( powerkey->getState(), powerkey_list->getSelected(), (int) Math::round( time_interval->getValue() ) );
-			});
-	}
 }

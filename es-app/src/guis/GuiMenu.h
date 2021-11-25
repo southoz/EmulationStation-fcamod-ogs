@@ -38,6 +38,7 @@ private:
 	void openUISettings();
 	void openSystemInformation();
 	void openQuitSettings();
+	void openPowerkeySettings();
 	void openMenusSettings();
 	void openAutoSuspendSettings();
 	void openSystemHotkeyEventsSettings();

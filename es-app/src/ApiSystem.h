@@ -138,7 +138,7 @@ public:
 	bool isPowerkeyState();
 	int getPowerkeyTimeInterval();
 	std::string getPowerkeyAction();
-	bool setPowerkeyValues(bool state, const std::string action, int time_interval);
+	bool setPowerkeyValues(const std::string action, bool two_push_state, int time_interval);
 
 	bool setDisplayBlinkLowBattery(bool state);
 

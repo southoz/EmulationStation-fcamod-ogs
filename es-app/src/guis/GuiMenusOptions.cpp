@@ -6,14 +6,13 @@
 #include "ApiSystem.h"
 
 
-GuiMenusOptions::GuiMenusOptions(Window* window) : GuiSettings(window, _("MENUS SETTINGS").c_str()), mPopupDisplayed(false)
+GuiMenusOptions::GuiMenusOptions(Window* window) : GuiSettings(window, _("MENUS SETTINGS").c_str())
 {
 	initializeMenu(window);
 }
 
 GuiMenusOptions::~GuiMenusOptions()
 {
-	mPopupDisplayed = false;
 }
 
 void GuiMenusOptions::initializeMenu(Window* window)

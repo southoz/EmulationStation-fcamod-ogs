@@ -1275,6 +1275,10 @@ msgid "\"QUIT\" SETTINGS"
 msgstr "CONFIGURACIÓN DE \"SALIR\""
 
 #:
+msgid "POWERKEY BUTTON SETTINGS"
+msgstr "CONFIGURACIÓN DEL BOTÓN POWERKEY"
+
+#:
 msgid "SYSTEM HOTKEY EVENTS SETTINGS"
 msgstr "CONF. EVENTOS HOTKEY DEL SISTEMA"
 
@@ -1311,10 +1315,6 @@ msgid "RESTART SYSTEM"
 msgstr "REINICIAR EL SISTEMA"
 
 #:
-msgid "SUSPEND"
-msgstr "SUSPENDER"
-
-#:
 msgid "REALLY SUSPEND?"
 msgstr "¿SEGURO DE SUSPENDER?"
 
@@ -1323,8 +1323,8 @@ msgid "SUSPEND SYSTEM"
 msgstr "SUSPENDER EL SISTEMA"
 
 #:
-msgid "SHUTDOWN"
-msgstr "APAGAR"
+msgid "shutdown"
+msgstr "apagar"
 
 #:
 msgid "REALLY SHUTDOWN?"

@@ -718,7 +718,7 @@ std::string ApiSystem::getPowerkeyAction()
 	return action;
 }
 
-bool ApiSystem::setPowerkeyValues(bool state, const std::string action, int time_interval)
+bool ApiSystem::setPowerkeyValues(const std::string action, bool two_push_state, int time_interval)
 {
 	LOG(LogInfo) << "ApiSystem::setPowerkeyValues()";
 
@@ -727,7 +727,7 @@ bool ApiSystem::setPowerkeyValues(bool state, const std::string action, int time
 	else if (time_interval > 10)
 		time_interval = 10;
 
-	return executeScript("es-powerkey set_all_values " + stateToString(state) + " " + action + " " + std::to_string(time_interval) + " &");
+	return executeScript("es-powerkey set_all_values " + action + " " + stateToString(two_push_state) + " " + std::to_string(time_interval) + " &");
 }
 
 bool ApiSystem::setDisplayBlinkLowBattery(bool state)
