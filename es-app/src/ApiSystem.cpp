@@ -826,7 +826,14 @@ bool ApiSystem::isDeviceAutoSuspend()
 	return isDeviceAutoSuspendByTime() || isDeviceAutoSuspendByBatteryLevel();
 }
 
-bool ApiSystem::setDeviceAutoSuspendValues(bool time_state, int timeout, bool battery_state, int battery_level)
+bool ApiSystem::isDeviceAutoSuspendStayAwakeCharging()
+{
+	LOG(LogInfo) << "ApiSystem::isDeviceAutoSuspendStayAwakeCharging()";
+
+	return stringToState(getShOutput(R"(es-auto_suspend get auto_suspend_stay_awake_while_charging)"));
+}
+
+bool ApiSystem::setDeviceAutoSuspendValues(bool stay_awake_charging_state, bool time_state, int timeout, bool battery_state, int battery_level)
 {
 	LOG(LogInfo) << "ApiSystem::isDeviceAutoSuspend()";
 
@@ -840,7 +847,7 @@ bool ApiSystem::setDeviceAutoSuspendValues(bool time_state, int timeout, bool ba
 	else if (battery_level > 100)
 		battery_level = 100;
 
-	return executeScript("es-auto_suspend set_all_values " + stateToString(time_state) + " " + std::to_string(timeout) + " " + stateToString(battery_state) + " " + std::to_string(battery_level) + " &");
+	return executeScript("es-auto_suspend set_all_values " + stateToString(stay_awake_charging_state) + " " + stateToString(time_state) + " " + std::to_string(timeout) + " " + stateToString(battery_state) + " " + std::to_string(battery_level) + " &");
 
 }
 

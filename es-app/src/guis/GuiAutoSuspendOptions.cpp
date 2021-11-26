@@ -22,6 +22,13 @@ void GuiAutoSuspendOptions::initializeMenu()
 {
 	Window *window = mWindow;
 
+	// enable device auto suspend stay awake while charging
+	auto stay_awake_charging = std::make_shared<SwitchComponent>(mWindow);
+	bool stay_awake_charging_value = ApiSystem::getInstance()->isDeviceAutoSuspendStayAwakeCharging();
+	stay_awake_charging->setState( stay_awake_charging_value );
+	addWithLabel(_("STAY AWAKE WHILE CHARGING"), stay_awake_charging);
+
+
 	addGroup(_("BY TIME"));
 
 	// enable device auto suspend by time
@@ -51,18 +58,25 @@ void GuiAutoSuspendOptions::initializeMenu()
 	auto_suspend_battery_level->setValue( (float) auto_suspend_battery_level_value );
 	addWithLabel(_("SUSPEND WITH LEVEL"), auto_suspend_battery_level);
 
-	addSaveFunc([this, window, auto_suspend_time, auto_suspend_time_value, auto_suspend_time_timeout, auto_suspend_time_timeout_value, auto_suspend_battery, auto_suspend_battery_value, auto_suspend_battery_level, auto_suspend_battery_level_value]
+	addSaveFunc([this, window,
+							stay_awake_charging, stay_awake_charging_value,
+							auto_suspend_time, auto_suspend_time_value,
+							auto_suspend_time_timeout, auto_suspend_time_timeout_value,
+							auto_suspend_battery, auto_suspend_battery_value,
+							auto_suspend_battery_level, auto_suspend_battery_level_value]
 		{
+			bool stay_awake_charging_new_value = stay_awake_charging->getState();
 			bool auto_suspend_time_new_value = auto_suspend_time->getState();
 			int auto_suspend_time_timeout_new_value = (int) Math::round( auto_suspend_time_timeout->getValue() );
 			bool auto_suspend_battery_new_value = auto_suspend_battery->getState();
 			int auto_suspend_battery_level_new_value = (int) Math::round( auto_suspend_battery_level->getValue() );
 
-			if ( (auto_suspend_time_value != auto_suspend_time_new_value) || (auto_suspend_time_timeout_value != auto_suspend_time_timeout_new_value)
+			if ( (stay_awake_charging_value != stay_awake_charging_new_value)
+					|| (auto_suspend_time_value != auto_suspend_time_new_value) || (auto_suspend_time_timeout_value != auto_suspend_time_timeout_new_value)
 					|| (auto_suspend_battery_value != auto_suspend_battery_new_value) || (auto_suspend_battery_level_value != auto_suspend_battery_level_new_value))
 			{
 				manageSuspendScreenSaver(window, auto_suspend_time_new_value || auto_suspend_battery_new_value);
-				ApiSystem::getInstance()->setDeviceAutoSuspendValues( auto_suspend_time_new_value, auto_suspend_time_timeout_new_value, auto_suspend_battery_new_value, auto_suspend_battery_level_new_value);
+				ApiSystem::getInstance()->setDeviceAutoSuspendValues( stay_awake_charging_new_value, auto_suspend_time_new_value, auto_suspend_time_timeout_new_value, auto_suspend_battery_new_value, auto_suspend_battery_level_new_value);
 			}
 		});
 

@@ -18,6 +18,7 @@
 #include "math/Vector2i.h"
 #include "platform.h"
 #include "Scripting.h"
+#include "ApiSystem.h"
 
 #define FADE_TIME 			500
 
@@ -156,7 +157,9 @@ void SystemScreenSaver::startScreenSaver()
 	}
 	else if (screensaver_behavior == "suspend")
 	{
-		LOG(LogDebug) << "SystemScreenSaver::startScreenSaver() - suspend device";
+		if (ApiSystem::getInstance()->isDeviceAutoSuspendStayAwakeCharging() && ApiSystem::getInstance()->isBatteryCharging())
+			return;
+
 		Scripting::fireEvent("quit", "suspend");
 		Scripting::fireEvent("suspend");
 		if (quitES(QuitMode::SUSPEND) != 0)

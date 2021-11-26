@@ -150,11 +150,12 @@ public:
 	bool setSystemHotkeysValues(bool brightness_state, bool volume_state, bool wifi_state, bool performance_state, bool suspend_state);
 
 	bool isDeviceAutoSuspend();
+	bool isDeviceAutoSuspendStayAwakeCharging();
 	bool isDeviceAutoSuspendByTime();
 	int getAutoSuspendTimeout();
 	bool isDeviceAutoSuspendByBatteryLevel();
 	int getAutoSuspendBatteryLevel();
-	bool setDeviceAutoSuspendValues(bool time_state, int timeout, bool battery_state, int battery_level);
+	bool setDeviceAutoSuspendValues(bool stay_awake_charging_state, bool time_state, int timeout, bool battery_state, int battery_level);
 
 	virtual bool ping();
 	bool getInternetStatus();
