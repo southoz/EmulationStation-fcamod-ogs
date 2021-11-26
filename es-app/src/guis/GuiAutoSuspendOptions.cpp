@@ -32,8 +32,8 @@ void GuiAutoSuspendOptions::initializeMenu()
 
 	// auto suspend timeout
 	auto auto_suspend_time_timeout = std::make_shared<SliderComponent>(mWindow, 1.f, 120.f, 1.f, "m", true);
-	float auto_suspend_time_timeout_value = (float) ApiSystem::getInstance()->getAutoSuspendTimeout();
-	auto_suspend_time_timeout->setValue( auto_suspend_time_timeout_value );
+	int auto_suspend_time_timeout_value = ApiSystem::getInstance()->getAutoSuspendTimeout();
+	auto_suspend_time_timeout->setValue( (float) auto_suspend_time_timeout_value );
 	addWithLabel(_("SUSPEND AFTER"), auto_suspend_time_timeout);
 
 
@@ -47,14 +47,23 @@ void GuiAutoSuspendOptions::initializeMenu()
 
 	// auto suspend battery level
 	auto auto_suspend_battery_level = std::make_shared<SliderComponent>(mWindow, 1.f, 100.f, 1.f, "%", true);
-	float auto_suspend_battery_level_value = (float) ApiSystem::getInstance()->getAutoSuspendBatteryLevel();
-	auto_suspend_battery_level->setValue( auto_suspend_battery_level_value );
+	int auto_suspend_battery_level_value = ApiSystem::getInstance()->getAutoSuspendBatteryLevel();
+	auto_suspend_battery_level->setValue( (float) auto_suspend_battery_level_value );
 	addWithLabel(_("SUSPEND WITH LEVEL"), auto_suspend_battery_level);
 
-	addSaveFunc([this, window, auto_suspend_time, auto_suspend_time_timeout, auto_suspend_battery, auto_suspend_battery_level]
+	addSaveFunc([this, window, auto_suspend_time, auto_suspend_time_value, auto_suspend_time_timeout, auto_suspend_time_timeout_value, auto_suspend_battery, auto_suspend_battery_value, auto_suspend_battery_level, auto_suspend_battery_level_value]
 		{
-			manageSuspendScreenSaver(window, auto_suspend_time->getState() || auto_suspend_battery->getState());
-			ApiSystem::getInstance()->setDeviceAutoSuspendValues( auto_suspend_time->getState(), (int) Math::round( auto_suspend_time_timeout->getValue() ), auto_suspend_battery->getState(), (int) Math::round( auto_suspend_battery_level->getValue() ));
+			bool auto_suspend_time_new_value = auto_suspend_time->getState();
+			int auto_suspend_time_timeout_new_value = (int) Math::round( auto_suspend_time_timeout->getValue() );
+			bool auto_suspend_battery_new_value = auto_suspend_battery->getState();
+			int auto_suspend_battery_level_new_value = (int) Math::round( auto_suspend_battery_level->getValue() );
+
+			if ( (auto_suspend_time_value != auto_suspend_time_new_value) || (auto_suspend_time_timeout_value != auto_suspend_time_timeout_new_value)
+					|| (auto_suspend_battery_value != auto_suspend_battery_new_value) || (auto_suspend_battery_level_value != auto_suspend_battery_level_new_value))
+			{
+				manageSuspendScreenSaver(window, auto_suspend_time_new_value || auto_suspend_battery_new_value);
+				ApiSystem::getInstance()->setDeviceAutoSuspendValues( auto_suspend_time_new_value, auto_suspend_time_timeout_new_value, auto_suspend_battery_new_value, auto_suspend_battery_level_new_value);
+			}
 		});
 
 }

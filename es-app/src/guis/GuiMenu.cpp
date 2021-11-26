@@ -87,15 +87,11 @@ GuiMenu::GuiMenu(Window* window, bool animate) : GuiComponent(window), mMenu(win
 	}
 
 	std::string quit_menu_label = "QUIT";
-	LOG(LogDebug) << "GuiMenu::GuiMenu() - ShowOnlyExit: " << Utils::String::boolToString(Settings::getInstance()->getBool("ShowOnlyExit")) << ", ShowOnlyExitActionAsMenu: " << Utils::String::boolToString(Settings::getInstance()->getBool("ShowOnlyExitActionAsMenu"));
 	if ( Settings::getInstance()->getBool("ShowOnlyExit") && Settings::getInstance()->getBool("ShowOnlyExitActionAsMenu") )
 	{
 		quit_menu_label = Settings::getInstance()->getString("OnlyExitAction");
-		LOG(LogDebug) << "GuiMenu::GuiMenu() - before quit_menu_label: " << quit_menu_label;
 		if ( quit_menu_label == "exit_es" )
 			quit_menu_label = "QUIT EMULATIONSTATION";
-
-		LOG(LogDebug) << "GuiMenu::GuiMenu() - before quit_menu_label: " << quit_menu_label;
 	}
 
 	addEntry(Utils::String::toUpper(_(quit_menu_label)), !Settings::getInstance()->getBool("ShowOnlyExit"), [this] { openQuitMenu(); }, "iconQuit");

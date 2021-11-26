@@ -19,34 +19,41 @@ GuiPowerkeyOptions::~GuiPowerkeyOptions()
 void GuiPowerkeyOptions::initializeMenu()
 {
 	// powerkey action
-	std::string powerkey_action = ApiSystem::getInstance()->getPowerkeyAction();
+	std::string powerkey_action_value = ApiSystem::getInstance()->getPowerkeyAction();
 	auto powerkey_list = std::make_shared< OptionListComponent< std::string > >(mWindow, _("ACTION TO EXECUTE"), false);
 
-	powerkey_list->add(_("shutdown"), "shutdown", powerkey_action == "shutdown");
-	powerkey_list->add(_("suspend"), "suspend", powerkey_action == "suspend");
-	powerkey_list->add(_("disabled"), "disabled", powerkey_action == "disabled");
+	powerkey_list->add(_("shutdown"), "shutdown", powerkey_action_value == "shutdown");
+	powerkey_list->add(_("suspend"), "suspend", powerkey_action_value == "suspend");
+	powerkey_list->add(_("disabled"), "disabled", powerkey_action_value == "disabled");
 	addWithLabel(_("ACTION TO EXECUTE"), powerkey_list);
 
 	if (!powerkey_list->hasSelection())
 	{
 		powerkey_list->selectFirstItem();
-		powerkey_action = powerkey_list->getSelected();
+		powerkey_action_value = powerkey_list->getSelected();
 	}
 
 	// push powerkey double to shutdown
-	auto powerkey = std::make_shared<SwitchComponent>(mWindow);
-	bool powerkey_value = ApiSystem::getInstance()->isPowerkeyState();
-	powerkey->setState( powerkey_value );
-	addWithLabel(_("PUSH TWO TIMES TO EXECUTE ACTION"), powerkey);
+	auto double_push = std::make_shared<SwitchComponent>(mWindow);
+	bool double_push_value = ApiSystem::getInstance()->isPowerkeyState();
+	double_push->setState( double_push_value );
+	addWithLabel(_("PUSH TWO TIMES TO EXECUTE ACTION"), double_push);
 
 	// max interval time
 	auto time_interval = std::make_shared<SliderComponent>(mWindow, 1.f, 10.f, 1.f, "s", true);
-	float time_interval_value = (float) ApiSystem::getInstance()->getPowerkeyTimeInterval();
-	time_interval->setValue( time_interval_value );
+	int time_interval_value = ApiSystem::getInstance()->getPowerkeyTimeInterval();
+	time_interval->setValue( (float) time_interval_value );
 	addWithLabel(_("TIME INTERVAL"), time_interval);
 
-	addSaveFunc([powerkey, powerkey_list, time_interval]
+	addSaveFunc([powerkey_list, powerkey_action_value, double_push, double_push_value, time_interval, time_interval_value]
 		{
-			ApiSystem::getInstance()->setPowerkeyValues( powerkey_list->getSelected(), powerkey->getState(), (int) Math::round( time_interval->getValue() ) );
+			std::string powerkey_action_new_value = powerkey_list->getSelected();
+			bool double_push_new_value = double_push->getState();
+			int time_interval_new_value = (int) Math::round( time_interval->getValue() );
+
+			if ( (powerkey_action_value != powerkey_action_new_value) || (double_push_value != double_push_new_value) || (time_interval_value != time_interval_new_value) )
+			{
+				ApiSystem::getInstance()->setPowerkeyValues(powerkey_action_new_value, double_push_new_value, time_interval_new_value);
+			}
 		});
 }
