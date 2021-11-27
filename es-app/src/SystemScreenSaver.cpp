@@ -74,7 +74,11 @@ void SystemScreenSaver::startScreenSaver()
 		AudioManager::getInstance()->deinit();
 
 	std::string screensaver_behavior = Settings::getInstance()->getString("ScreenSaverBehavior");
-	if (screensaver_behavior == "random video")
+	if (screensaver_behavior == "none")
+	{
+		return;
+	}
+	else if (screensaver_behavior == "random video")
 	{
 		mVideoChangeTime = Settings::getInstance()->getInt("ScreenSaverSwapVideoTimeout");
 
@@ -173,7 +177,8 @@ void SystemScreenSaver::startScreenSaver()
 
 void SystemScreenSaver::stopScreenSaver()
 {
-	if (Settings::getInstance()->getString("ScreenSaverBehavior") == "suspend")
+	std::string screensaver_behavior = Settings::getInstance()->getString("ScreenSaverBehavior");
+	if ((screensaver_behavior == "none") || (screensaver_behavior == "suspend"))
 		return;
 
 	bool isExitingScreenSaver = !mLoadingNext;
@@ -206,7 +211,8 @@ void SystemScreenSaver::stopScreenSaver()
 
 void SystemScreenSaver::renderScreenSaver()
 {
-	if (Settings::getInstance()->getString("ScreenSaverBehavior") == "suspend")
+	std::string screensaver_behavior = Settings::getInstance()->getString("ScreenSaverBehavior");
+	if ((screensaver_behavior == "none") || (screensaver_behavior == "suspend"))
 		return;
 
 	Transform4x4f transform = Transform4x4f::Identity();
@@ -241,7 +247,7 @@ void SystemScreenSaver::renderScreenSaver()
 			if (mImageScreensaver->hasImage())
 			{
 				unsigned int opacity = 255 - (unsigned char)(mOpacity * 255);
-													
+
 				Renderer::setMatrix(transform);
 				Renderer::drawRect(0.0f, 0.0f, Renderer::getScreenWidth(), Renderer::getScreenHeight(), 0x00000000 | opacity);
 				mImageScreensaver->setOpacity(opacity);
@@ -252,6 +258,9 @@ void SystemScreenSaver::renderScreenSaver()
 	else if (mState != STATE_INACTIVE)
 	{
 		std::string screensaver_behavior = Settings::getInstance()->getString("ScreenSaverBehavior");
+
+		if ((screensaver_behavior == "dim") && ApiSystem::getInstance()->isDisplayAutoDimStayAwakeCharging() && ApiSystem::getInstance()->isBatteryCharging())
+			return;
 
 		Renderer::setMatrix(Transform4x4f::Identity());
 		unsigned char color = screensaver_behavior == "dim" ? 0x000000A0 : 0x000000FF;

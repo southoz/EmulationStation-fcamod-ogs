@@ -52,6 +52,7 @@ private:
 	void openEmulatorSettings();
 	void openSystemEmulatorSettings(SystemData* system);
 	void openDisplaySettings();
+	void openDisplayAutoDimSettings();
 
 	static std::string formatNetworkStatus(bool isConnected);
 

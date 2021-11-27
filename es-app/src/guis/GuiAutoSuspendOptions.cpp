@@ -86,11 +86,14 @@ void GuiAutoSuspendOptions::manageSuspendScreenSaver(Window *window, bool auto_s
 {
 	if (auto_suspend_enabled && Settings::getInstance()->getString("ScreenSaverBehavior") == "suspend")
 	{
+		char strbuf[128];
+		snprintf(strbuf, 128, _("THE '%s' SCREENSAVER WAS DISABLED. THE SCREENSAVER BEHAVIOR WAS SETTLED TO 'NONE'.").c_str(), Utils::String::toUpper(_("suspend")).c_str());
+
 		window->pushGui(new GuiMsgBox(window,
-			_("THE \"SUSPEND\" SCREENSAVER WAS DISABLED. THE SCREENSAVER BEHAVIOR WAS SETTLED TO \"DIM\"."),
+			strbuf,
 			_("OK"), []
 				{
-					Settings::getInstance()->setString("ScreenSaverBehavior", "dim");
+					Settings::getInstance()->setString("ScreenSaverBehavior", "none");
 					PowerSaver::updateTimeouts();
 				}));
 	}

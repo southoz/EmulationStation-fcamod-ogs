@@ -18,20 +18,42 @@ GuiGeneralScreensaverOptions::GuiGeneralScreensaverOptions(Window* window, std::
 	screensaver_time->setValue((float)(Settings::getInstance()->getInt("ScreenSaverTime") / (1000 * 60)));
 	addWithLabel(_("SCREENSAVER AFTER"), screensaver_time);
 	addSaveFunc([screensaver_time] {
-	    Settings::getInstance()->setInt("ScreenSaverTime", (int)Math::round(screensaver_time->getValue()) * (1000 * 60));
-	    PowerSaver::updateTimeouts();
+			Settings::getInstance()->setInt("ScreenSaverTime", (int)Math::round(screensaver_time->getValue()) * (1000 * 60));
+			PowerSaver::updateTimeouts();
 	});
 
 	// screensaver behavior
+	std::string screensaver_behavior_value = Settings::getInstance()->getString("ScreenSaverBehavior");
+	bool isDisplayAutoDim = ApiSystem::getInstance()->isDisplayAutoDimByTime();
+	bool isDeviceAutoSuspend = ApiSystem::getInstance()->isDeviceAutoSuspend();
+
+	if ((screensaver_behavior_value == "suspend") && isDeviceAutoSuspend)
+		screensaver_behavior_value = "none";
+
+	if ((screensaver_behavior_value == "dim") && isDisplayAutoDim)
+		screensaver_behavior_value = "none";
+
 	auto screensaver_behavior = std::make_shared< OptionListComponent<std::string> >(mWindow, _("SCREENSAVER BEHAVIOR"), false);
 	std::vector<std::string> screensavers;
-	screensavers.push_back("dim");
+
+	screensavers.push_back("none");
+
+	if (!isDisplayAutoDim)
+		screensavers.push_back("dim");
+
 	screensavers.push_back("black");
 	screensavers.push_back("random video");
 	screensavers.push_back("slideshow");
-  screensavers.push_back("suspend");
+
+	if (!isDeviceAutoSuspend)
+		screensavers.push_back("suspend");
+
 	for(auto it = screensavers.cbegin(); it != screensavers.cend(); it++)
-		screensaver_behavior->add(_(it->c_str()), *it, Settings::getInstance()->getString("ScreenSaverBehavior") == *it);
+		screensaver_behavior->add(_(it->c_str()), *it, screensaver_behavior_value == *it);
+
+	if (!screensaver_behavior->hasSelection())
+		screensaver_behavior->selectFirstItem();
+
 	addWithLabel(_("SCREENSAVER BEHAVIOR"), screensaver_behavior);
 	addSaveFunc([this, screensaver_behavior] {
 		if (Settings::getInstance()->getString("ScreenSaverBehavior") != "random video"
@@ -42,13 +64,7 @@ GuiGeneralScreensaverOptions::GuiGeneralScreensaverOptions(Window* window, std::
 				_("THE \"RANDOM VIDEO\" SCREENSAVER SHOWS VIDEOS FROM YOUR GAMELIST.\nIF YOU DON'T HAVE VIDEOS, OR IF NONE OF THEM CAN BE PLAYED AFTER A FEW ATTEMPTS, IT WILL DEFAULT TO \"BLACK\".\nMORE OPTIONS IN THE \"UI SETTINGS\" -> \"RANDOM VIDEO SCREENSAVER SETTINGS\" MENU."),
 				_("OK"), [] { return; }));
 		}
-		if ((screensaver_behavior->getSelected() == "suspend") && ApiSystem::getInstance()->isDeviceAutoSuspend())
-		{
-			mWindow->pushGui(new GuiMsgBox(mWindow,
-					_("THE \"SUSPEND\" SCREENSAVER WON'T BE ENABLED BECAUSE THE \"DEVICE AUTO SUSPEND\" IS ENABLED."),
-					_("OK"), [] { return; }));
-			return;
-		}
+
 		Settings::getInstance()->setString("ScreenSaverBehavior", screensaver_behavior->getSelected());
 		PowerSaver::updateTimeouts();
 	});

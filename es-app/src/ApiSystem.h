@@ -157,6 +157,12 @@ public:
 	int getAutoSuspendBatteryLevel();
 	bool setDeviceAutoSuspendValues(bool stay_awake_charging_state, bool time_state, int timeout, bool battery_state, int battery_level);
 
+	bool isDisplayAutoDimStayAwakeCharging();
+	bool isDisplayAutoDimByTime();
+	int getDisplayAutoDimTimeout();
+	int getDisplayAutoDimBrightness();
+	bool setDisplayAutoDimValues(bool stay_awake_charging_state, bool time_state, int timeout, int brightness_level);
+
 	virtual bool ping();
 	bool getInternetStatus();
 	std::vector<std::string> getWifiNetworks(bool scan = false);

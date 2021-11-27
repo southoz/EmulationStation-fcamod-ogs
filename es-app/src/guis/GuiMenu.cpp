@@ -20,6 +20,7 @@
 #include "guis/GuiWifi.h"
 #include "guis/GuiAutoSuspendOptions.h"
 #include "guis/GuiRetroachievementsOptions.h"
+#include "guis/GuiDisplayAutoDimOptions.h"
 #include "views/UIModeController.h"
 #include "views/ViewController.h"
 #include "CollectionSystemManager.h"
@@ -224,6 +225,8 @@ void GuiMenu::openDisplaySettings()
 								} ));
 					}
 				});
+
+			s->addEntry(_("AUTO DIM SETTINGS"), true, [this] { openDisplayAutoDimSettings(); });
 		}
 
 	if (Settings::getInstance()->getBool("FullScreenMode"))
@@ -241,6 +244,11 @@ void GuiMenu::openDisplaySettings()
 	}
 
  mWindow->pushGui(s);
+}
+
+void GuiMenu::openDisplayAutoDimSettings()
+{
+	mWindow->pushGui(new GuiDisplayAutoDimOptions(mWindow));
 }
 
 void GuiMenu::openControllersSettings()

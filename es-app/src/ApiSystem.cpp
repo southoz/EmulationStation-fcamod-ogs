@@ -835,7 +835,7 @@ bool ApiSystem::isDeviceAutoSuspendStayAwakeCharging()
 
 bool ApiSystem::setDeviceAutoSuspendValues(bool stay_awake_charging_state, bool time_state, int timeout, bool battery_state, int battery_level)
 {
-	LOG(LogInfo) << "ApiSystem::isDeviceAutoSuspend()";
+	LOG(LogInfo) << "ApiSystem::setDeviceAutoSuspendValues()";
 
 	if (timeout <= 0)
 		timeout = 5;
@@ -849,6 +849,63 @@ bool ApiSystem::setDeviceAutoSuspendValues(bool stay_awake_charging_state, bool 
 
 	return executeScript("es-auto_suspend set_all_values " + stateToString(stay_awake_charging_state) + " " + stateToString(time_state) + " " + std::to_string(timeout) + " " + stateToString(battery_state) + " " + std::to_string(battery_level) + " &");
 
+}
+
+bool ApiSystem::isDisplayAutoDimStayAwakeCharging()
+{
+	LOG(LogInfo) << "ApiSystem::isDisplayAutoDimStayAwakeCharging()";
+
+	return stringToState(getShOutput(R"(es-display get auto_dim_stay_awake_while_charging)"));
+}
+
+bool ApiSystem::isDisplayAutoDimByTime()
+{
+	LOG(LogInfo) << "ApiSystem::isDisplayAutoDimByTime()";
+
+	return stringToState(getShOutput(R"(es-display get auto_dim_time)"));
+}
+
+int ApiSystem::getDisplayAutoDimTimeout()
+{
+	LOG(LogInfo) << "ApiSystem::getDisplayAutoDimTimeout()";
+
+	int timeout = std::atoi(getShOutput(R"(es-display get auto_dim_timeout)").c_str());
+	if (timeout <= 0)
+		return 5;
+	else if (timeout > 120)
+		return 120;
+
+	return timeout;
+}
+
+int ApiSystem::getDisplayAutoDimBrightness()
+{
+	LOG(LogInfo) << "ApiSystem::getDisplayAutoDimBrightness()";
+
+	int brightness_level = std::atoi(getShOutput(R"(es-display get auto_dim_brightness)").c_str());
+	if (brightness_level <= 0)
+		return 25;
+	else if (brightness_level > 100)
+		return 100;
+
+	return brightness_level;
+}
+
+bool ApiSystem::setDisplayAutoDimValues(bool stay_awake_charging_state, bool time_state, int timeout, int brightness_level)
+{
+	LOG(LogInfo) << "ApiSystem::setDisplayAutoDimValues()";
+
+	if (timeout <= 0)
+		timeout = 5;
+	else if (timeout > 120)
+		timeout = 120;
+
+	if (brightness_level <= 0)
+		brightness_level = 25;
+	else if (brightness_level > 100)
+		brightness_level = 100;
+
+	return executeScript("es-display set_all_values " + stateToString(stay_awake_charging_state) + " " + stateToString(time_state) + " " + std::to_string(timeout) + " " + std::to_string(brightness_level) + " &");
 }
 
 bool ApiSystem::ping()
