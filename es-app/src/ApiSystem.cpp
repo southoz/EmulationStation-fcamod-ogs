@@ -734,7 +734,7 @@ bool ApiSystem::setDisplayBlinkLowBattery(bool state)
 {
 	LOG(LogInfo) << "ApiSystem::setDisplayBlinkLowBattery()";
 
-	return executeScript("es-display blink_low_battery " + stateToString(state) + " &");
+	return executeScript("es-display set blink_low_battery " + stateToString(state) + " &");
 }
 
 bool ApiSystem::isSystemHotkeyBrightnessEvent()
@@ -905,7 +905,7 @@ bool ApiSystem::setDisplayAutoDimValues(bool stay_awake_charging_state, bool tim
 	else if (brightness_level > 100)
 		brightness_level = 100;
 
-	return executeScript("es-display set_all_values " + stateToString(stay_awake_charging_state) + " " + stateToString(time_state) + " " + std::to_string(timeout) + " " + std::to_string(brightness_level) + " &");
+	return executeScript("es-display set_auto_dim_all_values " + stateToString(stay_awake_charging_state) + " " + stateToString(time_state) + " " + std::to_string(timeout) + " " + std::to_string(brightness_level) + " &");
 }
 
 bool ApiSystem::ping()
