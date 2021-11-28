@@ -199,7 +199,7 @@ void Window::input(InputConfig* config, Input input)
 	if (mScreenSaver)
 	{
 		std::string screensaver_behavior = Settings::getInstance()->getString("ScreenSaverBehavior");
-		if ( screensaver_behavior != "suspend" )
+		if ((screensaver_behavior != "suspend") && (screensaver_behavior != "none"))
 		{
 			if (mScreenSaver->isScreenSaverActive() && Settings::getInstance()->getBool("ScreenSaverControls") &&
 				((screensaver_behavior == "slideshow") || (screensaver_behavior == "random video")))
@@ -695,7 +695,8 @@ void Window::startScreenSaver()
 
 bool Window::cancelScreenSaver()
 {
-	if ( Settings::getInstance()->getString("ScreenSaverBehavior") == "suspend" )
+	std::string screensaver_behavior = Settings::getInstance()->getString("ScreenSaverBehavior");
+	if ((screensaver_behavior == "suspend") || (screensaver_behavior == "none"))
 		return false;
 
 	if (mScreenSaver && mRenderScreenSaver)

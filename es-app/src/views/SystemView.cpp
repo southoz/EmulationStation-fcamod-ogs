@@ -457,7 +457,7 @@ bool SystemView::input(InputConfig* config, Input input)
 			break;
 		}
 
-		if(config->isMappedTo(BUTTON_OK, input))
+		if (config->isMappedTo(BUTTON_OK, input))
 		{
 			stopScrolling();
 			ViewController::get()->goToGameList(getSelected());
@@ -470,23 +470,27 @@ bool SystemView::input(InputConfig* config, Input input)
 			setCursor(SystemData::getRandomSystem());
 			return true;
 		}
-		if(config->isMappedLike("leftthumb", input) || config->isMappedLike("rightthumb", input)) // emuelec
+		if (config->isMappedLike("leftthumb", input) || config->isMappedLike("rightthumb", input)) // emuelec
 		{
 			// next song
 			AudioManager::getInstance()->playRandomMusic(false);
 			return true;
 		}
-	}else{
-		if(config->isMappedLike("left", input) ||
+	}
+	else
+	{
+		if (config->isMappedLike("left", input) ||
 			config->isMappedLike("right", input) ||
 			config->isMappedLike("up", input) ||
 			config->isMappedLike("down", input) ||
 			config->isMappedTo(BUTTON_PD, input) ||
 			config->isMappedTo(BUTTON_PU, input))
 			listInput(0);
-		if(!UIModeController::getInstance()->isUIModeKid() && config->isMappedTo("select", input) && Settings::getInstance()->getBool("ScreenSaverControls"))
+
+		if (!UIModeController::getInstance()->isUIModeKid() && config->isMappedTo("select", input) && Settings::getInstance()->getBool("ScreenSaverControls"))
 		{
-			if (Settings::getInstance()->getString("ScreenSaverBehavior") != "suspend")
+			std::string screensaver_behavior = Settings::getInstance()->getString("ScreenSaverBehavior");
+			if ((screensaver_behavior != "suspend") && (screensaver_behavior != "none"))
 			{
 				mWindow->startScreenSaver();
 				mWindow->renderScreenSaver();
@@ -738,7 +742,8 @@ std::vector<HelpPrompt> SystemView::getHelpPrompts()
 	if (SystemData::getSystem("all") != nullptr)
 		prompts.push_back(HelpPrompt("y", _("SEARCH"))); // QUICK
 
-	if (!UIModeController::getInstance()->isUIModeKid() && Settings::getInstance()->getBool("ScreenSaverControls") && (Settings::getInstance()->getString("ScreenSaverBehavior") != "suspend"))
+	std::string screensaver_behavior = Settings::getInstance()->getString("ScreenSaverBehavior");
+	if (!UIModeController::getInstance()->isUIModeKid() && Settings::getInstance()->getBool("ScreenSaverControls") && ((screensaver_behavior != "suspend") && (screensaver_behavior != "none")))
 		prompts.push_back(HelpPrompt("select", _("LAUNCH SCREENSAVER")));
 
 	return prompts;
