@@ -211,18 +211,13 @@ void GuiMenu::openDisplaySettings()
 			bool blink_low_battery_value = Settings::getInstance()->getBool("DisplayBlinkLowBattery");
 			blink_low_battery->setState(blink_low_battery_value);
 			s->addWithLabel(_("BLINK WITH LOW BATTERY"), blink_low_battery);
-			s->addSaveFunc([this, blink_low_battery, blink_low_battery_value]
+			s->addSaveFunc([blink_low_battery, blink_low_battery_value]
 				{
 					bool new_blink_low_battery_value = blink_low_battery->getState();
 					if (blink_low_battery_value != new_blink_low_battery_value)
 					{
-						mWindow->pushGui(new GuiMsgBox(mWindow,
-							_("THE PROCESS MAY DURE SOME SECONDS.\nPLEASE WAIT."),
-							_("OK"), [new_blink_low_battery_value]
-								{
-									Settings::getInstance()->setBool("DisplayBlinkLowBattery", new_blink_low_battery_value);
-									ApiSystem::getInstance()->setDisplayBlinkLowBattery(new_blink_low_battery_value);
-								} ));
+						Settings::getInstance()->setBool("DisplayBlinkLowBattery", new_blink_low_battery_value);
+						ApiSystem::getInstance()->setDisplayBlinkLowBattery(new_blink_low_battery_value);
 					}
 				});
 
