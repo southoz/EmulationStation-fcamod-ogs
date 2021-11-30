@@ -284,7 +284,7 @@ namespace Utils
 
 			// only parse the directory, if it's a directory
 			if(isDirectory(path))
-			{		
+			{
 				FileCache::add(path + "/*", FileCache(true, true));
 
 
@@ -303,7 +303,6 @@ namespace Utils
 						if((name != ".") && (name != ".."))
 						{
 							std::string fullName(getGenericPath(path + "/" + name));
-
 							FileCache::add(fullName, FileCache(fullName, entry));
 
 							if (!includeHidden && Utils::FileSystem::isHidden(fullName))
@@ -1074,6 +1073,18 @@ namespace Utils
 			out << std::fixed << size_d << " " << SIZES[div];
 			return out.str();
 		} // megaBytesToString
+
+		bool renameFile(const std::string src, const std::string dst, bool overWrite)
+		{
+			std::string path = getGenericPath(src);
+			if (!exists(path))
+				return true;
+
+			if (overWrite && Utils::FileSystem::exists(dst))
+				Utils::FileSystem::removeFile(dst);
+
+			return std::rename(src.c_str(), dst.c_str()) == 0;
+		} // renameFile
 
 	} // FileSystem::
 

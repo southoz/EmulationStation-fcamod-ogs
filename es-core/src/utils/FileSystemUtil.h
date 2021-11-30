@@ -50,6 +50,8 @@ namespace Utils
 		bool        isSymlink          (const std::string& _path);
 		bool        isHidden           (const std::string& _path);
 		std::string megaBytesToString  (unsigned long size);
+
+		bool		renameFile(const std::string src, const std::string dst, bool overWrite = true);
 	
 		// FCA
 		struct FileInfo
