@@ -17,6 +17,9 @@
 #include "Window.h"
 #include "views/ViewController.h"
 
+
+#include "MetaData.h"
+
 using namespace Utils;
 
 std::vector<SystemData*> SystemData::sSystemVector;
@@ -24,6 +27,10 @@ std::vector<SystemData*> SystemData::sSystemVector;
 SystemData::SystemData(const std::string& name, const std::string& fullName, SystemEnvironmentData* envData, const std::string& themeFolder, bool CollectionSystem, bool groupedSystem) :
 	mName(name), mFullName(fullName), mEnvData(envData), mThemeFolder(themeFolder), mIsCollectionSystem(CollectionSystem), mIsGameSystem(true)
 {
+
+LOG(LogDebug) << "SystemData::SystemData() - system: " << name;
+Log::flush();
+
 	mIsGroupSystem = groupedSystem;
 	mGameListHash = 0;
 	mGameCount = -1;
@@ -33,14 +40,21 @@ SystemData::SystemData(const std::string& name, const std::string& fullName, Sys
 	mViewModeChanged = false;
 	mFilterIndex = nullptr;// new FileFilterIndex();
 
+LOG(LogDebug) << "SystemData::SystemData() - system2: " << name;
+Log::flush();
+
 	auto hiddenSystems = Utils::String::split(Settings::getInstance()->getString("HiddenSystems"), ';');
 	mHidden = (mIsCollectionSystem ? !themeFolder.empty() : (std::find(hiddenSystems.cbegin(), hiddenSystems.cend(), getName()) != hiddenSystems.cend()));
 
 	// if it's an actual system, initialize it, if not, just create the data structure
 	if(!CollectionSystem && !mIsGroupSystem)
 	{
+
+LOG(LogDebug) << "SystemData::SystemData() - system: " << name << ", (!CollectionSystem && !mIsGroupSystem): " << Utils::String::boolToString((!CollectionSystem && !mIsGroupSystem));
+Log::flush();
+
 		mRootFolder = new FolderData(mEnvData->mStartPath, this);
-		mRootFolder->getMetadata().set("name", mFullName);
+		mRootFolder->setMetadata(MetaDataId::Name, mFullName);
 
 		std::unordered_map<std::string, FileData*> fileMap;
 		
@@ -55,7 +69,11 @@ SystemData::SystemData(const std::string& name, const std::string& fullName, Sys
 		}
 
 		if (!Settings::getInstance()->getBool("IgnoreGamelist") && mName != "imageviewer")
+		{
+LOG(LogDebug) << "SystemData::SystemData() - system: " << name << ", parseGamelist()";
+Log::flush();
 			parseGamelist(this, fileMap);
+		}
 	}
 	else
 	{
@@ -69,6 +87,9 @@ SystemData::SystemData(const std::string& name, const std::string& fullName, Sys
 
 	setIsGameSystemStatus();
 	loadTheme();
+
+LOG(LogDebug) << "SystemData::SystemData() - system: " << name << ", END constructor";
+Log::flush();
 }
 
 bool SystemData::setSystemViewMode(std::string newViewMode, Vector2f gridSizeOverride, bool setChanged)
@@ -119,6 +140,7 @@ void SystemData::populateFolder(FolderData* folder, std::unordered_map<std::stri
 	if(!Utils::FileSystem::isDirectory(folderPath))
 	{
 		LOG(LogWarning) << "Error - folder with path \"" << folderPath << "\" is not a directory!";
+		Log::flush();
 		return;
 	}
 
@@ -129,6 +151,7 @@ void SystemData::populateFolder(FolderData* folder, std::unordered_map<std::stri
 		if(folderPath.find(Utils::FileSystem::getCanonicalPath(folderPath)) == 0)
 		{
 			LOG(LogWarning) << "Skipping infinitely recursive symlink \"" << folderPath << "\"";
+			Log::flush();
 			return;
 		}
 	}
@@ -272,6 +295,9 @@ SystemData* SystemData::loadSystem(pugi::xml_node system)
 	fullname = system.child("fullname").text().get();
 	path = system.child("path").text().get();
 	defaultCore = system.child("defaultCore").text().get();
+
+LOG(LogDebug) << "SystemData::loadSystem() - system: " << name;
+Log::flush();
 
 	pugi::xml_node emulators = system.child("emulators");
 	if (emulators != NULL)
@@ -429,8 +455,8 @@ void SystemData::createGroupedSystems()
 					if (logoElem && logoElem->has("path"))
 					{
 						std::string path = logoElem->get<std::string>("path");
-						folder->setMetadata("image", path);
-						folder->setMetadata("thumbnail", path);
+						folder->setMetadata(MetaDataId::Image, path);
+						folder->setMetadata(MetaDataId::Thumbnail, path);
 
 						folder->enableVirtualFolderDisplay(true);
 					}
@@ -848,6 +874,9 @@ void SystemData::loadTheme()
 {
 	//StopWatch watch("SystemData::loadTheme " + getName());
 
+LOG(LogDebug) << "SystemData::loadTheme() - system: " << mName;
+Log::flush();
+
 	mTheme = std::make_shared<ThemeData>();
 
 	std::string path = getThemePath();
@@ -948,4 +977,16 @@ SystemData* SystemData::getFirstVisibleSystem()
 			return sys;
 
 	return nullptr;
+}
+
+bool SystemData::shouldExtractHashesFromArchives()
+{
+	return
+		!hasPlatformId(PlatformIds::ARCADE) &&
+		!hasPlatformId(PlatformIds::NEOGEO) &&
+		!hasPlatformId(PlatformIds::DAPHNE) &&
+		!hasPlatformId(PlatformIds::LUTRO) &&
+		!hasPlatformId(PlatformIds::SEGA_DREAMCAST) &&
+		!hasPlatformId(PlatformIds::ATOMISWAVE) &&
+		!hasPlatformId(PlatformIds::NAOMI);
 }
