@@ -27,10 +27,6 @@ std::vector<SystemData*> SystemData::sSystemVector;
 SystemData::SystemData(const std::string& name, const std::string& fullName, SystemEnvironmentData* envData, const std::string& themeFolder, bool CollectionSystem, bool groupedSystem) :
 	mName(name), mFullName(fullName), mEnvData(envData), mThemeFolder(themeFolder), mIsCollectionSystem(CollectionSystem), mIsGameSystem(true)
 {
-
-LOG(LogDebug) << "SystemData::SystemData() - system: " << name;
-Log::flush();
-
 	mIsGroupSystem = groupedSystem;
 	mGameListHash = 0;
 	mGameCount = -1;
@@ -40,19 +36,12 @@ Log::flush();
 	mViewModeChanged = false;
 	mFilterIndex = nullptr;// new FileFilterIndex();
 
-LOG(LogDebug) << "SystemData::SystemData() - system2: " << name;
-Log::flush();
-
 	auto hiddenSystems = Utils::String::split(Settings::getInstance()->getString("HiddenSystems"), ';');
 	mHidden = (mIsCollectionSystem ? !themeFolder.empty() : (std::find(hiddenSystems.cbegin(), hiddenSystems.cend(), getName()) != hiddenSystems.cend()));
 
 	// if it's an actual system, initialize it, if not, just create the data structure
 	if(!CollectionSystem && !mIsGroupSystem)
 	{
-
-LOG(LogDebug) << "SystemData::SystemData() - system: " << name << ", (!CollectionSystem && !mIsGroupSystem): " << Utils::String::boolToString((!CollectionSystem && !mIsGroupSystem));
-Log::flush();
-
 		mRootFolder = new FolderData(mEnvData->mStartPath, this);
 		mRootFolder->setMetadata(MetaDataId::Name, mFullName);
 
@@ -69,11 +58,8 @@ Log::flush();
 		}
 
 		if (!Settings::getInstance()->getBool("IgnoreGamelist") && mName != "imageviewer")
-		{
-LOG(LogDebug) << "SystemData::SystemData() - system: " << name << ", parseGamelist()";
-Log::flush();
 			parseGamelist(this, fileMap);
-		}
+
 	}
 	else
 	{
@@ -87,9 +73,6 @@ Log::flush();
 
 	setIsGameSystemStatus();
 	loadTheme();
-
-LOG(LogDebug) << "SystemData::SystemData() - system: " << name << ", END constructor";
-Log::flush();
 }
 
 bool SystemData::setSystemViewMode(std::string newViewMode, Vector2f gridSizeOverride, bool setChanged)
@@ -296,9 +279,6 @@ SystemData* SystemData::loadSystem(pugi::xml_node system)
 	path = system.child("path").text().get();
 	defaultCore = system.child("defaultCore").text().get();
 
-LOG(LogDebug) << "SystemData::loadSystem() - system: " << name;
-Log::flush();
-
 	pugi::xml_node emulators = system.child("emulators");
 	if (emulators != NULL)
 	{
@@ -376,6 +356,7 @@ Log::flush();
 	if (name.empty() || path.empty() || extensions.empty() || cmd.empty())
 	{
 		LOG(LogError) << "SystemData::loadSystem() - System \"" << name << "\" is missing name, path, extension, or command!";
+		Log::flush();
 		return nullptr;
 	}
 
@@ -488,6 +469,7 @@ bool SystemData::loadConfig(Window* window)
 	if(!Utils::FileSystem::exists(path))
 	{
 		LOG(LogError) << "SystemData::loadConfig() - '" << path << "' file does not exist!";
+		Log::flush();
 		writeExampleConfig(getConfigPath(true));
 		return false;
 	}
@@ -499,6 +481,7 @@ bool SystemData::loadConfig(Window* window)
 	{
 		LOG(LogError) << "SystemData::loadConfig() - Could not parse '" << path << "' file!";
 		LOG(LogError) << "SystemData::loadConfig() - " << res.description();
+		Log::flush();
 		return false;
 	}
 
@@ -508,6 +491,7 @@ bool SystemData::loadConfig(Window* window)
 	if(!systemList)
 	{
 		LOG(LogError) << "SystemData::loadConfig() - '" << path << "' is missing the <systemList> tag!";
+		Log::flush();
 		return false;
 	}
 
@@ -662,6 +646,7 @@ void SystemData::writeExampleConfig(const std::string& path)
 	file.close();
 
 	LOG(LogError) << "SystemData::writeExampleConfig() - Example config written!  Go read it at \"" << path << "\"!";
+	Log::flush();
 }
 
 bool SystemData::hasDirtySystems()
@@ -873,9 +858,6 @@ void SystemData::updateDisplayedGameCount()
 void SystemData::loadTheme()
 {
 	//StopWatch watch("SystemData::loadTheme " + getName());
-
-LOG(LogDebug) << "SystemData::loadTheme() - system: " << mName;
-Log::flush();
 
 	mTheme = std::make_shared<ThemeData>();
 

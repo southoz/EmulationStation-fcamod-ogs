@@ -130,9 +130,6 @@ MetaDataList::MetaDataList(MetaDataListType type) : mType(type), mWasChanged(fal
 
 MetaDataList MetaDataList::createFromXML(MetaDataListType type, pugi::xml_node& node, SystemData* system)
 {
-	LOG(LogInfo) << "MetaDataList::createFromXML() - type: " << (FOLDER_METADATA ? "folder" : "game") << ", system: " << system->getName() << ", node: " << node.name();
-	Log::flush();
-
 	MetaDataList mdl(type);
 	mdl.mRelativeTo = system;
 	std::string value;
@@ -144,9 +141,6 @@ MetaDataList MetaDataList::createFromXML(MetaDataListType type, pugi::xml_node& 
 	{
 		std::string name = xelement.name();
 
-	LOG(LogInfo) << "MetaDataList::createFromXML() - type: " << (FOLDER_METADATA ? "folder" : "game") << ", system: " << system->getName() << ", node: " << node.name() << ", element: " << name;
-	Log::flush();
-
 		auto it = mGameIdMap.find(name);
 		if (it == mGameIdMap.cend())
 		{
@@ -154,8 +148,6 @@ MetaDataList MetaDataList::createFromXML(MetaDataListType type, pugi::xml_node& 
 				continue;
 
 			value = xelement.text().get();
-	LOG(LogInfo) << "MetaDataList::createFromXML() - type: " << (FOLDER_METADATA ? "folder" : "game") << ", system: " << system->getName() << ", node: " << node.name() << ", element: " << name << ", value: " << value;
-	Log::flush();
 
 			if (!value.empty())
 				mdl.mUnKnownElements.push_back(std::tuple<std::string, std::string, bool>(name, value, true));
@@ -195,15 +187,9 @@ MetaDataList MetaDataList::createFromXML(MetaDataListType type, pugi::xml_node& 
 		mdl.set(mdd.id, value);
 	}
 
-	LOG(LogInfo) << "MetaDataList::createFromXML() - type: " << (FOLDER_METADATA ? "folder" : "game") << ", system: " << system->getName() << ", node: " << node.name() << ", passed child element loop";
-	Log::flush();
-
 	for (pugi::xml_attribute xattr : node.attributes())
 	{
 		std::string name = xattr.name();
-
-		LOG(LogInfo) << "MetaDataList::createFromXML() - type: " << (FOLDER_METADATA ? "folder" : "game") << ", system: " << system->getName() << ", node: " << node.name() << ", attribute: " << name;
-		Log::flush();
 
 		auto it = mGameIdMap.find(name);
 		if (it == mGameIdMap.cend())
@@ -237,31 +223,19 @@ MetaDataList MetaDataList::createFromXML(MetaDataListType type, pugi::xml_node& 
 			mdl.set(mdd.id, value);
 	}
 
-	LOG(LogInfo) << "MetaDataList::createFromXML() - type: " << (FOLDER_METADATA ? "folder" : "game") << ", system: " << system->getName() << ", node: " << node.name() << ", passed attributes loop";
-	Log::flush();
-
 	return mdl;
 }
 
 // Add migration for alternative formats & old tags
 void MetaDataList::migrate(FileData* file, pugi::xml_node& node)
 {
-	LOG(LogInfo) << "MetaDataList::migrate() file: " << file->getPath() << ", node: " << node.name();
-	Log::flush();
-
 	std::string ext = Utils::String::toLower(Utils::FileSystem::getExtension(file->getPath()));
-
-	LOG(LogInfo) << "MetaDataList::migrate() file: " << file->getPath() << ", node: " << node.name() << ", extension: " << ext;
-	Log::flush();
-
 	if (get(MetaDataId::Crc32).empty())
 	{
 		pugi::xml_node xelement = node.child("hash");
 		if (xelement)
 			set(MetaDataId::Crc32, xelement.text().get());
 	}
-	LOG(LogInfo) << "MetaDataList::migrate() file: " << file->getPath() << ", node: " << node.name() << ", extension: " << ext << " - END";
-	Log::flush();
 }
 
 void MetaDataList::appendToXML(pugi::xml_node& parent, bool ignoreDefaults, const std::string& relativeTo, bool fullPaths) const
@@ -348,14 +322,8 @@ void MetaDataList::set(MetaDataId id, const std::string& value)
 
 const std::string MetaDataList::get(MetaDataId id, bool resolveRelativePaths) const
 {
-			LOG(LogInfo) << "MetaDataList::get() - id: " << std::to_string(id);
-			Log::flush();
-
 	if (id == MetaDataId::Name)
 		return mName;
-
-			LOG(LogInfo) << "MetaDataList::get() -not MetaDataId::Name";
-			Log::flush();
 
 	auto it = mMap.find(id);
 	if (it != mMap.end())
